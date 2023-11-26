@@ -1,0 +1,28 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl leading-tight">
+            Edit example field content
+        </h2>
+    </x-slot>
+
+    <div class="sm:px-0 lg:px-0 space-y-6">
+        <div class="px-4 sm:px-4 sm:rounded-lg">
+            <form method="POST" action="{{ route('admin.exampleFields.updateContent', $exampleField->id) }}">
+                @method('PUT')
+                @csrf
+
+                <div>
+                    <x-input-label for="source" :value="__('Content')" />
+                    <x-text-input id="content" class="block mt-1" name="content" size="80" :value="old('content', $exampleField->content)" required autofocus />
+                    <x-input-error :messages="$errors->get('content')" class="mt-2" />
+                </div>
+
+                <div class="flex items-center mt-4">
+                    <x-primary-button class="ml-0">
+                        {{ __('Save') }}
+                    </x-primary-button>
+                </div>
+            </form>
+        </div>
+    </div>
+</x-app-layout>
