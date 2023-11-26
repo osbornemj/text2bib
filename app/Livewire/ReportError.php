@@ -21,9 +21,10 @@ class ReportError extends Component
 {
     public ReportErrorForm $form;
 
-    public $output;
+    public $bibtexItem;
     public $outputId;
     public $itemTypeOptions;
+    public $itemTypes;
     public $fields;
 
     public $itemTypeId;
@@ -36,22 +37,19 @@ class ReportError extends Component
 
     public function mount()
     {
-        $output = Output::where('id', $this->outputId)
-            ->with('fields.itemField')
-            ->first();
-
-        foreach ($output->fields as $field) {
-            $itemField = $field->itemField;
-            $this->form->{$itemField->name} = $field->content;
+        foreach ($this->bibtexItem['item'] as $name => $content) {
+            if ($name != 'kind') {
+                $this->form->{$name} = $content;
+            }
         }
 
-        $this->itemTypeId = $output->item_type_id;
-        $itemType = ItemType::find($this->itemTypeId);
+        $itemType = $this->itemTypes->where('name', $this->bibtexItem['item']->kind)->first();
+        $this->itemTypeId = $itemType->id;
         $this->fields = $itemType->itemFields->sortBy('id');
 
         $this->displayState = 'none';
 
-        $errorReport = ErrorReport::where('output_id', $output->id)->first();
+        $errorReport = ErrorReport::where('output_id', $this->outputId)->first();
         $this->correctionsEnabled = true;
         if ($errorReport) {
             $this->form->reportTitle = $errorReport->title;
@@ -112,7 +110,7 @@ class ReportError extends Component
         }
         
         $errorReport = ErrorReport::where('output_id', $output->id)->orderBy('created_at', 'asc')->first();
-        $errorReportComment = ErrorReportComment::where('error_report_id', $errorReport->id)->first();
+        $errorReportComment = $errorReport ? ErrorReportComment::where('error_report_id', $errorReport->id)->first() : null;
         $this->priorReportExists = $errorReport ? true : false;
         if (!$changes 
                 && $errorReport 
@@ -149,6 +147,8 @@ class ReportError extends Component
             // $output->item_type_id = $this->itemTypeId;
             // $output->save();
             $output->update(['item_type_id' => $this->itemTypeId]);
+            // Updsate $bibtexItem['item']->kind
+            $this->bibtexItem['item']->kind = $this->itemTypes->where('id', $this->itemTypeId)->first()->name;
 
             foreach ($output->fields as $field) {
                 $field->delete();
@@ -171,6 +171,9 @@ class ReportError extends Component
                     ]);
                 }
             }
+
+            // Update $bibtexItem['item'] fields
+            // ?????????????????????????
 
             // outputFields have changed, so need to get them again
             $output = Output::where('id', $this->outputId)

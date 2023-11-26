@@ -11,16 +11,16 @@
                 <x-link href="{{ url('downloadBibtex/' . $conversionId) }}">Download BibTeX file</x-link>
             </p>
             <ul>
-                @foreach ($outputs as $output)
+                @foreach ($bibtexItems as $outputId => $bibtexItem)
                 <div class="mt-4">
                     <li>
                         @if ($includeSource) 
-                            % {{ $output->source }}
+                            % {{ $bibtexItem['source'] }}
                             <br/>
                         @endif
                         
                         <div>
-                            <livewire:report-error :output="$output" :outputId="$output->id" :itemTypeOptions="$itemTypeOptions" :fields="$fields" :itemTypeId="$itemTypeId" />
+                            <livewire:report-error :bibtexItem="$bibtexItem" :itemTypes="$itemTypes" :outputId="$outputId" :itemTypeOptions="$itemTypeOptions" :fields="$fields" :itemTypeId="$itemTypeId" />
                         </div>
 
                     </li>

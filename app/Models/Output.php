@@ -14,6 +14,10 @@ class Output extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'item' => 'array'
+    ];
+
     public function conversion(): BelongsTo
     {
         return $this->belongsTo(Conversion:: class);

@@ -1,17 +1,19 @@
 <div>
-    {{ '@' }}{{ $output->itemType->name }}{
+    {{ '@' }}{{ $bibtexItem['item']->kind }}{
         <ul class="ml-6">
-        @foreach ($output->fields as $field)
-            <li>{{ $field->itemField->name }} = {{ '{' }}{{ $field->content }}{{ '}' }}</li>
+        @foreach ($bibtexItem['item'] as $name => $content)
+            @if ($name != 'kind')
+                <li>{{ $name }} = {{ '{' }}{{ $content }}{{ '}' }}</li>
+            @endif
         @endforeach
         </ul>
         }
     <br/>
 
     @if ($displayState == 'block')
-        <div style="display: none;" id="text1{{ $output->id }}">
+        <div style="display: none;" id="text1{{ $outputId }}">
     @else
-        <div style="display: block;" id="text1{{ $output->id }}">
+        <div style="display: block;" id="text1{{ $outputId }}">
     @endif
     @if ($status == 'changes')
         @if ($priorReportExists)
@@ -34,7 +36,7 @@
     @endif
     </div>
 
-    <div style="display:{{ $displayState }};" class="dark:bg-slate-600 bg-slate-300 p-4 mt-4" id="reportForm{{ $output->id }}">
+    <div style="display:{{ $displayState }};" class="dark:bg-slate-600 bg-slate-300 p-4 mt-4" id="reportForm{{ $outputId }}">
         <form method="POST" wire:submit="submit" id="form{{ $outputId }}">
             @csrf
             <div class="mb-2">

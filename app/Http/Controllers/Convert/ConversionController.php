@@ -41,15 +41,9 @@ class ConversionController extends Controller
         $filestring = Storage::disk('public')->get('files/' . $user->id . '-' . $conversion->user_file_id . '-source.txt');
 
         // Convert items in file to BibTeX and write them to the database
+        // $bibtexItems is an array, each component of which is an array with components
+        // 'source', 'item', 'warnings', 'notices', 'details' 
         $bibtexItems = $this->convertText($filestring, $conversion);
-        $includeSource = $conversion->include_source;
-
-        // After writing the outputs to the database, we now read them back.
-        // That seems inefficient, but it's hard to see how to avoid it.
-        $outputs = Output::where('conversion_id', $conversionId)
-                    ->with('fields.itemField')
-                    ->with('itemType')
-                    ->get();
 
         $unidentifieds = $warnings = $details = [];
         foreach ($bibtexItems as $outputId => $bibtexItem) {
@@ -58,19 +52,19 @@ class ConversionController extends Controller
             $details[$outputId] = $bibtexItem['details'];
         }
 
-        $itemTypes = ItemType::all();
-        $itemTypeOptions = [];
-        foreach ($itemTypes as $itemType) {
-            $itemTypeOptions[$itemType->id] = $itemType->name;
-        }
+        $itemTypeOptions = ItemType::pluck('name', 'id')->all();
 
         $fields = [];
         $itemTypeId = 0;
+        $includeSource = $conversion->include_source;
+
+        $itemTypes = ItemType::with('itemFields')->get();
 
         return view('index.bibtex',
             compact(
-                'outputs',
+                'bibtexItems',
                 'fields',
+                'itemTypes',
                 'itemTypeId',
                 'itemTypeOptions',
                 'conversionId',
@@ -92,20 +86,21 @@ class ConversionController extends Controller
             $bibtexItem = $this->converter->convertEntry($entry, $conversion);
             $itemType = ItemType::where('name', $bibtexItem['item']->kind)->first();
 
+            // $bibtexItem SHOULD REPORT item type SEPARATELY (not as 'kind' field of item)
+
             $output = Output::create([
                 'source' => $bibtexItem['source'],
                 'conversion_id' => $conversion->id,
                 'item_type_id' => $itemType->id,
+                'item' => $bibtexItem['item'],
                 'seq' => $i,
             ]);
     
+            // NOT NECESSARY (output_fields should not be used)
             $j = 0;
             foreach ($bibtexItem['item'] as $key => $content) {
                 if (!in_array($key, ['kind', 'label', 'unidentified'])) {
                     $itemField = ItemField::where('name', $key)->first();
-if (!$itemField) {
-    dd('key: ' . $key);
-}    
                     $j++;
                     OutputField::create([
                         'output_id' => $output->id,
@@ -115,6 +110,7 @@ if (!$itemField) {
                     ]);
                 }
             }
+
             $bibtexItems[$output->id] = $bibtexItem;
         }
 

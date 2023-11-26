@@ -81,7 +81,7 @@ class DatabaseSeeder extends Seeder
                 'name' => $name
             ]);
         }
-
+        
         $itemTypes = ['article', 'book', 'incollection', 'inproceedings', 'mastersthesis', 'online', 'phdthesis',
             'techreport', 'unpublished'];
 
@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        $itemFields = ['address', 'annote', 'archivePrefix', 'author', 'booktitle', 'chapter', 'doi', 'edition', 'editor',
+        $itemFields = ['address', 'annote', 'archiveprefix', 'author', 'booktitle', 'chapter', 'doi', 'edition', 'editor',
             'howpublished', 'eprint', 'institution', 'isbn', 'journal', 'key', 'month', 'note', 'number', 'oclc',
             'organization', 'pages', 'publisher', 'school', 'series', 'title', 'type', 'url', 'urldate', 'volume', 'year'];
 
@@ -103,16 +103,16 @@ class DatabaseSeeder extends Seeder
 
         $itemTypeItemFields = [
             'article' => ['author', 'title', 'journal', 'year', 'month', 'volume', 'number', 'pages', 'note', 'doi',
-                 'url', 'archivePrefix', 'eprint'],
+                 'url', 'archiveprefix', 'eprint'],
             'book' => ['author', 'editor', 'title', 'edition', 'volume', 'series', 'year', 'address', 'publisher',
-                 'note', 'doi', 'url', 'archivePrefix', 'eprint', 'isbn', 'oclc'],
+                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'isbn', 'oclc'],
             'techreport' => ['author', 'title', 'year', 'month', 'number', 'institution', 'note', 'type', 'url',
-                 'archivePrefix', 'eprint'],
+                 'archiveprefix', 'eprint'],
             'incollection' => ['author', 'title', 'booktitle', 'year', 'publisher', 'address', 'editor', 'pages',
-                 'note', 'doi', 'url', 'archivePrefix', 'eprint'],
+                 'note', 'doi', 'url', 'archiveprefix', 'eprint'],
             'inproceedings' => ['author', 'title', 'booktitle', 'year', 'month', 'publisher', 'address', 'editor',
-                 'pages', 'note', 'archivePrefix', 'eprint'],
-            'unpublished' => ['author', 'title', 'year', 'month', 'note', 'url', 'archivePrefix', 'eprint'],
+                 'pages', 'note', 'archiveprefix', 'eprint'],
+            'unpublished' => ['author', 'title', 'year', 'month', 'note', 'url', 'archiveprefix', 'eprint'],
             'mastersthesis' => ['author', 'title', 'school', 'year', 'month', 'note'],
             'phdthesis' => ['author', 'title', 'school', 'year', 'month', 'note'],
             'online' => ['author', 'title', 'year', 'url', 'urldate'],
