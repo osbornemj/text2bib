@@ -198,6 +198,7 @@ class Converter
         $entry = ltrim($entry, ' .0123456789[]()');
 
         $item = new \stdClass();
+        $itemKind = null;
 
         // If entry starts with '\bibitem', get label and remove '\bibitem'
         if (Str::startsWith($entry, "\\bibitem{")) {
@@ -395,7 +396,7 @@ class Converter
 
         // Website
         if (isset($item->url) && $oneWordAuthor) {
-            $item->kind = 'online';
+            $itemKind = 'online';
             $title = trim($remainder);
             $newRemainder = '';
         }
@@ -612,7 +613,7 @@ class Converter
 
         if (isset($item->url) && $oneWordAuthor) {
             $this->debug("Item type case 0");
-            $item->kind = 'online';
+            $itemKind = 'online';
         } elseif (
             $isArticle
             || 
@@ -630,84 +631,84 @@ class Converter
             )
         ) {
             $this->debug("Item type case 1");
-            $item->kind = 'article';
+            $itemKind = 'article';
         } elseif ($containsNumberedWorkingPaper || ($containsWorkingPaper && $containsNumber)) {
             $this->debug("Item type case 2");
-            $item->kind = 'techreport';
+            $itemKind = 'techreport';
         } elseif ($containsWorkingPaper || ! $remainder) {
             $this->debug("Item type case 3");
-            $item->kind = 'unpublished';
+            $itemKind = 'unpublished';
         } elseif ($containsEditors && ( $inStart || $containsPageRange)) {
             $this->debug("Item type case 4");
-            $item->kind = 'incollection';
+            $itemKind = 'incollection';
         } elseif ($containsEditors) {
             $this->debug("Item type case 5");
-            $item->kind = 'incollection';
-            if (!$this->itemType && !$item->kind) {
-                $notices[] = "Not sure of type; guessed to be " . $item->kind . ".  [1]";
+            $itemKind = 'incollection';
+            if (!$this->itemType && !$itemKind) {
+                $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [1]";
             }
         } elseif (($containsPageRange || $containsInteriorVolume) && ! $containsProceedings && ! $containsPublisher && ! $containsCity) {
             /** $commaCount criterion doesn't seem to be useful
-              if($commaCount < 6) $item->kind = 'article';
-              else $item->kind = 'incollection';
+              if($commaCount < 6) $itemKind = 'article';
+              else $itemKind = 'incollection';
              * */
             $this->debug("Item type case 6");
-            $item->kind = 'article';
-            if (!$this->itemType && !$item->kind) {
-                $notices[] = "Not sure of type; guessed to be " . $item->kind . ".  [2]";
+            $itemKind = 'article';
+            if (!$this->itemType && !$itemKind) {
+                $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [2]";
             }
         } elseif ($containsProceedings) {
             $this->debug("Item type case 8");
-            $item->kind = 'inproceedings';
+            $itemKind = 'inproceedings';
         } elseif ($containsIsbn || (isset($this->italicTitle) && (($containsCity || $containsPublisher) || isset($item->editor)))) {
             $this->debug("Item type case 7");
-            $item->kind = 'book';
+            $itemKind = 'book';
         } elseif ($pubInfoStartsWithForthcoming || $pubInfoEndsWithForthcoming) {
             $this->debug("Item type case 9");
-            $item->kind = 'article';
+            $itemKind = 'article';
         } elseif ($endsWithInReview) {
             $this->debug("Item type case 9a");
-            $item->kind = 'unpublished';
+            $itemKind = 'unpublished';
         } elseif ($containsPublisher || $inStart) {
             if ((!$containsIn && ! $containsPageRange) || strlen($remainder) - $cityLength - $publisherLength < 30) {
                 $this->debug("Item type case 10");
-                $item->kind = 'book';
+                $itemKind = 'book';
             } else {
                 $this->debug("Item type case 11");
-                $item->kind = 'incollection';
+                $itemKind = 'incollection';
             }
-            if (!$this->itemType && !$item->kind) {
-                $notices[] = "Not sure of type; guessed to be " . $item->kind . ".  [3]";
+            if (!$this->itemType && !$itemKind) {
+                $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [3]";
             }
         } elseif (!$containsNumber && !$containsPageRange) {
             // condition used to have 'or', which means that an article with a single page number is classified as a book
             if ($containsThesis) {
                 $this->debug("Item type case 12");
-                $item->kind = 'thesis';
+                $itemKind = 'thesis';
             } elseif ($endsWithInReview) {
                 $this->debug("Item type case 12a");
-                $item->kind = 'unpublished';
+                $itemKind = 'unpublished';
             } else {
                 $this->debug("Item type case 13");
-                $item->kind = 'book';
+                $itemKind = 'book';
             }
         } else {
             $this->debug("Item type case 14");
-            $item->kind = 'article';
+            $itemKind = 'article';
             if (!$this->itemType) {
-                $warnings[] = "Really not sure of type; has to be something, so set to " . $item->kind . ".";
+                $warnings[] = "Really not sure of type; has to be something, so set to " . $itemKind . ".";
             }
         }
 
         // Whether thesis is ma or phd is determined later
-        if ($item->kind != 'thesis') {
-            $this->verbose(strip_tags($item->kind), null, 'Item type');
+        if ($itemKind != 'thesis') {
+            $this->verbose(strip_tags($itemKind), null, 'Item type');
         }
 
         unset($journal, $volume, $pages);
 
         // Remove ISBN and OCLC if any and put them in isbn and oclc fields.
-        if ($item->kind == 'book' || $item->kind == 'incollection') {
+        if ($itemKind == 'book' || $itemKind == 'incollection') {
             $match = $this->extractLabeledContent($remainder, ' ISBN:? ', '[0-9X]+');
             if ($match) {
                 $item->isbn = $match;
@@ -723,7 +724,7 @@ class Converter
 
         // if item is not unpublished and ends with 'in review', put 'in review' in notes field and remove it from entry
         // Can this case arise?
-        if ($item->kind != 'unpublished') {
+        if ($itemKind != 'unpublished') {
             $match = $this->extractLabeledContent($remainder, '', '\(?[Ii]n [Rr]eview\.?\)?$');
             if ($match) {
                 $item->note = $match;
@@ -736,10 +737,10 @@ class Converter
         // If user is forcing type, specify it here.  The previous section can't be skipped because some of the variables defined in it
         // are used later on.
         if ($this->itemType) {
-            $item->kind = $this->itemType;
+            $itemKind = $this->itemType;
         }
 
-        switch ($item->kind) {
+        switch ($itemKind) {
 
             /////////////////////////////////////////////
             // Get publication information for article //
@@ -1418,20 +1419,20 @@ class Converter
             case 'thesis':
             case 'phdthesis':
             case 'mathesis':
-                if ($item->kind == 'thesis') {
+                if ($itemKind == 'thesis') {
                     $thesisTypeFound = 0;
                     if (preg_match('/' . $this->masterRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                        $item->kind = 'mastersthesis';
+                        $itemKind = 'mastersthesis';
                         $thesisTypeFound = 1;
                     } elseif (preg_match('/' . $this->phdRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                        $item->kind = 'phdthesis';
+                        $itemKind = 'phdthesis';
                         $thesisTypeFound = 1;
                     } else {
-                        $item->kind = 'phdthesis';
+                        $itemKind = 'phdthesis';
                         $warnings[] = "Can't determine whether MA or PhD thesis; set to be PhD thesis.";
                     }
                 }
-                $this->verbose(strip_tags($item->kind), null, 'Item type');
+                $this->verbose(strip_tags($itemKind), null, 'Item type');
 
                 $remainder = $this->findAndRemove($remainder, $this->fullThesisRegExp);
 
@@ -1455,7 +1456,6 @@ class Converter
 
         $remainder = trim($remainder, '.,:;}{ ');
         if ($remainder && !in_array($remainder, array('pages', 'Pages', 'pp', 'pp.'))) {
-            $item->unidentified = $remainder;
             $warnings[] = "The string \"" . $remainder . "\" remains unidentified.";
         }
 
@@ -1474,7 +1474,14 @@ class Converter
 
         }
 
-        $returner = ['source' => $originalEntry, 'item' => $item, 'warnings' => $warnings, 'notices' => $notices, 'details' => $this->displayLines];
+        $returner = [
+            'source' => $originalEntry,
+            'item' => $item,
+            'itemType' => $itemKind,
+            'warnings' => $warnings,
+            'notices' => $notices,
+            'details' => $this->displayLines
+        ];
 
         return $returner;
     }

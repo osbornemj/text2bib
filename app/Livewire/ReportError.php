@@ -21,11 +21,12 @@ class ReportError extends Component
 {
     public ReportErrorForm $form;
 
-    public $bibtexItem;
+    public $convertedItem;
     public $outputId;
     public $itemTypeOptions;
     public $itemTypes;
     public $fields;
+    public $errorReport;
 
     public $itemTypeId;
 
@@ -37,18 +38,17 @@ class ReportError extends Component
 
     public function mount()
     {
-        foreach ($this->bibtexItem['item'] as $name => $content) {
-            if ($name != 'kind') {
-                $this->form->{$name} = $content;
-            }
+        foreach ($this->convertedItem['item'] as $name => $content) {
+            $this->form->{$name} = $content;
         }
 
-        $itemType = $this->itemTypes->where('name', $this->bibtexItem['item']->kind)->first();
+        $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
         $this->itemTypeId = $itemType->id;
         $this->fields = $itemType->itemFields->sortBy('id');
 
         $this->displayState = 'none';
 
+        /*
         $errorReport = ErrorReport::where('output_id', $this->outputId)->first();
         $this->correctionsEnabled = true;
         if ($errorReport) {
@@ -66,6 +66,7 @@ class ReportError extends Component
             $this->errorReportExists = false;
             $this->priorReportExists = false;
         }
+        */
     }
 
     public function showForm()
@@ -147,8 +148,8 @@ class ReportError extends Component
             // $output->item_type_id = $this->itemTypeId;
             // $output->save();
             $output->update(['item_type_id' => $this->itemTypeId]);
-            // Updsate $bibtexItem['item']->kind
-            $this->bibtexItem['item']->kind = $this->itemTypes->where('id', $this->itemTypeId)->first()->name;
+            // Updsate $convertedItem['item']->kind
+            $this->convertedItem['item']->kind = $this->itemTypes->where('id', $this->itemTypeId)->first()->name;
 
             foreach ($output->fields as $field) {
                 $field->delete();
@@ -172,7 +173,7 @@ class ReportError extends Component
                 }
             }
 
-            // Update $bibtexItem['item'] fields
+            // Update $convertedItem['item'] fields
             // ?????????????????????????
 
             // outputFields have changed, so need to get them again
@@ -208,6 +209,8 @@ class ReportError extends Component
                         'comment_text' => $this->form->comment,
                     ]);
                 }
+
+                $this->errorReport = $newErrorReport;
             }
 
             // Notify admin?

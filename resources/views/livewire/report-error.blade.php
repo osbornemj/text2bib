@@ -1,7 +1,7 @@
 <div>
-    {{ '@' }}{{ $bibtexItem['item']->kind }}{
+    {{ '@' }}{{ $convertedItem['itemType'] }}{
         <ul class="ml-6">
-        @foreach ($bibtexItem['item'] as $name => $content)
+        @foreach ($convertedItem['item'] as $name => $content)
             @if ($name != 'kind')
                 <li>{{ $name }} = {{ '{' }}{{ $content }}{{ '}' }}</li>
             @endif
@@ -66,13 +66,13 @@
                     <span class="text-sm font-medium ml-1 text-gray-700 dark:text-gray-300">Report conversion error?</span>
 
                     <div class="hidden peer-checked:block">
-                        <x-input-label for="reportTitle" value="Short description of error (required; max 60 characters)" />
+                        <x-input-label for="reportTitle" value="Title of report (short description of error, max 60 characters)" />
                         <x-text-input id="reportTitle" class="block mt-1 w-full" type="text" maxlength="60" name="reportTitle" value="form.reportTitle" wire:model="form.reportTitle"/>
                         <div role="alert" class="mt-4 mb-4">
                             @error('form.reportTitle') <span class="bg-red-500 text-white font-bold rounded px-2 py-1">{{ $message }}</span> @enderror 
                         </div>
 
-                        <x-input-label for="comment" value="Cmment on error (optional)" />
+                        <x-input-label for="comment" value="Comment on error (optional)" />
                         <x-textarea-input rows="2" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="form.comment"/>
                     </div>
                 </div>

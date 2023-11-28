@@ -39,66 +39,66 @@ class ConversionController extends Controller
 
         // Get file that user uploaded
         $filestring = Storage::disk('public')->get('files/' . $user->id . '-' . $conversion->user_file_id . '-source.txt');
+        $filestring = $this->regularizeLineEndings($filestring);
+        $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
 
-        // Convert items in file to BibTeX and write them to the database
-        // $bibtexItems is an array, each component of which is an array with components
-        // 'source', 'item', 'warnings', 'notices', 'details' 
-        $bibtexItems = $this->convertText($filestring, $conversion);
+        $convertedItems = [];
+        foreach ($entries as $i => $entry) {
+            $convertedItem = $this->converter->convertEntry($entry, $conversion);
+            $itemType = ItemType::where('name', $convertedItem['itemType'])->first();
 
-        $unidentifieds = $warnings = $details = [];
-        foreach ($bibtexItems as $outputId => $bibtexItem) {
-            $unidentifieds[$outputId] = $bibtexItem['item']->unidentified ?? '';
-            $warnings[$outputId] = $bibtexItem['warnings'];
-            $details[$outputId] = $bibtexItem['details'];
+            $output = Output::create([
+                'source' => $convertedItem['source'],
+                'conversion_id' => $conversion->id,
+                'item_type_id' => $itemType->id,
+                'item' => $convertedItem['item'],
+                'seq' => $i,
+            ]);
+    
+            $convertedItems[$output->id] = $convertedItem;
         }
 
         $itemTypeOptions = ItemType::pluck('name', 'id')->all();
 
-        $fields = [];
-        $itemTypeId = 0;
         $includeSource = $conversion->include_source;
+        $reportType = $conversion->report_type;
 
         $itemTypes = ItemType::with('itemFields')->get();
 
         return view('index.bibtex',
             compact(
-                'bibtexItems',
-                'fields',
+                'convertedItems',
                 'itemTypes',
-                'itemTypeId',
                 'itemTypeOptions',
                 'conversionId',
                 'includeSource',
-                'unidentifieds',
-                'warnings',
-                'details'
+                'reportType'
             )
         );
     }
 
+    /*
     public function convertText(string $filestring, Conversion $conversion): array
     {
         $filestring = $this->regularizeLineEndings($filestring);
         $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
 
-        $bibtexItems = [];
+        $convertedItems = [];
         foreach ($entries as $i => $entry) {
-            $bibtexItem = $this->converter->convertEntry($entry, $conversion);
-            $itemType = ItemType::where('name', $bibtexItem['item']->kind)->first();
-
-            // $bibtexItem SHOULD REPORT item type SEPARATELY (not as 'kind' field of item)
+            $convertedItem = $this->converter->convertEntry($entry, $conversion);
+            $itemType = ItemType::where('name', $convertedItem['itemType'])->first();
 
             $output = Output::create([
-                'source' => $bibtexItem['source'],
+                'source' => $convertedItem['source'],
                 'conversion_id' => $conversion->id,
                 'item_type_id' => $itemType->id,
-                'item' => $bibtexItem['item'],
+                'item' => $convertedItem['item'],
                 'seq' => $i,
             ]);
     
             // NOT NECESSARY (output_fields should not be used)
             $j = 0;
-            foreach ($bibtexItem['item'] as $key => $content) {
+            foreach ($convertedItem['item'] as $key => $content) {
                 if (!in_array($key, ['kind', 'label', 'unidentified'])) {
                     $itemField = ItemField::where('name', $key)->first();
                     $j++;
@@ -111,11 +111,12 @@ class ConversionController extends Controller
                 }
             }
 
-            $bibtexItems[$output->id] = $bibtexItem;
+            $convertedItems[$output->id] = $convertedItem;
         }
 
-        return $bibtexItems;
+        return $convertedItems;
     }
+    */
 
     // Replace \r\n and \r with \n
     public function regularizeLineEndings(string $string): string

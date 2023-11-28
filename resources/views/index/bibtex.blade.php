@@ -11,16 +11,51 @@
                 <x-link href="{{ url('downloadBibtex/' . $conversionId) }}">Download BibTeX file</x-link>
             </p>
             <ul>
-                @foreach ($bibtexItems as $outputId => $bibtexItem)
+                @foreach ($convertedItems as $outputId => $convertedItem)
                 <div class="mt-4">
                     <li>
                         @if ($includeSource) 
-                            % {{ $bibtexItem['source'] }}
+                            % {{ $convertedItem['source'] }}
                             <br/>
                         @endif
+
+                        @if (count($convertedItem['warnings']))
+                        <ul>
+                            @foreach ($convertedItem['warnings'] as $warning)
+                                <li>
+                                    <span class="text-red-600">{{ $warning }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                        @endif
                         
+                        @if (count($convertedItem['notices']))
+                        <ul>
+                            @foreach ($convertedItem['notices'] as $notice)
+                                <li>
+                                    <span class="text-red-400">{{ $notice }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                        @endif
+                        
+                        @if ($reportType == 'detailed') 
+                        <ul>
+                            @foreach ($convertedItem['details'] as $details)
+                                <li>
+                                    {!! $details !!}
+                                </li>
+                            @endforeach
+                        </ul>
+                        @endif
+
                         <div>
-                            <livewire:report-error :bibtexItem="$bibtexItem" :itemTypes="$itemTypes" :outputId="$outputId" :itemTypeOptions="$itemTypeOptions" :fields="$fields" :itemTypeId="$itemTypeId" />
+                            <livewire:report-error 
+                                :convertedItem="$convertedItem" 
+                                :itemTypes="$itemTypes" 
+                                :outputId="$outputId" 
+                                :itemTypeOptions="$itemTypeOptions" 
+                            />
                         </div>
 
                     </li>
