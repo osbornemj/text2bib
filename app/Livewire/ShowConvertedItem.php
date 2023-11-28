@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 
-use App\Livewire\Forms\ReportErrorForm;
+use App\Livewire\Forms\ShowConvertedItemForm;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -17,9 +17,9 @@ use App\Models\OutputField;
 use App\Models\RawOutput;
 use App\Models\RawOutputField;
 
-class ReportError extends Component
+class ShowConvertedItem extends Component
 {
-    public ReportErrorForm $form;
+    public ShowConvertedItemForm $form;
 
     public $convertedItem;
     public $outputId;
@@ -44,13 +44,16 @@ class ReportError extends Component
 
         $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
         $this->itemTypeId = $itemType->id;
-        $this->fields = $itemType->itemFields;
-
+        $this->fields = $itemType->fields;
+        
         $this->displayState = 'none';
 
-        /*
-        $errorReport = ErrorReport::where('output_id', $this->outputId)->first();
+        //$errorReport = ErrorReport::where('output_id', $this->outputId)->first();
         $this->correctionsEnabled = true;
+        $this->form->reportTitle = '';
+        $this->errorReportExists = false;
+        $this->priorReportExists = false;
+        /*
         if ($errorReport) {
             $this->form->reportTitle = $errorReport->title;
             $this->errorReportExists = true;    
@@ -81,8 +84,7 @@ class ReportError extends Component
 
     public function updatedItemTypeId()
     {
-        $itemType = ItemType::find($this->itemTypeId);
-        $this->fields = $itemType->itemFields->sortBy('id');
+        $this->fields = ItemType::find($this->itemTypeId)->fields;
         $this->displayState = 'block';
     }
 
@@ -92,7 +94,7 @@ class ReportError extends Component
             $this->validate();
         }
 
-        // If no changes have been made, abort
+        // Determine whether user has made any changes
         $changes = false;
         $output = Output::find($this->outputId);
 
@@ -124,30 +126,25 @@ class ReportError extends Component
         } else {
             // If RawOutput exists for this Output, leave it alone.  Otherwise create
             // a RawOutput from Output.
-            $rawOutput = RawOutput::where('output_id', $output->id)->first();
-            if (!$rawOutput) {
-                $rawOutput = RawOutput::create([
-                        'output_id' => $output->id,
-                        'item_type_id' => $output->item_type_id,
-                        'item' => $output->item,
-                ]);
-            }
+            $rawOutput = RawOutput::firstOrCreate(
+                ['output_id' => $output->id],
+                ['output_id' => $output->id, 'item_type_id' => $output->item_type_id, 'item' => $output->item]
+            );
 
             // Change $output according to user's entries
             $output->update(['item_type_id' => $this->itemTypeId]);
+
             // Update $convertedItem['itemType']
-            $this->convertedItem['itemType'] = $this->itemTypes->where('id', $this->itemTypeId)->first()->name;
+            $itemType = $this->itemTypes->where('id', $this->itemTypeId)->first();
+            $this->convertedItem['itemType'] = $itemType->name;
 
             $inputs = $this->form->except('comment');
 
             // Restrict to fields relevant to the item_type
-            $itemType = ItemType::find($this->itemTypeId);
-            $i = 0;
             $item = [];
             foreach ($inputs as $name => $content) {
-                $i++;
                 $itemField = ItemField::where('name', $name)->first();
-                if ($itemType->itemFields->contains($itemField)) {
+                if (in_array($name, $itemType->fields)) {
                     $this->form->{$name} = $content;
                     $item[$name] = $content;
                 }
@@ -157,10 +154,12 @@ class ReportError extends Component
             $output->update(['item' => $item]);
 
             // Update $this->convertedItem['item'] fields
-            $this->convertedItem['item'] = $item;
+            foreach ($item as $name => $content) {
+                $this->convertedItem['item']->$name = $content;
+            }
 
             $this->itemTypeId = $output->item_type_id;
-            $this->fields = $itemType->itemFields->sortBy('id');
+            $this->fields = $itemType->fields;
 
             // File report
             if ($this->form->postReport) {
@@ -171,10 +170,14 @@ class ReportError extends Component
                 $this->errorReportExists = true;
 
                 if ($this->priorReportExists) {
-                    $errorReportComment->update([
+                    if ($this->form->comment) {
+                        $errorReportComment->update([
                             'comment_text' => $this->form->comment
                         ]);
-                } else {
+                    } elseif ($errorReportComment) {
+                        $errorReportComment->delete();
+                    }
+                } elseif ($this->form->comment) {
                     ErrorReportComment::create([
                         'error_report_id' => $newErrorReport->id,
                         'user_id' => Auth::user()->id,
@@ -194,6 +197,6 @@ class ReportError extends Component
 
     public function render()
     {
-        return view('livewire.report-error');
+        return view('livewire.show-converted-item');
     }
 }

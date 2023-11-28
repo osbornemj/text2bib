@@ -50,11 +50,11 @@
                         @endif
 
                         <div>
-                            <livewire:report-error 
+                            <livewire:show-converted-item 
                                 :convertedItem="$convertedItem" 
                                 :itemTypes="$itemTypes" 
                                 :outputId="$outputId" 
-                                :itemTypeOptions="$itemTypeOptions" 
+                                :itemTypeOptions="$itemTypeOptions"
                             />
                         </div>
 

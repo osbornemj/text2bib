@@ -27,7 +27,7 @@
                 <dl>
                     <x-dt>Fields with errors</x-dt>
                     <x-dd>
-                        @foreach ($output->itemType->itemFields as $itemField)
+                        @foreach ($output->itemType->fields as $itemField)
                         @php
                             $outputContent = $output->fields->where('item_field_id', $itemField->id)->first()->content;
                             $rawOutputContent = $rawOutput->fields->where('item_field_id', $itemField->id)->first()->content;

@@ -81,15 +81,15 @@ class DatabaseSeeder extends Seeder
                 'name' => $name
             ]);
         }
-        
-        $itemTypes = ['article', 'book', 'incollection', 'inproceedings', 'mastersthesis', 'online', 'phdthesis',
-            'techreport', 'unpublished'];
 
-        foreach ($itemTypes as $name) {
-            ItemType::create([
-                'name' => $name
-            ]);
-        }
+        // $itemTypes = ['article', 'book', 'incollection', 'inproceedings', 'mastersthesis', 'online', 'phdthesis',
+        //     'techreport', 'unpublished'];
+
+        // foreach ($itemTypes as $name) {
+        //     ItemType::create([
+        //         'name' => $name
+        //     ]);
+        // }
 
         $itemFields = ['address', 'annote', 'archiveprefix', 'author', 'booktitle', 'chapter', 'doi', 'edition', 'editor',
             'howpublished', 'eprint', 'institution', 'isbn', 'journal', 'key', 'month', 'note', 'number', 'oclc',
@@ -118,12 +118,19 @@ class DatabaseSeeder extends Seeder
             'online' => ['author', 'title', 'year', 'url', 'urldate'],
         ];
 
-        foreach ($itemTypes as $name) {
-            $itemType = ItemType::where('name', $name)->first();
-            foreach ($itemTypeItemFields[$name] as $fieldName) {
-                $itemField = ItemField::where('name', $fieldName)->first();
-                $itemType->itemFields()->attach($itemField->id);
-            }
+        foreach($itemTypeItemFields as $name => $fields) {
+            ItemType::create([
+                'name' => $name,
+                'fields' => $fields
+            ]);
         }
+
+        // foreach ($itemTypes as $name) {
+        //     $itemType = ItemType::where('name', $name)->first();
+        //     foreach ($itemTypeItemFields[$name] as $fieldName) {
+        //         $itemField = ItemField::where('name', $fieldName)->first();
+        //         $itemType->itemFields()->attach($itemField->id);
+        //     }
+        // }
     }
 }

@@ -1,11 +1,13 @@
 <div>
     {{ '@' }}{{ $convertedItem['itemType'] }}{{ '{' }}{{ $convertedItem['label'] }},
         <ul class="ml-6">
-        @foreach ($convertedItem['item'] as $name => $content)
-            <li>{{ $name }} = {{ '{' }}{{ $content }}{{ '}' }},</li>
-        @endforeach
+            @foreach ($fields as $field)
+                @isset($convertedItem['item']->$field)
+                    <li>{{ $field }} = {{ '{' }}{{ $convertedItem['item']->$field }}{{ '}' }},</li>
+                @endisset
+            @endforeach
         </ul>
-        }
+        {{ '}' }}
     <br/>
 
     @if ($displayState == 'block')
@@ -45,17 +47,14 @@
                 <x-select-input id="itemTypeId" name="itemTypeId" class="block mt-1 w-full" :options="$itemTypeOptions" :selected="$selected" wire:model.change="itemTypeId" />
             </div>
 
-            @foreach ($fields as $field)
-                @if ($field['name'] != 'kind')
+            @foreach ($fields as $name)
                 @php
-                    $name = $field['name'];
                     $modelName = 'form.' . $name;
                 @endphp
                 <div>
                     <x-input-label :for="$name" :value="$name" />
                     <x-text-input :id="$name" class="block mt-1 w-full" type="text" :name="$name" :wire:model="$modelName"/>
                 </div>
-                @endif
             @endforeach
 
             @if ($correctionsEnabled)

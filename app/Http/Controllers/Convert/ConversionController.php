@@ -52,7 +52,7 @@ class ConversionController extends Controller
 
         $convItems = $this->addLabels($convItems, $conversion);
 
-        $itemTypes = ItemType::with('itemFields')->get();
+        $itemTypes = ItemType::all();
 
         // Write converted items to database and key array to output ids
         $convertedItems = [];

@@ -19,7 +19,7 @@ class ErrorReport extends Model
 
     public function output(): BelongsTo
     {
-        return $this->belongsTo(Output:: class)->with('fields');
+        return $this->belongsTo(Output:: class);
     }
 
     public function getIsOpenAttribute(): bool

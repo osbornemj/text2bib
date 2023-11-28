@@ -8,7 +8,7 @@ use Livewire\Form;
 //use App\Models\ItemType;
 //use App\Models\Output;
 
-class ReportErrorForm extends Form
+class ShowConvertedItemForm extends Form
 {
     //public $outputId;
     //public $itemTypeOptions;

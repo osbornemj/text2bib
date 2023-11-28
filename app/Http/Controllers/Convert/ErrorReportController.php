@@ -11,10 +11,10 @@ class ErrorReportController extends Controller
 {
     public function index()
     {
-        $errorReports = ErrorReport::with('output.fields.itemField')
-            ->with('output.itemType')
-            ->with('output.rawOutput.fields.itemField')
-            ->with('output.rawOutput.itemType')
+        $errorReports = ErrorReport::with('output')
+            // ->with('output.itemType')
+            // ->with('output.rawOutput.fields.itemField')
+            // ->with('output.rawOutput.itemType')
             ->orderBy('created_at', 'desc')
             ->paginate();
 
@@ -24,9 +24,9 @@ class ErrorReportController extends Controller
     public function show($id)
     {
         $errorReport = ErrorReport::where('id', $id)
-            ->with('output.fields.itemField')
+            ->with('output')
             ->with('output.itemType')
-            ->with('output.rawOutput.fields.itemField')
+            ->with('output.rawOutput')
             ->with('output.rawOutput.itemType')
             ->first();
 
