@@ -33,7 +33,7 @@
                         <ul>
                             @foreach ($convertedItem['notices'] as $notice)
                                 <li>
-                                    <span class="text-red-400">{{ $notice }}</span>
+                                    <span class="text-orange-600">{{ $notice }}</span>
                                 </li>
                             @endforeach
                         </ul>

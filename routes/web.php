@@ -29,7 +29,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
 Route::get('/', [IndexController::class, 'index'])->name('public.index');
 
 Route::middleware('auth')->group(function () {

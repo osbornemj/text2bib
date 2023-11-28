@@ -42,18 +42,17 @@ class ConversionController extends Controller
         $filestring = $this->regularizeLineEndings($filestring);
         $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
 
-        $convertedItems = [];
+        $convItems = [];
         foreach ($entries as $entry) {
-            // $covertedItem is array with components 'source', 'item', 'itemType', 'label', 'warnings',
+            // $convItem is array with components 'source', 'item', 'itemType', 'label', 'warnings',
             // 'notices', 'details'.
             // 'label' (which depends on whole set of converted items) is updated later
-            $convItem = $this->converter->convertEntry($entry, $conversion);
-            $itemType = ItemType::where('name', $convItem['itemType'])->first();
-
-            $convItems[] = $convItem;
+            $convItems[] = $this->converter->convertEntry($entry, $conversion);
         }
 
         $convItems = $this->addLabels($convItems, $conversion);
+
+        $itemTypes = ItemType::with('itemFields')->get();
 
         // Write converted items to database and key array to output ids
         $convertedItems = [];
@@ -61,7 +60,7 @@ class ConversionController extends Controller
             $output = Output::create([
                 'source' => $convItem['source'],
                 'conversion_id' => $conversion->id,
-                'item_type_id' => $itemType->id,
+                'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
                 'label' => $convItem['label'],
                 'item' => $convItem['item'],
                 'seq' => $i,
@@ -70,12 +69,9 @@ class ConversionController extends Controller
             $convertedItems[$output->id] = $convItem;
         }
 
-        $itemTypeOptions = ItemType::pluck('name', 'id')->all();
-
+        $itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
         $includeSource = $conversion->include_source;
         $reportType = $conversion->report_type;
-
-        $itemTypes = ItemType::with('itemFields')->get();
 
         return view('index.bibtex',
             compact(
@@ -175,34 +171,40 @@ class ConversionController extends Controller
         return $label;
     }
 
-    public function downloadBibtex(int $conversionId)
+    public function downloadBibtex(int $conversionId): StreamedResponse
     {
         $user = Auth::user();
 
         $conversion = Conversion::find($conversionId);
         $includeSource = $conversion->include_source;
+        $lineEndings = $conversion->line_endings;
 
         if ($conversion->user_id != $user->id)  {
             die('Invalid');
         }                   
 
         $outputs = Output::where('conversion_id', $conversionId)
-                    ->with('fields.itemField')
                     ->with('itemType')
+                    ->orderBy('seq')
                     ->get();
 
         return new StreamedResponse(
-            function () use ($outputs, $includeSource) {
-                $cr = "\r\n";
+            function () use ($outputs, $includeSource, $lineEndings) {
+                if ($lineEndings == 'w') {
+                    $cr = "\r\n";
+                } elseif ($lineEndings == 'l') {
+                    $cr = "\n";
+                }
+
                 $handle = fopen('php://output', 'w');
                 foreach ($outputs as $output) {
                     $item = '';
                     if ($includeSource) {
                         $item .= '% ' . $output->source . $cr;
                     }
-                    $item .= '@' . $output->itemType->name . '{' . $cr;
-                    foreach ($output->fields as $field) {
-                        $item .= '  ' . $field->itemField->name . ' = {' . $field->content . '},' . $cr;
+                    $item .= '@' . $output->itemType->name . '{' . $output->label . ',' . $cr;
+                    foreach ($output->item as $name => $content) {
+                        $item .= '  ' . $name . ' = {' . $content . '},' . $cr;
                     }
                     $item .= '}' . $cr . $cr;
                 

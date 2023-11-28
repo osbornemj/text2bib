@@ -44,7 +44,7 @@ class ReportError extends Component
 
         $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
         $this->itemTypeId = $itemType->id;
-        $this->fields = $itemType->itemFields->sortBy('id');
+        $this->fields = $itemType->itemFields;
 
         $this->displayState = 'none';
 
