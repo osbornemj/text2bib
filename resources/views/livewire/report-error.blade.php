@@ -1,10 +1,8 @@
 <div>
-    {{ '@' }}{{ $convertedItem['itemType'] }}{
+    {{ '@' }}{{ $convertedItem['itemType'] }}{{ '{' }}{{ $convertedItem['label'] }},
         <ul class="ml-6">
         @foreach ($convertedItem['item'] as $name => $content)
-            @if ($name != 'kind')
-                <li>{{ $name }} = {{ '{' }}{{ $content }}{{ '}' }}</li>
-            @endif
+            <li>{{ $name }} = {{ '{' }}{{ $content }}{{ '}' }},</li>
         @endforeach
         </ul>
         }

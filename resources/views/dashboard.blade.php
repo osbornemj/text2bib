@@ -104,10 +104,10 @@
                         <x-input-error :messages="$errors->get('override_labels')" class="mt-2" />
 
                         <x-option-info class="peer-checked/1:block">
-                            For any  item in your file that starts with <code>\bibitem{&lt;label&gt;}</code>, where <code>&lt;label&gt;</code> is a string, that string is used as the label for the item; the label style you have selected is ignored for this item. 
+                            For any item in your file that starts with <code>\bibitem{&lt;label&gt;}</code>, where <code>&lt;label&gt;</code> is a string, that string is ignored and a label is constructed according to the option you have selected.
                         </x-option-info>
                         <x-option-info class="peer-checked/0:block">
-                            For any item in your file that starts with <code>\bibitem{&lt;label&gt;}</code>, where <code>&lt;label&gt;</code> is a string, that string is ignored and a label is constructed according to the option you have selected.
+                            For any item in your file that starts with <code>\bibitem{&lt;label&gt;}</code>, where <code>&lt;label&gt;</code> is a string, that string is used as the label for the item; the label style you have selected is ignored for this item. 
                         </x-option-info>
                     </div>
 

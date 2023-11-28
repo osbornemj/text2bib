@@ -43,19 +43,31 @@ class ConversionController extends Controller
         $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
 
         $convertedItems = [];
-        foreach ($entries as $i => $entry) {
-            $convertedItem = $this->converter->convertEntry($entry, $conversion);
-            $itemType = ItemType::where('name', $convertedItem['itemType'])->first();
+        foreach ($entries as $entry) {
+            // $covertedItem is array with components 'source', 'item', 'itemType', 'label', 'warnings',
+            // 'notices', 'details'.
+            // 'label' (which depends on whole set of converted items) is updated later
+            $convItem = $this->converter->convertEntry($entry, $conversion);
+            $itemType = ItemType::where('name', $convItem['itemType'])->first();
 
+            $convItems[] = $convItem;
+        }
+
+        $convItems = $this->addLabels($convItems, $conversion);
+
+        // Write converted items to database and key array to output ids
+        $convertedItems = [];
+        foreach ($convItems as $i => $convItem) {
             $output = Output::create([
-                'source' => $convertedItem['source'],
+                'source' => $convItem['source'],
                 'conversion_id' => $conversion->id,
                 'item_type_id' => $itemType->id,
-                'item' => $convertedItem['item'],
+                'label' => $convItem['label'],
+                'item' => $convItem['item'],
                 'seq' => $i,
             ]);
     
-            $convertedItems[$output->id] = $convertedItem;
+            $convertedItems[$output->id] = $convItem;
         }
 
         $itemTypeOptions = ItemType::pluck('name', 'id')->all();
@@ -77,99 +89,31 @@ class ConversionController extends Controller
         );
     }
 
-    /*
-    public function convertText(string $filestring, Conversion $conversion): array
+    public function addLabels(array $convertedItems, Conversion $conversion): array
     {
-        $filestring = $this->regularizeLineEndings($filestring);
-        $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
-
-        $convertedItems = [];
-        foreach ($entries as $i => $entry) {
-            $convertedItem = $this->converter->convertEntry($entry, $conversion);
-            $itemType = ItemType::where('name', $convertedItem['itemType'])->first();
-
-            $output = Output::create([
-                'source' => $convertedItem['source'],
-                'conversion_id' => $conversion->id,
-                'item_type_id' => $itemType->id,
-                'item' => $convertedItem['item'],
-                'seq' => $i,
-            ]);
-    
-            // NOT NECESSARY (output_fields should not be used)
-            $j = 0;
-            foreach ($convertedItem['item'] as $key => $content) {
-                if (!in_array($key, ['kind', 'label', 'unidentified'])) {
-                    $itemField = ItemField::where('name', $key)->first();
-                    $j++;
-                    OutputField::create([
-                        'output_id' => $output->id,
-                        'item_field_id' => $itemField->id,
-                        'content' => $content,
-                        'seq' => $j,
-                    ]);
-                }
+        $baseLabels = [];
+        foreach ($convertedItems as $key => $convertedItem) {
+            if ($convertedItem['label'] || !$conversion->override_labels) {
+                $baseLabel = $convertedItem['label'];
+            } else {
+                $baseLabel = $this->makeLabel($convertedItem['item'], $conversion);
+            }
+            
+            $label = $baseLabel;
+            // if $baseLabel already used, add a suffix to it
+            if (in_array($baseLabel, $baseLabels)) {
+                $values = array_count_values($baseLabels);
+                $label .= chr(96 + $values[$baseLabel]);
             }
 
-            $convertedItems[$output->id] = $convertedItem;
+            $baseLabels[] = $baseLabel;
+            $convertedItems[$key]['label'] = $label;
         }
 
         return $convertedItems;
     }
-    */
 
-    // Replace \r\n and \r with \n
-    public function regularizeLineEndings(string $string): string
-    {
-        return str_replace(["\r\n", "\r"], "\n", $string);
-    }
-
-    public function makeBibtex(array $bibtexItems, Conversion $conversion): string
-    {
-        $cr = $conversion->line_endings == 'w' ? "\r\n" : "\n";
-        $output = '';
-        $baseLabels = [];
-        foreach ($bibtexItems as $bibtexItem) {
-            if ($conversion->include_source) {
-                $output .= '% ' . $bibtexItem['source'] . $cr;
-            }
-
-            $fields = $bibtexItem['item'];
-
-            $output .= '@' . $fields->kind . '{';
-
-            if (isset($fields->label)) {
-                $output .= $fields->label;
-            } else {
-                $baseLabel = $this->makeLabel($fields, $conversion);
-            
-                $label = $baseLabel;
-                if (in_array($baseLabel, $baseLabels)) {
-                    $values = array_count_values($baseLabels);
-                    $label .= chr(96 + $values[$baseLabel]);
-                }
-
-                $baseLabels[] = $baseLabel;
-                $output .= $label;
-                $fields->label = $label;
-            }
-
-            $output .= ',' . $cr;
-            foreach($fields as $key => $value) {
-                if ($value && !in_array($key, ['kind', 'label'])) {
-                    $output .= $key . ' = {' . $value . '},' . $cr;
-                }
-            }
-            // If many items are being added, put blank line between them.
-            // (If only one item is added at a time, an additional CR will
-            // be added by the append operation.)
-            $output .= '}' . $cr . (count($bibtexItems) == 1 ? '' : $cr);
-        }
-
-        return $output;
-    }
-
-    public function makeLabel($item, Conversion $conversion): string
+    public function makeLabel(object $item, Conversion $conversion): string
     {
         $label = '';
         if (isset($item->author) && $item->author) {
@@ -216,13 +160,14 @@ class ConversionController extends Controller
                 $label = strtolower(substr($firstAuthor, 0, strpos($firstAuthor, ',')));
             }
             $label .= $item->year;
-            if (Str::startsWith($item->title, ['A ', 'The ', 'On ', 'An '])) {
-                $item->title = Str::after($item->title, ' ');   
+            $title = $item->title;
+            if (Str::startsWith($title, ['A ', 'The ', 'On ', 'An '])) {
+                $title = Str::after($title, ' ');   
             }
             
-            $firstTitleWord = Str::before($item->title, ' ');
+            $firstTitleWord = Str::before($title, ' ');
 
-            $label .= strtolower($firstTitleWord);
+            $label .= strtolower($this->onlyLetters($firstTitleWord));
         } else {
             $label .= $item->year;
         }
@@ -271,6 +216,18 @@ class ConversionController extends Controller
                 'Content-Disposition' => 'attachment; filename=bibtex.bib'
             ]
         );
+    }
+
+    // Replace \r\n and \r with \n
+    public function regularizeLineEndings(string $string): string
+    {
+        return str_replace(["\r\n", "\r"], "\n", $string);
+    }
+
+    // Returns string consisting only of letters and spaces in $string
+    public function onlyLetters(string $string): string
+    {
+        return preg_replace("/[^a-z\s]+/i", "", $string);
     }
 
     /////////////// SHOULD BE MOVED TO A DIFFERENT FILE ///////////////////

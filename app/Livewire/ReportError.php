@@ -94,16 +94,13 @@ class ReportError extends Component
 
         // If no changes have been made, abort
         $changes = false;
-        $output = Output::where('id', $this->outputId)
-            ->with('fields')
-            ->first();
+        $output = Output::find($this->outputId);
 
         if ($output->item_type_id != $this->itemTypeId) {
             $changes = true;
         } else {
-            foreach ($output->fields as $field) {
-                $name = $field->itemField->name;
-                if ($field->content != $this->form->$name) {
+            foreach ($output->item as $name => $content) {
+                if ($content != $this->form->$name) {
                     $changes = true;
                     break;
                 }
@@ -126,68 +123,43 @@ class ReportError extends Component
             $this->displayState = 'block';
         } else {
             // If RawOutput exists for this Output, leave it alone.  Otherwise create
-            // a RawOutput (and RawOutputFields) from Output and its fields.
+            // a RawOutput from Output.
             $rawOutput = RawOutput::where('output_id', $output->id)->first();
             if (!$rawOutput) {
                 $rawOutput = RawOutput::create([
                         'output_id' => $output->id,
                         'item_type_id' => $output->item_type_id,
+                        'item' => $output->item,
                 ]);
-
-                foreach ($output->fields as $field) {
-                    RawOutputField::create([
-                            'raw_output_id' => $rawOutput->id,
-                            'item_field_id' => $field->item_field_id,
-                            'content' => $field->content,
-                            'seq' => $field->seq,
-                    ]);
-                }
             }
 
             // Change $output according to user's entries
-            // $output->item_type_id = $this->itemTypeId;
-            // $output->save();
             $output->update(['item_type_id' => $this->itemTypeId]);
-            // Updsate $convertedItem['item']->kind
-            $this->convertedItem['item']->kind = $this->itemTypes->where('id', $this->itemTypeId)->first()->name;
-
-            foreach ($output->fields as $field) {
-                $field->delete();
-            }
+            // Update $convertedItem['itemType']
+            $this->convertedItem['itemType'] = $this->itemTypes->where('id', $this->itemTypeId)->first()->name;
 
             $inputs = $this->form->except('comment');
-            
+
             // Restrict to fields relevant to the item_type
             $itemType = ItemType::find($this->itemTypeId);
             $i = 0;
-            foreach ($inputs as $key => $input) {
+            $item = [];
+            foreach ($inputs as $name => $content) {
                 $i++;
-                $itemField = ItemField::where('name', $key)->first();
+                $itemField = ItemField::where('name', $name)->first();
                 if ($itemType->itemFields->contains($itemField)) {
-                    OutputField::create([
-                        'output_id' => $output->id,
-                        'item_field_id' => $itemField->id,
-                        'content' => $input,
-                        'seq' => $i,
-                    ]);
+                    $this->form->{$name} = $content;
+                    $item[$name] = $content;
                 }
             }
 
-            // Update $convertedItem['item'] fields
-            // ?????????????????????????
+            // Update entry in database
+            $output->update(['item' => $item]);
 
-            // outputFields have changed, so need to get them again
-            $output = Output::where('id', $this->outputId)
-                ->with('fields')
-                ->first();
-            $this->output = $output;
-            foreach ($output->fields as $field) {
-                $itemField = $field->itemField;
-                $this->form->{$itemField->name} = $field->content;
-            }
+            // Update $this->convertedItem['item'] fields
+            $this->convertedItem['item'] = $item;
 
             $this->itemTypeId = $output->item_type_id;
-            $itemType = ItemType::find($this->itemTypeId);
             $this->fields = $itemType->itemFields->sortBy('id');
 
             // File report

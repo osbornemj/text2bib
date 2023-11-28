@@ -199,11 +199,12 @@ class Converter
 
         $item = new \stdClass();
         $itemKind = null;
+        $itemLabel = null;
 
         // If entry starts with '\bibitem', get label and remove '\bibitem'
         if (Str::startsWith($entry, "\\bibitem{")) {
             if (!$conversion->override_labels) {
-                $item->label = Str::betweenFirst($entry, '{', '}');
+                $itemLabel = Str::betweenFirst($entry, '{', '}');
             }
             $entry = trim(Str::after($entry, '}'), '{}');
         } elseif (Str::startsWith($entry, "\\bibitem{}")) {
@@ -229,10 +230,8 @@ class Converter
         $entry = rtrim($entry, ' }');
 
         $this->verbose("<hr size=1 noshade><font color=\"green\">Item:</font> " . strip_tags($entry));
-        if (isset($item->label) && $item->label) {
-            $this->verbose("<br>Label in file: " . strip_tags($item->label));
-        } else {
-            unset($item->label);
+        if ($itemLabel) {
+            $this->verbose("<br>Label in file: " . strip_tags($itemLabel));
         }
 
         $phrases = $this->phrases;
@@ -1469,14 +1468,10 @@ class Converter
 
         $item->title = $this->requireUc($item->title);
 
-        // Make label
-        if (!isset($item->label)) {
-
-        }
-
         $returner = [
             'source' => $originalEntry,
             'item' => $item,
+            'label' => $itemLabel,
             'itemType' => $itemKind,
             'warnings' => $warnings,
             'notices' => $notices,
@@ -1839,16 +1834,6 @@ class Converter
         return $returner;
     }
     */
-
-    /**
-     * onlyLetters
-     * @param $string string
-     * Returns string consisting only of letters and spaces in $string
-     */
-    public function onlyLetters(string $string): string
-    {
-        return preg_replace("/[^a-z\s]+/i", "", $string);
-    }
 
     // Truncate $string at first '%' that is not preceded by '\'.  Return 1 if truncated, 0 if not.
     public function uncomment(string &$string) : bool

@@ -33,8 +33,8 @@ class Output extends Model
         return $this->belongsTo(ItemType:: class);
     }
 
-    public function fields(): HasMany
-    {
-        return $this->hasMany(OutputField:: class)->orderBy('item_field_id');
-    }
+    // public function fields(): HasMany
+    // {
+    //     return $this->hasMany(OutputField:: class)->orderBy('item_field_id');
+    // }
 }

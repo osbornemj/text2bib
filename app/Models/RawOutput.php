@@ -14,6 +14,10 @@ class RawOutput extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'item' => 'array'
+    ];
+
     public function output(): HasOne
     {
         return $this->hasOne(Output:: class);
@@ -24,8 +28,8 @@ class RawOutput extends Model
         return $this->belongsTo(ItemType:: class);
     }
 
-    public function fields(): HasMany
-    {
-        return $this->hasMany(RawOutputField:: class)->orderBy('item_field_id');
-    }
+    // public function fields(): HasMany
+    // {
+    //     return $this->hasMany(RawOutputField:: class)->orderBy('item_field_id');
+    // }
 }
