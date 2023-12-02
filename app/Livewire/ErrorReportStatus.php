@@ -6,18 +6,23 @@ use Livewire\Component;
 
 use App\Enums\ReportStatus;
 
+use App\Models\ErrorReport;
+
 class ErrorReportStatus extends Component
 {
     public $statusOptions;
+    public $status;
+    public $errorReport;
 
     public function mount()
     {
-        $this->statusOptions = array_column(ReportStatus::cases(), 'name');
+        $this->status = $this->errorReport->status;
+        $this->statusOptions = collect(ReportStatus::cases())->pluck('name', 'value')->all();
     }
 
-    public function setStatus()
+    public function updatedStatus()
     {
-                
+        $this->errorReport->update(['status' => $this->status]);
     }
 
     public function render()

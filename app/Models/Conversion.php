@@ -13,7 +13,6 @@ class Conversion extends Model
     protected $guarded = [];
 
     protected $attributes = [
-        'incremental' => false,
         'item_separator' => 'line',
         'first_component' => 'authors',
         'label_style' => 'short',

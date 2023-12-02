@@ -1,6 +1,6 @@
 <div>
-    <form method="POST" wire:submit="submit()" id="status">
-        @csrf
-        Status: <x-select-input id="status" name="status" class="mt-1" :options="$statusOptions" wire:model.change="setStatus" />
-    </form>
+    @php
+        $selected[$errorReport->status->value] = true;
+    @endphp
+    Status: <x-select-input-plain id="status" name="status" class="mt-1 dark:bg-gray-800 dark:border-gray-800" :options="$statusOptions" :selected="$selected" wire:model.change="status" />
 </div>

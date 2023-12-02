@@ -39,41 +39,20 @@ class FileUploadController extends Controller
         unset($validatedRequest['file']);
 
         if ($request->save_settings) {
-            $userSetting = UserSetting::where('user_id', Auth::id())->first();
-            if (!$userSetting) {
-                $userSetting = new UserSetting;
-                $userSetting->user_id = Auth::id();
-            }
+            $userSetting = UserSetting::firstOrNew(
+                ['user_id' => Auth::id()]
+            );
             $userSetting->fill($validatedRequest);
             $userSetting->save();
         }
 
         $validatedRequest['user_file_id'] = $sourceFile->id;
 
-        /*
-        // create empty file for bibtex
-        $bibFile = new UserFile;
-        $bibFile->user_id = Auth::id();
-        $bibFile->file_type = 'text/plain';
-        $bibFile->file_size = 0;
-        $bibFile->original_filename = '';
-        $bibFile->type = 'BIB';
-        $bibFile->save();
-
-        Storage::disk('public')->put('files/' . Auth::id() . '-' . $bibFile->id . '-bib.bib', '');
-
-        $validatedRequest['bib_file_id'] = $bibFile->id;
-        */
-
         $conversion = new Conversion;
         $conversion->fill($validatedRequest);
         $conversion->user_id = Auth::id();
         $conversion->save();
 
-        if ($conversion->incremental) {
-            return redirect('convertIncremental/' . $conversion->id);
-        } else {
-            return redirect('convert/' . $conversion->id);
-        }
+        return redirect('convert/' . $conversion->id);
     }
 }

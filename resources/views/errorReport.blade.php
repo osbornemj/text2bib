@@ -14,7 +14,7 @@
             <p>
                 @if (Auth::user()->is_admin)
                     <div>
-                        <livewire:error-report-status />
+                        <livewire:error-report-status :errorReport="$errorReport" />
                     </div>
                 @else
                     Status: {{ $errorReport->status->name }}

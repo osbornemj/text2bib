@@ -18,25 +18,6 @@
                     </div>
 
                     <div>
-                        <x-input-label for="incremental" :value="__('Incremental conversion?')" class="mt-4" />
-                    
-                        <x-radio-input name="incremental" id="incremental" value="1" class="peer/1" :checked="old('incremental', $settings->incremental ?? true)" /> 
-                        <x-value-label for="1" class="peer-checked/1:text-blue-600 ml-1" :value="__('Yes')" />
-
-                        <x-radio-input name="incremental" id="incremental" value="0" class="peer/0 ml-4" :checked="old('incremental', !($settings->incremental ?? true))" />
-                        <x-value-label for="0" class="peer-checked/0:text-blue-600 ml-1" :value="__('No')" />
-
-                        <x-input-error :messages="$errors->get('incremental')" class="mt-2" />
-
-                        <x-option-info class="peer-checked/1:block">
-                            The items in your file will be converted one at a time.  After each item is converted, you will be able to accept the conversion, edit the converted item, or edit the source and re-do the conversion.
-                        </x-option-info>
-                        <x-option-info class="peer-checked/0:block">
-                            All the items in your file will be converted in one pass.
-                        </x-option-info>
-                    </div>
-
-                    <div>
                         <x-input-label for="item_separator" :value="__('Item separator')"  class="mt-4"/>
                     
                         <x-radio-input name="item_separator" id="item_separator" value="line" class="peer/line" :checked="old('item_separator', !isset($settings) || $settings->item_separator == 'line')" /> 

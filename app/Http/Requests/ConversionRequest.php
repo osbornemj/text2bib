@@ -17,7 +17,6 @@ class ConversionRequest extends FormRequest
     {
         return [
             'file' => ['required', 'mimetypes:text/plain', 'max:100'],
-            'incremental' => ['required'],
             'item_separator' => ['required', 'string', 'in:line,cr'],
             'first_component' => ['required', 'string', 'in:authors,year'],
             'label_style' => ['required', 'string', 'in:short,long,gs'],
