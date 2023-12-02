@@ -5,16 +5,8 @@ namespace App\Livewire\Forms;
 use Livewire\Attributes\Rule;
 use Livewire\Form;
 
-//use App\Models\ItemType;
-//use App\Models\Output;
-
 class ShowConvertedItemForm extends Form
 {
-    //public $outputId;
-    //public $itemTypeOptions;
-    //public $fields;
-
-    //public $itemTypeId;
     public $author;
     public $title;         
     public $journal;       
@@ -44,7 +36,7 @@ class ShowConvertedItemForm extends Form
     public $organization;  
 
     #[Rule('required', message: 'Please enter a short description of the error')]    
-    #[Rule('max:60', message: 'The description  you have entered is too long')]    
+    #[Rule('max:60', message: 'The description you have entered is too long')]    
     public $reportTitle;
 
     public $postReport;

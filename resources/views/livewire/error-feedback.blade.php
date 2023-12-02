@@ -12,6 +12,9 @@
 
         <x-input-label for="comment" value="Comment" />
         <x-textarea-input rows="5" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="comment"/>
+        <div role="alert" class="mt-4 mb-4">
+            @error('comment') <span class="bg-red-500 text-white font-bold rounded px-2 py-1">{{ $message }}</span> @enderror 
+        </div>
 
         <x-primary-button class="ml-0 mt-3">
             {{ __('Submit') }}

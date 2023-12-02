@@ -12,7 +12,13 @@
                 Submitted by {{ $errorReport->output->conversion->user->fullName() }} {{ $errorReport->created_at }}
             </p>
             <p>
-                Status: {{ $errorReport->status->name }}
+                @if (Auth::user()->is_admin)
+                    <div>
+                        <livewire:error-report-status />
+                    </div>
+                @else
+                    Status: {{ $errorReport->status->name }}
+                @endif
             </p>
             <dl>
                 <x-dt>Source</x-dt>
@@ -27,17 +33,17 @@
                 <dl>
                     <x-dt>Fields with errors</x-dt>
                     <x-dd>
-                        @foreach ($output->itemType->fields as $itemField)
-                        @php
-                            $outputContent = $output->fields->where('item_field_id', $itemField->id)->first()->content;
-                            $rawOutputContent = $rawOutput->fields->where('item_field_id', $itemField->id)->first()->content;
-                        @endphp
-                        <ul class="ml-6">
-                            @if ($outputContent != $rawOutputContent)
-                            <li><span class="text-red-600">{{ $itemField->name }} = {{ $rawOutputContent }}</span></li>
-                            <li><span class="text-green-700">{{ $itemField->name }} = {{ $outputContent }}</span></li>
-                            @endif
-                        </ul>
+                        @foreach ($output->itemType->fields as $fieldName)
+                            @php
+                                $outputContent = ($output->item)[$fieldName] ?? null;
+                                $rawOutputContent = ($rawOutput->item)[$fieldName] ?? null;
+                            @endphp
+                            <ul class="ml-6">
+                                @if ($outputContent != $rawOutputContent)
+                                <li><span class="text-red-600">{{ $fieldName }} = {{ $rawOutputContent }}</span></li>
+                                <li><span class="text-green-700">{{ $fieldName }} = {{ $outputContent }}</span></li>
+                                @endif
+                            </ul>
                         @endforeach
                     </x-dd>
                 </dl>
