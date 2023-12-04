@@ -3143,6 +3143,7 @@ class Converter
                 // if($remainder[$j] == ',' || $remainder[$j] == '.' || $j == strlen($remainder)-1
                 // Case of comma removed to allow commas in journal titles
                 $lastWord = trim(substr($remainder, $lastSpacePos + 1, $j - $lastSpacePos - 1));
+                //$this->debug('lastWord: ' . $lastWord);
                 // stop after period if preceding word is in dictionary and not a single letter and not an excluded word
                 // Single letter exclusion means periods in 'U.S.A.' don't end journal name
                 if (($remainder[$j] == '.' && $this->inDict($lastWord) && strlen($lastWord) != 1 && !in_array($lastWord, $this->excludedWords))
@@ -3152,22 +3153,29 @@ class Converter
                         || $this->containsFontStyle(substr($remainder, $j + 1), true, 'bold', $posBold, $lenBold)
                         || $this->containsFontStyle(substr($remainder, $j + 1), true, 'italics', $posItalic, $lenItalic)
                 ) {
+                    $this->debug('Remainder: ' . $remainder);
                     // if stop character is number, check if preceding string indicates pages, and if so
                     // remove the page indicator (e.g. 'pages' or 'pp.') from the string
                     if (in_array($remainder[$j], range('1', '9'))) {
                         $tempRemainder = substr($remainder, 0, $j);
                         $trimmedTempRemainder = rtrim($tempRemainder, ' ');
                         $this->debug("trimmedTempRemainder: " . $trimmedTempRemainder);
-                        // !!!!!! ENGLISH-SPECIFIC
-                        if (in_array(substr($trimmedTempRemainder, strlen($trimmedTempRemainder) - 5, 5), array('pages', 'Pages'))) {
-                            $j = strlen($trimmedTempRemainder) - 5;
+                        $pageStrings = ['pages', 'Pages', 'pp.', 'Pp.', 'p.', 'P.', 'pp', 'Pp'];
+                        foreach ($pageStrings as $pageString) {
+                            if (Str::endsWith($trimmedTempRemainder, $pageString)) {
+                                $j = strlen($trimmedTempRemainder) - strlen($pageString);
+                                break;
+                            }
                         }
-                        if (in_array(substr($trimmedTempRemainder, strlen($trimmedTempRemainder) - 3, 3), array('pp.', 'Pp.'))) {
-                            $j = strlen($trimmedTempRemainder) - 3;
-                        }
-                        if (in_array(substr($trimmedTempRemainder, strlen($trimmedTempRemainder) - 2, 2), array('p.', 'P.', 'pp', 'Pp'))) {
-                            $j = strlen($trimmedTempRemainder) - 2;
-                        }
+                        // if (in_array(substr($trimmedTempRemainder, strlen($trimmedTempRemainder) - 5, 5), ['pages', 'Pages'])) {
+                        //     $j = strlen($trimmedTempRemainder) - 5;
+                        // }
+                        // if (in_array(substr($trimmedTempRemainder, strlen($trimmedTempRemainder) - 3, 3), ['pp.', 'Pp.'])) {
+                        //     $j = strlen($trimmedTempRemainder) - 3;
+                        // }
+                        // if (in_array(substr($trimmedTempRemainder, strlen($trimmedTempRemainder) - 2, 2), ['p.', 'P.', 'pp', 'Pp'])) {
+                        //     $j = strlen($trimmedTempRemainder) - 2;
+                        // }
                     }
                     $journal = rtrim(substr($remainder, 0, $j), ', ');
                     $this->debug("Journal case 8");
@@ -3295,7 +3303,6 @@ class Converter
     public function cleanText(string $string, string|null $charEncoding): string
     {
         $string = str_replace("\\newblock", "", $string);
-        $string = str_replace('\\"', '"', $string);
         // Replace each tab with a space
         $string = str_replace("\t", " ", $string);
         $string = str_replace("\\textquotedblleft ", "``", $string);

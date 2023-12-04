@@ -31,10 +31,8 @@ class ExampleCheckController extends Controller
 
         $conversion = new Conversion;
 
-        $report = '';
+        $results = [];
         foreach ($examples as $example) {
-            // line endings should be reglarized when example is saved
-            //$source = $this->regularizeLineEndings($example->source);
             $source = $example->source;
 
             $output = $this->converter->convertEntry($source, $conversion);
@@ -46,32 +44,34 @@ class ExampleCheckController extends Controller
 
             $diff = array_diff((array) $output['item'], (array) $example->bibtexFields());
 
-            $report .= "<p>Example " . $example->id . ' converted ';
+            $result = [];
             if (empty($diff)) {
-                $report .= '<span style="background-color: rgb(134 239 172);">correctly</span>';
+                $result['result'] = 'correct';
                 if ($unidentified) {
-                    $report .= ' (but string "' . $unidentified . '" not assigned to field)';
+                    $result['unidentified'] = $unidentified;
                 }
             } else {
-                $report .= '<span style="background-color: rgb(253 164 175);">incorrectly</span>';
-                $report .= ' &nbsp; &bull; &nbsp; <a href="' . url('/admin/runExampleCheck/1/' . $example->id) . '">verbose conversion</a>';
-                $report .= '<p><span style="background-color: rgb(203 213 225);">Source:</span> ' . $source . '<p>';
+                $result['result'] = 'incorrect';
+                $result['source'] = $source;
+                $result['errors'] = [];
                 foreach ($diff as $key => $content) {
                     $bibtexFields = $example->bibtexFields();
-                    $report .= "<p>" . $key . ':<p>|' . $content . '|';
-                    $report .= '<p><i>instead of</i><p>|' . (isset($bibtexFields->{$key}) ? $bibtexFields->{$key} : '') . '|';
+                    $result['errors'][$key] = 
+                        [
+                            'content' => $content,
+                            'correct' => isset($bibtexFields->{$key}) ? $bibtexFields->{$key} : ''
+                        ];
                 }
             }
 
             if ($verbose) {
-                $report .= '<p>';
-                foreach ($this->displayLines as $line) {
-                    $report .= $line;
-                };
+                $result['details'] = $output['details'];
             }
+
+            $results[$example->id] = $result;
         }
 
-        return view('admin.examples.checkResult')
-            ->with('report', $report);
+        return view('admin.examples.checkResult',
+            compact('results', 'verbose'));
     }
 }
