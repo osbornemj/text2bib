@@ -16,7 +16,7 @@ class ExamplesController extends Controller
     {
         $examples = Example::orderByDesc('created_at')
             ->with('fields')
-            ->paginate(config('constants.items_page'));
+            ->paginate(100);
 
         return view('admin.examples.index')
             ->with('examples', $examples);
@@ -47,11 +47,11 @@ class ExamplesController extends Controller
             array_pop($bibtexLines);
 
             foreach($bibtexLines as $key => $bibtexLine) {
-                $bibtexLineComponents = explode(' = ', $bibtexLine);
+                $bibtexLineComponents = explode('=', $bibtexLine);
                 ExampleField::create([
                     'example_id' => $example->id,
                     'name' => $bibtexLineComponents[0],
-                    'content' => trim($bibtexLineComponents[1], '{},'),
+                    'content' => trim($bibtexLineComponents[1], '{}, '),
                 ]);
             }
         }

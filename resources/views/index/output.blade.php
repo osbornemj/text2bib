@@ -80,7 +80,34 @@
                     <i>Details of conversion</i>
                 </li>
                     @foreach ($bibtexItem['details'] as $details)
-                        {!! $details !!}
+                        <li>
+                        @if (is_array($details))
+                            @foreach ($details as $key => $value)
+                                @switch ($key)
+                                    @case ('fieldName')
+                                        <span class="text-blue-500">{{ $value }}</span>
+                                        @break
+                                    @case ('content')
+                                        {{ $value }}
+                                        @break
+                                    @case ('item')
+                                        <span class="text-violet-500">{{ $value }}</span>
+                                        @break
+                                    @case ('label')
+                                        <span class="text-teal-500">{{ $value }}</span>
+                                        @break
+                                    @case ('warning')
+                                        <span class="text-red-500">{{ $value }}</span>
+                                        @break
+                                    @case ('notice')
+                                        <span class="text-orange-500">{{ $value }}</span>
+                                        @break
+                                @endswitch
+                            @endforeach
+                        @else
+                            {{ $details }}
+                        @endif
+                        </li>
                     @endforeach
                 @endif
             </ul>

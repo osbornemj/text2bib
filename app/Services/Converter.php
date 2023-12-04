@@ -229,9 +229,9 @@ class Converter
         $entry = ltrim($entry, ' {');
         $entry = rtrim($entry, ' }');
 
-        $this->verbose("<hr size=1 noshade><font color=\"green\">Item:</font> " . strip_tags($entry));
+        $this->verbose(['item' => strip_tags($entry)]);
         if ($itemLabel) {
-            $this->verbose("<br>Label in file: " . strip_tags($itemLabel));
+            $this->verbose(['label' => strip_tags($itemLabel)]);
         }
 
         $phrases = $this->phrases;
@@ -249,9 +249,9 @@ class Converter
             if (!preg_match('/[0-9]+/', $doi)) {
                 $warnings[] = 'The doi appears to be invalid.';
             }
-            $this->verbose($item->doi, "doi");
+            $this->verbose(['fieldName' => 'doi', 'content' => $item->doi]);
         } else {
-            $this->verbose("<br>No doi found.");
+            $this->verbose("No doi found.");
         }
 
         ///////////////////////////////
@@ -263,9 +263,9 @@ class Converter
         if ($eprint) {
             $item->archiveprefix = 'arXiv';
             $item->eprint = $eprint;
-            $this->verbose($item->archiveprefix . ':' . $item->eprint, "arXiv info");
+            $this->verbose(['fieldName' => 'arXiv info', 'content' => $item->archiveprefix . ':' . $item->eprint]);
         } else {
-            $this->verbose("<br>No arXiv info found.");
+            $this->verbose("No arXiv info found.");
         }
 
         ////////////////////////
@@ -295,13 +295,13 @@ class Converter
 
         if (isset($url) && $url) {
             $item->url = $url;
-            $this->verbose($item->url, "URL");
+            $this->verbose(['fieldName' => 'URL', 'content' => $item->url]);
             if (isset($item->urldate) && $item->urldate) {
                 $item->urldate = $accessDate;
-                $this->verbose($item->urldate, "URL access date");
+                $this->verbose(['fieldName' => 'URL access date', 'content' => $item->urldate]);
             }
         } else {
-            $this->verbose("<br>No url found.");
+            $this->verbose("No url found.");
         }
 
         ///////////////////////////////////////
@@ -314,7 +314,7 @@ class Converter
             $result = preg_match('%^\D+(\d+)\D%', $entry, $matches, PREG_OFFSET_CAPTURE);
 
             if (!$result) {
-                $this->verbose("<br>No year found near start of entry.");
+                $this->verbose("No year found near start of entry.");
             } else {
                 $year = $matches[1][0];
                 $entry = trim(substr($entry, $matches[1][1] + strlen($year)), ' ');
@@ -330,12 +330,12 @@ class Converter
         //////////////////////
 
         $words = explode(" ", $entry);
-        $this->verbose("<br>Words in entry are:");
+        $this->verbose("Words in entry are");
         foreach ($words as $word) {
-            $this->verbose(" | " . $word);
+            $this->verbose(['words' => [$word]]);
         }
 
-        $this->verbose("<br>Looking for authors ...");
+        $this->verbose("Looking for authors ...");
 
         $isEditor = false;
 
@@ -371,11 +371,11 @@ class Converter
         }
 
         if (isset($item->author)) {
-            $this->verbose(strip_tags($item->author), 'Authors');
+            $this->verbose(['fieldName' => 'Authors', 'content' => strip_tags($item->author)]);
         }
 
         if (isset($item->editor)) {
-            $this->verbose(strip_tags($item->editor), 'Editors');
+            $this->verbose(['fieldName' => 'Editors', 'content' => strip_tags($item->editor)]);
         }
 
         if ($year) {
@@ -408,7 +408,7 @@ class Converter
         $remainder = $newRemainder;
         $item->title = rtrim($title, '.');
 
-        $this->verbose(strip_tags($title), "Title");
+        $this->verbose(['fieldName' => 'Title', 'content' => strip_tags($title)]);
         $this->debug("Remainder: " . strip_tags($remainder));
 
         ///////////////////////////////////////////////////////////
@@ -430,13 +430,13 @@ class Converter
             if (isset($month)) {
                 // translate 'Jan' or 'Jan.' or 'January', for example, to 'January'.
                 $item->month = Carbon::parse($month)->format('F');
-                $this->verbose(strip_tags($item->month), "Month");
+                $this->verbose(['fieldName' => 'Month', 'content' => strip_tags($item->month)]);
             }
         }
 
         $remainder = ltrim($newRemainder, ' ');
 
-        $this->verbose(strip_tags($item->year), "Year");
+        $this->verbose(['fieldName' => 'Year', 'content' => strip_tags($item->year)]);
 
         ///////////////////////////////////////////////////////////////////////////////
         // To determine type of item, first record some features of publication info //
@@ -647,10 +647,10 @@ class Converter
                 $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [1]";
             }
         } elseif (($containsPageRange || $containsInteriorVolume) && ! $containsProceedings && ! $containsPublisher && ! $containsCity) {
-            /** $commaCount criterion doesn't seem to be useful
+            /* $commaCount criterion doesn't seem to be useful
               if($commaCount < 6) $itemKind = 'article';
               else $itemKind = 'incollection';
-             * */
+            */
             $this->debug("Item type case 6");
             $itemKind = 'article';
             if (!$this->itemType && !$itemKind) {
@@ -701,7 +701,7 @@ class Converter
 
         // Whether thesis is ma or phd is determined later
         if ($itemKind != 'thesis') {
-            $this->verbose(strip_tags($itemKind), null, 'Item type');
+            $this->verbose(['fieldName' => 'Item type', 'content' => strip_tags($itemKind)]);
         }
 
         unset($journal, $volume, $pages);
@@ -711,13 +711,13 @@ class Converter
             $match = $this->extractLabeledContent($remainder, ' ISBN:? ', '[0-9X]+');
             if ($match) {
                 $item->isbn = $match;
-                $this->verbose(strip_tags($item->isbn), "ISBN");
+                $this->verbose(['fieldName' => 'ISBN', 'content' => strip_tags($item->isbn)]);
             }
 
             $match = $this->extractLabeledContent($remainder, ' OCLC:? ', '[0-9]+');
             if ($match) {
                 $item->oclc = $match;
-                $this->verbose(strip_tags($item->oclc), "OCLC");
+                $this->verbose(['fieldName' => 'OCLC', 'content' => strip_tags($item->oclc)]);
             }
         }
 
@@ -729,7 +729,7 @@ class Converter
                 $item->note = $match;
                 $this->debug('"In review" string removed and put in note field');
                 $this->debug('Remainder: ' . $remainder);
-                $this->verbose(strip_tags($item->note), "Note");
+                $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
             }
         }
 
@@ -754,7 +754,7 @@ class Converter
                 $this->debug("Journal: " . isset($journal) ? $journal : '');
                 $item->journal = isset($journal) ? $journal : '';
                 if ($item->journal) {
-                    $this->verbose(strip_tags($item->journal), "Journal");
+                    $this->verbose(['fieldName' => 'Journal', 'content' => strip_tags($item->journal)]);
                 } else {
                     $warnings[] = "'Journal' field not found.";
                 }
@@ -765,7 +765,7 @@ class Converter
 
                 $pagesReported = false;
                 if ($item->pages) {
-                    $this->verbose(strip_tags($item->pages), "Pages");
+                    $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
                     $pagesReported = true;
                 } else {
                     $warnings[] = "No page range found.";
@@ -781,7 +781,7 @@ class Converter
 
                 if (isset($matches[0][0][0]) && $matches[0][0][0]) {
                     $item->month = trim($matches[0][0][0], '()');
-                    $this->verbose(strip_tags($item->month), "Month");
+                    $this->verbose(['fieldName' => 'Month', 'content' => strip_tags($item->month)]);
                     $remainder = substr($remainder, 0, $matches[0][0][1]) . substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0]));
                     $this->debug('Remainder: ' . $remainder);
                 }
@@ -797,21 +797,21 @@ class Converter
                 }
 
                 if (!$pagesReported && isset($item->pages)) {
-                    $this->verbose(strip_tags($item->pages), "Pages");
+                    $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
                 }
 
                 if (isset($item->volume) && $item->volume) {
-                    $this->verbose(strip_tags($item->volume), "Volume");
+                    $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($item->volume)]);
                 } else {
                     $warnings[] = "'Volume' field not found.";
                 }
                 if (isset($item->number) && $item->number) {
-                    $this->verbose(strip_tags($item->number), "Number");
+                    $this->verbose(['fieldName' => 'Number', 'content' => strip_tags($item->number)]);
                 }
 
                 if (isset($item->note)) {
                     if ($item->note) {
-                        $this->verbose(strip_tags($item->note), "Note");
+                        $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
                     } else {
                         unset($item->note);
                     }
@@ -827,7 +827,7 @@ class Converter
                 $item->note = trim($remainder, '., }');
                 $remainder = '';
                 if ($item->note) {
-                    $this->verbose(strip_tags($item->note), "Note");
+                    $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
                 } else {
                     $warnings[] = "Mandatory 'note' field missing.";
                 }
@@ -854,15 +854,15 @@ class Converter
                 }
 
                 if ($item->type) {
-                    $this->verbose("<br>Type: " . strip_tags($item->type));
+                    $this->verbose(['fieldName' => 'Type', 'content' => strip_tags($item->type)]);
                 }
                 if ($item->number) {
-                    $this->verbose(strip_tags($item->number), "Number");
+                    $this->verbose(['fieldName' => 'Number', 'content' => strip_tags($item->number)]);
                 } else {
                     unset($item->number);
                 }
                 if ($item->institution) {
-                    $this->verbose(strip_tags($item->institution), "Institution");
+                    $this->verbose(['fieldName' => 'Institution', 'content' => strip_tags($item->institution)]);
                 } else {
                     $warnings[] = "Mandatory 'institition' field missing";
                 }
@@ -895,7 +895,7 @@ class Converter
                 }
 
                 if ($item->pages) {
-                    $this->verbose(strip_tags($item->pages), "Pages");
+                    $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
                 } else {
                     $warnings[] = "Pages not found.";
                 }
@@ -1285,7 +1285,7 @@ class Converter
                 }
 
                 if (isset($item->editor)) {
-                    $this->verbose(strip_tags($item->editor), "Editors");
+                    $this->verbose(['fieldName' => 'Editors', 'content' => strip_tags($item->editor)]);
                 } else {
                     $warnings[] = "Editor not found.";
                 }
@@ -1303,7 +1303,7 @@ class Converter
                     $remainder = substr($remainder, 0, $take) . substr($remainder, $drop);
                     $this->debug('"Forthcoming" string removed and put in note field');
                     $this->debug('Remainder: ' . $remainder);
-                    $this->verbose(strip_tags($item->note), "Note");
+                    $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
                 }
 
                 // Whatever is left is publisher and address
@@ -1314,12 +1314,12 @@ class Converter
                     $item->address = $address;
                 }
                 if ($item->publisher) {
-                    $this->verbose(strip_tags($item->publisher), "Publisher");
+                    $this->verbose(['fieldName' => 'Publisher', 'content' => strip_tags($item->publisher)]);
                 } else {
                     $warnings[] = "Publisher not found.";
                 }
                 if ($item->address) {
-                    $this->verbose(strip_tags($item->address), "Address");
+                    $this->verbose(['fieldName' => 'Address', 'content' => strip_tags($item->address)]);
                 } else {
                     $warnings[] = "Address not found.";
                 }
@@ -1327,7 +1327,7 @@ class Converter
                 $booktitle = rtrim($booktitle, '.');
                 $item->booktitle = trim($booktitle);
                 if ($item->booktitle) {
-                    $this->verbose(strip_tags($item->booktitle), "Book title");
+                    $this->verbose(['fieldName' => 'Book title', 'content' => strip_tags($item->booktitle)]);
                 } else {
                     $warnings[] = "Book title not found.";
                 }
@@ -1352,7 +1352,7 @@ class Converter
                 foreach ($remainingWords as $key => $word) {
                     if ($key && in_array(strtolower(trim($word, ',. ()')), array('edition', 'ed'))) {
                         $item->edition = trim($remainingWords[$key - 1], ',. )(');
-                        $this->verbose(strip_tags($item->edition), "Edition");
+                        $this->verbose(['fieldName' => 'Edition', 'content' => strip_tags($item->edition)]);
                         array_splice($remainingWords, $key - 1, 2);
                         break;
                     }
@@ -1366,7 +1366,7 @@ class Converter
                     if (count($remainingWords) > $key + 1
                             && in_array(strtolower(trim($word, ',. ()')), ['volume', 'vol'])) {
                         $item->volume = trim($remainingWords[$key + 1], ',. ');
-                        $this->verbose(strip_tags($item->volume), "Volume");
+                        $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($item->volume)]);
                         array_splice($remainingWords, $key, 2);
                         $series = array();
                         if (strtolower($remainingWords[$key]) == 'in') {
@@ -1377,7 +1377,7 @@ class Converter
                                         array_shift($series);
                                     }
                                     $item->series = trim(implode(" ", $series), '.,}');
-                                    $this->verbose(strip_tags($item->series), "Series");
+                                    $this->verbose(['fieldName' => 'Series', 'content' => strip_tags($item->series)]);
                                     array_splice($remainingWords, $key, $k - $key + 1);
                                     break;
                                 }
@@ -1397,14 +1397,14 @@ class Converter
 
                 $item->publisher = $publisher;
                 if ($item->publisher) {
-                    $this->verbose(strip_tags($item->publisher), "Publisher");
+                    $this->verbose(['fieldName' => 'Publisher', 'content' => strip_tags($item->publisher)]);
                 } else {
                     $warnings[] = "No publisher identified.";
                 }
 
                 $item->address = $address;
                 if ($item->address) {
-                    $this->verbose(strip_tags($item->address), "Publication city");
+                    $this->verbose(['fieldName' => 'Publication city', 'content' => strip_tags($item->address)]);
                 } else {
                     $warnings[] = "No place of publication identified.";
                 }
@@ -1431,7 +1431,7 @@ class Converter
                         $warnings[] = "Can't determine whether MA or PhD thesis; set to be PhD thesis.";
                     }
                 }
-                $this->verbose(strip_tags($itemKind), null, 'Item type');
+                $this->verbose(['fieldName' => 'Item type', 'content' => strip_tags($itemKind)]);
 
                 $remainder = $this->findAndRemove($remainder, $this->fullThesisRegExp);
 
@@ -1445,7 +1445,7 @@ class Converter
                 $remainder = '';
 
                 if ($item->school) {
-                    $this->verbose(strip_tags($item->school), "School");
+                    $this->verbose(['fieldName' => 'School', 'content' => strip_tags($item->school)]);
                 } else {
                     $warnings[] = "No school identified.";
                 }
@@ -1459,11 +1459,11 @@ class Converter
         }
 
         foreach ($warnings as $warning) {
-            $this->verbose("<br><font color=\"red\">Warning:</font> " . strip_tags($warning));
+            $this->verbose(['warning' => strip_tags($warning)]);
         }
 
         foreach ($notices as $notice) {
-            $this->verbose("<br><font color=\"#ff66ff\">Notice:</font> " . strip_tags($notice));
+            $this->verbose(['notice' => strip_tags($notice)]);
         }
 
         $item->title = $this->requireUc($item->title);
@@ -2110,15 +2110,9 @@ class Converter
         return $result;
     }
 
-    public function verbose(string $string, string|null $fieldName = null, string|null $typeName = null)
+    public function verbose(string|array $arg)
     {
-        if ($fieldName) {
-            $this->displayLines[] = "<br><font style=\"background-color:#ddeeff\">" . $fieldName . "</font>: " . $string;
-        } elseif ($typeName) {
-            $this->displayLines[] = "<br><font style=\"background-color:#ddffee\">" . $typeName . "</font>: " . $string;
-        } else {
-            $this->displayLines[] = $string;
-        }
+        $this->displayLines[] = $arg;
     }
 
     /**
@@ -2167,6 +2161,7 @@ class Converter
         $maxAuthors = 100;
         $wordHasComma = $prevWordHasComma = $oneWordAuthor = false;
 
+        $this->debug('Looking at each word in turn');
         foreach ($words as $i => $word) {
             $prevWordHasComma = $wordHasComma;
             $wordHasComma = (substr($word,-1) == ',');
@@ -2178,14 +2173,17 @@ class Converter
             if ($authorIndex >= $maxAuthors) {
                 break;  // exit from foreach
             }
-            $debugString1 = $case ? "[<i>convertToAuthors</i> case " . $case . "] authorstring: " . ($authorstring ? $authorstring : '[empty]') . "." : "";
+            $debugString1 = $case ? "[convertToAuthors case " . $case . "] authorstring: " . ($authorstring ? $authorstring : '[empty]') . "." : "";
             if (isset($bareWords)) {
                 $debugString1 .= " bareWords: " . $bareWords . ".";
             }
             unset($bareWords);
             $this->debug($debugString1);
-            $this->debug("<hr><b>i: " . $i . ", word: " . $word . "</b>. authorIndex: " . $authorIndex . ". namePart: " . $namePart);
-            $debugString2 = "<i>fullName</i>: " . $fullName;
+            if (isset($reason)) {
+                $this->debug('Reason: ' . $reason);
+            }
+            $this->debug(['text' => 'Word ' . $i . ": ", 'words' => [$word], 'content' => " - authorIndex: " . $authorIndex . ", namePart: " . $namePart]);
+            $debugString2 = "fullName: " . $fullName;
             $this->debug($debugString2);
             
             if (isset($itemYear)) {
@@ -2226,6 +2224,7 @@ class Converter
                 $namePart = 0;
                 $authorIndex++;
                 $case = 1;
+                $reason = 'Word is "and" or equivalent';
             } elseif ($word == 'et') {
                 // word is 'et'
                 $nextWord = rtrim($words[$i+1], ',');
@@ -2236,6 +2235,7 @@ class Converter
                     $remainder = implode(" ", $remainingWords);
                     $done = 1;
                     $case = 14;
+                    $reason = 'Word is "et" and next word is "al." or "al"';
                 } else {
                     $this->debug("'et' not followed by 'al' or 'al.', so not sure what to do");
                 }
@@ -2254,6 +2254,7 @@ class Converter
                         $fullName .= trim($nameComponent, '.');
                         $authorstring .= $fullName;
                         $case = 2;
+                        $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, namePart is 0, and remaining string starts with year';
                         $oneWordAuthor = true;
                         $itemYear = $year; // because $year is recalculated below
                         //break;
@@ -2269,6 +2270,7 @@ class Converter
                         $remainder = $word . " " . $remainder;
                         $warnings[] = "Unexpected period after \"" . substr($word, 0, strlen($word) - 1) . "\".  Typo?";
                         $case = 3;
+                        $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, namePart is 0, and remaining string does not start with year';
                     }
                 } else {
                     // If $namePart > 0
@@ -2277,6 +2279,7 @@ class Converter
                     $authorstring .= $this->formatAuthor($fullName);
                     $remainder = implode(" ", $remainingWords);
                     $case = 4;
+                    $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, and namePart is > 0';
                 }
                 $this->debug("Remainder: " . $remainder);
                 if ($year = $this->getYear($remainder, true, $remains, false, $trash)) {
@@ -2363,6 +2366,7 @@ class Converter
                     $done = 1;
                     $authorstring .= $this->formatAuthor($fullName);
                     $case = 8;
+                    $reason = 'Remainder starts with year';
                 } elseif ($determineEnd && $bareWords > 2 && ! $this->isInitials($remainingWords[0])) {
                     // Note that this check occurs only when $namePart > 0---so it rules out double-barelled
                     // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
@@ -2433,10 +2437,9 @@ class Converter
         return ['authorstring' => $authorstring, 'warnings' => $warnings, 'oneWordAuthor' => $oneWordAuthor];
     }
 
-    public function debug(string $string)
+    public function debug(string|array $arg)
     {
-        $this->displayLines[] = "<br>
-        $string\n";
+        $this->displayLines[] = $arg;
     }
    
     /*
@@ -2967,24 +2970,26 @@ class Converter
      */
     public function inDict(string $word): bool
     {
-        $tag = 'en_US';
-        $r = enchant_broker_init();
-        if (enchant_broker_dict_exists($r, $tag)) {
-            $d = enchant_broker_request_dict($r, $tag);
-            //$dprovides = enchant_dict_describe($d);
-            $correct = enchant_dict_check($d, $word);
-            $this->debug("\"" . $word . "\" is " . ($correct ? "" : "NOT ") . "in dictionary");
-            if (in_array($word, $this->excludedWords)) {
-                $this->debug("but is in the list of excluded words");
-            }
-            //enchant_broker_free_dict($d);
-            unset($d);
-        }
+        // enchant_broker_init seems to not be installed and currently not to be available
+        return true;
+        // $tag = 'en_US';
+        // $r = enchant_broker_init();
+        // if (enchant_broker_dict_exists($r, $tag)) {
+        //     $d = enchant_broker_request_dict($r, $tag);
+        //     //$dprovides = enchant_dict_describe($d);
+        //     $correct = enchant_dict_check($d, $word);
+        //     $this->debug("\"" . $word . "\" is " . ($correct ? "" : "NOT ") . "in dictionary");
+        //     if (in_array($word, $this->excludedWords)) {
+        //         $this->debug("but is in the list of excluded words");
+        //     }
+        //     //enchant_broker_free_dict($d);
+        //     unset($d);
+        // }
 
-        //enchant_broker_free($r);
-        unset($r);
+        // //enchant_broker_free($r);
+        // unset($r);
 
-        return $correct;
+        // return $correct;
     }
 
     /**
@@ -2993,21 +2998,21 @@ class Converter
      */
     public function isNotName($word1, $word2) {
         $words = array($word1, $word2);
-        $this->debug("Arguments of isNotName: " . $words[0] . ", " . $words[1]);
+        $this->debug(['text' => 'Arguments of isNotName: ', 'words' => [$words[0], $words[1]]]);
         $result = false;
         for ($i = 0; $i < 2; $i++) {
             if (preg_match('/^(\\\"|\\\'|\\`)\{?[A-Z]\}?/', $words[$i])) {
-                $this->debug('Name component ' . $words[$i] . ' starts with accented uppercase character');
+                $this->debug(['text' => 'Name component ', 'words' => [$words[$i]], 'content' => ' starts with accented uppercase character']);
             }
             // not a name if is starts with l.c. and is not a von name and doesn't start with accented uppercase char
             if (isset($words[$i][0]) and strtolower($words[$i][0]) == $words[$i][0]
                     and ! preg_match('/^(\\\"|\\\'|\\`)\{?[A-Z]\}?/', $words[$i])
                     and substr($words[$i], 0, 2) != "d'" and ! in_array($words[$i], $this->vonNames)) {
-                $this->debug("isNotName: " . $words[$i] . " appears not to be a name");
+                $this->debug(['text' => 'isNotName: ', 'words' => [$words[$i]], 'content' => ' appears not to be a name']);
                 return true;
             }
         }
-        $this->debug("isNotName: " . $word1 . " and " . $word2 . " appear to be names");
+        $this->debug(['text' => 'isNotName: ', 'words' => [$word1, $word2], 'content' => ' appear to be names']);
         return $result;
     }
 
@@ -3026,7 +3031,7 @@ class Converter
      * $nameString is a FULL name (e.g. first and last or first middle last)
      */
     public function formatAuthor($nameString) {
-        $this->debug('formatAuthor: argument of formatAuthor: ' . $nameString);
+        $this->debug(['text' => 'formatAuthor: argument ', 'words' => [$nameString]]);
         $names = explode(' ', $nameString);
         // $initialsStart is index of component (a) that is initials and (b) after which all components are initials
         // initials are any string all u.c. of length one or two
@@ -3084,7 +3089,7 @@ class Converter
                 $fName .= $name;
             }
         }
-        $this->debug('formatAuthor: result of formatAuthor: ' . $fName);
+        $this->debug(['text' => 'formatAuthor: result ', 'words' => [$fName]]);
         return $fName;
     }
 
@@ -3290,6 +3295,7 @@ class Converter
     public function cleanText(string $string, string|null $charEncoding): string
     {
         $string = str_replace("\\newblock", "", $string);
+        $string = str_replace('\\"', '"', $string);
         // Replace each tab with a space
         $string = str_replace("\t", " ", $string);
         $string = str_replace("\\textquotedblleft ", "``", $string);
@@ -3450,6 +3456,7 @@ class Converter
             //$string = str_replace("\xC4\xbF", "", $string);
         }
 
+        /*
         if($charEncoding == 'windows1252') {
             // Following two are windows encoding of opening and closing quotes(?) [might conflict with other encodings?---
             // 93 is o circumflex and 94 is o umlaut]
@@ -3492,6 +3499,7 @@ class Converter
             $string = str_replace("\xFB", "{\^u}", $string);
             $string = str_replace("\xFC", "{\"u}", $string);
         }
+        */
 
         $string = str_replace("\\ ", " ", $string);
         $string = str_replace("\\textbf{\\ }", " ", $string);

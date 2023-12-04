@@ -17,7 +17,7 @@
                         <livewire:error-report-status :errorReport="$errorReport" />
                     </div>
                 @else
-                    Status: {{ $errorReport->status->name }}
+                    Status: <span class="{{ $errorReport->status->color() }}">{{ $errorReport->status->name }}</span>
                 @endif
             </p>
             <dl>

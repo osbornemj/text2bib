@@ -39,12 +39,19 @@ class ConversionController extends Controller
 
         // Get file that user uploaded
         $filestring = Storage::disk('public')->get('files/' . $user->id . '-' . $conversion->user_file_id . '-source.txt');
+
+        // if (mb_detect_encoding($filestring, 'UTF-8, ISO-8859-1', true) === 'UTF-8'){
+        //     dd('utf-8');
+        // } else {
+        //     dd('not utf-8');
+        // }
+
         $filestring = $this->regularizeLineEndings($filestring);
         $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
 
         $convItems = [];
         foreach ($entries as $entry) {
-            // $convItem is array with components 'source', 'item', 'itemType', 'label', 'warnings',
+            // $convItems is array with components 'source', 'item', 'itemType', 'label', 'warnings',
             // 'notices', 'details'.
             // 'label' (which depends on whole set of converted items) is updated later
             $convItems[] = $this->converter->convertEntry($entry, $conversion);
@@ -230,55 +237,6 @@ class ConversionController extends Controller
     public function onlyLetters(string $string): string
     {
         return preg_replace("/[^a-z\s]+/i", "", $string);
-    }
-
-    /////////////// SHOULD BE MOVED TO A DIFFERENT FILE ///////////////////
-    public function runExampleCheck(bool $verbose = false, int $id = null): View
-    {
-        $examples = $id ? [Example::find($id)] : Example::all();
-
-        $conversion = new Conversion;
-
-        $report = '';
-        foreach ($examples as $example) {
-            $source = $this->regularizeLineEndings($example->source);
-
-            $output = $this->convertEntry($source, $conversion);
-            $unidentified = '';
-            if (isset($output['item']->unidentified)) {
-                $unidentified = $output['item']->unidentified;
-                unset($output['item']->unidentified);
-            }
-
-            $diff = array_diff((array) $output['item'], (array) $example->bibtexFields());
-
-            $report .= "<p>Example " . $example->id . ' converted ';
-            if (empty($diff)) {
-                $report .= '<span style="background-color: rgb(134 239 172);">correctly</span>';
-                if ($unidentified) {
-                    $report .= ' (but string "' . $unidentified . '" not assigned to field)';
-                }
-            } else {
-                $report .= '<span style="background-color: rgb(253 164 175);">incorrectly</span>';
-                $report .= ' &nbsp; &bull; &nbsp; <a href="' . url('/admin/runExampleCheck/1/' . $example->id) . '">verbose conversion</a>';
-                $report .= '<p><span style="background-color: rgb(203 213 225);">Source:</span> ' . $source . '<p>';
-                foreach ($diff as $key => $content) {
-                    $bibtexFields = $example->bibtexFields();
-                    $report .= "<p>" . $key . ':<p>|' . $content . '|';
-                    $report .= '<p><i>instead of</i><p>|' . (isset($bibtexFields->{$key}) ? $bibtexFields->{$key} : '') . '|';
-                }
-            }
-
-            if ($verbose) {
-                $report .= '<p>';
-                foreach ($this->displayLines as $line) {
-                    $report .= $line;
-                };
-            }
-        }
-
-        return view('admin.examples.checkResult')
-            ->with('report', $report);
     }
 
     ///////////////// REMAINING METHODS PROBABLY NOT USED ///////////////////////

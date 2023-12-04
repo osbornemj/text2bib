@@ -5,6 +5,25 @@
         </h2>
     </x-slot>
 
+    <div class="sm:px-4 lg:px-4 space-y-6 mb-4">
+        <div class="sm:p-0 pt-0 sm:pt-0">
+            <h3 class="font-semibold text-lg leading-tight">
+                {{ __('Requirements')}}
+            </h3>
+                <ul class="list-disc list-outside ml-8">
+                <li>
+                    Your file must contain only a list of references, not any other text.  (The conversion routine does not extract references from text.)
+                </li>
+                <li>
+                    <b>Either</b> each reference in your file must be on a separate line <b>or</b> the references must be separated by blank lines.
+                </li>
+                <li>
+                    Your file must be plain text (txt), with character encoding utf-8.
+                </li>
+            </ul>
+        </div>
+    </div>
+
         <div class="sm:px-4 lg:px-4 space-y-6">
             <div class="sm:p-0 pt-0 sm:pt-0">
                 <form method="POST" action="{{ route('file.upload') }}" method="POST" enctype="multipart/form-data" class="mt-0 space-y-0">
@@ -37,7 +56,7 @@
                     </div>
 
                     <div>
-                        <x-input-label for="first_component" :value="__('First component of each item in your source file')" class="mt-4" />
+                        <x-input-label for="first_component" :value="__('First component of each item in your file')" class="mt-4" />
                     
                         <x-radio-input name="first_component" id="first_component" value="authors" class="peer/authors" :checked="old('first_component', !isset($settings) || $settings->first_component == 'authors')" /> 
                         <x-value-label for="authors" class="peer-checked/authors:text-blue-600 ml-1" :value="__('Authors')" />
@@ -105,24 +124,18 @@
                     </div>
 
                     <div>
-                        <x-input-label for="char_encoding" :value="__('Character encoding')" class="mt-4" />
+                        <x-input-label for="char_encoding" :value="__('Convert accented characters to TeX?')" class="mt-4" />
                     
                         <x-radio-input name="char_encoding" id="char_encoding" value="utf8" class="peer/utf8" :checked="old('char_encoding', !isset($settings) || $settings->char_encoding == 'utf8')" /> 
-                        <x-value-label for="utf8" class="peer-checked/utf8:text-blue-600 ml-1" :value="__('utf-8 (convert to TeX)')" />
+                        <x-value-label for="utf8" class="peer-checked/utf8:text-blue-600 ml-1" :value="__('Yes')" />
 
                         <x-radio-input name="char_encoding" id="char_encoding" value="utf8leave" class="peer/utf8leave ml-4" :checked="old('char_encoding', isset($settings) && $settings->char_encoding == 'utf8leave')" />
-                        <x-value-label for="l" class="peer-checked/utf8leave:text-blue-600 ml-1" :value="__('utf-8 (leave as is)')" />
-
-                        <x-radio-input name="char_encoding" id="char_encoding" value="ascii" class="peer/ascii ml-4" :checked="old('char_encoding', isset($settings) && $settings->char_encoding == 'ascii')" />
-                        <x-value-label for="l" class="peer-checked/ascii:text-blue-600 ml-1" :value="__('ASCII')" />
-
-                        <x-radio-input name="char_encoding" id="char_encoding" value="windows1252" class="peer/windows1252 ml-4" :checked="old('char_encoding', isset($settings) && $settings->char_encoding == 'windows1252')" />
-                        <x-value-label for="l" class="peer-checked/windows1252:text-blue-600 ml-1" :value="__('Windows 1252')" />
+                        <x-value-label for="l" class="peer-checked/utf8leave:text-blue-600 ml-1" :value="__('No')" />
 
                         <x-input-error :messages="$errors->get('char_encoding')" class="mt-2" />
 
                         <div class="mt-2 dark:text-gray-300">
-                            If you don't know, utf-8 (convert to TeX) is fairly safe. If you are using biblatex to process your BibTeX file, you can use the option "utf8 (leave as is)". If you want to learn all about encodings, read <x-link href="http://kunststube.net/encoding/" target="_blank">this superb article</x-link>. 
+                            If you are using biblatex to process your BibTeX file, you can safely choose "No". 
                         </div>
                     </div>
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CitiesController;
 use App\Http\Controllers\Admin\ConversionAdminController;
 use App\Http\Controllers\Admin\ExamplesController;
+use App\Http\Controllers\Admin\ExampleCheckController;
 use App\Http\Controllers\Admin\ExampleFieldsController;
 use App\Http\Controllers\Admin\ExcludedWordsController;
 use App\Http\Controllers\Admin\AdminController;
@@ -85,7 +86,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/itemTypeField/detach/{itemFieldId}/{itemTypeId}', 'detach')->name('itemTypeField.detach');
     });
 
-    Route::get('/admin/runExampleCheck/{verbose?}/{id?}', [ConversionController::class, 'runExampleCheck'])->name('admin.examples.runCheck');
+    Route::get('/admin/runExampleCheck/{verbose?}/{id?}', [ExampleCheckController::class, 'runExampleCheck'])->name('admin.examples.runCheck');
 
     Route::get('/admin/users', [UsersController::class, 'index'])->name('admin.users');
 });
