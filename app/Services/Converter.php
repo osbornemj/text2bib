@@ -208,7 +208,7 @@ class Converter
         $itemLabel = null;
 
         // If entry starts with '\bibitem', get label and remove '\bibitem'
-        if (Str::startsWith($entry, "\\bibitem{")) {
+        if (Str::startsWith($entry, ["\\bibitem{", "\\bibitem {"])) {
             if (!$conversion->override_labels) {
                 $itemLabel = Str::betweenFirst($entry, '{', '}');
             }
@@ -1528,11 +1528,220 @@ class Converter
                 $pos = $pos + 1;
             }
 
+            $this->debug('Title case 1');
             $title = substr($remainder, 0, $pos);
             $newRemainder = substr($remainder, $pos);
         }
 
         if (!$title) {
+            // Look for comma or period (including ? or !).
+            // If period is found first and is not followed by lowercase letter, take that to be end of title.
+            // If comma is found first, look to see if following string
+            //		starts italics, or starts with working paper string, or starts with 'in ',
+            //  	or starts with a year since 1900 followed by a period (case of a working paper without any institution).
+            // 		If so, take that to be end of title.
+            //		(Assumption: 'in ' can occur in a title, but is very unlikely after a comma.)
+            // If comma found first and is at least second comma in remainder and string from the comma to the next comma
+            // or period contains no
+            // letters, then take item to be article (assume string with no letters is volume/number, with
+            // the title the string up to the previous comma).
+            // Else continue searching.
+            $numberOfCommas = 0;
+            for ($j = 0; $j < strlen($remainder) - 1 && !$title; $j++) {
+                // find index, $k, of first nonspace after $remainder[$j]
+                for ($k = $j + 1; $remainder[$k] == ' '; $k++) {
+                }
+
+                switch ($remainder[$j]) {
+                    case '!':
+                    case '?':
+                    case '.':
+                        if (strtolower($remainder[$k]) == $remainder[$k]) {
+                            // period doesn't terminate if followed (possibly after spaces) by lowercase letter
+                            // (covers case of abbreviation in title).
+                            $this->debug("Not ending title, case 1");
+                        } elseif (substr($remainder, $k, 3) == 'I. ') {
+                            // 'abc. I. ' in middle of title => neither period ends title
+                            $j += 3;
+                            $this->debug("Not ending title, case 2");
+                        } elseif (substr($remainder, $k, 4) == 'II. ') {
+                            // 'abc. II. ' in middle of title => neither period ends title
+                            $j += 4;
+                            $this->debug("Not ending title, case 3");
+                        } elseif (substr($remainder, $k, 5) == 'III. ') {
+                            // 'abc. III. ' in middle of title => neither period ends title
+                            $j += 5;
+                            $this->debug("Not ending title, case 4");
+                        } elseif ($j < strlen($remainder) - 1) {
+                            // Get string up to next period.  If it is shortish (less than 8 chars) and contains no space,
+                            // assume it is the first word (abbreviation) in the publication info (e.g. journal name)
+                            // That assumes that a title doesn't contain a string of the form '.  abc.', except for
+                            // I., II., and III., which are covered in the previous three cases.
+                            $nextStringToPeriod = $this->getStringBeforeChar(substr($remainder, $k), '.');
+                            if (strlen($nextStringToPeriod) < 8 && strpos($nextStringToPeriod, ' ') === false) {
+                                $this->debug("Ending title, case 6");
+                                $title = rtrim(substr($remainder, 0, $j), ' ');
+                                $newRemainder = ltrim(substr($remainder, $j+1), ' ');
+                            } else {
+                                //die($nextStringToPeriod);
+                                // Rough check that period (or ! or ?) doesn't end title
+                                // Look for NEXT period.
+                                for ($l = $j + 1; isset($remainder[$l]) && $remainder[$l] != '.'; $l++) {}
+                                // if text up to next period is all alphabetic characters and spaces and doesn't start with 'in'
+                                // (in which case it is probably start of pub info for article in volume) and at
+                                // least 40 characters remain after next period (pub info), assume title ends
+                                // at next period (and the 40+ characters at the end are the publication info).
+                                if(ctype_alpha(str_replace(' ', '', substr($remainder, $k, $l-$k)))
+                                        && !preg_match($this->inRegExp1, substr($remainder, $k))
+                                        && strlen($remainder) > $l + 40) {
+                                    $j = $l-1;
+                                    $this->debug("Not ending title, case 5 (rest starts: " . $remainder[$l+1] . $remainder[$l+2] . $remainder[$l+3] . ")");
+                                } else {
+                                    $this->debug("Ending title, case 7");
+                                    $title = rtrim(substr($remainder, 0, $j + 1), '.');
+                                    $newRemainder = ltrim(substr($remainder, $j + 2), ' ');
+                                }
+                            }
+                        } elseif (isset($firstCommaPos)) {
+                            $title = rtrim(substr($remainder, 0, $firstCommaPos), ',');
+                            $newRemainder = ltrim(substr($remainder, $firstCommaPos + 1), ' ');
+                            $this->debug("Ending title, case 2");
+                        } else {
+                            $title = rtrim(substr($remainder, 0, $j), '.');
+                            $newRemainder = ltrim(substr($remainder, $j + 1), ' ');
+                            $this->debug("Ending title, case 3");
+                        }
+                        break;
+                    case ',':
+                        if (!isset($firstCommaPos)) {
+                            $firstCommaPos = $j;
+                        }
+                        $numberOfCommas++;
+                        if ($this->isProceedings(ltrim(substr($remainder, $j + 1), ' '))) {
+                            $containsProceedings = true;
+                            $this->debug("Ending title, case 8");
+                            $title = trim(substr($remainder, 0, $j+1), ', ');
+                            $newRemainder = substr($remainder, $j + 1);
+                            break;
+                        }
+                    case ' ':
+                        $rest = ltrim(substr($remainder, $j + 1), ' ');
+                        $this->debug("Rest: " . $rest);
+                        $regExp = '/^' . $this->workingPaperRegExp . '/';
+                        if ($remainder[$j] == ',') {
+                            $commaPos = strpos($rest, ',');
+                            $periodPos = strpos($rest, '.');
+                            if ($commaPos !== false) {
+                                if ($periodPos !== false) {
+                                    $stringBeforeNextComma = substr($rest, 0, min($commaPos, $periodPos));
+                                } else {
+                                    $stringBeforeNextComma = substr($rest, 0, $commaPos);
+                                }
+                            } elseif ($periodPos !== false) {
+                                $stringBeforeNextComma = substr($rest, 0, $periodPos);
+                            } else {
+                                $stringBeforeNextComma = '';
+                            }
+                            $this->debug("String before next comma or period: " . $stringBeforeNextComma);
+                        }
+                        if ($this->containsFontStyle($rest, true, 'italics', $startPos, $length)
+                                || preg_match($regExp, $rest, $matches)
+                                || preg_match('/^(' . $this->pagesRegExp2 . ') [1-9]/', $rest, $matches)
+                                || ($remainder[$j] == ',' && Str::startsWith($rest, ['in ', $this->journalWord . ' ', 'Vol. ', 'Vol ']))
+                                || ($remainder[$j] == ',' && preg_match('/^(19|20)[0-9][0-9]\./', $rest))) {
+                            $this->debug("Case A");
+                            $title = rtrim(substr($remainder, 0, $j), ',');
+                            $newRemainder = ltrim(substr($remainder, $j + 1), ' ');
+                            if ( $remainder[$j] == ',' && Str::startsWith($rest, $this->journalWord . ' ')) {
+                                $isArticle = true;
+                            }
+                        } elseif ($remainder[$j] == ','
+                                && $numberOfCommas > 1
+                                && preg_match('/^[^A-Za-z]+$/', $stringBeforeNextComma)) {
+                            $this->debug("Case B");
+                            $isArticle = true;
+                            $remainderArray = explode(",", substr($remainder, 0, $j));
+                            array_pop($remainderArray);
+                            $title = implode(",", $remainderArray);
+                            $newRemainder = ltrim(substr($remainder, strlen($title)), ' ');
+                        }
+                        break;
+                }
+            }
+        }
+
+        // If no title has been identified and $remainder contains a comma, take title to be string up to first comma.
+        // What to do if $remainder contains no comma?
+        if (!$title && $numberOfCommas) {
+            $this->debug("Title not clearly identified; setting it equal to string up to first comma");
+            $title = substr($remainder, 0, $firstCommaPos);
+            $newRemainder = ltrim(substr($remainder, $firstCommaPos + 1), ' ');
+        }
+
+        $remainder = isset($newRemainder) ? $newRemainder : $remainder;
+
+        return $title;
+    }
+
+    /*
+    // Get title from string that starts with title and then has publication info.
+    // Cases in which title is in italics or in quotation marks have already been dealt with.
+    // Also one-word author for online items have been dealt with.
+    public function getTitle(string &$remainder, bool &$containsProceedings, bool &$isArticle): string|null
+    {
+        // Roughly, if string contains one comma and no period, except possibly at end, title is string up to comma
+        $wordSegmentCount = $this->wordSegmentCount(explode(" ", $remainder));
+        $segmentCount = $wordSegmentCount['count'];
+        $title = null;
+
+        if ($segmentCount == 2) {
+            $this->debug('[t1] segmentCount is 2');
+            $commaPos = strpos($remainder, ',');
+            $periodPos = strpos($remainder, '.');
+            $questionPos = strpos($remainder, '?');
+
+            if ($periodPos && $questionPos) {
+                $stopPos = min($periodPos, $questionPos);
+            } elseif ($periodPos) {
+                $stopPos = $periodPos;
+            } elseif ($questionPos) {
+                $stopPos = $questionPos;
+            } else {
+                $stopPos = false;
+            }
+
+            if ($commaPos && $stopPos) {
+                $pos = min($commaPos, $stopPos);
+            } elseif ($commaPos) {
+                $pos = $commaPos;
+            } elseif ($stopPos) {
+                $pos = $stopPos;
+            } else {
+                $pos = strlen($remainder);  // this case shouldn't happen
+            }
+
+            // if title is terminated by question mark, include that in the title
+            if ($questionPos && $pos = $questionPos) {
+                $pos = $pos + 1;
+            }
+
+            $title = substr($remainder, 0, $pos);
+            $newRemainder = substr($remainder, $pos);
+        }
+        
+        if (!$title) {
+            // $words = explode(' ', $remainder);
+            // foreach ($words as $key => $word) {
+            //     $nextWord = $words[$key+1] ?? null;
+            //     $word = trim($word);
+            //     $nextWord = trim($nextWord);
+            //     if (Str::endsWith($word, ['.', '!', '?'])) {
+            //         if (strtolower($nextWord[0]) == $nextWord[0] || Str::startsWith($nextWord, ['I. ', 'II. ', 'III. '])) {
+            //             $this->debug("Not ending title");
+            //         } else   
+            //     } 
+            // }
+
             // Look for comma or period (including ? or !).
             // If period is found first and is not followed by lowercase letter, take that to be end of title.
             // If comma is found first, look to see if following string
@@ -1679,7 +1888,7 @@ class Converter
 
         return $title;
     }
-
+    */
     public function requireUc(string $string): string
     {
         $words = explode(" ", $string);

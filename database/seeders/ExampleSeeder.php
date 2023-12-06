@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use DB;
+
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -851,8 +853,24 @@ class ExampleSeeder extends Seeder
                     'pages' => '1391-1402',
                     'volume' => '55'
                 ]
+            ],
+            [
+                'source' => '\bibitem {MPR} Milgrom, P. (1989), ``Auctions and Bidding: A Primer,\'\' {\it Journal of Economic Perspectives}, 3, 3-22.',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Milgrom, P.',
+                    'title' => 'Auctions and Bidding: A Primer',
+                    'journal' => 'Journal of Economic Perspectives',
+                    'volume' => '3',
+                    'pages' => '3-22',
+                    'year' => '1989'
+                ]
             ]
         ];
+
+        DB::statement('DELETE FROM examples');
+        DB::statement('ALTER TABLE examples AUTO_INCREMENT 1');
+        DB::statement('ALTER TABLE example_fields AUTO_INCREMENT 1');
 
         foreach ($examples as $example) {
             $ex = Example::create([
