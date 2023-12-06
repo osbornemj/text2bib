@@ -14,6 +14,10 @@
                 @foreach ($convertedItems as $outputId => $convertedItem)
                 <div class="mt-4">
                     <li>
+                        @if (Auth::user()->is_admin)
+                            <x-link href="{{ url('admin/formatExample/' . $outputId)}}" target="_blank">Format result for Examples Seeder</x-link>
+                            <br/>
+                        @endif
                         @if ($includeSource) 
                             % {{ $convertedItem['source'] }}
                             <br/>

@@ -865,7 +865,19 @@ class ExampleSeeder extends Seeder
                     'pages' => '3-22',
                     'year' => '1989'
                 ]
-            ]
+            ],
+            [
+                'source' => 'Glejser, H., \& Heyndels, B. Efficiency and inefficiency in the ranking in competitions: The case of the Queen Elisabeth Music Contest. \textit{Journal of Cultural Economics}, 25 (2001), 109--129. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'year' => '2001',
+                    'pages' => '109-129',
+                    'title' => 'Efficiency and inefficiency in the ranking in competitions: The case of the Queen Elisabeth Music Contest',
+                    'author' => 'Glejser, H. and Heyndels, B.',
+                    'volume' => '25',
+                    'journal' => 'Journal of Cultural Economics',
+                    ]
+            ],            
         ];
 
         DB::statement('DELETE FROM examples');

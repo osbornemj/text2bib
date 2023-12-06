@@ -9,7 +9,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Conversion;
+use App\Models\ItemType;
+use App\Models\Output;
 use App\Models\UserFile;
+
 use Illuminate\Http\RedirectResponse;
 
 class ConversionAdminController extends Controller
@@ -20,8 +23,7 @@ class ConversionAdminController extends Controller
             ->with('userFile.user')
             ->paginate(config('constants.items_page'));
 
-        return view('admin.conversions.index')
-            ->with('conversions', $conversions);
+        return view('admin.conversions.index', compact('conversions'));
     }
 
     public function showFile(int $fileId): View
@@ -33,8 +35,7 @@ class ConversionAdminController extends Controller
         $filestring = Storage::disk('public')->get('files/' . $userId . '-' . $fileId . '-' . $suffix);
         $fileFormatted = str_replace("\n", "<br/>", $filestring);
 
-        return view('admin.conversions.file')
-            ->with('fileFormatted', $fileFormatted);
+        return view('admin.conversions.file', compact('fileFormatted'));
     }
 
     public function convert(int $fileId, string|null $itemSeparator = null): RedirectResponse
@@ -52,5 +53,13 @@ class ConversionAdminController extends Controller
         $conversion->save();
 
         return redirect()->route('file.convert', ['conversionId' => $conversion->id]);        
+    }
+
+    public function formatExample(int $outputId): View
+    {
+        $output = Output::find($outputId);
+        $itemType = ItemType::find($output->item_type_id);
+
+        return view('admin.formatExample', compact('output', 'itemType'));
     }
 }

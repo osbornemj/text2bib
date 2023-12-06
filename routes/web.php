@@ -74,6 +74,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/showFile/{fileId}', 'showFile')->name('admin.showFile');
         Route::get('/admin/convert/{fileId}/{itemSeparator?}', 'convert')->name('admin.convert');
         Route::get('/admin/conversions', 'index')->name('admin.conversions');
+        Route::get('/admin/formatExample/{outputId}', 'formatExample')->name('admin.formatExample');
     });
 
     Route::controller(ExampleFieldsController::class)->group(function () {
