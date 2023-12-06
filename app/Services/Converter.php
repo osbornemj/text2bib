@@ -32,6 +32,8 @@ class Converter
     var $volRegExp2;
     var $inRegExp1;
     var $inRegExp2; 
+    var $startForthcomingRegExp;
+    var $endForthcomingRegExp;
     var $forthcomingRegExp1;
     var $forthcomingRegExp2;
     var $forthcomingRegExp3;
@@ -100,6 +102,8 @@ class Converter
         $this->inRegExp1 = '/^[iI]n:? /';
         $this->inRegExp2 = '/([iI]n: |, in)/';
 
+        $this->startForthcomingRegExp = '^forthcoming|in press|accepted|to appear in';
+        $this->endForthcomingRegExp = 'forthcoming\.?\)?|in press\.?\)?|accepted\.?\)?|to appear\.?\)?$';
         $this->forthcomingRegExp1 = '/^[Ff]orthcoming/';
         $this->forthcomingRegExp2 = '/^[Ii]n [Pp]ress/';
         $this->forthcomingRegExp3 = '/^[Aa]ccepted/';
@@ -547,19 +551,14 @@ class Converter
             $this->debug("Contains string in boldface.");
         }
 
-        if (preg_match($this->forthcomingRegExp1, $remainder)
-                || preg_match($this->forthcomingRegExp2, $remainder)
-                || preg_match($this->forthcomingRegExp7, $remainder)
-                || preg_match($this->forthcomingRegExp3, $remainder)) {
+        if (preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)) {
             $pubInfoStartsWithForthcoming = true;
             $this->debug("Publication info starts with 'forthcoming', 'accepted', 'in press', or 'to appear'.");
         }
 
-        if (preg_match($this->forthcomingRegExp4, $remainder)
-                || preg_match($this->forthcomingRegExp5, $remainder)
-                || preg_match($this->forthcomingRegExp6, $remainder)) {
+        if (preg_match('/' . $this->endForthcomingRegExp . '/i', $remainder)) {
             $pubInfoEndsWithForthcoming = true;
-            $this->debug("Publication info ends with 'forthcoming', 'accepted', or 'in press'.");
+            $this->debug("Publication info ends with 'forthcoming', 'accepted', or 'in press', or 'to appear'.");
         }
 
         if (preg_match($this->inReviewRegExp1, $remainder)
@@ -758,62 +757,69 @@ class Converter
                 } else {
                     $warnings[] = "'Journal' field not found.";
                 }
+                $remainder = trim($remainder, ' ,.');
                 $this->debug("Remainder: " . $remainder);
 
-                // get pages
-                $this->getPagesForArticle($remainder, $item);
-
-                $pagesReported = false;
-                if ($item->pages) {
-                    $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
-                    $pagesReported = true;
+                // If $remainder ends with 'forthcoming' phrase, put that in note.  Else look for pages & volume etc.
+                if (preg_match('/' . $this->endForthcomingRegExp . '/', $remainder)) {
+                    $item->note = $remainder;
+                    $remainder = '';
                 } else {
-                    $warnings[] = "No page range found.";
-                }
-                $this->debug("[p1] Remainder: " . $remainder);
+                    // get pages
+                    $this->getPagesForArticle($remainder, $item);
 
-                // --------------------------------------------//
-
-                // get month, if any
-                $months = $this->monthsRegExp;
-                $regExp = '(\(?(' . $months . '\)?)([-\/](' . $months . ')\)?)?)';
-                preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
-
-                if (isset($matches[0][0][0]) && $matches[0][0][0]) {
-                    $item->month = trim($matches[0][0][0], '()');
-                    $this->verbose(['fieldName' => 'Month', 'content' => strip_tags($item->month)]);
-                    $remainder = substr($remainder, 0, $matches[0][0][1]) . substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0]));
-                    $this->debug('Remainder: ' . $remainder);
-                }
-
-                // get volume and number
-                $this->getVolumeAndNumberForArticle($remainder, $item);
-
-                if (!$item->pages && isset($item->number) && $item->number) {
-                    $item->pages = $item->number;
-                    unset($item->number);
-                    $this->debug('[p4] no pages found, so assuming string previously assigned to number is a single page: ' . $item->pages);
-                    $warnings[] = "Not sure the pages value is correct.";
-                }
-
-                if (!$pagesReported && isset($item->pages)) {
-                    $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
-                }
-
-                if (isset($item->volume) && $item->volume) {
-                    $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($item->volume)]);
-                } else {
-                    $warnings[] = "'Volume' field not found.";
-                }
-                if (isset($item->number) && $item->number) {
-                    $this->verbose(['fieldName' => 'Number', 'content' => strip_tags($item->number)]);
-                }
-
-                if (isset($item->note)) {
-                    if ($item->note) {
-                        $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
+                    $pagesReported = false;
+                    if ($item->pages) {
+                        $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
+                        $pagesReported = true;
                     } else {
-                        unset($item->note);
+                        $warnings[] = "No page range found.";
+                    }
+                    $this->debug("[p1] Remainder: " . $remainder);
+
+                    // --------------------------------------------//
+
+                    // get month, if any
+                    $months = $this->monthsRegExp;
+                    $regExp = '(\(?(' . $months . '\)?)([-\/](' . $months . ')\)?)?)';
+                    preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
+
+                    if (isset($matches[0][0][0]) && $matches[0][0][0]) {
+                        $item->month = trim($matches[0][0][0], '()');
+                        $this->verbose(['fieldName' => 'Month', 'content' => strip_tags($item->month)]);
+                        $remainder = substr($remainder, 0, $matches[0][0][1]) . substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0]));
+                        $this->debug('Remainder: ' . $remainder);
+                    }
+
+                    // get volume and number
+                    $this->getVolumeAndNumberForArticle($remainder, $item);
+
+                    if (!$item->pages && isset($item->number) && $item->number) {
+                        $item->pages = $item->number;
+                        unset($item->number);
+                        $this->debug('[p4] no pages found, so assuming string previously assigned to number is a single page: ' . $item->pages);
+                        $warnings[] = "Not sure the pages value is correct.";
+                    }
+
+                    if (!$pagesReported && isset($item->pages)) {
+                        $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
+                    }
+
+                    if (isset($item->volume) && $item->volume) {
+                        $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($item->volume)]);
+                    } else {
+                        $warnings[] = "'Volume' field not found.";
+                    }
+                    if (isset($item->number) && $item->number) {
+                        $this->verbose(['fieldName' => 'Number', 'content' => strip_tags($item->number)]);
+                    }
+
+                    if (isset($item->note)) {
+                        if ($item->note) {
+                            $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
+                        } else {
+                            unset($item->note);
+                        }
                     }
                 }
 
@@ -1866,7 +1872,7 @@ class Converter
      * $labelPattern and $contentPattern are Regex expressions.  Matching is case-insensitive.
      * Example: $doi = $this->extractLabeledContent($entry, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._]+');
      */ 
-    public function extractLabeledContent(string &$entry, string $labelPattern, string $contentPattern): false|string
+    public function extractLabeledContent(string &$entry, string $labelPattern, string $contentPattern, bool $reportLabel = false): false|string|array
     {
         $matched = preg_match(
             '%(' . $labelPattern . ')(' . $contentPattern . ')%i',
@@ -1879,12 +1885,18 @@ class Converter
             return false;
         }
 
-        $info = rtrim($matches[2][0], '.,;');
+        $content = trim($matches[2][0], ' .,;');
         $entry = substr($entry, 0, $matches[1][1]) . 
                     substr($entry, $matches[2][1] + strlen($matches[2][0]), strlen($entry));
         $entry = $this->regularizeSpaces(trim($entry, ' .,'));
 
-        return $info;
+        if ($reportLabel) {
+            $returner = ['label' => trim($matches[1][0]), 'content' => $content];
+        } else {
+            $returner = $content;
+        }
+
+        return $returner;
     }
 
     /**
@@ -3097,44 +3109,19 @@ class Converter
     {
         if ($italicStart) {
             $journal = $this->getQuotedOrItalic($remainder, true, false, $remainder);
-        }
-        // else journal is string up to first period (unless preceding word is one of list of abbreviations),
-        // or number, or string of the type ' vol. #' or ' vol #'
-        elseif ($pubInfoStartsWithForthcoming) {
-            if (preg_match($this->forthcomingRegExp3, $remainder)) {
-                $item->note .= trim(substr($remainder, 0, strlen($this->forthcomingRegExp3) - 6), ',. ');
-                $journal = trim(substr($remainder, strlen($this->forthcomingRegExp3) - 3), ',. ');
-                $this->debug("Journal case 1");
-            } elseif (preg_match($this->forthcomingRegExp1, $remainder)) {
-                $item->note .= trim(substr($remainder, 0, strlen($this->forthcomingRegExp1) - 6), ',. ');
-                $journal = trim(substr($remainder, strlen($this->forthcomingRegExp1) - 3), ',. ');
-                $this->debug("Journal case 2");
-            } elseif (preg_match($this->forthcomingRegExp2, $remainder)) {
-                $item->note .= trim(substr($remainder, 0, strlen($this->forthcomingRegExp2) - 9), ',. ');
-                $journal = trim(substr($remainder, strlen($this->forthcomingRegExp2) - 9), ',. ');
-                $this->debug("Journal case 3");
-            } elseif (preg_match($this->forthcomingRegExp7, $remainder)) {
-                $item->note .= trim(substr($remainder, 0, strlen($this->forthcomingRegExp7) - 9), ',. ');
-                $journal = trim(substr($remainder, strlen($this->forthcomingRegExp7) - 6), ',. ');
-                $this->debug("Journal case 7");
-            }
-            $remainder = '';
+        } elseif ($pubInfoStartsWithForthcoming) {
+            // forthcoming at start
+            $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
+            $journal = $result['content'];
+            $item->note = $result['label'];
         } elseif ($pubInfoEndsWithForthcoming) {
-            if (preg_match($this->forthcomingRegExp6, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                $item->note .= trim(substr($remainder, $matches[0][1]), ',. ');
-                $journal = trim(substr($remainder, 0, $matches[0][1]), ',. ');
-                $this->debug("Journal case 4");
-            } elseif (preg_match($this->forthcomingRegExp4, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                $item->note .= trim(substr($remainder, $matches[0][1]), ',. ');
-                $journal = trim(substr($remainder, 0, $matches[0][1]), ',. ');
-                $this->debug("Journal case 5");
-            } elseif (preg_match($this->forthcomingRegExp5, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                $item->note .= trim(substr($remainder, $matches[0][1]), ',. ');
-                $journal = trim(substr($remainder, 0, $matches[0][1]), ',. ');
-                $this->debug("Journal case 6");
-            }
-            $remainder = '';
+            // forthcoming at end
+            $result = $this->extractLabeledContent($remainder, $this->endForthcomingRegExp, '.*', true);
+            $journal = $result['content'];
+            $item->note = $result['label'];
         } else {
+            // else journal is string up to first period (unless preceding word is one of list of abbreviations),
+            // or number, or string of the type ' vol. #' or ' vol #'
             $lastSpacePos = -1;
             for ($j = 0; $j < strlen($remainder); $j++) {
                 if ($remainder[$j] == ' ') {

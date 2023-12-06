@@ -13,7 +13,7 @@
 
                 <div>
                     <x-input-label for="source" :value="__('Source')" />
-                    <x-textarea-input rows="2" cols="80" id="source" class="block mt-1" name="source" :value="old('source', $example->source)" required autofocus />
+                    <x-textarea-input rows="5" cols="80" id="source" class="block mt-1" name="source" :value="old('source', $example->source)" required autofocus />
                     <x-input-error :messages="$errors->get('source')" class="mt-2" />
                 </div>
 
