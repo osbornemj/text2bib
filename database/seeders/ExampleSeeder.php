@@ -186,7 +186,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'L. R. Chen and S. L. Wu and D. T. Shieh and T. R. Chen',
                     'title' => 'Sinusoidal-Ripple-Current Charging Strategy and Optimal Charging Frequency Study for Li-Ion Batteries',
-                    'journal' => 'IEEE Trans. Ind. Electron',
+                    'journal' => 'IEEE Trans. Ind. Electron.',
                     'year' => '2013',
                     'month' => 'January',
                     'volume' => '60',
@@ -200,7 +200,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'S. Haghbin and S. Lundmark and M. Alakula and O. Carlson',
                     'title' => 'Grid-Connected Integrated Battery Chargers in Vehicle Applications: Review and New Solution',
-                    'journal' => 'IEEE Trans. Ind. Electron',
+                    'journal' => 'IEEE Trans. Ind. Electron.',
                     'year' => '2013',
                     'volume' => '60',
                     'number' => '2',
@@ -241,7 +241,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Itishree Mohanty and Prasun Das and Debashish Bhattacharjee and Shubhabrata Datta',
                     'title' => 'In Search of the Attributes Responsible for Sliver Formation in Cold Rolled Steel Sheets',
-                    'journal' => 'Journal of The Institution of Engineers [India): Series D, Springer India',
+                    'journal' => 'Journal of The Institution of Engineers (India): Series D, Springer India',
                     'year' => '2016',
                     'volume' => '',
                     'number' => '',
@@ -324,10 +324,10 @@ class ExampleSeeder extends Seeder
                 ]
             ],
             [
-                'source' => '\\\"{U}nver, M.U. (2001) "Backward Unraveling over Time: The Evolution of Strategic Behavior in the Entry-Level British Medical Labor Markets." \\emph{Journal of Economic Dynamics and Control} 25: 1039-1080',
+                'source' => '\\"{U}nver, M.U. (2001) "Backward Unraveling over Time: The Evolution of Strategic Behavior in the Entry-Level British Medical Labor Markets." \\emph{Journal of Economic Dynamics and Control} 25: 1039-1080',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => '\\\"{U}nver, M. U.',
+                    'author' => '\\"{U}nver, M. U.',
                     'title' => 'Backward Unraveling over Time: The Evolution of Strategic Behavior in the Entry-Level British Medical Labor Markets',
                     'journal' => 'Journal of Economic Dynamics and Control',
                     'year' => '2001',
@@ -525,7 +525,7 @@ class ExampleSeeder extends Seeder
                 ]
             ],
             [
-                'source' => 'Arrow, K. J., L. Hurwicz, and H. Uzawa [1961, ``Constraint qualifications in maximization problems,\'\' {\\it Naval Research Logistics Quarterly}, 8(2), 175-191.',
+                'source' => 'Arrow, K. J., L. Hurwicz, and H. Uzawa [1961], ``Constraint qualifications in maximization problems,\'\' {\\it Naval Research Logistics Quarterly}, 8(2), 175-191.',
                 'type' => 'article',
                 'bibtex' => [
                     'author' => 'Arrow, K. J. and L. Hurwicz and H. Uzawa',

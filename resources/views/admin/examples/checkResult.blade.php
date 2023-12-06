@@ -16,8 +16,11 @@
                         (but string "{{ $result['unidentified'] }}" not assigned to field)
                     @endisset
                 @else
-                    <span class="bg-red-600">incorrect</span> &nbsp;&bull;&nbsp;
+                    <span class="bg-red-600">incorrect</span> 
+                    &nbsp;&bull;&nbsp;
                     <a href="{{ url('/admin/runExampleCheck/1/' . $id) }}">verbose conversion</a>
+                    &nbsp;&bull;&nbsp;
+                    <a href="{{ url('/admin/runExampleCheck/0/' . $id) }}">brief conversion</a>
                     <br/>
                     Source: {{ $result['source'] }}
                     @foreach ($result['errors'] as $key => $value)

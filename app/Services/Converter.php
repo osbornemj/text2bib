@@ -15,25 +15,18 @@ use App\Models\VonName;
 
 class Converter
 {
+    var $boldCodes;
+    var $bookTitleAbbrevs;
+    var $cities;
     var $displayLines;
-    var $phrases;
-    var $vonNames;
-    var $italicTitle;
-    var $itemType;
-    var $excludedWords;
-    var $ordinals;
+    var $editorStartRegExp;
+    var $editorRegExp;
     var $edsRegExp1;
     var $edsRegExp2;
     var $edsRegExp3;
     var $edsRegExp4;
-    var $editorStartRegExp;
-    var $editorRegExp;
-    var $volRegExp1;
-    var $volRegExp2;
-    var $inRegExp1;
-    var $inRegExp2; 
-    var $startForthcomingRegExp;
     var $endForthcomingRegExp;
+    var $excludedWords;
     var $forthcomingRegExp1;
     var $forthcomingRegExp2;
     var $forthcomingRegExp3;
@@ -41,31 +34,39 @@ class Converter
     var $forthcomingRegExp5;
     var $forthcomingRegExp6;
     var $forthcomingRegExp7;
-    var $proceedingsRegExp;
-    var $proceedingsExceptions;
-    var $thesisRegExp;
     var $fullThesisRegExp;
-    var $masterRegExp;
-    var $phdRegExp;
+    var $inRegExp1;
+    var $inRegExp2; 
     var $inReviewRegExp1;
     var $inReviewRegExp2;
     var $inReviewRegExp3;
+    var $isbnRegExp;
+    var $italicCodes;
+    var $italicTitle;
+    var $itemType;
+    var $journalWord;
+    var $masterRegExp;
+    var $monthsRegExp;
+    var $names;
+    var $numberRegExp1;
+    var $oclcRegExp;
+    var $ordinals;
     var $pagesRegExp1;
     var $pagesRegExp2;
-    var $numberRegExp1;
+    var $pagesRegExp3;
+    var $phdRegExp;
+    var $phrases;
+    var $proceedingsRegExp;
+    var $proceedingsExceptions;
+    var $publishers;
+    var $startForthcomingRegExp;
+    var $thesisRegExp;
+    var $volRegExp1;
+    var $volRegExp2;
     var $volumeRegExp1;
-    var $isbnRegExp;
-    var $oclcRegExp;
-    var $journalWord;
-    var $bookTitleAbbrevs;
+    var $vonNames;
     var $workingPaperRegExp;
     var $workingPaperNumberRegExp;
-    var $monthsRegExp;
-    var $cities;
-    var $publishers;
-    var $names;
-    var $italicCodes;
-    var $boldCodes;
 
     public function __construct()
     {
@@ -126,6 +127,7 @@ class Converter
 
         $this->pagesRegExp1 = 'pp\.?|p\.';
         $this->pagesRegExp2 = 'pp\.?|[pP]ages?';
+        $this->pagesRegExp3 = '/^pages |^pp\.?|^p\.|^p /i';
 
         $this->numberRegExp1 = '[Nn]os?\.?:?|[Nn]umbers?|[Ii]ssues?';
         $this->volumeRegExp1 = '[Vv]ol\.? ?|[Vv]olume ?';
@@ -2731,7 +2733,7 @@ class Converter
                 }
                 if (isset($foundMatch) and $foundMatch[1] >= 0) {
                     $year = $foundMatch[0];
-                    $remains = rtrim(substr($string, 0, $wholeMatch[1]), '.,') . ltrim(substr($string, $wholeMatch[1] + strlen($wholeMatch[0])), '.,');
+                    $remains = rtrim(substr($string, 0, $wholeMatch[1]), '.,') . ' ' . ltrim(substr($string, $wholeMatch[1] + strlen($wholeMatch[0])), '.,');
                     break;
                 }
             }
@@ -2750,7 +2752,7 @@ class Converter
                     }
                     if (isset($foundMatch[1]) and $foundMatch[1] >= 0) {
                         $month = $foundMatch[0];
-                        $remains = rtrim(substr($string, 0, $wholeMatch[1]), '.,') . ltrim(substr($string, $wholeMatch[1] + strlen($wholeMatch[0])), '.,');
+                        $remains = rtrim(substr($string, 0, $wholeMatch[1]), '.,') . ' ' . ltrim(substr($string, $wholeMatch[1] + strlen($wholeMatch[0])), '.,');
                         break;
                     }
                 }
@@ -3105,6 +3107,7 @@ class Converter
         return $fName;
     }
 
+    // Get journal name from $remainder, which includes also publication info
     public function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming): string
     {
         if ($italicStart) {
@@ -3120,58 +3123,28 @@ class Converter
             $journal = $result['content'];
             $item->note = $result['label'];
         } else {
-            // else journal is string up to first period (unless preceding word is one of list of abbreviations),
-            // or number, or string of the type ' vol. #' or ' vol #'
-            $lastSpacePos = -1;
-            for ($j = 0; $j < strlen($remainder); $j++) {
-                if ($remainder[$j] == ' ') {
-                    $lastSpacePos = $j;
-                }
-                // if($remainder[$j] == ',' || $remainder[$j] == '.' || $j == strlen($remainder)-1
-                // Case of comma removed to allow commas in journal titles
-                $lastWord = trim(substr($remainder, $lastSpacePos + 1, $j - $lastSpacePos - 1));
-                //$this->debug('lastWord: ' . $lastWord);
-                // stop after period if preceding word is in dictionary and not a single letter and not an excluded word
-                // Single letter exclusion means periods in 'U.S.A.' don't end journal name
-                if (($remainder[$j] == '.' && $this->inDict($lastWord) && strlen($lastWord) != 1 && !in_array($lastWord, $this->excludedWords))
-                        || $j == strlen($remainder) - 1
-                        || in_array($remainder[$j], range('1', '9'))
-                        || preg_match($this->volRegExp2, substr($remainder, $lastSpacePos + 1))
-                        || $this->containsFontStyle(substr($remainder, $j + 1), true, 'bold', $posBold, $lenBold)
-                        || $this->containsFontStyle(substr($remainder, $j + 1), true, 'italics', $posItalic, $lenItalic)
-                ) {
+            $words = $remainingWords = explode(' ', $remainder);
+            $initialWords = [];
+            foreach ($words as $key => $word) {
+                $initialWords[] = $word;
+                array_shift($remainingWords);
+                $remainder = implode(' ', $remainingWords);
+                if ($key === count($words) - 1 // last word in remainder
+                    || Str::contains($words[$key+1], range('1', '9')) // next word contains a digit
+                    || preg_match($this->volRegExp2, $remainder) // followed by volume info
+                    || preg_match($this->pagesRegExp3, $remainder) // followed by pages info
+                    || $this->containsFontStyle($remainder, true, 'bold', $posBold, $lenBold) // followed by bold
+                    || $this->containsFontStyle($remainder, true, 'italics', $posItalic, $lenItalic) // followed by italics
+                    // (Str::endsWith($word, '.') && strlen($word) > 2 && $this->inDict($word) && !in_array($word, $this->excludedWords))
+                )
+                {
                     $this->debug('Remainder: ' . $remainder);
-                    // if stop character is number, check if preceding string indicates pages, and if so
-                    // remove the page indicator (e.g. 'pages' or 'pp.') from the string
-                    if (in_array($remainder[$j], range('1', '9'))) {
-                        $tempRemainder = substr($remainder, 0, $j);
-                        $trimmedTempRemainder = rtrim($tempRemainder, ' ');
-                        $this->debug("trimmedTempRemainder: " . $trimmedTempRemainder);
-                        $pageStrings = ['pages', 'Pages', 'pp.', 'Pp.', 'p.', 'P.', 'pp', 'Pp'];
-                        foreach ($pageStrings as $pageString) {
-                            if (Str::endsWith($trimmedTempRemainder, $pageString)) {
-                                $j = strlen($trimmedTempRemainder) - strlen($pageString);
-                                break;
-                            }
-                        }
-                        // if (in_array(substr($trimmedTempRemainder, strlen($trimmedTempRemainder) - 5, 5), ['pages', 'Pages'])) {
-                        //     $j = strlen($trimmedTempRemainder) - 5;
-                        // }
-                        // if (in_array(substr($trimmedTempRemainder, strlen($trimmedTempRemainder) - 3, 3), ['pp.', 'Pp.'])) {
-                        //     $j = strlen($trimmedTempRemainder) - 3;
-                        // }
-                        // if (in_array(substr($trimmedTempRemainder, strlen($trimmedTempRemainder) - 2, 2), ['p.', 'P.', 'pp', 'Pp'])) {
-                        //     $j = strlen($trimmedTempRemainder) - 2;
-                        // }
-                    }
-                    $journal = rtrim(substr($remainder, 0, $j), ', ');
-                    $this->debug("Journal case 8");
-                    $remainder = ltrim(substr($remainder, $j), ',.');
+                    $journal = rtrim(implode(' ', $initialWords), ', ');
+                    $remainder = ltrim($remainder, ',.');
                     break;
                 }
             }
         }
-
         return $journal;
     }
 
