@@ -7,8 +7,8 @@
 
     <div class="sm:px-0 lg:px-0 space-y-0">
         <div class="px-4 sm:px-4 sm:rounded-lg">
-            <h3 class="font-semibold text-xl">Attach field to type</h3>
-            <form method="POST" action="{{ route('itemTypeField.attach') }}">
+            <h3 class="font-semibold text-xl">Add field to type</h3>
+            <form method="POST" action="{{ route('itemTypeField.add') }}">
                 @csrf
 
                 <div>
@@ -25,7 +25,7 @@
 
                 <div class="flex items-center mt-4">
                     <x-primary-button class="ml-0">
-                        {{ __('Attach') }}
+                        {{ __('Add') }}
                     </x-primary-button>
                 </div>
             </form>
@@ -35,15 +35,15 @@
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="p-4 sm:p-4 sm:rounded-lg">
             <h3 class="font-semibold text-xl">Item types</h3>
-            <a href="/admin/itemTypes/create">Add item type</a>
+            <x-link href="/admin/itemTypes/create">Add item type</x-link>
             <ul>
                 @foreach ($itemTypes as $itemType)
                     <li>
                         {{ $itemType->name }}
                         <ul class="ml-4">
-                            @foreach ($itemType->itemFields as $itemField)
+                            @foreach ($itemType->fields as $itemField)
                                 <li>
-                                    {{ $itemField->name }} [<a href="{{ url('/admin/itemTypeField/detach/' . $itemField->id . '/' . $itemType->id) }}">detach</a>]
+                                    {{ $itemField }} [<x-link href="{{ url('/admin/itemTypeField/remove/' . $itemField . '/' . $itemType->id) }}">remove</x-link>]
                                 </li>
                             @endforeach
                         </ul>
@@ -56,7 +56,7 @@
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="p-4 sm:p-4 sm:rounded-lg">
             <h3 class="font-semibold text-xl">Item fields</h3>
-            <a href="/admin/itemFields/create">Add item field</a>
+            <x-link href="/admin/itemFields/create">Add item field</x-link>
             <ul>
                 @foreach ($itemFields as $itemField)
                     <li>

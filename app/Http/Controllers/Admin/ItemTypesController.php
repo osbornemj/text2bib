@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 use App\Models\ItemField;
+use App\Models\ItemFieldItemType;
 use App\Models\ItemType;
 
 class ItemTypesController extends Controller
@@ -18,7 +19,6 @@ class ItemTypesController extends Controller
     public function index(): View
     {
         $itemTypes = ItemType::orderBy('name')
-            ->with('itemFields')
             ->get();
 
         $itemFields = ItemField::orderBy('name')
@@ -112,23 +112,39 @@ class ItemTypesController extends Controller
     }
 
     /**
-     * Attach the specified field to the specified type.
+     * Add the specified field to the specified type.
      */
-    public function attach(Request $request): RedirectResponse
+    public function add(Request $request): RedirectResponse
     {
         $itemType = ItemType::find($request->itemType_id);
-        $itemType->itemFields()->attach($request->itemField_id);
+        $itemField = ItemField::find($request->itemField_id);
+
+        if (!in_array($itemField->name, $itemType->fields)) {
+            $fields = $itemType->fields;
+            array_push($fields, $itemField->name);
+            $itemType->fields = $fields;
+            $itemType->save();
+
+            ItemFieldItemType::create([
+                'item_field_id' => $itemField->id,
+                'item_type_id' => $itemType->id
+            ]);
+        }
 
         return redirect()->route('itemTypes.index');
     }
 
     /**
-     * Detach the specified field from the specified type.
+     * Remove the specified field from the specified type.
      */
-    public function detach(int $itemFieldId, int $itemTypeId): RedirectResponse
+    public function remove(string $itemField, int $itemTypeId): RedirectResponse
     {
         $itemType = ItemType::find($itemTypeId);
-        $itemType->itemFields()->detach($itemFieldId);
+        $itemType->fields = array_diff($itemType->fields, [$itemField]);
+        $itemType->save();        
+
+        $itemField = ItemField::where('name', $itemField)->first();
+        ItemFieldItemType::where('item_field_id', $itemField->id)->where('item_type_id', $itemTypeId)->delete();
 
         return redirect()->route('itemTypes.index');
     }

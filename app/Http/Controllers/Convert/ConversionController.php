@@ -240,6 +240,7 @@ class ConversionController extends Controller
     }
 
     ///////////////// REMAINING METHODS PROBABLY NOT USED ///////////////////////
+    /*
     public function convertIncremental(Request $request, int $conversionId, int $index = 0): View
     {
         $user = Auth::user();
@@ -344,7 +345,7 @@ class ConversionController extends Controller
             return redirect()->route('conversion.showBibtex', ['fileId' => $conversion->bib_file_id]);
         }
     }
-
+    */
     /*
     public function addToBibtex(Request $request, int $conversionId)
     {

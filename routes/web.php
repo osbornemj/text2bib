@@ -82,8 +82,8 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     });
     
     Route::controller(ItemTypesController::class)->group(function () {
-        Route::post('/admin/itemTypeField/attach', 'attach')->name('itemTypeField.attach');
-        Route::get('/admin/itemTypeField/detach/{itemFieldId}/{itemTypeId}', 'detach')->name('itemTypeField.detach');
+        Route::post('/admin/itemTypeField/add', 'add')->name('itemTypeField.add');
+        Route::get('/admin/itemTypeField/remove/{itemField}/{itemTypeId}', 'remove')->name('itemTypeField.remove');
     });
 
     Route::get('/admin/runExampleCheck/{verbose?}/{id?}', [ExampleCheckController::class, 'runExampleCheck'])->name('admin.examples.runCheck');

@@ -1548,7 +1548,7 @@ class Converter
             $numberOfCommas = 0;
             for ($j = 0; $j < strlen($remainder) - 1 && !$title; $j++) {
                 // find index, $k, of first nonspace after $remainder[$j]
-                for ($k = $j + 1; $remainder[$k] == ' '; $k++) {
+                for ($k = $j; isset($remainder[$k]) && $remainder[$k] == ' '; $k++) {
                 }
 
                 switch ($remainder[$j]) {
@@ -2389,7 +2389,7 @@ class Converter
                     $done = 1;
                     $authorstring .= $this->formatAuthor($fullName);
                     $case = 9;
-                } elseif (in_array(substr($word, -1), [',', ';']) && ! $this->isEd($words[$i + 1], $hasAnd)) {
+                } elseif (in_array(substr($word, -1), [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $hasAnd)) {
                     // $word ends in comma or semicolon and next word is not string for editors
                     if ($hasAnd) {
                         // $word ends in comma or semicolon and 'and' has already occurred
