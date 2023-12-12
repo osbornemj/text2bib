@@ -42,10 +42,11 @@ class ExampleCheckController extends Controller
                 unset($output['item']->unidentified);
             }
 
-            $diff = array_diff((array) $output['item'], (array) $example->bibtexFields());
+            $diff1 = array_diff((array) $output['item'], (array) $example->bibtexFields());
+            $diff2 = array_diff((array) $example->bibtexFields(), (array) $output['item']);
 
             $result = [];
-            if (empty($diff)) {
+            if (empty($diff1) && empty($diff2)) {
                 $result['result'] = 'correct';
                 if ($unidentified) {
                     $result['unidentified'] = $unidentified;
@@ -54,12 +55,20 @@ class ExampleCheckController extends Controller
                 $result['result'] = 'incorrect';
                 $result['source'] = $source;
                 $result['errors'] = [];
-                foreach ($diff as $key => $content) {
+                foreach ($diff1 as $key => $content) {
                     $bibtexFields = $example->bibtexFields();
                     $result['errors'][$key] = 
                         [
                             'content' => $content,
                             'correct' => isset($bibtexFields->{$key}) ? $bibtexFields->{$key} : ''
+                        ];
+                }
+                foreach ($diff2 as $key => $content) {
+                    $outputFields = $output['item'];
+                    $result['errors'][$key] = 
+                        [
+                            'content' => $content,
+                            'correct' => isset($outputFields->{$key}) ? $outputFields->{$key} : ''
                         ];
                 }
             }

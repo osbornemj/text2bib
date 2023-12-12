@@ -54,7 +54,10 @@ class ConversionController extends Controller
             // $convItems is array with components 'source', 'item', 'itemType', 'label', 'warnings',
             // 'notices', 'details'.
             // 'label' (which depends on whole set of converted items) is updated later
-            $convItems[] = $this->converter->convertEntry($entry, $conversion);
+            $convertedEntry = $this->converter->convertEntry($entry, $conversion);
+            if ($convertedEntry) {
+                $convItems[] = $convertedEntry;
+            }
         }
 
         $convItems = $this->addLabels($convItems, $conversion);

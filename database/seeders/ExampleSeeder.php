@@ -872,7 +872,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'year' => '2001',
                     'pages' => '109-129',
-                    'title' => 'Efficiency and inefficiency in the ranking in competitions: The case of the Queen Elisabeth Music Contest',
+                    'title' => 'Efficiency and inefficiency in the ranking in competitions: The case of the Queen {E}lisabeth Music Contest',
                     'author' => 'Glejser, H. and Heyndels, B.',
                     'volume' => '25',
                     'journal' => 'Journal of Cultural Economics',
@@ -916,7 +916,68 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Understanding Strategic Interaction -- Essays in Honor of Reinhard Selten',
                     'publisher' => 'Springer-Verlag',
                     ]
-            ],                            
+            ],
+            [
+                'source' => '[13] Laffont, Jean-Jacques, Eric Maskin, and Jean-Charles Rochet, ``Optimal Nonlinear Pricing with Two-Dimensional Characteristics,\'\' in T. Groves, R. Radner and S. Reiter, (eds.), Information, Incentives and Economic Mechanism (Minneapolis: University of Minnesota Press, 1987). ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'year' => '1987',
+                    'pages' => '',
+                    'title' => 'Optimal Nonlinear Pricing with Two-Dimensional Characteristics',
+                    'author' => 'Laffont, Jean-Jacques and Eric Maskin and Jean-Charles Rochet',
+                    'editor' => 'T. Groves and R. Radner and S. Reiter',
+                    'address' => 'Minneapolis',
+                    'booktitle' => 'Information, Incentives and Economic Mechanism',
+                    'publisher' => 'University of Minnesota Press',
+                    ]
+            ],
+            [
+                'source' => '\bibitem{} Dekel, E., D. Fudenberg, and D. K. Levine (2004) . "Learning to Play Bayesian Games," \textit{Games and Economic Behavior}, \textbf{46}, 282-303. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Dekel, E. and D. Fudenberg and D. K. Levine',
+                    'year' => '2004',
+                    'title' => 'Learning to Play {B}ayesian Games',
+                    'journal' => 'Games and Economic Behavior',
+                    'volume' => '46',
+                    'pages' => '282-303',
+                    ]
+            ],
+            [
+                'source' => 'Bruine de Bruin, W., \& Keren, G. (2003). ``Save the last dance for me: Unwanted order effects in jury evaluations.\'\' \textit{Manuscript under review}. ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'year' => '2003',
+                    'title' => 'Save the last dance for me: Unwanted order effects in jury evaluations',
+                    'author' => 'Bruine de Bruin, W. and Keren, G.',
+                    'note' => 'Manuscript under review',
+                    ]
+            ],
+            [
+                'source' => '\bibitem{dennis-strickland} Patrick Dennis and Deon Strickland. Who Blinks in Volatile Markets, Individuals or Institutions? \ \emph{Journal of Finance} 57(5): 1923-1950. 2002. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'year' => '2002',
+                    'pages' => '1923-1950',
+                    'title' => 'Who Blinks in Volatile Markets, Individuals or Institutions?',
+                    'author' => 'Patrick Dennis and Deon Strickland',
+                    'number' => '5',
+                    'volume' => '57',
+                    'journal' => 'Journal of Finance',
+                    ]
+            ], 
+            [
+                'source' => '\bibitem{glaser-weber} Markus Glaser and Martin Weber. Overconfindence and trading volume. CEPR Discussion Paper No. 3941, 2003.',
+                'type' => 'techreport',
+                'bibtex' => [
+                    'type' => 'Discussion Paper',
+                    'year' => '2003',
+                    'title' => 'Overconfindence and trading volume',
+                    'author' => 'Markus Glaser and Martin Weber',
+                    'institution' => 'CEPR',
+                    'number' => '3941',
+                    ]
+            ],                                                                           
         ];
 
         DB::statement('DELETE FROM examples');
