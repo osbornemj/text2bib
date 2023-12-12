@@ -896,8 +896,7 @@ class Converter
                 // Get pages and remove them from $remainder
                 preg_match('/(\()?(' . $this->pagesRegExp2 . ')?( )?([1-9][0-9]{0,4} ?-{1,2} ?[0-9]{1,5})(\))?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
                 if (isset($matches[4][0])) {
-                    $item->pages = str_replace('--', '-', $matches[4][0]);
-                    $item->pages = str_replace(' ', '', $item->pages);
+                    $item->pages = str_replace(['--', ' '], ['-', ''], $matches[4][0]);
                 } else {
                     $item->pages = '';
                 }
@@ -2093,6 +2092,9 @@ class Converter
             $this->debug($debugString1);
             if (isset($reason)) {
                 $this->debug('Reason: ' . $reason);
+            }
+            if ($case == 14 && $done) {  // et al.
+                break;
             }
             $this->debug(['text' => 'Word ' . $i . ": ", 'words' => [$word], 'content' => " - authorIndex: " . $authorIndex . ", namePart: " . $namePart]);
             $debugString2 = "fullName: " . $fullName;

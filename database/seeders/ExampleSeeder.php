@@ -877,7 +877,46 @@ class ExampleSeeder extends Seeder
                     'volume' => '25',
                     'journal' => 'Journal of Cultural Economics',
                     ]
-            ],            
+            ],    
+            [
+                'source' => 'Mertens, J.-F., S. Sorin and S. Zamir (1994). Repeated Games: Part A Background Material, CORE Discussion Paper \#9420. ',
+                'type' => 'techreport',
+                'bibtex' => [
+                    'type' => 'Discussion Paper',
+                    'year' => '1994',
+                    'title' => 'Repeated Games: Part A Background Material',
+                    'author' => 'Mertens, J.-F. and S. Sorin and S. Zamir',
+                    'number' => '9420',
+                    'institution' => 'CORE',
+                    ]
+            ],
+            [
+                'source' => 'Kasper Nielsen. Institutional Investors and the Market for Corporate Equity. Working paper 33, University of Copenhagen, September 2003. ',
+                'type' => 'techreport',
+                'bibtex' => [
+                    'type' => 'Working paper',
+                    'year' => '2003',
+                    'month' => 'September',
+                    'title' => 'Institutional Investors and the Market for Corporate Equity',
+                    'author' => 'Kasper Nielsen',
+                    'number' => '33',
+                    'institution' => 'University of Copenhagen',
+                    ]
+            ],  
+            [
+                'source' => 'Rubinstein, A., Tversky, A., \& Heller, D. (1996). Naive Strategies in Zero-sum Games. \textit{Understanding Strategic Interaction -- Essays in Honor of Reinhard Selten}, W.Guth et al. (editors), Springer-Verlag, 394-402.',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'year' => '1996',
+                    'pages' => '394-402',
+                    'title' => 'Naive Strategies in Zero-sum Games',
+                    'author' => 'Rubinstein, A. and Tversky, A. and Heller, D.',
+                    'editor' => 'W. Guth and others',
+                    'address' => '',
+                    'booktitle' => 'Understanding Strategic Interaction -- Essays in Honor of Reinhard Selten',
+                    'publisher' => 'Springer-Verlag',
+                    ]
+            ],                            
         ];
 
         DB::statement('DELETE FROM examples');
