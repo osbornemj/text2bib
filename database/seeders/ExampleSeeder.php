@@ -178,7 +178,6 @@ class ExampleSeeder extends Seeder
                     'year' => '2013',
                     'month' => 'May',
                     'volume' => '230',
-                    'number' => '',
                     'pages' => '244-250',
                 ]
             ],
@@ -245,8 +244,6 @@ class ExampleSeeder extends Seeder
                     'title' => 'In Search of the Attributes Responsible for Sliver Formation in Cold Rolled Steel Sheets',
                     'journal' => 'Journal of The Institution of Engineers (India): Series D, Springer India',
                     'year' => '2016',
-                    'volume' => '',
-                    'number' => '',
                     'pages' => '1-12',
                 ]
             ],
@@ -458,7 +455,6 @@ class ExampleSeeder extends Seeder
                     'journal' => 'Science',
                     'year' => '2003',
                     'volume' => '300',
-                    'number' => '',
                     'pages' => '1920',
                 ]
             ],
@@ -510,7 +506,6 @@ class ExampleSeeder extends Seeder
                     'year' => '1997',
                     'month' => 'August',
                     'volume' => '34',
-                    'number' => '',
                     'pages' => '406',
                 ]
             ],
@@ -660,7 +655,6 @@ class ExampleSeeder extends Seeder
                     'journal' => 'Naval Research Logistics Quarterly',
                     'year' => '1961',
                     'volume' => '8',
-                    'number' => '',
                     'pages' => '175',
                 ]
             ],
@@ -977,7 +971,18 @@ class ExampleSeeder extends Seeder
                     'institution' => 'CEPR',
                     'number' => '3941',
                     ]
-            ],                                                                           
+            ],
+            [
+                'source' => '\bibitem{gumbel} Alexander G\"{u}mbel. Trading on short-term information. Forthcoming, \emph{Journal of Institutional and Theoretical Economics}. 2004.',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'Forthcoming',
+                    'year' => '2004',
+                    'title' => 'Trading on short-term information',
+                    'author' => 'Alexander G\"{u}mbel',
+                    'journal' => 'Journal of Institutional and Theoretical Economics',
+                    ]
+            ],                                                                                       
         ];
 
         DB::statement('DELETE FROM examples');

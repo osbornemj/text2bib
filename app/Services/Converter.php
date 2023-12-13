@@ -144,7 +144,7 @@ class Converter
         $this->workingPaperRegExp = '([Pp]reprint|[Ww]orking [Pp]aper|[Dd]iscussion [Pp]aper|[Tt]echnical [Rr]eport|'
                 . '[Rr]esearch [Pp]aper|[Mi]meo|[Uu]npublished [Pp]aper|[Uu]npublished [Mm]anuscript|'
                 . '[Uu]nder [Rr]eview)';
-        $this->workingPaperNumberRegExp = ' (\\\\#|[Nn]umber)? ?(\d{0,5})/';
+        $this->workingPaperNumberRegExp = ' (\\\\#|[Nn]umber|[Nn]o\.?)? ?(\d{0,5})/';
 
         $this->monthsRegExp = 'January|Jan\.?|February|Feb\.?|March|Mar\.?|April|Apr\.?|May|June|Jun\.?|July|Jul\.?|'
                 . 'August|Aug\.?|September|Sept\.?|Sep\.?|October|Oct\.?|November|Nov\.?|December|Dec\.?';
@@ -298,6 +298,7 @@ class Converter
         // Assumes URL is at the end of entry.
         $urlAndAccessDate = $this->extractLabeledContent($entry, ' [Rr]etrieved from ', 'http\S+ .*$');
 
+        $accessDate = '';
         if ($urlAndAccessDate) {
             $url = trim(Str::before($urlAndAccessDate, ' '), ',.;');
             $accessDate = trim(Str::after($urlAndAccessDate, ' '), '.');
@@ -310,15 +311,19 @@ class Converter
                 $accessWordsAndDate = Str::after($urlAndAccessDate, ' ');
                 $accessDate = trim(Str::after($accessWordsAndDate, ' '), ' ).');
             } else {
-                $url = $this->extractLabeledContent($entry, '', 'https?://\S+');
-                $url = trim($url, ',.;');
+                $urlPlus = $this->extractLabeledContent($entry, '', 'https?://\S+ .*$');
+                $url = trim(Str::before($urlPlus, ' '), ',.;');
+                $afterUrl = Str::after($urlPlus, ' ');
+                if ($afterUrl) {
+                    $warnings[] = "The string \"" . $afterUrl . "\" remains unidentified.";
+                }
             }
         }
 
         if (isset($url) && $url) {
             $item->url = $url;
             $this->verbose(['fieldName' => 'URL', 'content' => $item->url]);
-            if (isset($item->urldate) && $item->urldate) {
+            if ($accessDate) {
                 $item->urldate = $accessDate;
                 $this->verbose(['fieldName' => 'URL access date', 'content' => $item->urldate]);
             }
@@ -352,10 +357,12 @@ class Converter
         //////////////////////
 
         $words = explode(" ", $entry);
+        /*
         $this->verbose("Words in entry are");
         foreach ($words as $word) {
             $this->verbose(['words' => [$word]]);
         }
+        */
 
         $this->verbose("Looking for authors ...");
 
@@ -474,7 +481,7 @@ class Converter
         
         $inStart = $containsIn = $italicStart = $containsBoldface = $containsEditors = $containsThesis = false;
         $containsWorkingPaper = $containsNumber = $containsInteriorVolume = $containsCity = $containsPublisher = false;
-        $containsIsbn = false;
+        $containsIsbn = $containsEdition = false;
         $containsNumberedWorkingPaper = $containsNumber = $pubInfoStartsWithForthcoming = $pubInfoEndsWithForthcoming = false;
         $containsVolume = $endsWithInReview = false;
         $cityLength = $publisherLength = 0;
@@ -553,6 +560,11 @@ class Converter
         if (substr_count($remainder, '\\#')) {
             $containsNumber = true;
             $this->verbose("Contains number sign (\\#).");
+        }
+
+        if (preg_match('/ edition(,|.|:|;| )/i', $remainder)) {
+            $containsEdition = true;
+            $this->verbose("Contains word \"edition\".");
         }
 
         if (preg_match('/' . $this->thesisRegExp . '/', $remainder)) {
@@ -709,8 +721,13 @@ class Converter
                 $this->verbose("Item type case 13");
                 $itemKind = 'book';
             }
-        } else {
+        } elseif ($containsEdition) {
             $this->verbose("Item type case 14");
+            $itemKind = 'book';
+            if (!$this->itemType) {
+                $warnings[] = "Not sure of type; contains \"edition\", so set to " . $itemKind . ".";
+            }
+        } else {
             $itemKind = 'article';
             if (!$this->itemType) {
                 $warnings[] = "Really not sure of type; has to be something, so set to " . $itemKind . ".";
@@ -769,7 +786,7 @@ class Converter
 
                 $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming);
 
-                $this->verbose("Journal: " . isset($journal) ? $journal : '');
+                $this->verbose('Journal: ' . isset($journal) ? $journal : '');
                 $item->journal = isset($journal) ? $journal : '';
                 if ($item->journal) {
                     $this->verbose(['fieldName' => 'Journal', 'content' => strip_tags($item->journal)]);
@@ -886,17 +903,20 @@ class Converter
                 if ($item->type) {
                     $this->verbose(['fieldName' => 'Type', 'content' => strip_tags($item->type)]);
                 }
+                
                 if ($item->number) {
                     $this->verbose(['fieldName' => 'Number', 'content' => strip_tags($item->number)]);
                 } else {
                     unset($item->number);
                 }
+                
                 if ($item->institution) {
                     $this->verbose(['fieldName' => 'Institution', 'content' => strip_tags($item->institution)]);
                 } else {
                     $warnings[] = "Mandatory 'institition' field missing";
                 }
-                $warnings[] = "Check institution.";
+
+                $notices[] = "Check institution.";
                 break;
 
             //---------------------------------------------//
@@ -2093,7 +2113,7 @@ class Converter
         $maxAuthors = 100;
         $wordHasComma = $prevWordHasComma = $oneWordAuthor = false;
 
-        $this->verbose('Looking at each word in turn');
+        $this->verbose('convertToAuthors: Looking at each word in turn');
         foreach ($words as $i => $word) {
             $prevWordHasComma = $wordHasComma;
             $wordHasComma = (substr($word,-1) == ',');

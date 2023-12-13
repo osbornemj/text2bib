@@ -67,8 +67,8 @@ class ExampleCheckController extends Controller
                     $outputFields = $output['item'];
                     $result['errors'][$key] = 
                         [
-                            'content' => $content,
-                            'correct' => isset($outputFields->{$key}) ? $outputFields->{$key} : ''
+                            'content' => isset($outputFields->{$key}) ? $outputFields->{$key} : '',
+                            'correct' => $content
                         ];
                 }
             }
