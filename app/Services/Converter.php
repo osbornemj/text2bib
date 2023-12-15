@@ -1521,7 +1521,9 @@ class Converter
             $this->verbose(['notice' => strip_tags($notice)]);
         }
 
-        $item->author = trim($item->author);
+        if (isset($item->author)) {
+            $item->author = trim($item->author);
+        }
         $item->title = $this->requireUc($item->title);
 
         $returner = [
@@ -2988,12 +2990,12 @@ class Converter
         $this->verbose(['text' => 'Arguments of isNotName: ', 'words' => [$words[0], $words[1]]]);
         $result = false;
         for ($i = 0; $i < 2; $i++) {
-            if (preg_match('/^(\\\"|\\\'|\\`)\{?[A-Z]\}?/', $words[$i])) {
+            if (preg_match('/^(\\\"|\\\\\'|\\`)\{?[A-Z]\}?/', $words[$i])) {
                 $this->verbose(['text' => 'Name component ', 'words' => [$words[$i]], 'content' => ' starts with accented uppercase character']);
             }
             // not a name if is starts with l.c. and is not a von name and doesn't start with accented uppercase char
             if (isset($words[$i][0]) and strtolower($words[$i][0]) == $words[$i][0]
-                    and ! preg_match('/^(\\\"|\\\'|\\`)\{?[A-Z]\}?/', $words[$i])
+                    and ! preg_match('/^(\\\"|\\\\\'|\\`)\{?[A-Z]\}?/', $words[$i])
                     and substr($words[$i], 0, 2) != "d'" and ! in_array($words[$i], $this->vonNames)) {
                 $this->verbose(['text' => 'isNotName: ', 'words' => [$words[$i]], 'content' => ' appears not to be a name']);
                 return true;
@@ -3025,7 +3027,11 @@ class Converter
         $initialsStart = count($names);
         $allUppercase = true;
         foreach ($names as $k => $name) {
-            $initialsStart = (strtoupper($name) == $name and strlen($name) < 3) ? min(array($k, $initialsStart)) : count($names);
+            $deaccentedName = $name;
+            if (Str::startsWith($name, '\\\'{')) {
+                $deaccentedName = Str::after($name, '\\\'{');
+            }
+            $initialsStart = (strtoupper($deaccentedName) == $deaccentedName && strlen($deaccentedName) < 3) ? min([$k, $initialsStart]) : count($names);
             if (strtoupper($name) != $name) {
                 $allUppercase = false;
             }
@@ -3052,11 +3058,11 @@ class Converter
                 $commaPassed = true;
             }
             // if name is not ALL uppercase, assume that an uppercase component is initials
-            if (!$allUppercase and ! $initialPassed and ( strlen($name) < 3 or $commaPassed) and strtoupper($name) == $name) {
+            if (! $allUppercase && ! $initialPassed && ( strlen($name) < 3 || $commaPassed) && strtoupper($name) == $name) {
                 $chars = str_split($name);
                 foreach ($chars as $j => $char) {
                     if (ctype_alpha($char)) {
-                        if ($j >= count($chars) - 1 or $chars[$j + 1] != '.') {
+                        if ($j >= count($chars) - 1 || $chars[$j + 1] != '.') {
                             $fName .= $char . '.';
                             if (count($chars) > $j + 1) {
                                 $fName .= ' ';

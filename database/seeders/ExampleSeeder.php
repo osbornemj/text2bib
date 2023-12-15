@@ -1026,7 +1026,17 @@ class ExampleSeeder extends Seeder
                     'title' => 'Efficient Auctions',
                     'author' => 'Dasgupta, P. and E. Maskin',
                     ]
-            ],                                    
+            ],
+            [
+                'source' => '\bibitem{} \\\'{A}brah\\\'{a}m \\\'{A}. and E. Carceles-Poveda (2006), \textquotedblleft Risk Sharing under Limited Commitment\textquotedblright , mimeo., University of Rochester and SUNY, Stony Brook. ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'year' => '2006',
+                    'title' => 'Risk Sharing under Limited Commitment',
+                    'author' => '\\\'{A}brah\\\'{a}m \\\'{A}. and E. Carceles-Poveda',
+                    'note' => 'mimeo., University of Rochester and SUNY',
+                    ]
+            ],                                                
         ];
 
         DB::statement('DELETE FROM examples');
