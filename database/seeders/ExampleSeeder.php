@@ -256,7 +256,6 @@ class ExampleSeeder extends Seeder
                     'journal' => 'Frontiers in Microbiology',
                     'year' => '2016',
                     'volume' => '7',
-                    'pages' => '',
                 ]
             ],
             [
@@ -916,7 +915,6 @@ class ExampleSeeder extends Seeder
                 'type' => 'incollection',
                 'bibtex' => [
                     'year' => '1987',
-                    'pages' => '',
                     'title' => 'Optimal Nonlinear Pricing with Two-Dimensional Characteristics',
                     'author' => 'Laffont, Jean-Jacques and Eric Maskin and Jean-Charles Rochet',
                     'editor' => 'T. Groves and R. Radner and S. Reiter',
@@ -982,7 +980,53 @@ class ExampleSeeder extends Seeder
                     'author' => 'Alexander G\"{u}mbel',
                     'journal' => 'Journal of Institutional and Theoretical Economics',
                     ]
-            ],                                                                                       
+            ],
+            [
+                'source' => '\bibitem{vayanos} Dimitri Vayanos. Flight to Quality, Flight to Liquidity, and the Pricing of Risk. Working paper, MIT, 2003.',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'note' => 'Working paper, MIT',
+                    'year' => '2003',
+                    'title' => 'Flight to Quality, Flight to Liquidity, and the Pricing of Risk',
+                    'author' => 'Dimitri Vayanos',
+                    ]
+            ],
+            [
+                // Note: no space at end of authors
+                'source' => '\noindent {\sc Joseph Greenberg, Benyamin Shitovitz \& A. Wieczorek},``Existence of Equilibria in Atomless Production Economies with Price Dependent Preferences,\'\' {\em Journal of Mathematical Economics} {\bf 6} (1979), 31-41 . ',
+                'type' => 'article',
+                'bibtex' => [
+                    'volume' => '6',
+                    'pages' => '31-41',
+                    'year' => '1979',
+                    'journal' => 'Journal of Mathematical Economics',
+                    'title' => 'Existence of Equilibria in Atomless Production Economies with Price Dependent Preferences',
+                    'author' => 'Joseph Greenberg and Benyamin Shitovitz and A. Wieczorek',
+                    ]
+            ],
+            [
+                'source' => '{\sc Bikhchandani, S., S. Chatterji, R. Lavi, A. Mu\'alem,  N. Nisan, and A. Sen}~(2006), ``Weak Monotonicity Characterizes Dominant Strategy Implementation,\'\' forthcoming {\it Econometrica}. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'forthcoming',
+                    'year' => '2006',
+                    'title' => 'Weak Monotonicity Characterizes Dominant Strategy Implementation',
+                    'author' => 'Bikhchandani, S. and S. Chatterji and R. Lavi and A. Mu\'alem and N. Nisan and A. Sen',
+                    'journal' => 'Econometrica',
+                    ]
+            ],
+            [
+                'source' => '{\sc Dasgupta, P. and E. Maskin~(2000)}, ``Efficient Auctions,\'\' {\it Quarterly Journal of Economics}, 115, 341-388. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'journal' => 'Quarterly Journal of Economics',
+                    'year' => '2000',
+                    'volume' => '115',
+                    'pages' => '341-388',
+                    'title' => 'Efficient Auctions',
+                    'author' => 'Dasgupta, P. and E. Maskin',
+                    ]
+            ],                                    
         ];
 
         DB::statement('DELETE FROM examples');

@@ -144,7 +144,7 @@ class Converter
         $this->workingPaperRegExp = '([Pp]reprint|[Ww]orking [Pp]aper|[Dd]iscussion [Pp]aper|[Tt]echnical [Rr]eport|'
                 . '[Rr]esearch [Pp]aper|[Mi]meo|[Uu]npublished [Pp]aper|[Uu]npublished [Mm]anuscript|'
                 . '[Uu]nder [Rr]eview)';
-        $this->workingPaperNumberRegExp = ' (\\\\#|[Nn]umber|[Nn]o\.?)? ?(\d{0,5})/';
+        $this->workingPaperNumberRegExp = ' (\\\\#|[Nn]umber|[Nn]o\.?)? ?(\d{1,5}),?/';
 
         $this->monthsRegExp = 'January|Jan\.?|February|Feb\.?|March|Mar\.?|April|Apr\.?|May|June|Jun\.?|July|Jul\.?|'
                 . 'August|Aug\.?|September|Sept\.?|Sep\.?|October|Oct\.?|November|Nov\.?|December|Dec\.?';
@@ -304,12 +304,16 @@ class Converter
             $accessDate = trim(Str::after($urlAndAccessDate, ' '), '.');
         } else {
             // Entry ends 'http ... " followed by a string including 'retrieve' or 'access' or 'view'
-            // (?: is a non-capturing grouping symbol in the regular expression
-            $urlAndAccessDate = $this->extractLabeledContent($entry, '', 'http\S+ .*(?:retrieve|access|view).*$');
-            if ($urlAndAccessDate) {
-                $url = trim(Str::before($urlAndAccessDate, ' '), ',.;');
-                $accessWordsAndDate = Str::after($urlAndAccessDate, ' ');
-                $accessDate = trim(Str::after($accessWordsAndDate, ' '), ' ).');
+            if (preg_match('/(http\S+ ).*((retrieve|access|view).*)$/', $entry, $matches)) {
+                $url = trim($matches[1], ' ,.;()');
+                $possibleDate = $matches[3] ? Str::after($matches[2], ' ') : $matches[2];
+                $possibleDate = trim($possibleDate, ' ,.)');
+                if ($this->isDate($possibleDate)) {
+                    $accessDate = $possibleDate;
+                } else {
+                    $warnings[] = "The string \"" . $possibleDate . "\" remains unidentified.";
+                }
+                $entry = Str::before($entry, $matches[0]);
             } else {
                 $urlPlus = $this->extractLabeledContent($entry, '', 'https?://\S+ .*$');
                 $url = trim(Str::before($urlPlus, ' '), ',.;');
@@ -411,7 +415,7 @@ class Converter
             $item->year = $year;
         }
 
-        $remainder = trim($remainder, '. ');
+        $remainder = trim($remainder, '.}, ');
         $this->verbose("[1] Remainder: " . strip_tags($remainder));
 
         ////////////////////
@@ -480,8 +484,8 @@ class Converter
         //unset($city, $publisher, $type, $number, $institution, $booktitle, $workingPaperMatches);
         
         $inStart = $containsIn = $italicStart = $containsBoldface = $containsEditors = $containsThesis = false;
-        $containsWorkingPaper = $containsNumber = $containsInteriorVolume = $containsCity = $containsPublisher = false;
-        $containsIsbn = $containsEdition = false;
+        $containsNumber = $containsInteriorVolume = $containsCity = $containsPublisher = false;
+        $containsIsbn = $containsEdition = $containsWorkingPaper = false;
         $containsNumberedWorkingPaper = $containsNumber = $pubInfoStartsWithForthcoming = $pubInfoEndsWithForthcoming = false;
         $containsVolume = $endsWithInReview = false;
         $cityLength = $publisherLength = 0;
@@ -551,10 +555,8 @@ class Converter
             $this->verbose("Contains string for numbered working paper.");
         }
 
-        $regExp = '/' . $this->workingPaperRegExp . '/';
-        if (preg_match($regExp, $remainder)) {
+        if (preg_match('/' . $this->workingPaperRegExp . '/', $remainder)) {
             $containsWorkingPaper = true;
-            $this->verbose("Contains string for working paper.");
         }
 
         if (substr_count($remainder, '\\#')) {
@@ -1503,8 +1505,12 @@ class Converter
         }
 
         $remainder = trim($remainder, '.,:;}{ ');
+
         if ($remainder && !in_array($remainder, array('pages', 'Pages', 'pp', 'pp.'))) {
             $warnings[] = "The string \"" . $remainder . "\" remains unidentified.";
+        }
+        if (isset($item->pages) && !$item->pages) {
+            unset($item->pages);
         }
 
         foreach ($warnings as $warning) {
@@ -1515,6 +1521,7 @@ class Converter
             $this->verbose(['notice' => strip_tags($notice)]);
         }
 
+        $item->author = trim($item->author);
         $item->title = $this->requireUc($item->title);
 
         $returner = [
@@ -1577,7 +1584,7 @@ class Converter
                     }
                 }
                 
-                // If title was not detected in previous step and word ends in period-equivalent or comma,
+                // If end of title has not been detected and word ends in period-equivalent or comma,
                 if (Str::endsWith($word, ['.', '!', '?', ','])) {
                     // if next letter is lowercase (in which case '.' ended abbreviation?) or following string starts with
                     // a part designation, continue, skipping next word,
@@ -1597,9 +1604,20 @@ class Converter
                             && !preg_match($this->inRegExp1, $remainder)
                             && strlen($remainder) > strlen($stringToNextPeriod) + 40) {
                         $this->verbose("Not ending title, case 2");
+                    // if working paper string occurs later in remainder,
+                    } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/', $remainder, $matches)) {
+                        // if no intervening punctuation, end title
+                        if (!Str::contains($matches[1], ['.', ',', ':'])) {
+                            $this->verbose("Ending title, case 3");
+                            $title = rtrim(Str::before($originalRemainder, $matches[0]), '., ');
+                            break;
+                        // otherwise keep going
+                        } else {
+                            $this->verbose("Not ending title, case 3 (working paper string is coming up)");
+                        }
                     // otherwise assume the punctuation ends the title.
                     } else {
-                        $this->verbose("Ending title, case 3");
+                        $this->verbose("Ending title, case 4");
                         $title = rtrim(implode(' ', $initialWords), '.,');
                         break;
                     }
@@ -1852,6 +1870,9 @@ class Converter
      */
     public function containsFontStyle(string $string, bool $start, string $style, int|null &$startPos, int|null &$length): bool
     {
+        // if (substr($string, 0, 4) != 'Trad') {
+        //     dd($string);
+        // }
         if ($style == 'italics') {
             $codes = $this->italicCodes;
         } elseif ($style == 'bold') {
@@ -2087,7 +2108,7 @@ class Converter
         $authorstring = $fullName = '';
         $remainingWords = $words;
         $warnings = [];
-        $phrases = $this->phrases;
+        //$phrases = $this->phrases;
 
         // $maxAuthors is an attempt to deal with entries like "Vijay Krishna, Auction Theory, Academic Press, 1992",
         // where the authors might otherwise be taken to be Vijay Krishna, Auction Theory, and Academic Press.
@@ -2117,6 +2138,17 @@ class Converter
         foreach ($words as $i => $word) {
             $prevWordHasComma = $wordHasComma;
             $wordHasComma = (substr($word,-1) == ',');
+
+            // Deal with specific case of no space at end of authors: Smith},``Title... 
+            // This case is very specific --- how to generalize?  Note that case Smith~(1980) is
+            // already handled.
+            if (Str::contains($word, ['},`'])) {
+                $firstWord = strtok($word, '}');
+                $remain = $remainingWords;
+                array_shift($remain);
+                $remainingWords = array_merge([$firstWord, ltrim(Str::after($word, '}'), ',.')], $remain);
+                $word = $firstWord;
+            }
 
             if ($case == 12 
                     && ! in_array($word, ['Jr.', 'Jr.,', 'Sr.', 'Sr.,']) 
@@ -3056,7 +3088,7 @@ class Converter
         } elseif ($pubInfoStartsWithForthcoming) {
             // forthcoming at start
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
-            $journal = $result['content'];
+            $journal = $this->getQuotedOrItalic($result['content'], true, false, $remains);
             $item->note = $result['label'];
         } elseif ($pubInfoEndsWithForthcoming) {
             // forthcoming at end
