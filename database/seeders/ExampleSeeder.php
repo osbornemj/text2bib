@@ -1033,8 +1033,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'year' => '2006',
                     'title' => 'Risk Sharing under Limited Commitment',
-                    'author' => '\\\'{A}brah\\\'{a}m \\\'{A}. and E. Carceles-Poveda',
-                    'note' => 'mimeo., University of Rochester and SUNY',
+                    'author' => '\\\'{A}brah\\\'{a}m, \\\'{A}. and E. Carceles-Poveda',
+                    'note' => 'mimeo., University of Rochester and SUNY, Stony Brook',
                     ]
             ],                                                
         ];

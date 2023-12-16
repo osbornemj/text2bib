@@ -2140,6 +2140,8 @@ class Converter
         foreach ($words as $i => $word) {
             $prevWordHasComma = $wordHasComma;
             $wordHasComma = (substr($word,-1) == ',');
+            // Get letters in word, eliminating accents, to get accurate length
+            $lettersOnlyWord = preg_replace("/[^A-Za-z]/", '', $word);
 
             // Deal with specific case of no space at end of authors: Smith},``Title... 
             // This case is very specific --- how to generalize?  Note that case Smith~(1980) is
@@ -2233,7 +2235,7 @@ class Converter
                 } else {
                     $this->verbose("'et' not followed by 'al' or 'al.', so not sure what to do");
                 }
-            } elseif ($determineEnd && substr($word, -1) == '.' && strlen($word) > 3
+            } elseif ($determineEnd && substr($word, -1) == '.' && strlen($lettersOnlyWord) > 3
                     && strtolower(substr($word, -2, 1)) == substr($word, -2, 1)) {
                 // If $determineEnd and word ends in period and word has > 3 chars (hence not "St.") and previous letter
                 // is lowercase (hence not string of initials without spaces):
@@ -3023,20 +3025,112 @@ class Converter
         $this->verbose(['text' => 'formatAuthor: argument ', 'words' => [$nameString]]);
         $names = explode(' ', $nameString);
         // $initialsStart is index of component (a) that is initials and (b) after which all components are initials
+        // initials are any string for which all letters are u.c. and at most two characters that are
+        // letter or period
+        $initialsStart = count($names);
+        $allUppercase = true;
+        foreach ($names as $k => $name) {
+            $lettersOnlyName = preg_replace("/[^A-Za-z]/", '', $name);
+            $initialsMaxStringLength = 2; // initials could be 'A' or 'AB' or 'A.'
+            $initialsStart = (strtoupper($lettersOnlyName) == $lettersOnlyName 
+                    && strlen($lettersOnlyName) <= $initialsMaxStringLength) ? min([$k, $initialsStart]) : count($names);
+        }
+
+        // If word does not end in comma and names do not begin with initials and ??
+        // add comma to end of preceding word if there isn't one there already
+        if (strpos($nameString, ',') === false && $initialsStart > 0 && $initialsStart < count($names)) {
+            if (substr($names[$initialsStart - 1], -1) != ',') {
+                $names[$initialsStart - 1] .= ',';
+            }
+        }
+
+        $fName = '';
+        $commaPassed = false;
+        $initialPassed = false;
+
+        $lettersOnlyNameString = preg_replace("/[^A-Za-z]/", '', $nameString);
+        if (strtoupper($lettersOnlyNameString) != $lettersOnlyNameString) {
+            $allUppercase = false;
+        }
+
+        foreach ($names as $i => $name) {
+            $lettersOnlyName = preg_replace("/[^A-Za-z]/", '', $name);
+            if ($i) {
+                $fName .= ' ';
+            }
+            if (strpos($name, '.') !== false) {
+                $initialPassed = true;
+            }
+            if (strpos($name, ',') !== false) {
+                $commaPassed = true;
+            }
+            // If name is not ALL uppercase, a period has not yet occured, there are fewer than 3 letters
+            // in $name or a comma has occurred, and all letters in the name are uppercase, assume $name
+            // is initials.  Put periods and spaces as appropriate.
+            if (! $allUppercase && ! $initialPassed && (strlen($lettersOnlyName) < 3 || $commaPassed) 
+                        && strtoupper($lettersOnlyName) == $lettersOnlyName) {
+                // First deal with single accented initial
+                // Case of multiple accented initials not currently covered
+                if (preg_match('/^\\\\\S\{[a-zA-Z]\}\.$/', $name)) {  // e.g. \'{A}.
+                    $fName .= $name; 
+                } elseif (preg_match('/^\\\\\S\{[a-zA-Z]\}$/', $name)) {  // e.g. \'{A}
+                    $fName .= $name . '.';
+                } elseif (preg_match('/^\\\\\S[a-zA-Z]$/', $name)) {  // e.g. \'A
+                    $fName .= $name . '.';
+                } else {
+                    $chars = str_split($name);
+                    foreach ($chars as $j => $char) {
+                        if (ctype_alpha($char)) {
+                            if ($j >= count($chars) - 1 || $chars[$j + 1] != '.') {
+                                $fName .= $char . '.';
+                                if (count($chars) > $j + 1) {
+                                    $fName .= ' ';
+                                }
+                            } else {
+                                $fName .= $char;
+                            }
+                        } else {
+                            $fName .= $char;
+                        }
+                    }
+                }
+            // if name is ALL uppercase and contains no period, translate uppercase component to an u.c. first letter and the rest l.c.
+            // (Contains no period to deal with name H.-J., which should not be convered to H.-j.)
+            } elseif (strtoupper($lettersOnlyName) == $lettersOnlyName and strpos($name, '.') === false) {
+                $fName .= ucfirst(strtolower($name));
+            } else {
+                $fName .= $name;
+            }
+        }
+
+        $this->verbose(['text' => 'formatAuthor: result ', 'words' => [$fName]]);
+        return $fName;
+    }
+
+
+    /*
+
+    public function formatAuthor($nameString) {
+        $this->verbose(['text' => 'formatAuthor: argument ', 'words' => [$nameString]]);
+        $names = explode(' ', $nameString);
+        // $initialsStart is index of component (a) that is initials and (b) after which all components are initials
         // initials are any string all u.c. of length one or two
         $initialsStart = count($names);
         $allUppercase = true;
         foreach ($names as $k => $name) {
-            $deaccentedName = $name;
-            if (Str::startsWith($name, '\\\'{')) {
-                $deaccentedName = Str::after($name, '\\\'{');
+            $lettersOnlyName = preg_replace("/[^A-Za-z]/", '', $name);
+            $initialsStringLength = 2; // includes possible period
+            if (preg_match('/^\\\\\S\{[a-zA-Z]\}/', $name)) {
+                $initialsStringLength = 6;
+            } elseif (preg_match('/^\\\\\S[a-zA-Z]/', $name)) {
+                $initialsStringLength = 4;
             }
-            $initialsStart = (strtoupper($deaccentedName) == $deaccentedName && strlen($deaccentedName) < 3) ? min([$k, $initialsStart]) : count($names);
-            if (strtoupper($name) != $name) {
+            $initialsStart = (strtoupper($lettersOnlyName) == $lettersOnlyName 
+                    && strlen($name) <= $initialsStringLength) ? min([$k, $initialsStart]) : count($names);
+            if (strtoupper($lettersOnlyName) != $lettersOnlyName) {
                 $allUppercase = false;
             }
         }
-
         // put comma after Smith in Smith AB format but not in John SMITH
         if (strpos($nameString, ',') === false and $initialsStart > 0 and $initialsStart < count($names)) {
             if (substr($names[$initialsStart - 1], -1) != ',') {
@@ -3057,8 +3151,15 @@ class Converter
             if (strpos($name, ',') !== false) {
                 $commaPassed = true;
             }
+            $lettersOnlyName = preg_replace("/[^A-Za-z]/", '', $name);
+            $initialsStringLength = 2; // includes possible period
+            if (preg_match('/^\\\\\S\{[a-zA-Z]\}/', $name)) {
+                $initialsStringLength = 6;
+            } elseif (preg_match('/^\\\\\S[a-zA-Z]/', $name)) {
+                $initialsStringLength = 4;
+            }
             // if name is not ALL uppercase, assume that an uppercase component is initials
-            if (! $allUppercase && ! $initialPassed && ( strlen($name) < 3 || $commaPassed) && strtoupper($name) == $name) {
+            if (strtoupper($lettersOnlyName) != $lettersOnlyName && ! $initialPassed && ( strlen($name) <= $initialsStringLength || $commaPassed) && strtoupper($lettersOnlyName) == $lettersOnlyName) {
                 $chars = str_split($name);
                 foreach ($chars as $j => $char) {
                     if (ctype_alpha($char)) {
@@ -3076,7 +3177,7 @@ class Converter
                 }
             // if name is ALL uppercase and contains no period, translate uppercase component to an u.c. first letter and the rest l.c.
             // (Contains no period to deal with name H.-J., which should not be convered to H.-j.)
-            } elseif (strtoupper($name) == $name and strpos($name, '.') === false) {
+            } elseif (strtoupper($lettersOnlyName) == $lettersOnlyName and strpos($name, '.') === false) {
                 $fName .= ucfirst(strtolower($name));
             } else {
                 $fName .= $name;
@@ -3085,6 +3186,7 @@ class Converter
         $this->verbose(['text' => 'formatAuthor: result ', 'words' => [$fName]]);
         return $fName;
     }
+*/
 
     // Get journal name from $remainder, which includes also publication info
     public function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming): string
