@@ -1036,7 +1036,54 @@ class ExampleSeeder extends Seeder
                     'author' => '\\\'{A}brah\\\'{a}m, \\\'{A}. and E. Carceles-Poveda',
                     'note' => 'mimeo., University of Rochester and SUNY, Stony Brook',
                     ]
-            ],                                                
+            ],
+            [
+                'source' => '\bibitem{} Kehoe, P. and F. Perri (2002b), \textquotedblleft Competitive Equilibria with Limited Enforcement\textquotedblright , \textit{NBER Working Paper 9077}. ',
+                'type' => 'techreport',
+                'bibtex' => [
+                    'type' => 'Working Paper',
+                    'year' => '2002',
+                    'title' => 'Competitive Equilibria with Limited Enforcement',
+                    'author' => 'Kehoe, P. and F. Perri',
+                    'number' => '9077',
+                    'institution' => 'NBER',
+                    ]
+            ],
+            [
+                'source' => 'Glazer, Jacob and Ariel Rubinstein (2001), Debates and Decisions, On a Rationale of Argumentation Rules, \textit{Games and Economic Behavior}, 36, 158-173',
+                'type' => 'article',
+                'bibtex' => [
+                    'year' => '2001',
+                    'pages' => '158-173',
+                    'title' => 'Debates and Decisions, On a Rationale of Argumentation Rules',
+                    'author' => 'Glazer, Jacob and Ariel Rubinstein',
+                    'volume' => '36',
+                    'journal' => 'Games and Economic Behavior',
+                    ]
+            ],
+            [
+                // Note: no space before year
+                'source' => '\bibitem{} Bai, Y. and J. Zhang(2005), \textquotedblleft Explaining the Cross-Section Feldstein-Horioka Puzzle\textquotedblright , Unpublished Manuscript, University of Minnesota. ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'note' => 'Unpublished Manuscript, University of Minnesota',
+                    'year' => '2005',
+                    'title' => 'Explaining the Cross-Section Feldstein-Horioka Puzzle',
+                    'author' => 'Bai, Y. and J. Zhang',
+                    ]
+            ],
+            [
+                'source' => 'Savage (1954) \textit{The Foundations of Statistics}, Wiley, New York.',
+                'type' => 'book',
+                'bibtex' => [
+                    'year' => '1954',
+                    'title' => 'The Foundations of Statistics',
+                    'author' => 'Savage',
+                    'address' => 'New York',
+                    'publisher' => 'Wiley',
+                    ]
+            ],
+                                                                       
         ];
 
         DB::statement('DELETE FROM examples');

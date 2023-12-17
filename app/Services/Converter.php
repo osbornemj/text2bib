@@ -551,6 +551,13 @@ class Converter
 
         $regExp = '/' . $this->workingPaperRegExp . $this->workingPaperNumberRegExp;
         if (preg_match($regExp, $remainder, $workingPaperMatches, PREG_OFFSET_CAPTURE)) {
+            if ($italicStart) {
+                // remove italic code at start and recompute $workingPaperMatches (used later)
+                foreach ($this->italicCodes as $italicCode) {
+                    $remainder = Str::replaceStart($italicCode, '', $remainder);
+                    preg_match($regExp, $remainder, $workingPaperMatches, PREG_OFFSET_CAPTURE);
+                }
+            }
             $containsNumberedWorkingPaper = true;
             $this->verbose("Contains string for numbered working paper.");
         }
@@ -893,6 +900,7 @@ class Converter
                 $item->number = isset($workingPaperMatches[3][0]) ? $workingPaperMatches[3][0] : '';
                 if (isset($workingPaperMatches[0][1]) && $workingPaperMatches[0][1] > 0) {
                     // Chars before 'Working Paper'
+                    //dd($workingPaperMatches, $remainder);
                     $item->institution = trim(substr($remainder, 0, $workingPaperMatches[0][1] - 1), ' .,');
                     $remainder = trim(substr($remainder, $workingPaperMatches[3][1] + strlen($item->number)), ' .,');
                 } else {
@@ -955,6 +963,7 @@ class Converter
                 $drop = isset($matches[0]) ? $matches[0][1] + strlen($matches[0][0]) : 0;
                 $remainder = trim(substr($remainder, 0, $take), ',. ') . substr($remainder, $drop);
                 $remainder = ltrim($remainder, ' ');
+                
                 // Next case occurs if remainder previously was like "pages 2-33 in ..."
                 if (substr($remainder, 0, 3) == 'in ') {
                     $remainder = substr($remainder, 3);
@@ -965,6 +974,7 @@ class Converter
                 // Try to find book title
                 $editorStart = false;
                 $newRemainder = $remainder;
+                
                 // If a string is quoted or italicized, take that to be book title
                 $booktitle = $this->getQuotedOrItalic($remainder, false, false, $newRemainder);
 
@@ -1201,7 +1211,7 @@ class Converter
                             for ($j = $colonPos; $j > 0 && $remainder[$j] != '.' && $remainder[$j] != '('; $j--) {
 
                             }
-                            $this->verbose("j is " . $j);
+                            $this->verbose("Position of period in remainder is " . $j);
                             // Previous version---why drop first 3 chars?
                             // $editor = trim(substr($remainder, 3, $j-3), ' .,');
 
@@ -1409,7 +1419,6 @@ class Converter
                     }
                 }
 
-                // LANGUAGE
                 // If remainder contains word 'volume', take next word to be volume number, and if
                 // following word is "in", take string up to next comma to be series name
                 $this->verbose('Looking for volume');
@@ -1524,6 +1533,9 @@ class Converter
         if (isset($item->author)) {
             $item->author = trim($item->author);
         }
+        if (isset($item->journal)) {
+            $item->journal = trim($item->journal);
+        }
         $item->title = $this->requireUc($item->title);
 
         $returner = [
@@ -1563,6 +1575,7 @@ class Converter
                 $nextWord = $words[$key + 1] ?? null;
                 $word = trim($word);
                 $nextWord = trim($nextWord);
+                $periodFound = Str::endsWith($word, '.');
 
                 $stringToNextPeriod = strtok($remainder, '.?!');
 
@@ -1591,7 +1604,7 @@ class Converter
                     // if next letter is lowercase (in which case '.' ended abbreviation?) or following string starts with
                     // a part designation, continue, skipping next word,
                     if ($nextWord && (strtolower($nextWord[0]) == $nextWord[0] || Str::startsWith($remainder, ['I. ', 'II. ', 'III. ']))) {
-                        $this->verbose("Not ending title, case 1");
+                        $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
                         $skipNextWord = true;
                     // if next word is short and ends with period, assume it is the first word of the publication info, which
                     // is an abbreviation,
@@ -1605,7 +1618,7 @@ class Converter
                     } elseif (preg_match('/[a-zA-Z ]+/', $stringToNextPeriod)
                             && !preg_match($this->inRegExp1, $remainder)
                             && strlen($remainder) > strlen($stringToNextPeriod) + 40) {
-                        $this->verbose("Not ending title, case 2");
+                        $this->verbose("Not ending title, case 2 (next word is " . $nextWord . ")");
                     // if working paper string occurs later in remainder,
                     } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/', $remainder, $matches)) {
                         // if no intervening punctuation, end title
@@ -1617,6 +1630,12 @@ class Converter
                         } else {
                             $this->verbose("Not ending title, case 3 (working paper string is coming up)");
                         }
+                    // If there has been no period so far and italics is coming up, 
+                    // wait for the italics (journal name?)
+                    } elseif (!$periodFound 
+                            && $this->containsFontStyle($remainder, false, 'italics', $startPos, $length)) {
+                                //dd($remainder, $startPos, $word, $periodFound, $stringToNextPeriod);
+                        $this->verbose("Not ending title, case 4 (italics is coming up)");
                     // otherwise assume the punctuation ends the title.
                     } else {
                         $this->verbose("Ending title, case 4");
@@ -2143,14 +2162,22 @@ class Converter
             // Get letters in word, eliminating accents, to get accurate length
             $lettersOnlyWord = preg_replace("/[^A-Za-z]/", '', $word);
 
-            // Deal with specific case of no space at end of authors: Smith},``Title... 
-            // This case is very specific --- how to generalize?  Note that case Smith~(1980) is
+            // Deal with specific cases of no space at end of authors.  Note that case Smith~(1980) is
             // already handled.
+            // These cases are very specific --- how to generalize?  
+            // Smith},``Title... 
             if (Str::contains($word, ['},`'])) {
                 $firstWord = strtok($word, '}');
                 $remain = $remainingWords;
                 array_shift($remain);
                 $remainingWords = array_merge([$firstWord, ltrim(Str::after($word, '}'), ',.')], $remain);
+                $word = $firstWord;
+            // Smith(2001)
+            } elseif (preg_match('/[a-zA-Z]\([19|20]/', $word)) {
+                $firstWord = strtok($word, '(');
+                $remain = $remainingWords;
+                array_shift($remain);
+                $remainingWords = array_merge([$firstWord, '(' . Str::after($word, '(')], $remain);
                 $word = $firstWord;
             }
 
@@ -2286,6 +2313,8 @@ class Converter
             } elseif ($namePart == 0) {
                 // Check if $word and first word of $remainingWords are plausibly a name.  If not, end search if $determineEnd.
                 if ($determineEnd && isset($remainingWords[0]) && $this->isNotName($word, $remainingWords[0])) {
+                    $fullName .= $word;
+                    $remainder = implode(" ", $remainingWords);
                     $authorstring .= $this->formatAuthor($fullName);
                     $case = 5;
                     $done = 1;
@@ -2606,9 +2635,9 @@ class Converter
         if ($quoteExists) {
             $quoted = rtrim(substr($string, $posStart + $quoteDelimiterLen, $posEnd - $quoteDelimiterLen - $posStart), ',.');
             $quoted = $this->trimRightPeriod($quoted);
-            $remains = substr($string, 0, $posStart) . ltrim(substr($string, $posEnd + 1), "'");
+            $remains = substr($string, 0, $posStart) . ltrim(substr($string, $posEnd + 1), ".' ");
         }
-
+        
         return $quoted;
     }
 
@@ -2909,6 +2938,7 @@ class Converter
                 $remainder = '';
             }
         }
+        $publisher = Str::of($publisher)->replaceStart('by', '')->trim();
         $address = ltrim($address, '} ');
 
         return $remainder;
