@@ -425,7 +425,7 @@ class Converter
         unset($this->italicTitle);
 
         $remainder = ltrim($remainder, ': ');
-        $title = $this->getQuotedOrItalic($remainder, true, false, $newRemainder);
+        $title = $this->getQuotedOrItalic($remainder, true, false, $newRemainder, $posStart, $posEnd);
 
         // Website
         if (isset($item->url) && $oneWordAuthor) {
@@ -976,63 +976,79 @@ class Converter
                 $newRemainder = $remainder;
                 
                 // If a string is quoted or italicized, take that to be book title
-                $booktitle = $this->getQuotedOrItalic($remainder, false, false, $newRemainder);
+                $booktitle = $this->getQuotedOrItalic($remainder, false, false, $newRemainder, $posStart, $posEnd);
 
-                // if a city or publisher has been found, temporarily remove it from remainder to see what is left
-                // and whether info can be extracted from what is left
-                $tempRemainder = $remainder;
-                if ($cityString) {
-                    $pos = strpos($tempRemainder, $cityString);
-                    if ($pos !== false) {
-                        $tempRemainder = substr($tempRemainder, 0, $pos) . substr($tempRemainder, $pos + strlen($cityString));
+                if ($booktitle && $posStart > 0) {
+                    // If booktitle has been found and does not start $remainder, then it must be preceded
+                    // by editors
+                    $possibleEditors = trim(substr($remainder, 0, $posStart), ',. ');
+                    if (preg_match($this->editorStartRegExp, $possibleEditors, $matches, PREG_OFFSET_CAPTURE)) {
+                        $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
                     }
+                    $conversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $isEditor, false);
+                    $item->editor = trim($conversion['authorstring']);
+                    $this->verbose('Editors: ' . $item->editor);
+                    // What is left must be the publisher & address
+                    $remainder = $newRemainder = trim(substr($remainder, $posEnd+1), '., ');
                 }
-                if ($publisherString) {
-                    $pos = strpos($tempRemainder, $publisherString);
-                    if ($pos !== false) {
-                        $tempRemainder = substr($tempRemainder, 0, $pos) . substr($tempRemainder, $pos + strlen($publisherString));
-                    }
-                }
-                $tempRemainder = trim($tempRemainder, ',.:() ');
-                $this->verbose('tempRemainder: ' . $tempRemainder);
-                // If item doesn't contain string identifying editors, look more carefully to see whether
-                // it contains a string that could be editors' names
-                // The first case handles, for example, the Darby reference in the examples
-                if (!$containsEditors) {
-                    if (strpos($tempRemainder, '.') === false && strpos($tempRemainder, ',') === false) {
-                        $this->verbose("tempRemainder contains no period or comma, so appears to not contain editors' names");
-                        $booktitle = $tempRemainder;
-                        $item->editor = '';
-                        $warnings[] = 'No editor found';
-                        $item->address = $cityString;
-                        $item->publisher = $publisherString;
-                        $newRemainder = '';
-                    } elseif (strpos($tempRemainder, ',') !== false) {
-                        // looking at strings following commas, to see if they are names
-                        $tempRemainderLeft = ', ' . $tempRemainder;
-                        $possibleEds = null;
-                        while (strpos($tempRemainderLeft, ',') !== false && ! $possibleEds) {
-                            $tempRemainderLeft = trim(strchr($tempRemainderLeft, ','), ', ');
-                            if ($this->isNameString($tempRemainderLeft)) {
-                                $possibleEds = $tempRemainderLeft;
-                            }
+
+                if (!isset($item->editor)) {
+                    // if a city or publisher has been found, temporarily remove it from remainder to see what is left
+                    // and whether info can be extracted from what is left
+                    $tempRemainder = $remainder;
+                    if ($cityString) {
+                        $pos = strpos($tempRemainder, $cityString);
+                        if ($pos !== false) {
+                            $tempRemainder = substr($tempRemainder, 0, $pos) . substr($tempRemainder, $pos + strlen($cityString));
                         }
-                        if (!$possibleEds) {
-                            $this->verbose("No string that could be editors' names identified in tempRemainder");
-
-                            if ($cityString || $publisherString) {
-                                $booktitle = $tempRemainder;
-                                $item->editor = '';
-                                $warnings[] = 'No editor found';
-                                $item->address = $cityString;
-                                $item->publisher = $publisherString;
-                                $newRemainder = '';
+                    }
+                    if ($publisherString) {
+                        $pos = strpos($tempRemainder, $publisherString);
+                        if ($pos !== false) {
+                            $tempRemainder = substr($tempRemainder, 0, $pos) . substr($tempRemainder, $pos + strlen($publisherString));
+                        }
+                    }
+                    $tempRemainder = trim($tempRemainder, ',.:() ');
+                    $this->verbose('tempRemainder: ' . $tempRemainder);
+                    // If item doesn't contain string identifying editors, look more carefully to see whether
+                    // it contains a string that could be editors' names
+                    // The first case handles, for example, the Darby reference in the examples
+                    if (!$containsEditors) {
+                        if (strpos($tempRemainder, '.') === false && strpos($tempRemainder, ',') === false) {
+                            $this->verbose("tempRemainder contains no period or comma, so appears to not contain editors' names");
+                            $booktitle = $tempRemainder;
+                            $item->editor = '';
+                            $warnings[] = 'No editor found';
+                            $item->address = $cityString;
+                            $item->publisher = $publisherString;
+                            $newRemainder = '';
+                        } elseif (strpos($tempRemainder, ',') !== false) {
+                            // looking at strings following commas, to see if they are names
+                            $tempRemainderLeft = ', ' . $tempRemainder;
+                            $possibleEds = null;
+                            while (strpos($tempRemainderLeft, ',') !== false && ! $possibleEds) {
+                                $tempRemainderLeft = trim(strchr($tempRemainderLeft, ','), ', ');
+                                if ($this->isNameString($tempRemainderLeft)) {
+                                    $possibleEds = $tempRemainderLeft;
+                                }
                             }
+                            if (!$possibleEds) {
+                                $this->verbose("No string that could be editors' names identified in tempRemainder");
 
-                            // Otherwise leave it to rest of code to figure out whether there is an editor, and
-                            // publisher and address.  (Deals well with Harstad et al. items in torture.txt.)
-                        } else {
-                            $this->verbose("The string \"" . $possibleEds . "\" is a possible string of editors' names");
+                                if ($cityString || $publisherString) {
+                                    $booktitle = $tempRemainder;
+                                    $item->editor = '';
+                                    $warnings[] = 'No editor found';
+                                    $item->address = $cityString;
+                                    $item->publisher = $publisherString;
+                                    $newRemainder = '';
+                                }
+
+                                // Otherwise leave it to rest of code to figure out whether there is an editor, and
+                                // publisher and address.  (Deals well with Harstad et al. items in torture.txt.)
+                            } else {
+                                $this->verbose("The string \"" . $possibleEds . "\" is a possible string of editors' names");
+                            }
                         }
                     }
                 }
@@ -1205,8 +1221,16 @@ class Converter
                         // If $remainder starts with "ed." or "eds." or "edited by", guess that potential editors end at period or '('
                         // (to cover case of publication info in parens) preceding
                         // ':' (which could separate publisher and city), if such exists.
-                        $colonPos = strpos($remainder, ':');
+                        $colonPos = strrpos($remainder, ':');
                         if ($colonPos !== false) {
+                            $this->verbose("Remainder contains colon");
+                            $remainderBeforeColon = trim(substr($remainder, 0, $colonPos));
+                            // At least last word must be city or part of city name, so remove it
+                            $spacePos = strrpos($remainderBeforeColon, ' ');
+                            $possibleEditors = trim(substr($remainderBeforeColon, 0, $spacePos));
+                            $conversion = $this->convertToAuthors(explode(' ', $possibleEditors), $trash1, $trash2, $isEditor, true);
+
+                            //dd($conversion);
                             // find previous period
                             for ($j = $colonPos; $j > 0 && $remainder[$j] != '.' && $remainder[$j] != '('; $j--) {
 
@@ -2118,8 +2142,6 @@ class Converter
      * @param $remainder string remaining string after authors removed
      * @param $determineEnd boolean if true, figure out where authors end; otherwise take whole string
      *        to be authors
-     * @param $fullEntry boolean if true, take $words to be complete citation, and thus assume that authors constitute
-     *        only first part of string---title and publication details must remain
      * return author string
      */
     public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, bool &$isEditor, bool $determineEnd = true): array
@@ -2202,7 +2224,7 @@ class Converter
             if (isset($reason)) {
                 $this->verbose('Reason: ' . $reason);
             }
-            if (in_array($case, [11, 14]) && $done) {  // 14: et al.
+            if (in_array($case, [11, 12, 14]) && $done) {  // 14: et al.
                 break;
             }
             $this->verbose(['text' => 'Word ' . $i . ": ", 'words' => [$word], 'content' => " - authorIndex: " . $authorIndex . ", namePart: " . $namePart]);
@@ -2382,7 +2404,7 @@ class Converter
                 // $bareWords is number of words at start of $remainingWords that don't end in ',' or '.' or ')' or ':' or,
                 // if !$hasAnd, aren't 'and'.
                 $bareWords = $this->bareWords($remainingWords, !$hasAnd, $hasAnd);
-                if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains)) {
+                if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd)) {
                     $remainder = implode(" ", $remainingWords);
                     $done = 1;
                     $authorstring .= $this->formatAuthor($fullName);
@@ -2400,7 +2422,7 @@ class Converter
                     $done = 1;
                     $authorstring .= $this->formatAuthor($fullName);
                     $case = 9;
-                } elseif (in_array(substr($word, -1), [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $hasAnd)) {
+                } elseif (Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $hasAnd)) {
                     // $word ends in comma or semicolon and next word is not string for editors
                     if ($hasAnd) {
                         // $word ends in comma or semicolon and 'and' has already occurred
@@ -2491,7 +2513,7 @@ class Converter
      * @param $remains what is left of the string after the substring is removed
      * return quoted or italic substring
      */
-    public function getQuotedOrItalic($string, $start, $italicsOnly, &$remains) {
+    public function getQuotedOrItalic($string, $start, $italicsOnly, &$remains, &$posStart, &$posEnd) {
         $quoted = '';
         $remains = $string;
         $quoteExists = 0;
@@ -2499,10 +2521,9 @@ class Converter
         if ($italicsOnly) {
             $containsQuote = 0;
         } else {
-            /*             * *
-              // Could use the following?
-              if(preg_match('/``|[^\\\\]"/', $string, $matches, PREG_OFFSET_CAPTURE)) {}
-             * * */
+            // Could use the following?
+            //  if(preg_match('/``|[^\\\\]"/', $string, $matches, PREG_OFFSET_CAPTURE)) {}
+
             // check for `` or " or ' or ` in string
             $posQuote1 = (strpos($string, "``") !== false) ? strpos($string, "``") : strlen($string);
             $lenQuote1 = 2;
@@ -3222,11 +3243,11 @@ class Converter
     public function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming): string
     {
         if ($italicStart) {
-            $journal = $this->getQuotedOrItalic($remainder, true, false, $remainder);
+            $journal = $this->getQuotedOrItalic($remainder, true, false, $remainder, $posStart, $posEnd);
         } elseif ($pubInfoStartsWithForthcoming) {
             // forthcoming at start
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
-            $journal = $this->getQuotedOrItalic($result['content'], true, false, $remains);
+            $journal = $this->getQuotedOrItalic($result['content'], true, false, $remains, $posStart, $posEnd);
             $item->note = $result['label'];
         } elseif ($pubInfoEndsWithForthcoming) {
             // forthcoming at end
