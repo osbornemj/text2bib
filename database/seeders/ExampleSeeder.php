@@ -279,7 +279,6 @@ class ExampleSeeder extends Seeder
                     'year' => '2005',
                     'publisher' => 'University of Pennsylvania Press',
                     'address' => 'Philadelphia',
-                    'editor' => '',
                     'pages' => '160-75',
                 ]
             ],
@@ -304,7 +303,6 @@ class ExampleSeeder extends Seeder
                     'year' => '2001',
                     'publisher' => 'Springer-Verlag',
                     'address' => 'Berlin',
-                    'editor' => '',
                     'pages' => '685-696',
                 ]
             ],
@@ -343,7 +341,6 @@ class ExampleSeeder extends Seeder
                     'year' => '2010',
                     'publisher' => 'ACM',
                     'address' => 'Atlanta, Georgia, USA',
-                    'editor' => '',
                     'pages' => '927-936',
                 ]
             ],
@@ -1083,7 +1080,67 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Wiley',
                     ]
             ],
-                                                                       
+            [
+                'source' => '\bibitem{duff1} Darrell Duffie and Wayne Shafer, Equilibrium in Incomplete Markets: I {\em Journal of Mathematical Economics} 14(1985), 285-300. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'journal' => 'Journal of Mathematical Economics',
+                    'volume' => '14',
+                    'pages' => '285-300',
+                    'year' => '1985',
+                    'title' => 'Equilibrium in Incomplete Markets: I',
+                    'author' => 'Darrell Duffie and Wayne Shafer',
+                    ]
+            ],
+            [
+                'source' => '\bibitem{Magill Shafer} Michael Magill and Wayne Shafer, Incomplete Markets, pages 1523-1614 in {\em Handbook of Mathematical Economics,  vol. IV}, North-Holland, Amsterdam, 1991.',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'year' => '1991',
+                    'pages' => '1523-1614',
+                    'title' => 'Incomplete Markets',
+                    'author' => 'Michael Magill and Wayne Shafer',
+                    'booktitle' => 'Handbook of Mathematical Economics, vol. IV',
+                    'publisher' => 'North-Holland',
+                    'address' => 'Amsterdam'
+                    ]
+            ],
+            [
+                'source' => '\bibitem{Monteiro} Paulo Klinger Monteiro, A New Proof of the Existence of Equilibrium in Incomplete Market Economies, {\em Journal of Mathematical Economics} 26(1996), 85-101. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'year' => '1996',
+                    'pages' => '85-101',
+                    'title' => 'A New Proof of the Existence of Equilibrium in Incomplete Market Economies',
+                    'author' => 'Paulo Klinger Monteiro',
+                    'volume' => '26',
+                    'journal' => 'Journal of Mathematical Economics',
+                    ]
+            ],                                                                                               
+            [
+                'source' => '\bibitem{Raimondo Algebraic Geometry} Roberto C. Raimondo, Hart Effect and Equilibrium in Incomplete Markets I, Research Paper Number 876, Department of Economics, The University of Melbourne, Australia, March 2003. ',
+                'type' => 'techreport',
+                'bibtex' => [
+                    'type' => 'Research Paper',
+                    'year' => '2003',
+                    'month' => 'March',
+                    'title' => ' Hart Effect and Equilibrium in Incomplete Markets I',
+                    'author' => 'Roberto C. Raimondo',
+                    'number' => '876',
+                    'institution' => 'Department of Economics, The University of Melbourne, Australia',
+                    ]
+            ],
+            [
+                'source' => '\bibitem{Raimondo Discrete Time} Roberto C. Raimondo, ``Incomplete Markets with a Continuum of States,\'\' Department of Economics, The University of Melbourne, November 2002. ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'year' => '2002',
+                    'month' => 'November',
+                    'title' => 'Incomplete Markets with a Continuum of States',
+                    'author' => 'Roberto C. Raimondo',
+                    'note' => 'Department of Economics, The University of Melbourne',
+                    ]
+            ],            
         ];
 
         DB::statement('DELETE FROM examples');

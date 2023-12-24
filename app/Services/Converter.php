@@ -119,7 +119,7 @@ class Converter
         $this->proceedingsExceptions = ['Proceedings of the National Academy', 'Proceedings of the Royal Society'];
 
         $this->thesisRegExp = '( [Tt]hesis| [Dd]issertation)';
-        $this->fullThesisRegExp = '/(PhD|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral|[Mm]aster|MA|M\.A\.)( [Tt]hesis| [Dd]issertation)/';
+        $this->fullThesisRegExp = '(PhD|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral|[Mm]aster|MA|M\.A\.)( [Tt]hesis| [Dd]issertation)';
         $this->masterRegExp = '[Mm]aster|MA|M\.A\.';
         $this->phdRegExp = 'PhD|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral';
 
@@ -929,8 +929,6 @@ class Converter
                 $notices[] = "Check institution.";
                 break;
 
-            //---------------------------------------------//
-
             ////////////////////////////////////////////////////////////////////
             // Get publication information for incollection and inproceedings //
             ////////////////////////////////////////////////////////////////////
@@ -940,18 +938,19 @@ class Converter
                 $leftover = '';
                 $pubInfoInParens = false;
                 $this->verbose("[in1] Remainder: " . $remainder);
+
+                // If $remainder starts with "in", remove it
                 if ($inStart) {
                     $this->verbose("Starts with variant of \"in\"");
                     $remainder = ltrim(substr($remainder, 2), ': ');
                 }
 
                 // Get pages and remove them from $remainder
-                preg_match('/(\()?(' . $this->pagesRegExp2 . ')?( )?([1-9][0-9]{0,4} ?-{1,2} ?[0-9]{1,5})(\))?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
-                if (isset($matches[4][0])) {
-                    $item->pages = str_replace(['--', ' '], ['-', ''], $matches[4][0]);
-                } else {
-                    $item->pages = '';
-                }
+                $regExp = '(\()?(' . $this->pagesRegExp2 . ')?( )?([1-9][0-9]{0,4} ?-{1,2} ?[0-9]{1,5})(\))?';
+                // Return group 4 of match and remove whole match from $remainder
+                $pages = $this->findRemoveAndReturn($remainder, $regExp, 4);
+
+                $item->pages = $pages ? str_replace(['--', ' '], ['-', ''], $pages) : '';
 
                 if ($item->pages) {
                     $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
@@ -959,11 +958,6 @@ class Converter
                     $warnings[] = "Pages not found.";
                 }
 
-                $take = isset($matches[0][1]) ? $matches[0][1] : 0;
-                $drop = isset($matches[0]) ? $matches[0][1] + strlen($matches[0][0]) : 0;
-                $remainder = trim(substr($remainder, 0, $take), ',. ') . substr($remainder, $drop);
-                $remainder = ltrim($remainder, ' ');
-                
                 // Next case occurs if remainder previously was like "pages 2-33 in ..."
                 if (substr($remainder, 0, 3) == 'in ') {
                     $remainder = substr($remainder, 3);
@@ -971,57 +965,64 @@ class Converter
                 $this->verbose("[in2] Remainder: " . $remainder);
 
                 //$remainder = str_replace(array('Proc.', 'Amer.'),  array('Proceedings', 'American'), $remainder);
-                // Try to find book title
                 $editorStart = false;
                 $newRemainder = $remainder;
                 
-                // If a string is quoted or italicized, take that to be book title
+                // If a string in $remainder is quoted or italicized, take that to be book title
                 $booktitle = $this->getQuotedOrItalic($remainder, false, false, $newRemainder, $posStart, $posEnd);
 
-                if ($booktitle && $posStart > 0) {
-                    // If booktitle has been found and does not start $remainder, then it must be preceded
-                    // by editors
-                    $possibleEditors = trim(substr($remainder, 0, $posStart), ',. ');
-                    if (preg_match($this->editorStartRegExp, $possibleEditors, $matches, PREG_OFFSET_CAPTURE)) {
-                        $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
+                if ($booktitle) {
+                    $item->booktitle = $booktitle;
+                    if ($posStart > 0) {
+                        // Pattern is <string1> <booktitle> <string2> (with <string1> nonempty).
+                        // Assume <string1> is editors and <string2> is publisher and address
+                        $possibleEditors = trim(substr($remainder, 0, $posStart), ',. ');
+                        if (preg_match($this->editorStartRegExp, $possibleEditors, $matches, PREG_OFFSET_CAPTURE)) {
+                            $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
+                        }
+                        $conversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $isEditor, false);
+                        $item->editor = trim($conversion['authorstring']);
+                        $this->verbose('Editors: ' . $item->editor);
+                        // What is left must be the publisher & address
+                        $remainder = $newRemainder = trim(substr($remainder, $posEnd+1), '., ');
+                    } else {
+                        $remainder = ltrim($newRemainder, ', ');
                     }
-                    $conversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $isEditor, false);
-                    $item->editor = trim($conversion['authorstring']);
-                    $this->verbose('Editors: ' . $item->editor);
-                    // What is left must be the publisher & address
-                    $remainder = $newRemainder = trim(substr($remainder, $posEnd+1), '., ');
                 }
+                
+                $updateRemainder = false;
 
+                // The only reason why $item->editor could be set other than by the previous code block is that the 
+                // item is a book with an editor rather than an author.  So probably the following condition could
+                // be replaced by } else {.
                 if (!isset($item->editor)) {
+                    $updateRemainder = true;
                     // if a city or publisher has been found, temporarily remove it from remainder to see what is left
                     // and whether info can be extracted from what is left
                     $tempRemainder = $remainder;
                     if ($cityString) {
-                        $pos = strpos($tempRemainder, $cityString);
-                        if ($pos !== false) {
-                            $tempRemainder = substr($tempRemainder, 0, $pos) . substr($tempRemainder, $pos + strlen($cityString));
-                        }
+                        $tempRemainder = $this->findAndRemove($tempRemainder, $cityString);
                     }
                     if ($publisherString) {
-                        $pos = strpos($tempRemainder, $publisherString);
-                        if ($pos !== false) {
-                            $tempRemainder = substr($tempRemainder, 0, $pos) . substr($tempRemainder, $pos + strlen($publisherString));
-                        }
+                        $tempRemainder = $this->findAndRemove($tempRemainder, $publisherString);
                     }
                     $tempRemainder = trim($tempRemainder, ',.:() ');
                     $this->verbose('tempRemainder: ' . $tempRemainder);
+
                     // If item doesn't contain string identifying editors, look more carefully to see whether
-                    // it contains a string that could be editors' names
+                    // it contains a string that could be editors' names.
                     // The first case handles, for example, the Darby reference in the examples
                     if (!$containsEditors) {
                         if (strpos($tempRemainder, '.') === false && strpos($tempRemainder, ',') === false) {
                             $this->verbose("tempRemainder contains no period or comma, so appears to not contain editors' names");
-                            $booktitle = $tempRemainder;
+                            if (!$booktitle) {
+                                $booktitle = $tempRemainder;
+                            }
                             $item->editor = '';
                             $warnings[] = 'No editor found';
                             $item->address = $cityString;
                             $item->publisher = $publisherString;
-                            $newRemainder = '';
+                            $newRemainder = trim(Str::remove([$cityString, $publisherString], $remainder), ', ');
                         } elseif (strpos($tempRemainder, ',') !== false) {
                             // looking at strings following commas, to see if they are names
                             $tempRemainderLeft = ', ' . $tempRemainder;
@@ -1036,7 +1037,9 @@ class Converter
                                 $this->verbose("No string that could be editors' names identified in tempRemainder");
 
                                 if ($cityString || $publisherString) {
-                                    $booktitle = $tempRemainder;
+                                    if (!$booktitle) {
+                                        $booktitle = $tempRemainder;
+                                    }
                                     $item->editor = '';
                                     $warnings[] = 'No editor found';
                                     $item->address = $cityString;
@@ -1045,7 +1048,7 @@ class Converter
                                 }
 
                                 // Otherwise leave it to rest of code to figure out whether there is an editor, and
-                                // publisher and address.  (Deals well with Harstad et al. items in torture.txt.)
+                                // publisher and address.  (Deals well with Harstad et al. items in Examples.)
                             } else {
                                 $this->verbose("The string \"" . $possibleEds . "\" is a possible string of editors' names");
                             }
@@ -1054,6 +1057,7 @@ class Converter
                 }
 
                 if (!$booktitle) {
+                    $updateRemainder = true;
                     // If no string is quoted or italic, try to determine whether $remainder starts with
                     // title or editors.
                     // If $remainder contains string "(Eds.)" or similar (parens required) then check
@@ -1148,21 +1152,15 @@ class Converter
                         // CASES 2 and 5
                         $this->verbose("Remainder: " . $remainder);
                         $this->verbose("[ed2] Remainder starts with book title");
-                        /* code repeated from above; needs to be refined considerably if used here
-                          if($cityString) {
-                          $pos = strpos($remainder, $cityString);
-                          if($pos !== false) {
-                          $remainder = substr($remainder,0,$pos) . substr($remainder,$pos+strlen($cityString));
-                          }
-                          }
-                          if($publisherString) {
-                          $pos = strpos($remainder, $publisherString);
-                          if($pos !== false) {
-                          $remainder = substr($remainder,0,$pos) . substr($remainder,$pos+strlen($publisherString));
-                          }
-                          }
-                          $booktitle = trim($remainder, ',.:() ');
-                         */
+                        // code repeated from above; needs to be refined considerably if used here
+                        // if ($cityString) {
+                        //     $tempRemainder = $this->findAndRemove($tempRemainder, $cityString);
+                        // }
+                        // if ($publisherString) {
+                        //     $tempRemainder = $this->findAndRemove($tempRemainder, $publisherString);
+                        // }
+                        // }
+                        // $booktitle = trim($remainder, ',.:() ');
 
                         // Take book title to be string up to first comma or period
                         for ($j = 0; $j < strlen($remainder) && ! $booktitle; $j++) {
@@ -1178,11 +1176,11 @@ class Converter
                                         &&
                                         $stringTrue
                                     )
-                                    or
+                                    ||
                                         $remainder[$j] == ','
-                                    or
+                                    ||
                                     (
-                                        in_array($remainder[$j], array('(', '['))
+                                        in_array($remainder[$j], ['(', '['])
                                         && $this->isNameString(substr($remainder, $j+1))
                                     )
                                 ) {
@@ -1208,7 +1206,9 @@ class Converter
                     }
                 }
 
-                $remainder = ltrim($newRemainder, ", ");
+                if ($updateRemainder) {
+                    $remainder = ltrim($newRemainder, ", ");
+                }
                 $this->verbose("[in9] Remainder: " . $remainder);
 
                 // Get editors
@@ -1347,24 +1347,6 @@ class Converter
                                 $booktitle = $potentialTitle;
                             }
                             $remainder = substr($remainder, strlen($booktitle));
-                            /*                             * ***
-                              //Old code, before $potentialTitle was constructed:
-                              //$booktitle is $remainder up to ', ' or '. ' or ': ' or ') ' string preceding first colon
-                              $colonPos = strpos($remainder, ':');
-                              if($colonPos !== false) {
-                              // find previous space
-                              for($j=$colonPos; $j>0
-                              && substr($remainder, $j-2, 2) != ', '
-                              && substr($remainder, $j-2, 2) != '. '
-                              && substr($remainder, $j-2, 2) != ': '
-                              && substr($remainder, $j-2, 2) != ') '
-                              && substr($remainder, $j-2, 2) != '. '; $j--) {}
-                              $booktitle = trim(substr($remainder, 0, $j), ' .,');
-                              $remainder = substr($remainder, $j);
-                              } else {
-                              $warnings[] = "Unable to determine book title.";
-                              }
-                             * *** */
                         }
                     }
                 }
@@ -1378,14 +1360,10 @@ class Converter
                 $remainder = trim($remainder, '[]()., ');
                 $this->verbose("[in6b] remainder: " . $remainder);
 
-                // LANGUAGE
-                if (preg_match('/^([Ff]orthcoming)/', $remainder, $matches, PREG_OFFSET_CAPTURE)
-                    || preg_match('/^([Ii]n [Pp]ress)/', $remainder, $matches, PREG_OFFSET_CAPTURE)
-                    || preg_match('/^([Aa]ccepted)/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                    $item->note .= ' ' . $matches[1][0];
-                    $take = $matches[1][1];
-                    $drop = $matches[1][1] + strlen($matches[1][0]);
-                    $remainder = substr($remainder, 0, $take) . substr($remainder, $drop);
+                // If $remainder contains 'forthcoming' string, remove it and put it in $item->note.
+                $match = $this->findRemoveAndReturn($remainder, '^(Forthcoming|In press|Accepted)', 1);
+                if ($match) {
+                    $item->note .= ' ' . $match;
                     $this->verbose('"Forthcoming" string removed and put in note field');
                     $this->verbose('Remainder: ' . $remainder);
                     $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
@@ -1394,9 +1372,17 @@ class Converter
                 // Whatever is left is publisher and address
                 //if(!isset($item->publisher) || !isset($item->address)) {
                 if ((!isset($item->publisher) || ! $item->publisher) || ( !isset($item->address) || ! $item->address)) {
-                    $newRemainder = $this->extractPublisherAndAddress($remainder, $address, $publisher);
-                    $item->publisher = $publisher;
-                    $item->address = $address;
+                    if (isset($item->publisher) && $item->publisher) {
+                        $item->address = $remainder;
+                        $newRemainder = '';
+                    } elseif (isset($item->address) && $item->address) {
+                        $item->publisher = $remainder;
+                        $newRemainder = '';
+                    } else {
+                        $newRemainder = $this->extractPublisherAndAddress($remainder, $address, $publisher);
+                        $item->publisher = $publisher;
+                        $item->address = $address;
+                    }
                 }
                 if ($item->publisher) {
                     $this->verbose(['fieldName' => 'Publisher', 'content' => strip_tags($item->publisher)]);
@@ -1435,7 +1421,7 @@ class Converter
 
                 $this->verbose('Looking for edition');
                 foreach ($remainingWords as $key => $word) {
-                    if ($key && in_array(strtolower(trim($word, ',. ()')), array('edition', 'ed'))) {
+                    if ($key && in_array(strtolower(trim($word, ',. ()')), ['edition', 'ed'])) {
                         $item->edition = trim($remainingWords[$key - 1], ',. )(');
                         $this->verbose(['fieldName' => 'Edition', 'content' => strip_tags($item->edition)]);
                         array_splice($remainingWords, $key - 1, 2);
@@ -1452,7 +1438,7 @@ class Converter
                         $item->volume = trim($remainingWords[$key + 1], ',. ');
                         $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($item->volume)]);
                         array_splice($remainingWords, $key, 2);
-                        $series = array();
+                        $series = [];
                         if (strtolower($remainingWords[$key]) == 'in') {
                             for ($k = $key + 1; $k < count($remainingWords); $k++) {
                                 $series[] = $remainingWords[$k];
@@ -1539,11 +1525,15 @@ class Converter
 
         $remainder = trim($remainder, '.,:;}{ ');
 
-        if ($remainder && !in_array($remainder, array('pages', 'Pages', 'pp', 'pp.'))) {
+        if ($remainder && !in_array($remainder, ['pages', 'Pages', 'pp', 'pp.'])) {
             $warnings[] = "The string \"" . $remainder . "\" remains unidentified.";
         }
         if (isset($item->pages) && !$item->pages) {
             unset($item->pages);
+        }
+
+        if (isset($item->editor) && !$item->editor) {
+            unset($item->editor);
         }
 
         foreach ($warnings as $warning) {
@@ -1558,7 +1548,7 @@ class Converter
             $item->author = trim($item->author);
         }
         if (isset($item->journal)) {
-            $item->journal = trim($item->journal);
+            $item->journal = trim($item->journal, '} ');
         }
         $item->title = $this->requireUc($item->title);
 
@@ -1589,9 +1579,17 @@ class Converter
 
         // Go through the words in $remainder one at a time.
         foreach ($words as $key => $word) {
-            $initialWords[] = $word;
             array_shift($remainingWords);
             $remainder = implode(' ', $remainingWords);
+
+            // If $word is one of the italic codes ending in a space, stop and form title
+            if (in_array($word . ' ', $this->italicCodes)) {
+                $this->verbose("Ending title, case 0");
+                $title = rtrim(implode(' ', $initialWords), ',:;.');
+                break;
+            }
+
+            $initialWords[] = $word;
 
             if ($skipNextWord) {
                 $skipNextWord = false;
@@ -1865,23 +1863,50 @@ class Converter
     }
 
     /*
-     * Remove $regExp from $string and return resulting string
+     * Remove all matches for $regExp (regular expression without delimiters) from $string
+     * and return resulting string (unaltered if there are no matches).
      */
     public function findAndRemove(string $string, string $regExp): string
     {
-        return preg_replace($regExp, '', $string);
+        return preg_replace('%' . $regExp . '%i', '', $string);
     }
 
     /*
-     * Remove label for content and extract content from entry.  (If no matches, return false.)
-     * $labelPattern and $contentPattern are Regex expressions.  Matching is case-insensitive.
-     * Example: $doi = $this->extractLabeledContent($entry, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._]+');
+     * Find first match for $regExp (regular expression without delimiters), case insensitive, in $string,
+     * return group number $groupNumber (defined by parentheses in $regExp)
+     * and remove entire match for $regExp from $string after triming ',. ' from substring preceding match.
+     * If no match, return false (and do not alter $string).
+     */
+    public function findRemoveAndReturn(string &$string, string $regExp, int $groupNumber = 0): false|string
+    {
+        $matched = preg_match(
+            '%' . $regExp . '%i',
+            $string,
+            $matches,
+            PREG_OFFSET_CAPTURE
+        );
+
+        if (!$matched) {
+            return false;
+        }
+
+        $match = $matches[$groupNumber][0];
+        $string = trim(substr($string, 0, $matches[0][1]), ',. ') . substr($string, $matches[0][1] + strlen($matches[0][0]), strlen($string));
+        $string = $this->regularizeSpaces(trim($string));
+
+        return $match;
+    }
+
+    /*
+     * For $string that matches <label><content>, remove match for <label> and return match for <content>, where <label> and <content>
+     * are regular expressions (without delimiters).  Matching is case-insensitive.  If no matches, return false.
+     * Example: $doi = $this->extractLabeledContent($string, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._]+');
      */ 
-    public function extractLabeledContent(string &$entry, string $labelPattern, string $contentPattern, bool $reportLabel = false): false|string|array
+    public function extractLabeledContent(string &$string, string $labelPattern, string $contentPattern, bool $reportLabel = false): false|string|array
     {
         $matched = preg_match(
             '%(' . $labelPattern . ')(' . $contentPattern . ')%i',
-            $entry,
+            $string,
             $matches,
             PREG_OFFSET_CAPTURE
         );
@@ -1891,9 +1916,8 @@ class Converter
         }
 
         $content = trim($matches[2][0], ' .,;');
-        $entry = substr($entry, 0, $matches[1][1]) . 
-                    substr($entry, $matches[2][1] + strlen($matches[2][0]), strlen($entry));
-        $entry = $this->regularizeSpaces(trim($entry, ' .,'));
+        $string = substr($string, 0, $matches[1][1]) . substr($string, $matches[2][1] + strlen($matches[2][0]), strlen($string));
+        $string = $this->regularizeSpaces(trim($string, ' .,'));
 
         if ($reportLabel) {
             $returner = ['label' => trim($matches[1][0]), 'content' => $content];
@@ -1915,9 +1939,6 @@ class Converter
      */
     public function containsFontStyle(string $string, bool $start, string $style, int|null &$startPos, int|null &$length): bool
     {
-        // if (substr($string, 0, 4) != 'Trad') {
-        //     dd($string);
-        // }
         if ($style == 'italics') {
             $codes = $this->italicCodes;
         } elseif ($style == 'bold') {
@@ -2338,6 +2359,10 @@ class Converter
                     $fullName .= $word;
                     $remainder = implode(" ", $remainingWords);
                     $authorstring .= $this->formatAuthor($fullName);
+                    if ($year = $this->getYear($remainder, true, $remains, false, $trash)) {
+                        $remainder = $remains;
+                        $this->verbose("Year detected");
+                    }
                     $case = 5;
                     $done = 1;
                 } else {
@@ -2378,7 +2403,7 @@ class Converter
                 // some conditions.
                 //$nameComponent = $this->trimRightBrace($this->spaceOutInitials(rtrim($word, ',;')));
                 $nameComponent = $this->spaceOutInitials(rtrim($word, ',;'));
-                if (in_array($nameComponent, array('Jr.', 'Sr.'))) {
+                if (in_array($nameComponent, ['Jr.', 'Sr.'])) {
                     // put Jr. or Sr. in right place for BibTeX: format is lastName, Jr., firstName
                     // Assume last name is single word that is followed by a comma (which covers both
                     // firstName lastName, Jr. and lastName, firstName, Jr.
@@ -2443,7 +2468,7 @@ class Converter
                             $case = 11;
                         }
                     } else {
-                        // If word ends in comma or semicolon and 'and' has not occurred
+                        // If word ends in comma or semicolon and 'and' has not occurred.
                         // To cover case of last name containing a space, look ahead to see if next word
                         // is a year.  (Including case of next word is initials messes up other cases.)
                         // If so, add back comma and continue.
@@ -2462,6 +2487,12 @@ class Converter
                                 // neither of following two variables are used
                                 $possibleLastChar = strlen($authorstring);
                                 $possibleLastWord = $i;
+                            }
+                            // If more than 2 following words have not punctuation after them, must be start of title.
+                            // (unless there is another author with three names)
+                            if ($bareWords > 2) {
+                                $authorstring .= $this->formatAuthor($fullName);
+                                $done = 1;
                             }
                             $case = 12;
                         }
@@ -2548,17 +2579,17 @@ class Converter
 
             $containsQuote = 1;
             // if string contains at least one of ``, ", and ', take first one to start quote.
-            if (min(array($posQuote1, $posQuote2, $posQuote3, $posQuote4)) < strlen($string)) {
+            if (min([$posQuote1, $posQuote2, $posQuote3, $posQuote4]) < strlen($string)) {
                 // Note: $posQuote1 is either equal to $posQuote4 or is strlen($string)
-                if ($posQuote1 < min(array($posQuote2, $posQuote3))) {
+                if ($posQuote1 < min([$posQuote2, $posQuote3])) {
                     $posQuote = $posQuote1;
                     $lenQuote = $lenQuote1;
                     $quoteCharacterType = 1;
-                } elseif ($posQuote2 < min(array($posQuote1, $posQuote3, $posQuote4))) {
+                } elseif ($posQuote2 < min([$posQuote1, $posQuote3, $posQuote4])) {
                     $posQuote = $posQuote2;
                     $lenQuote = $lenQuote2;
                     $quoteCharacterType = 2;
-                } elseif ($posQuote3 < min(array($posQuote1, $posQuote2, $posQuote4))) {
+                } elseif ($posQuote3 < min([$posQuote1, $posQuote2, $posQuote4])) {
                     $posQuote = $posQuote3;
                     $lenQuote = $lenQuote3;
                     $quoteCharacterType = 3;
@@ -3039,7 +3070,7 @@ class Converter
      * @param $words array
      */
     public function isNotName($word1, $word2) {
-        $words = array($word1, $word2);
+        $words = [$word1, $word2];
         $this->verbose(['text' => 'Arguments of isNotName: ', 'words' => [$words[0], $words[1]]]);
         $result = false;
         for ($i = 0; $i < 2; $i++) {
