@@ -62,6 +62,7 @@ class Converter
     var $proceedingsExceptions;
     var $publishers;
     var $startForthcomingRegExp;
+    var $stopwords;
     var $thesisRegExp;
     var $volRegExp1;
     var $volRegExp2;
@@ -178,6 +179,323 @@ class Converter
         
         $this->italicCodes = ["\\textit{", "\\textsl{", "\\emph{", "{\\em ", "\\em ", "{\\it ", "\\it ", "{\\sl ", "\\sl "];
         $this->boldCodes = ["\\textbf{", "{\\bf ", "{\\bfseries "];
+
+        // Taken, with some deletions, from https://github.com/voku/stop-words
+        $this->stopwords = [
+            'about',
+            'above',
+            'above',
+            'across',
+            'after',
+            'afterwards',
+            'again',
+            'against',
+            'all',
+            'almost',
+            'alone',
+            'along',
+            'already',
+            'also',
+            'although',
+            'always',
+            'am',
+            'among',
+            'amongst',
+            'amoungst',
+            'amount',
+            'an',
+            'and',
+            'another',
+            'any',
+            'anyhow',
+            'anyone',
+            'anything',
+            'anyway',
+            'anywhere',
+            'are',
+            'around',
+            'as',
+            'at',
+            'back',
+            'be',
+            'became',
+            'because',
+            'become',
+            'becomes',
+            'becoming',
+            'been',
+            'before',
+            'beforehand',
+            'behind',
+            'being',
+            'below',
+            'beside',
+            'besides',
+            'between',
+            'beyond',
+            'both',
+            'bottom',
+            'but',
+            'by',
+            'call',
+            'can',
+            'cannot',
+            'co',
+            'con',
+            'could',
+            'cry',
+            'describe',
+            'detail',
+            'do',
+            'done',
+            'down',
+            'due',
+            'during',
+            'each',
+            'eight',
+            'either',
+            'eleven',
+            'else',
+            'elsewhere',
+            'empty',
+            'enough',
+            'etc',
+            'even',
+            'ever',
+            'every',
+            'everyone',
+            'everything',
+            'everywhere',
+            'except',
+            'few',
+            'fifteen',
+            'fify',
+            'fill',
+            'find',
+            'fire',
+            'first',
+            'five',
+            'for',
+            'former',
+            'formerly',
+            'forty',
+            'found',
+            'four',
+            'from',
+            'front',
+            'full',
+            'further',
+            'get',
+            'give',
+            'go',
+            'had',
+            'has',
+            'hasnt',
+            'have',
+            'he',
+            'hence',
+            'her',
+            'here',
+            'hereafter',
+            'hereby',
+            'herein',
+            'hereupon',
+            'hers',
+            'herself',
+            'him',
+            'himself',
+            'his',
+            'how',
+            'however',
+            'hundred',
+            'ie',
+            'if',
+            'in',
+            'inc',
+            'indeed',
+            'interest',
+            'into',
+            'is',
+            'it',
+            'its',
+            'itself',
+            'keep',
+            'last',
+            'latter',
+            'latterly',
+            'least',
+            'less',
+            'ltd',
+            'made',
+            'many',
+            'may',
+            'me',
+            'meanwhile',
+            'might',
+            'mill',
+            'mine',
+            'more',
+            'moreover',
+            'most',
+            'mostly',
+            'move',
+            'much',
+            'must',
+            'my',
+            'myself',
+            'name',
+            'namely',
+            'neither',
+            'never',
+            'nevertheless',
+            'next',
+            'nine',
+            'no',
+            'nobody',
+            'none',
+            'noone',
+            'nor',
+            'not',
+            'nothing',
+            'now',
+            'nowhere',
+            'of',
+            'off',
+            'often',
+            'on',
+            'once',
+            'one',
+            'only',
+            'onto',
+            'or',
+            'other',
+            'others',
+            'otherwise',
+            'our',
+            'ours',
+            'ourselves',
+            'out',
+            'over',
+            'own',
+            'part',
+            'per',
+            'perhaps',
+            'please',
+            'put',
+            'rather',
+            're',
+            'same',
+            'see',
+            'seem',
+            'seemed',
+            'seeming',
+            'seems',
+            'serious',
+            'several',
+            'she',
+            'should',
+            'show',
+            'side',
+            'since',
+            'sincere',
+            'six',
+            'sixty',
+            'so',
+            'some',
+            'somehow',
+            'someone',
+            'something',
+            'sometime',
+            'sometimes',
+            'somewhere',
+            'still',
+            'such',
+            'system',
+            'take',
+            'ten',
+            'than',
+            'that',
+            'the',
+            'their',
+            'them',
+            'themselves',
+            'then',
+            'thence',
+            'there',
+            'thereafter',
+            'thereby',
+            'therefore',
+            'therein',
+            'thereupon',
+            'these',
+            'they',
+            'thickv',
+            'thin',
+            'third',
+            'this',
+            'those',
+            'though',
+            'three',
+            'through',
+            'throughout',
+            'thru',
+            'thus',
+            'to',
+            'together',
+            'too',
+            'top',
+            'toward',
+            'towards',
+            'twelve',
+            'twenty',
+            'two',
+            'un',
+            'under',
+            'until',
+            'up',
+            'upon',
+            'us',
+            'very',
+            'via',
+            'was',
+            'we',
+            'well',
+            'were',
+            'what',
+            'whatever',
+            'when',
+            'whence',
+            'whenever',
+            'where',
+            'whereafter',
+            'whereas',
+            'whereby',
+            'wherein',
+            'whereupon',
+            'wherever',
+            'whether',
+            'which',
+            'while',
+            'whither',
+            'who',
+            'whoever',
+            'whole',
+            'whom',
+            'whose',
+            'why',
+            'will',
+            'with',
+            'within',
+            'without',
+            'would',
+            'yet',
+            'you',
+            'your',
+            'yours',
+            'yourself',
+            'yourselves',
+            'the',
+        ];
     }
 
     ///////////////////////////////////////////////////
@@ -186,31 +504,15 @@ class Converter
 
     // If, after removing numbers etc. at start, entry is empty, return null.
     // Otherwise return array with components
-    // 'source': original entry
-    // 'item': converted entry
-    // 'label'
-    // 'itemType'
-    // 'warnings'
-    // 'notices'
-    // 'details': array of text lines
+    //   'source': original entry
+    //   'item': converted entry
+    //   'label'
+    //   'itemType'
+    //   'warnings'
+    //   'notices'
+    //   'details': array of text lines
     public function convertEntry(string $rawEntry, Conversion $conversion): array|null
     {
-        $aspell = Aspell::create();
-        $misspellings = $aspell->check('Hart and not so big', ['en_US']);
-        dd(iterator_count($misspellings));
-        //
-        // $numErrors = 0;
-        // foreach ($misspellings as $misspelling) {
-        //     $numErrors++;
-        //     print_r($misspelling->getWord()); // 'mispell'
-        //     $misspelling->getLineNumber(); // '1'
-        //     $misspelling->getOffset(); // '0'
-        //     $misspelling->getSuggestions(); // ['misspell', ...]
-        //     $misspelling->getContext(); // ['from_example']
-        //     print_r("\n");
-        // }
-        // dd($numErrors);
-
         $warnings = $notices = [];
 
         // Remove comments and concatenate lines in entry
@@ -2256,7 +2558,7 @@ class Converter
             }
             $debugString1 = $case ? "[convertToAuthors case " . $case . "] authorstring: " . ($authorstring ? $authorstring : '[empty]') . "." : "";
             if (isset($bareWords)) {
-                $debugString1 .= " bareWords: " . $bareWords . ".";
+                $debugString1 .= " bareWords: " . implode(' ', $bareWords);
             }
             unset($bareWords);
             $this->verbose($debugString1);
@@ -2444,8 +2746,8 @@ class Converter
                     $fullName .= " " . $nameComponent;
                 }
                 //$authorstring .= " " . $nameComponent;
-                // $bareWords is number of words at start of $remainingWords that don't end in ',' or '.' or ')' or ':' or,
-                // if $word is not 'and', aren't 'and'.
+                // $bareWords is array of words at start of $remainingWords that don't end in ',' or '.' or ')' or ':' and
+                // are not year in parens or brackets and, if $word is not 'and', aren't 'and'.
                 $bareWords = $this->bareWords($remainingWords, !$isAnd);
                 $bareWordsAll = $this->bareWords($remainingWords, false);
                 if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd)) {
@@ -2458,7 +2760,7 @@ class Converter
                     $authorstring .= $this->formatAuthor($fullName);
                     $case = 8;
                     $reason = 'Remainder starts with year';
-                } elseif ($determineEnd && $bareWords > 2 && ! $this->isInitials($remainingWords[0])) {
+                } elseif ($determineEnd && count($bareWords) > 2 && ! $this->isInitials($remainingWords[0])) {
                     // Note that this check occurs only when $namePart > 0---so it rules out double-barelled
                     // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
                     // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
@@ -2510,10 +2812,15 @@ class Converter
                             // If ($word is not 'and' and next three words have no punctuation after them and are not 'and') 
                             // or (next 6 words have no punctuation after them (but might be 'and')), must be start of title.
                             // (unless there is another author with three names --- maybe want to increase number to 3)
-                            if ($bareWords > 2 || $bareWordsAll > 8) {
-                                $authorstring .= $this->formatAuthor($fullName);
+                            //if (count($bareWords) > 2 || count($bareWordsAll) > 8) {
+                            $nameScore = $this->nameScore($bareWords);
+                            //if ($nameScore['score'] <= 0) {
+                            if ($nameScore['count'] > 2) {
+                                    $authorstring .= $this->formatAuthor($fullName);
                                 $done = 1;
                             }
+                            $this->verbose("bareWords: " . implode(' ', $bareWords));
+                            $this->verbose("nameScore: " . $nameScore['score']);
                             $case = 12;
                         }
                     }
@@ -3037,25 +3344,69 @@ class Converter
     }
 
     /**
-     * bareWords: count number of words that do not end in ',' or '.' or ')' or ':' at the start of an array of words
-     * If $countAndAsPunct is true, count 'and' as punctuation
-     * @param $words array
-     * @param $countAndAsPunct boolean
+     * bareWords: in array $words of strings, report the elements at the start up until one ends
+     * in ',' or '.' or ')' or ':' or is a year in parens or brackets or, if $stopAtAnd is true,
+     * is 'and'.
      */
-    public function bareWords(array $words, bool $countAndAsPunct): int
+    public function bareWords(array $words, bool $stopAtAnd): array
     {
-        // an empty element is added to the end of $words to cover case in which no element has ending punctuation
-        $words[] = "";
+        $barewords = [];
         foreach ($words as $j => $word) {
-            if (in_array(substr($word, -1), ['.', ',', ')', ':'])) {
-                break;
+            $stop = false;
+            if (Str::endsWith($word, ['.', ',', ')', ':'])) {
+                $stop = true;
             }
+            if (preg_match('/(\(|\[)(18|19|20)([0-9][0-9])(\)|\])/', $word)) {
+                $stop = true;
+            }
+            // if (Str::startsWith($word, ['`', '"', "'"])) {
+            //     $stop = true;
+            // }
+
             // 'et' deals with the case 'et al.'
-            if ($countAndAsPunct && ($this->isAnd($word) || $word == 'et')) {
+            if ($stopAtAnd && ($this->isAnd($word) || $word == 'et')) {
+                $stop = true;
+            }
+
+            if ($stop) {
                 break;
+            } else {
+                $barewords[] = $word;
             }
         }
-        return $j;
+        return $barewords;
+    }
+
+    /*
+     * Assign a score to an array of words, with higher numbers meaning it is more likely to consist of names than
+     * the title of an item.
+     * +1 for each word in the string that is not in the dictionary
+     * +2 for each word in the string that is a von name
+     * -2 for each word in the string that is a stopword
+     */
+    public function nameScore(array $words): array
+    {
+        $aspell = Aspell::create();
+        $wordsToCheck = [];
+        $score = 0;
+        foreach ($words as $word) {
+            if ($word != 'and') {
+                $wordsToCheck[] = $word;
+                if (in_array($word, $this->stopwords)) {
+                    $score -= 2;
+                }
+                if (in_array($word, $this->vonNames)) {
+                    $score += 2;
+                }
+            }
+        }
+        $string = implode(' ', $wordsToCheck);
+        // Number of words in string not in dictionary
+        $score += iterator_count($aspell->check($string, ['en_US']));
+        
+        $returner = ['count' => count($wordsToCheck), 'score' => $score];
+
+        return $returner;
     }
 
     /*
