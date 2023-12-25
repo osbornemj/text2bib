@@ -13,6 +13,8 @@ use App\Models\Name;
 use App\Models\Publisher;
 use App\Models\VonName;
 
+use PhpSpellcheck\Spellchecker\Aspell;
+
 class Converter
 {
     var $boldCodes;
@@ -193,6 +195,22 @@ class Converter
     // 'details': array of text lines
     public function convertEntry(string $rawEntry, Conversion $conversion): array|null
     {
+        $aspell = Aspell::create();
+        $misspellings = $aspell->check('Hart and not so big', ['en_US']);
+        dd(iterator_count($misspellings));
+        //
+        // $numErrors = 0;
+        // foreach ($misspellings as $misspelling) {
+        //     $numErrors++;
+        //     print_r($misspelling->getWord()); // 'mispell'
+        //     $misspelling->getLineNumber(); // '1'
+        //     $misspelling->getOffset(); // '0'
+        //     $misspelling->getSuggestions(); // ['misspell', ...]
+        //     $misspelling->getContext(); // ['from_example']
+        //     print_r("\n");
+        // }
+        // dd($numErrors);
+
         $warnings = $notices = [];
 
         // Remove comments and concatenate lines in entry
@@ -2167,8 +2185,8 @@ class Converter
      */
     public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, bool &$isEditor, bool $determineEnd = true): array
     {
-        $hasAnd = $namePart = $prevWordAnd = $done = $authorIndex = $case = 0;
-        $isEditor = false;
+        $namePart = $prevWordAnd = $done = $authorIndex = $case = 0;
+        $isEditor = $isAnd = false;
         $authorstring = $fullName = '';
         $remainingWords = $words;
         $warnings = [];
@@ -2264,8 +2282,8 @@ class Converter
 
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
-            } elseif ($this->isEd($word, $hasAnd)) {
-                // word is 'ed' or 'ed.' if $hasAnd is false, or 'eds' or 'eds.' if $hasAnd is true
+            } elseif ($this->isEd($word, $isAnd)) {
+                // word is 'ed' or 'ed.' if $isAnd is false, or 'eds' or 'eds.' if $isAnd is true
                 $isEditor = true;
                 $remainder = implode(" ", $remainingWords);
                 if ($namePart == 0) {
@@ -2284,7 +2302,7 @@ class Converter
                 break;  // exit from foreach
             } elseif ($this->isAnd($word)) {
                 // word is 'and' or equivalent
-                $hasAnd = $prevWordAnd = 1;
+                $isAnd = $prevWordAnd = true;
                 $authorstring .= $this->formatAuthor($fullName) . ' and';
                 $fullName = '';
                 $namePart = 0;
@@ -2427,8 +2445,9 @@ class Converter
                 }
                 //$authorstring .= " " . $nameComponent;
                 // $bareWords is number of words at start of $remainingWords that don't end in ',' or '.' or ')' or ':' or,
-                // if !$hasAnd, aren't 'and'.
-                $bareWords = $this->bareWords($remainingWords, !$hasAnd, $hasAnd);
+                // if $word is not 'and', aren't 'and'.
+                $bareWords = $this->bareWords($remainingWords, !$isAnd);
+                $bareWordsAll = $this->bareWords($remainingWords, false);
                 if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd)) {
                     $remainder = implode(" ", $remainingWords);
                     $done = 1;
@@ -2447,9 +2466,9 @@ class Converter
                     $done = 1;
                     $authorstring .= $this->formatAuthor($fullName);
                     $case = 9;
-                } elseif (Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $hasAnd)) {
+                } elseif (Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $isAnd)) {
                     // $word ends in comma or semicolon and next word is not string for editors
-                    if ($hasAnd) {
+                    if ($isAnd) {
                         // $word ends in comma or semicolon and 'and' has already occurred
                         // To cover the case of a last name containing a space, look ahead to see if next words
                         // are initials or year.  If so, add back comma taken off above and continue.  Else done.
@@ -2488,9 +2507,10 @@ class Converter
                                 $possibleLastChar = strlen($authorstring);
                                 $possibleLastWord = $i;
                             }
-                            // If more than 2 following words have not punctuation after them, must be start of title.
-                            // (unless there is another author with three names)
-                            if ($bareWords > 2) {
+                            // If ($word is not 'and' and next three words have no punctuation after them and are not 'and') 
+                            // or (next 6 words have no punctuation after them (but might be 'and')), must be start of title.
+                            // (unless there is another author with three names --- maybe want to increase number to 3)
+                            if ($bareWords > 2 || $bareWordsAll > 8) {
                                 $authorstring .= $this->formatAuthor($fullName);
                                 $done = 1;
                             }
@@ -3041,6 +3061,7 @@ class Converter
     /*
      * Determine whether $word is in the dictionary
      */
+    /* Not currently used.
     public function inDict(string $word): bool
     {
         // enchant_broker_init seems to not be installed and currently not to be available
@@ -3064,6 +3085,7 @@ class Converter
 
         // return $correct;
     }
+    */
 
     /**
      * isNotName: determine if array of words starts with a name
@@ -3364,25 +3386,25 @@ class Converter
             $this->verbose('Remainder: ' . $remainder);
             $numberOfMatches = preg_match('/^(' . $this->volumeRegExp1 . ')?([1-9][0-9]{0,3})$/', $remainder, $matches, PREG_OFFSET_CAPTURE);
             if($numberOfMatches) {
-                $this->verbose('[p2a] matches: 1: ' . $matches[1][0] . ' &nbsp; 2: ' . $matches[2][0]);
+                $this->verbose('[p2a] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0]);
                 $item->volume = $matches[2][0];
                 unset($item->number);
                 // if a match is empty, [][1] component is -1
                 $take = $matches[1][1] >= 0 ? $matches[1][1] : $matches[2][1];
                 $drop = $matches[2][1] + strlen($matches[2][0]);
-                $this->verbose('take: ' . $take . ' &nbsp; drop: ' . $drop);
+                $this->verbose('take: ' . $take . ', drop: ' . $drop);
                 $this->verbose('volume: ' . $item->volume);
                 $this->verbose('No number assigned');
             } else {
                 $numberOfMatches = preg_match('/(' . $this->volumeRegExp1 .  ')?([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:|;)(' . $this->numberRegExp1 . ')?( )?(([1-9][0-9]{0,4})(-[1-9][0-9]{0,4})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
                 if ($numberOfMatches) {
-                    $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ' &nbsp; 2: ' . $matches[2][0] . ' &nbsp; 3: ' . $matches[3][0] . ' &nbsp; 4: ' . $matches[4][0] . ' &nbsp; 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ' &nbsp; 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ' &nbsp; 7: ' . $matches[7][0] : ''));
+                    $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : ''));
                     $item->volume = $matches[2][0];
                     $item->number = $matches[6][0];
                     // if a match is empty, [][1] component is -1
                     $take = $matches[1][1] >= 0 ? $matches[1][1] : $matches[2][1];
                     $drop = $matches[6][1] + strlen($matches[6][0]);
-                    $this->verbose('take: ' . $take . ' &nbsp; drop: ' . $drop);
+                    $this->verbose('take: ' . $take . ', drop: ' . $drop);
                     $this->verbose('volume: ' . $item->volume);
                     $this->verbose('temporarily assign number: ' . $item->number);
                 } else {

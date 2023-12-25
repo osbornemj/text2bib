@@ -1124,7 +1124,7 @@ class ExampleSeeder extends Seeder
                     'type' => 'Research Paper',
                     'year' => '2003',
                     'month' => 'March',
-                    'title' => ' Hart Effect and Equilibrium in Incomplete Markets I',
+                    'title' => 'Hart Effect and Equilibrium in Incomplete Markets I',
                     'author' => 'Roberto C. Raimondo',
                     'number' => '876',
                     'institution' => 'Department of Economics, The University of Melbourne, Australia',
@@ -1140,7 +1140,22 @@ class ExampleSeeder extends Seeder
                     'author' => 'Roberto C. Raimondo',
                     'note' => 'Department of Economics, The University of Melbourne',
                     ]
-            ],            
+            ],
+            [
+                'source' => 'Y. Lv, Y. Duan, W. Kang, Z. Li, and F. Wang, “Traffic flow prediction with big data: A deep learning approach,” IEEE Trans. Intel. Transp. Syst., vol. 16, no. 2, pp. 865–873, Apr. 2015.',
+                'type' => 'article',
+                'bibtex' => [
+                    'year' => '2015',
+                    'month' => 'April',
+                    'pages' => '865-873',
+                    'title' => 'Traffic flow prediction with big data: A deep learning approach',
+                    'author' => 'Y. Lv and Y. Duan and W. Kang and Z. Li and F. Wang',
+                    'volume' => '16',
+                    'number' => '2',
+                    'journal' => 'IEEE Trans. Intel. Transp. Syst.',
+
+                ]
+            ]                                   
         ];
 
         DB::statement('DELETE FROM examples');
