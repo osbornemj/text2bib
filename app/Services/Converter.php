@@ -513,6 +513,11 @@ class Converter
     //   'details': array of text lines
     public function convertEntry(string $rawEntry, Conversion $conversion): array|null
     {
+        // $aspell = Aspell::create();
+        // 'john' and 'martin' and 'smith' are in dictionary all lowercase
+        // $x = iterator_count($aspell->check('Melissa John Robert Celia john harold martin Carolyn', ['en_US']));
+        // dd($x);
+
         $warnings = $notices = [];
 
         // Remove comments and concatenate lines in entry
@@ -770,6 +775,7 @@ class Converter
         // (may already have been found at end of author string) //
         ///////////////////////////////////////////////////////////
 
+        $containsMonth = false;
         if (!isset($item->year)) {
             if (!$year) {
                 $year = $this->getYear($remainder, false, $newRemainder, true, $month);
@@ -782,6 +788,7 @@ class Converter
                 $warnings[] = "No year found.";
             }
             if (isset($month)) {
+                $containsMonth = true;
                 // translate 'Jan' or 'Jan.' or 'January', for example, to 'January'.
                 $item->month = Carbon::parse($month)->format('F');
                 $this->verbose(['fieldName' => 'Month', 'content' => strip_tags($item->month)]);
@@ -1043,7 +1050,7 @@ class Converter
             if ($containsThesis) {
                 $this->verbose("Item type case 12");
                 $itemKind = 'thesis';
-            } elseif ($endsWithInReview) {
+            } elseif ($endsWithInReview || $containsMonth) {
                 $this->verbose("Item type case 12a");
                 $itemKind = 'unpublished';
             } else {
@@ -2488,7 +2495,7 @@ class Converter
     public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, bool &$isEditor, bool $determineEnd = true): array
     {
         $namePart = $prevWordAnd = $done = $authorIndex = $case = 0;
-        $isEditor = $isAnd = false;
+        $isEditor = $hasAnd = false;
         $authorstring = $fullName = '';
         $remainingWords = $words;
         $warnings = [];
@@ -2556,12 +2563,12 @@ class Converter
             if ($authorIndex >= $maxAuthors) {
                 break;  // exit from foreach
             }
-            $debugString1 = $case ? "[convertToAuthors case " . $case . "] authorstring: " . ($authorstring ? $authorstring : '[empty]') . "." : "";
+            $vString = $case ? "[convertToAuthors case " . $case . "] authorstring: " . ($authorstring ? $authorstring : '[empty]') . "." : "";
+            $this->verbose($vString);
             if (isset($bareWords)) {
-                $debugString1 .= " bareWords: " . implode(' ', $bareWords);
+                $this->verbose("bareWords: " . implode(' ', $bareWords));
             }
             unset($bareWords);
-            $this->verbose($debugString1);
             if (isset($reason)) {
                 $this->verbose('Reason: ' . $reason);
             }
@@ -2584,8 +2591,9 @@ class Converter
 
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
-            } elseif ($this->isEd($word, $isAnd)) {
-                // word is 'ed' or 'ed.' if $isAnd is false, or 'eds' or 'eds.' if $isAnd is true
+            } elseif ($this->isEd($word, $hasAnd)) {
+                $this->verbose('String for editors, so ending name string');
+                // word is 'ed' or 'ed.' if $hasAnd is false, or 'eds' or 'eds.' if $hasAnd is true
                 $isEditor = true;
                 $remainder = implode(" ", $remainingWords);
                 if ($namePart == 0) {
@@ -2604,7 +2612,7 @@ class Converter
                 break;  // exit from foreach
             } elseif ($this->isAnd($word)) {
                 // word is 'and' or equivalent
-                $isAnd = $prevWordAnd = true;
+                $hasAnd = $prevWordAnd = true;
                 $authorstring .= $this->formatAuthor($fullName) . ' and';
                 $fullName = '';
                 $namePart = 0;
@@ -2747,9 +2755,17 @@ class Converter
                 }
                 //$authorstring .= " " . $nameComponent;
                 // $bareWords is array of words at start of $remainingWords that don't end in ',' or '.' or ')' or ':' and
-                // are not year in parens or brackets and, if $word is not 'and', aren't 'and'.
-                $bareWords = $this->bareWords($remainingWords, !$isAnd);
-                $bareWordsAll = $this->bareWords($remainingWords, false);
+                // are not year in parens or brackets and
+                $bareWords = $this->bareWords($remainingWords, false);
+                // If 'and' has not already occurred ($hasAnd is false), its occurrence in $barewords is compatible
+                // with $barewords being part of the authors' names OR being part of the title, so should be ignored.
+                $nameScore = $this->nameScore($bareWords, !$hasAnd);
+                $this->verbose("bareWords (no trailing punct, not year in parens): " . implode(' ', $bareWords));
+                $this->verbose("nameScore: " . $nameScore['score']);
+                if ($nameScore['count']) {
+                    $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
+                }
+
                 if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd)) {
                     $remainder = implode(" ", $remainingWords);
                     $done = 1;
@@ -2760,7 +2776,8 @@ class Converter
                     $authorstring .= $this->formatAuthor($fullName);
                     $case = 8;
                     $reason = 'Remainder starts with year';
-                } elseif ($determineEnd && count($bareWords) > 2 && ! $this->isInitials($remainingWords[0])) {
+                } elseif ($determineEnd && count($bareWords) > 2 && $nameScore['score'] / $nameScore['count'] < 0.25 && ! $this->isInitials($remainingWords[0])) {
+                    // Low nameScore relative to number of bareWords (e.g. less than 25% of words not in dictionary)
                     // Note that this check occurs only when $namePart > 0---so it rules out double-barelled
                     // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
                     // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
@@ -2768,9 +2785,9 @@ class Converter
                     $done = 1;
                     $authorstring .= $this->formatAuthor($fullName);
                     $case = 9;
-                } elseif (Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $isAnd)) {
+                } elseif (Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $hasAnd)) {
                     // $word ends in comma or semicolon and next word is not string for editors
-                    if ($isAnd) {
+                    if ($hasAnd) {
                         // $word ends in comma or semicolon and 'and' has already occurred
                         // To cover the case of a last name containing a space, look ahead to see if next words
                         // are initials or year.  If so, add back comma taken off above and continue.  Else done.
@@ -2809,18 +2826,11 @@ class Converter
                                 $possibleLastChar = strlen($authorstring);
                                 $possibleLastWord = $i;
                             }
-                            // If ($word is not 'and' and next three words have no punctuation after them and are not 'and') 
-                            // or (next 6 words have no punctuation after them (but might be 'and')), must be start of title.
-                            // (unless there is another author with three names --- maybe want to increase number to 3)
-                            //if (count($bareWords) > 2 || count($bareWordsAll) > 8) {
-                            $nameScore = $this->nameScore($bareWords);
-                            //if ($nameScore['score'] <= 0) {
-                            if ($nameScore['count'] > 2) {
+                            // Low name score relative to number of bareWords (e.g. less than 25% of words not in dictionary)
+                            if ($nameScore['count'] > 2 && $nameScore['score'] / $nameScore['count'] < 0.25) {
                                     $authorstring .= $this->formatAuthor($fullName);
                                 $done = 1;
                             }
-                            $this->verbose("bareWords: " . implode(' ', $bareWords));
-                            $this->verbose("nameScore: " . $nameScore['score']);
                             $case = 12;
                         }
                     }
@@ -3364,7 +3374,11 @@ class Converter
             // }
 
             // 'et' deals with the case 'et al.'
-            if ($stopAtAnd && ($this->isAnd($word) || $word == 'et')) {
+            if ($word == 'et') {
+                $stop = true;
+            }
+
+            if ($stopAtAnd && $this->isAnd($word)) {
                 $stop = true;
             }
 
@@ -3379,18 +3393,20 @@ class Converter
 
     /*
      * Assign a score to an array of words, with higher numbers meaning it is more likely to consist of names than
-     * the title of an item.
+     * the title of an item.  If $ignoreAnd is true, ignore occurrences of 'and'.
      * +1 for each word in the string that is not in the dictionary
      * +2 for each word in the string that is a von name
      * -2 for each word in the string that is a stopword
      */
-    public function nameScore(array $words): array
+    public function nameScore(array $words, bool $ignoreAnd): array
     {
         $aspell = Aspell::create();
         $wordsToCheck = [];
         $score = 0;
         foreach ($words as $word) {
-            if ($word != 'and') {
+            // Names are in dictionary with initial u.c. letter, so convert word to l.c. to exclude them as regular words
+            $word = strtolower($word);
+            if ($word != 'and' || !$ignoreAnd) {
                 $wordsToCheck[] = $word;
                 if (in_array($word, $this->stopwords)) {
                     $score -= 2;
