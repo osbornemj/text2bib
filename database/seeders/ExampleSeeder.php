@@ -1155,7 +1155,87 @@ class ExampleSeeder extends Seeder
                     'journal' => 'IEEE Trans. Intel. Transp. Syst.',
 
                 ]
-            ]                                   
+                ],
+                [
+                    'source' => 'Chakraborty, A. and R. Harbaugh [2005]: ``Comparative cheap talk,\'\' Journal of Economic Theory, forthcoming.',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'note' => 'forthcoming',
+                        'year' => '2005',
+                        'title' => 'Comparative cheap talk',
+                        'author' => 'Chakraborty, A. and R. Harbaugh',
+                        'journal' => 'Journal of Economic Theory',
+                        ]
+                ],
+                [
+                    'source' => '[19] Page Jr., H. Frank and Paulo K. Monteiro. ``Three Principles of Competitive Nonlinear Pricing,\'\' \textit{Journal of Mathematical Economics}, 2003, 39, pp 63-109.',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '2003',
+                        'pages' => '63-109',
+                        'title' => 'Three Principles of Competitive Nonlinear Pricing',
+                        'author' => 'Page Jr., H. Frank and Paulo K. Monteiro',
+                        'volume' => '39',
+                        'journal' => 'Journal of Mathematical Economics',
+                        ]
+                ],
+                [
+                    'source' => '[11] Johnson, Justin and David Myatt. ``Multiproduct Cournot Oligopoly,\'\' forthcoming at \textit{Rand Journal of Economics}, 2005.',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'note' => 'forthcoming',
+                        'year' => '2005',
+                        'title' => 'Multiproduct {C}ournot Oligopoly',
+                        'author' => 'Johnson, Justin and David Myatt',
+                        'journal' => 'Rand Journal of Economics',
+                        ]
+                ],
+                [
+                    'source' => '[14] Martimort, David and Lars Stole. ``Communication Spaces, Equilibria Sets and the Revelation Principle Under Common Agency,\'\' 1997, Chicago GSB Working Paper. ',
+                    'type' => 'unpublished',
+                    'bibtex' => [
+                        'year' => '1997',
+                        'title' => 'Communication Spaces, Equilibria Sets and the Revelation Principle Under Common Agency',
+                        'author' => 'Martimort, David and Lars Stole',
+                        'note' => 'Chicago GSB Working Paper',
+                        ]
+                ],
+                [
+                    'source' => 'Fernández, R. and J. Galí, (1999), ``To each according to...? Markets, tournaments and the matching problem with borrowing constraints\'\', \textit{Review of Economic Studies}, 66, 799-824. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1999',
+                        'pages' => '799-824',
+                        'title' => 'To each according to...? Markets, tournaments and the matching problem with borrowing constraints',
+                        'author' => 'Fern{\\\'a}ndez, R. and J. Gal{\\\'\i}',
+                        'volume' => '66',
+                        'journal' => 'Review of Economic Studies',
+                        ]
+                ],
+                [
+                    'source' => '[19] Slovic, Paul. 1966. ``Risk-Taking in Children: Age and Sex Differences.\'\' 1966 \textit{Child Development} 37:169-176. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1966',
+                        'pages' => '169-176',
+                        'title' => 'Risk-Taking in Children: Age and Sex Differences',
+                        'author' => 'Slovic, Paul',
+                        'volume' => '37',
+                        'journal' => 'Child Development',
+                        ]
+                ],
+                [
+                    'source' => '[13] Harry Holzer and David Neumark. 2000. ``Assessing Affirmative Action.\'\' \textit{Journal of Economic Literature} XXXVIII:483-569. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '2000',
+                        'volume' => 'XXXVIII',
+                        'pages' => '483-569',
+                        'title' => 'Assessing Affirmative Action',
+                        'author' => 'Harry Holzer and David Neumark',
+                        'journal' => 'Journal of Economic Literature',
+                        ]
+                ],                                                                                                                   
         ];
 
         DB::statement('DELETE FROM examples');

@@ -9,7 +9,7 @@
         <div class="sm:p-0 pt-0 sm:pt-0">
             <pre>
             [
-                'source' => '{{ $output->source}}',
+                'source' => '{{ str_replace("'", "\'", $output->source) }}',
                 'type' => '{{ $itemType->name }}',
                 'bibtex' => [
                     @foreach ($output->item as $name => $content)

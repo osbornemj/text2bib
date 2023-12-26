@@ -108,8 +108,8 @@ class Converter
         $this->inRegExp1 = '/^[iI]n:? /';
         $this->inRegExp2 = '/([iI]n: |, in)/';
 
-        $this->startForthcomingRegExp = '^forthcoming|in press|accepted|to appear in';
-        $this->endForthcomingRegExp = 'forthcoming\.?\)?|in press\.?\)?|accepted\.?\)?|to appear\.?\)?$';
+        $this->startForthcomingRegExp = '^forthcoming( at)?|^in press|^accepted( at)?|^to appear in';
+        $this->endForthcomingRegExp = '(forthcoming|in press|accepted|to appear)\.?\)?$';
         $this->forthcomingRegExp1 = '/^[Ff]orthcoming/';
         $this->forthcomingRegExp2 = '/^[Ii]n [Pp]ress/';
         $this->forthcomingRegExp3 = '/^[Aa]ccepted/';
@@ -778,7 +778,9 @@ class Converter
         $containsMonth = false;
         if (!isset($item->year)) {
             if (!$year) {
-                $year = $this->getYear($remainder, false, $newRemainder, true, $month);
+                // space prepended to $remainder in case it starts with year, because getYear requires space 
+                // (but perhaps could be rewritten to avoid it).
+                $year = $this->getYear(' '. $remainder, false, $newRemainder, true, $month);
             }
 
             if ($year) {
@@ -1121,6 +1123,7 @@ class Converter
                 $remainder = ltrim($remainder, '., ');
 
                 $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming);
+                $journal = rtrim($journal, ' ,');
 
                 $this->verbose('Journal: ' . isset($journal) ? $journal : '');
                 $item->journal = isset($journal) ? $journal : '';
@@ -2232,7 +2235,7 @@ class Converter
     public function extractLabeledContent(string &$string, string $labelPattern, string $contentPattern, bool $reportLabel = false): false|string|array
     {
         $matched = preg_match(
-            '%(' . $labelPattern . ')(' . $contentPattern . ')%i',
+            '%(?P<label>' . $labelPattern . ')(?P<content>' . $contentPattern . ')%i',
             $string,
             $matches,
             PREG_OFFSET_CAPTURE
@@ -2242,15 +2245,25 @@ class Converter
             return false;
         }
 
-        $content = trim($matches[2][0], ' .,;');
-        $string = substr($string, 0, $matches[1][1]) . substr($string, $matches[2][1] + strlen($matches[2][0]), strlen($string));
+        $content = trim($matches['content'][0], ' .,;');
+        $string = substr($string, 0, $matches['label'][1]) . substr($string, $matches['content'][1] + strlen($matches['content'][0]), strlen($string));
         $string = $this->regularizeSpaces(trim($string, ' .,'));
 
         if ($reportLabel) {
-            $returner = ['label' => trim($matches[1][0]), 'content' => $content];
+            $returner = ['label' => trim($matches['label'][0]), 'content' => $content];
         } else {
             $returner = $content;
         }
+
+        // $content = trim($matches[2][0], ' .,;');
+        // $string = substr($string, 0, $matches[1][1]) . substr($string, $matches[2][1] + strlen($matches[2][0]), strlen($string));
+        // $string = $this->regularizeSpaces(trim($string, ' .,'));
+
+        // if ($reportLabel) {
+        //     $returner = ['label' => trim($matches[1][0]), 'content' => $content];
+        // } else {
+        //     $returner = $content;
+        // }
 
         return $returner;
     }
@@ -2576,8 +2589,7 @@ class Converter
                 break;
             }
             $this->verbose(['text' => 'Word ' . $i . ": ", 'words' => [$word], 'content' => " - authorIndex: " . $authorIndex . ", namePart: " . $namePart]);
-            $debugString2 = "fullName: " . $fullName;
-            $this->verbose($debugString2);
+            $this->verbose("fullName: " . $fullName);
             
             if (isset($itemYear)) {
                 $year = $itemYear;
@@ -2707,9 +2719,15 @@ class Converter
                     $fullName .= ' ' . $nameComponent;
                     if (in_array($word, $this->vonNames)) {
                         $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name");
-                    } elseif (!Str::endsWith($words[$i], ',') && isset($words[$i+1]) && Str::endsWith($words[$i+1], ',') && !$this->isInitials(substr($words[$i+1], 0, -1)) && isset($words[$i+2]) && Str::endsWith($words[$i+2], ',')) {
+                    } elseif (!Str::endsWith($words[$i], ',') 
+                                && isset($words[$i+1]) 
+                                && Str::endsWith($words[$i+1], ',') 
+                                && !$this->isInitials(substr($words[$i+1], 0, -1)) 
+                                && isset($words[$i+2]) 
+                                && Str::endsWith($words[$i+2], ',') 
+                                && !$this->isYear(trim($words[$i+2], ',()[]'))) {
                         // $words[$i] does not end in a comma AND $words[$i+1] is set and ends in a comma and is not initials AND $words[$i+2]
-                        // is set and ends in a comma.
+                        // is set and ends in a comma AND $words[$i+2] is not a year.
                         // E.g. Ait Messaoudene, N., ...
                         $this->verbose("convertToAuthors: '" . $words[$i] . "' identified as first segment of last name, with '" . $words[$i+1] . "' as next segment");
                     } else {
@@ -2730,121 +2748,135 @@ class Converter
                 // However, it must have been included here for a reason, so probably it should be included under
                 // some conditions.
                 //$nameComponent = $this->trimRightBrace($this->spaceOutInitials(rtrim($word, ',;')));
-                $nameComponent = $this->spaceOutInitials(rtrim($word, ',;'));
-                if (in_array($nameComponent, ['Jr.', 'Sr.'])) {
-                    // put Jr. or Sr. in right place for BibTeX: format is lastName, Jr., firstName
-                    // Assume last name is single word that is followed by a comma (which covers both
-                    // firstName lastName, Jr. and lastName, firstName, Jr.
+                if (Str::startsWith($word, ['Jr.', 'Sr.'])) {
                     $nameWords = explode(' ', trim($fullName, ' '));
-                    $fullName = ' ';
-                    // put Jr. after the last name
-                    foreach ($nameWords as $j => $nameWord) {
-                        if (substr($nameWord, -1) == ',') {
-                            $fullName .= $nameWord . ' ' . $nameComponent . ',';
-                            $k = $j;
+                    if (count($nameWords) == 1) {
+                        $fullName = $nameWords[0] . ' ' . $word;
+                    } else {
+                        // put Jr. or Sr. in right place for BibTeX: format is lastName, Jr., firstName OR lastName Jr., firstName.
+                        // Assume last name is single word that is followed by a comma (which covers both
+                        // firstName lastName, Jr. and lastName, firstName, Jr.
+                        $fullName = ' ';
+                        // put Jr. after the last name
+                        $k = 0;
+                        foreach ($nameWords as $j => $nameWord) {
+                            if (substr($nameWord, -1) == ',') {
+                                $fullName .= $nameWord . ' ' . rtrim($word, ',') . ',';
+                                $k = $j;
+                            }
                         }
-                    }
-                    // put the rest of the names after Jr.
-                    foreach ($nameWords as $m => $nameWord) {
-                        if ($m != $k) {
-                            $fullName .= ' ' . $nameWord;
+                        // put the rest of the names after Jr.
+                        foreach ($nameWords as $m => $nameWord) {
+                            if ($m != $k) {
+                                $fullName .= ' ' . $nameWord;
+                            }
                         }
-                    }
-                } else {
-                    $fullName .= " " . $nameComponent;
-                }
-                //$authorstring .= " " . $nameComponent;
-                // $bareWords is array of words at start of $remainingWords that don't end in ',' or '.' or ')' or ':' and
-                // are not year in parens or brackets and
-                $bareWords = $this->bareWords($remainingWords, false);
-                // If 'and' has not already occurred ($hasAnd is false), its occurrence in $barewords is compatible
-                // with $barewords being part of the authors' names OR being part of the title, so should be ignored.
-                $nameScore = $this->nameScore($bareWords, !$hasAnd);
-                $this->verbose("bareWords (no trailing punct, not year in parens): " . implode(' ', $bareWords));
-                $this->verbose("nameScore: " . $nameScore['score']);
-                if ($nameScore['count']) {
-                    $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
-                }
-
-                if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd)) {
-                    $remainder = implode(" ", $remainingWords);
-                    $done = 1;
-                    $authorstring .= $this->formatAuthor($fullName);
-                    $case = 7;
-                } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), true, $remainder, false, $trash)) {
-                    $done = 1;
-                    $authorstring .= $this->formatAuthor($fullName);
-                    $case = 8;
-                    $reason = 'Remainder starts with year';
-                } elseif ($determineEnd && count($bareWords) > 2 && $nameScore['score'] / $nameScore['count'] < 0.25 && ! $this->isInitials($remainingWords[0])) {
-                    // Low nameScore relative to number of bareWords (e.g. less than 25% of words not in dictionary)
-                    // Note that this check occurs only when $namePart > 0---so it rules out double-barelled
-                    // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
-                    // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
-                    // at comma.
-                    $done = 1;
-                    $authorstring .= $this->formatAuthor($fullName);
-                    $case = 9;
-                } elseif (Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $hasAnd)) {
-                    // $word ends in comma or semicolon and next word is not string for editors
-                    if ($hasAnd) {
-                        // $word ends in comma or semicolon and 'and' has already occurred
-                        // To cover the case of a last name containing a space, look ahead to see if next words
-                        // are initials or year.  If so, add back comma taken off above and continue.  Else done.
-                        if ($i + 3 < count($words)
-                                and (
-                                $this->isInitials($words[$i + 1])
-                                or $this->getYear($words[$i + 2], true, $trash, false, $trash2)
-                                or ( $this->isInitials($words[$i + 2]) and $this->getYear($words[$i + 3], true, $trash, false, $trash2))
-                                )
-                        ) {
-                            $fullName .= ',';
-                            $case = 10;
-                        } else {
-                            $done = 1;
+                        $namePart = 0;
+                        $authorIndex++;
+                        if ($year = $this->getYear(implode(" ", $remainingWords), true, $remains, false, $trash)) {
+                            $remainder = $remains;
                             $authorstring .= $this->formatAuthor($fullName);
-                            $case = 11;
-                        }
-                    } else {
-                        // If word ends in comma or semicolon and 'and' has not occurred.
-                        // To cover case of last name containing a space, look ahead to see if next word
-                        // is a year.  (Including case of next word is initials messes up other cases.)
-                        // If so, add back comma and continue.
-                        // (Of course this routine won't do the trick if there are more authors after this one.  In
-                        // that case, you need to look further ahead.)
-                        if (!$prevWordHasComma && $i + 2 < count($words)
-                                && (
-                                    //$this->isInitials($words[$i + 1])
-                                    //or
-                                    $this->getYear($words[$i + 2], true, $trash, false, $trash2)
-                                )) {
-                            $fullName .= ',';
-                            $case = 14;
-                        } else {
-                            if ($authorIndex == 0) {
-                                // neither of following two variables are used
-                                $possibleLastChar = strlen($authorstring);
-                                $possibleLastWord = $i;
-                            }
-                            // Low name score relative to number of bareWords (e.g. less than 25% of words not in dictionary)
-                            if ($nameScore['count'] > 2 && $nameScore['score'] / $nameScore['count'] < 0.25) {
-                                    $authorstring .= $this->formatAuthor($fullName);
-                                $done = 1;
-                            }
-                            $case = 12;
+                            $done = 1;
                         }
                     }
+                    $this->verbose('Name with Jr. or Sr.; fullName: ' . $fullName);
+                    $case = 15;
                 } else {
-                    if (in_array($word, $this->vonNames)) {
-                        $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name, so 'namePart' not incremented");
-                    } else {
-                        $namePart++;
+                    $nameComponent = $this->spaceOutInitials(rtrim($word, ',;'));
+                    $fullName .= " " . $nameComponent;
+                    //$authorstring .= " " . $nameComponent;
+                    // $bareWords is array of words at start of $remainingWords that don't end in ',' or '.' or ')' or ':' and
+                    // are not year in parens or brackets and
+                    $bareWords = $this->bareWords($remainingWords, false);
+                    // If 'and' has not already occurred ($hasAnd is false), its occurrence in $barewords is compatible
+                    // with $barewords being part of the authors' names OR being part of the title, so should be ignored.
+                    $nameScore = $this->nameScore($bareWords, !$hasAnd);
+                    $this->verbose("bareWords (no trailing punct, not year in parens): " . implode(' ', $bareWords));
+                    $this->verbose("nameScore: " . $nameScore['score']);
+                    if ($nameScore['count']) {
+                        $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                     }
-                    if ($i + 1 == count($words)) {
+
+                    if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd)) {
+                        $remainder = implode(" ", $remainingWords);
+                        $done = 1;
                         $authorstring .= $this->formatAuthor($fullName);
+                        $case = 7;
+                    } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), true, $remainder, false, $trash)) {
+                        $done = 1;
+                        $authorstring .= $this->formatAuthor($fullName);
+                        $case = 8;
+                        $reason = 'Remainder starts with year';
+                    } elseif ($determineEnd && count($bareWords) > 2 && $nameScore['score'] / $nameScore['count'] < 0.25 && ! $this->isInitials($remainingWords[0])) {
+                        // Low nameScore relative to number of bareWords (e.g. less than 25% of words not in dictionary)
+                        // Note that this check occurs only when $namePart > 0---so it rules out double-barelled
+                        // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
+                        // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
+                        // at comma.
+                        $done = 1;
+                        $authorstring .= $this->formatAuthor($fullName);
+                        $case = 9;
+                    } elseif (Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $hasAnd)) {
+                        // $word ends in comma or semicolon and next word is not string for editors
+                        if ($hasAnd) {
+                            // $word ends in comma or semicolon and 'and' has already occurred
+                            // To cover the case of a last name containing a space, look ahead to see if next words
+                            // are initials or year.  If so, add back comma taken off above and continue.  Else done.
+                            if ($i + 3 < count($words)
+                                    && (
+                                    $this->isInitials($words[$i + 1])
+                                    || $this->getYear($words[$i + 2], true, $trash, false, $trash2)
+                                    || ( $this->isInitials($words[$i + 2]) && $this->getYear($words[$i + 3], true, $trash, false, $trash2))
+                                    )
+                            ) {
+                                $fullName .= ',';
+                                $case = 10;
+                            } else {
+                                $done = 1;
+                                $authorstring .= $this->formatAuthor($fullName);
+                                $case = 11;
+                            }
+                        } else {
+                            // If word ends in comma or semicolon and 'and' has not occurred.
+                            // To cover case of last name containing a space, look ahead to see if next word
+                            // is a year.  (Including case of next word is initials messes up other cases.)
+                            // If so, add back comma and continue.
+                            // (Of course this routine won't do the trick if there are more authors after this one.  In
+                            // that case, you need to look further ahead.)
+                            if (!$prevWordHasComma && $i + 2 < count($words)
+                                    && (
+                                        //$this->isInitials($words[$i + 1])
+                                        //or
+                                        $this->getYear($words[$i + 2], true, $trash, false, $trash2)
+                                    )) {
+                                $fullName .= ',';
+                                $case = 14;
+                            } else {
+                                if ($authorIndex == 0) {
+                                    // neither of following two variables are used
+                                    $possibleLastChar = strlen($authorstring);
+                                    $possibleLastWord = $i;
+                                }
+                                // Low name score relative to number of bareWords (e.g. less than 25% of words not in dictionary)
+                                if ($nameScore['count'] > 2 && $nameScore['score'] / $nameScore['count'] < 0.25) {
+                                        $authorstring .= $this->formatAuthor($fullName);
+                                    $done = 1;
+                                }
+                                $case = 12;
+                            }
+                        }
+                    } else {
+                        if (in_array($word, $this->vonNames)) {
+                            $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name, so 'namePart' not incremented");
+                        } else {
+                            $namePart++;
+                        }
+                        if ($i + 1 == count($words)) {
+                            $authorstring .= $this->formatAuthor($fullName);
+                        }
+                        //$this->verbose("authorstring: " . $authorstring);
+                        $case = 13;
                     }
-                    //$this->verbose("authorstring: " . $authorstring);
-                    $case = 13;
                 }
             }
         }
@@ -3090,7 +3122,8 @@ class Converter
           $regExp1 = $yearRegExp . '[ .,)]';
           $regExp2 = $yearRegExp . '$';
          */
-        // require space in front of year if not at start or in parens or brackets, to avoid picking up second part of page range (e.g. 1913-1920)
+        // require space in front of year if search is not restricte to start or in parens or brackets,
+        // to avoid picking up second part of page range (e.g. 1913-1920)
         $regExp1 = ($start ? '' : ' ') . $regExp0 . '[ .,):;]';
         $regExp2 = ' ' . $regExp0 . '$';
         $regExp3 = '\(' . $regExp0 . '\)';
@@ -3109,6 +3142,7 @@ class Converter
         } else {
             preg_match_all($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
         }
+
         // See file regExpAnalysis.txt in \xy\m\TeX\text2bib (as well as handwritten notes in Projects folder) for logic behind these numbers
         // They are the indexes of the matches for the subpatterns on the regular expression
         if ($allowMonth) {
@@ -3668,12 +3702,16 @@ class Converter
             // forthcoming at start
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
             $journal = $this->getQuotedOrItalic($result['content'], true, false, $remains, $posStart, $posEnd);
-            $item->note = $result['label'];
+            $label = $result['label'];
+            if (Str::startsWith($label, ['forthcoming', 'accepted'])) {
+                $label = Str::before($label, ' ');
+            }
+            $item->note = $label;
         } elseif ($pubInfoEndsWithForthcoming) {
             // forthcoming at end
-            $result = $this->extractLabeledContent($remainder, $this->endForthcomingRegExp, '.*', true);
-            $journal = $result['content'];
-            $item->note = $result['label'];
+            $result = $this->extractLabeledContent($remainder, '.*', $this->endForthcomingRegExp, true);
+            $journal = $result['label'];
+            $item->note = $result['content'];
         } else {
             $words = $remainingWords = explode(' ', $remainder);
             $initialWords = [];
@@ -3690,7 +3728,7 @@ class Converter
                     // (Str::endsWith($word, '.') && strlen($word) > 2 && $this->inDict($word) && !in_array($word, $this->excludedWords))
                 )
                 {
-                    $this->verbose('Remainder: ' . $remainder);
+                    $this->verbose('[getJournal] Remainder: ' . $remainder);
                     $journal = rtrim(implode(' ', $initialWords), ', ');
                     $remainder = ltrim($remainder, ',.');
                     break;

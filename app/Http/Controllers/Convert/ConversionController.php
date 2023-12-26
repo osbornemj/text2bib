@@ -41,9 +41,9 @@ class ConversionController extends Controller
         $filestring = Storage::disk('public')->get('files/' . $user->id . '-' . $conversion->user_file_id . '-source.txt');
 
         // if (mb_detect_encoding($filestring, 'UTF-8, ISO-8859-1', true) === 'UTF-8'){
-        //     dd('utf-8');
+        //      dd('utf-8');
         // } else {
-        //     dd('not utf-8');
+        //      dd('not utf-8');
         // }
 
         $filestring = $this->regularizeLineEndings($filestring);
@@ -67,14 +67,20 @@ class ConversionController extends Controller
         // Write converted items to database and key array to output ids
         $convertedItems = [];
         foreach ($convItems as $i => $convItem) {
-            $output = Output::create([
-                'source' => $convItem['source'],
-                'conversion_id' => $conversion->id,
-                'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
-                'label' => $convItem['label'],
-                'item' => $convItem['item'],
-                'seq' => $i,
-            ]);
+            if ($this->isUtf8($convItem['source'])) {
+                $output = Output::create([
+                    'source' => $convItem['source'],
+                    'conversion_id' => $conversion->id,
+                    'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
+                    'label' => $convItem['label'],
+                    'item' => $convItem['item'],
+                    'seq' => $i,
+                ]);
+            } else {
+                return view('index.encodingError',
+                    compact('convItem')
+                );
+            }
     
             $convertedItems[$output->id] = $convItem;
         }
@@ -95,16 +101,30 @@ class ConversionController extends Controller
         );
     }
 
+    private function isUtf8(string $string): bool
+    {
+        return preg_match('%^(?:
+            [\x09\x0A\x0D\x20-\x7E]              # ASCII
+            | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
+            |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
+            | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
+            |  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates
+            |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
+            | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
+            |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
+            )*$%xs', $string);
+    }
+
     public function addLabels(array $convertedItems, Conversion $conversion): array
     {
         $baseLabels = [];
         foreach ($convertedItems as $key => $convertedItem) {
-            if ($convertedItem['label'] || !$conversion->override_labels) {
+            if ($convertedItem['label'] && !$conversion->override_labels) {
                 $baseLabel = $convertedItem['label'];
             } else {
                 $baseLabel = $this->makeLabel($convertedItem['item'], $conversion);
             }
-            
+
             $label = $baseLabel;
             // if $baseLabel already used, add a suffix to it
             if (in_array($baseLabel, $baseLabels)) {

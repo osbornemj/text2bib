@@ -15,8 +15,10 @@ class ConversionRequest extends FormRequest
      */
     public function rules(): array
     {
+        // 'mimetypes:text/plain' restriction removed because it seemed to exclude
+        // legitimate text files
         return [
-            'file' => ['required', 'mimetypes:text/plain', 'max:100'],
+            'file' => ['required', 'max:100'],
             'item_separator' => ['required', 'string', 'in:line,cr'],
             'first_component' => ['required', 'string', 'in:authors,year'],
             'label_style' => ['required', 'string', 'in:short,long,gs'],
