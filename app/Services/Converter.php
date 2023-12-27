@@ -1122,6 +1122,21 @@ class Converter
                 // get journal
                 $remainder = ltrim($remainder, '., ');
 
+                // If does not start with italics, check whether first word is all numeric and
+                // italics starts after first word, in which case
+                // classify first word as unidentified.  (Covers case of mistaken duplication of year.)
+                if (!$italicStart) {
+                    $firstWord = strtok($remainder, ' ');
+                    if (preg_match('/^[0-9]*$/', $firstWord)) {
+                        $remainderAfterFirstWord = trim(substr($remainder, strlen($firstWord)));
+                        if ($this->containsFontStyle($remainderAfterFirstWord, true, 'italics', $startPos, $length)) {
+                            $warnings[] = "The string \"" . $firstWord . "\" remains unidentified.";
+                            $remainder = $remainderAfterFirstWord;
+                            $italicStart = true;
+                        }
+                    }
+                }
+
                 $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming);
                 $journal = rtrim($journal, ' ,');
 
@@ -1151,8 +1166,6 @@ class Converter
                         $warnings[] = "No page range found.";
                     }
                     $this->verbose("[p1] Remainder: " . $remainder);
-
-                    // --------------------------------------------//
 
                     // get month, if any
                     $months = $this->monthsRegExp;
@@ -1860,6 +1873,10 @@ class Converter
         }
         if (isset($item->pages) && !$item->pages) {
             unset($item->pages);
+        }
+
+        if (isset($item->volume) && !$item->volume) {
+            unset($item->volume);
         }
 
         if (isset($item->editor) && !$item->editor) {
@@ -3775,6 +3792,10 @@ class Converter
             $this->verbose('Remainder is entirely numeric, so assume it is the volume');
             $item->volume = $remainder;
             $remainder = '';
+        } elseif (preg_match('/^[IVXLCDM]{0,8}$/', $remainder)) {
+            $this->verbose('Remainder is Roman numeral, so assume it is the volume');
+            $item->volume = $remainder;
+            $remainder = '';
         } elseif ($this->containsFontStyle($remainder, false, 'bold', $startPos, $length)) {
             $this->verbose('[v2] bold (startPos: ' . $startPos . ')');
             $item->volume = $this->getBold($remainder, false, $remainder);
@@ -3789,6 +3810,7 @@ class Converter
             // Look for something like 123:6-19
             $this->verbose('[v3]');
             $this->verbose('Remainder: ' . $remainder);
+            // 'Volume? 123$'
             $numberOfMatches = preg_match('/^(' . $this->volumeRegExp1 . ')?([1-9][0-9]{0,3})$/', $remainder, $matches, PREG_OFFSET_CAPTURE);
             if($numberOfMatches) {
                 $this->verbose('[p2a] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0]);
@@ -3801,7 +3823,7 @@ class Converter
                 $this->verbose('volume: ' . $item->volume);
                 $this->verbose('No number assigned');
             } else {
-                $numberOfMatches = preg_match('/(' . $this->volumeRegExp1 .  ')?([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:|;)(' . $this->numberRegExp1 . ')?( )?(([1-9][0-9]{0,4})(-[1-9][0-9]{0,4})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                $numberOfMatches = preg_match('/(' . $this->volumeRegExp1 . ')?([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:|;)(' . $this->numberRegExp1 . ')?( )?(([1-9][0-9]{0,4})(-[1-9][0-9]{0,4})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
                 if ($numberOfMatches) {
                     $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : ''));
                     $item->volume = $matches[2][0];

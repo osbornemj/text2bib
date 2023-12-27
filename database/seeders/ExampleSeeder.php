@@ -1213,6 +1213,7 @@ class ExampleSeeder extends Seeder
                         ]
                 ],
                 [
+                    // Note error: year is duplicated
                     'source' => '[19] Slovic, Paul. 1966. ``Risk-Taking in Children: Age and Sex Differences.\'\' 1966 \textit{Child Development} 37:169-176. ',
                     'type' => 'article',
                     'bibtex' => [
@@ -1235,7 +1236,19 @@ class ExampleSeeder extends Seeder
                         'author' => 'Harry Holzer and David Neumark',
                         'journal' => 'Journal of Economic Literature',
                         ]
-                ],                                                                                                                   
+                ],
+                [
+                    'source' => '[8] Eckel, Catherine C. and Philip J. Grossman. 2005a. ``Sex and Risk: Experimental Evidence.\'\' (Forthcoming in) \textit{Handbook of Experimental Economics Results}. Amsterdam: Elsevier Science (North-Holland).',
+                    'type' => 'incollection',
+                    'bibtex' => [
+                        'year' => '2005',
+                        'title' => 'Sex and Risk: Experimental Evidence',
+                        'author' => 'Eckel, Catherine C. and Philip J. Grossman',
+                        'booktitle' => 'Handbook of Experimental Economics Results',
+                        'address' => 'Amsterdam',
+                        'publisher' => 'Elsevier Science (North-Holland)',
+                        ]
+                ],                                                                                                                                   
         ];
 
         DB::statement('DELETE FROM examples');
