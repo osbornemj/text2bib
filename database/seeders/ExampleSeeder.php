@@ -902,7 +902,6 @@ class ExampleSeeder extends Seeder
                     'title' => 'Naive Strategies in Zero-sum Games',
                     'author' => 'Rubinstein, A. and Tversky, A. and Heller, D.',
                     'editor' => 'W. Guth and others',
-                    'address' => '',
                     'booktitle' => 'Understanding Strategic Interaction -- Essays in Honor of Reinhard Selten',
                     'publisher' => 'Springer-Verlag',
                     ]
@@ -1247,8 +1246,45 @@ class ExampleSeeder extends Seeder
                         'booktitle' => 'Handbook of Experimental Economics Results',
                         'address' => 'Amsterdam',
                         'publisher' => 'Elsevier Science (North-Holland)',
+                        'note' => 'Forthcoming',
                         ]
-                ],                                                                                                                                   
+                ],
+                [
+                    'source' => '\bibitem{K2-50} Atiyah, M. F. (1969). The signature of fibre-bundles. In D. C. Spencer \& S. Iyanaga (Eds.), Global Analysis. Papers in honor of K. Kodaira, pp. 73-84. Princeton Univ. Press.',
+                    'type' => 'incollection',
+                    'bibtex' => [
+                        'year' => '1969',
+                        'pages' => '73-84',
+                        'title' => 'The signature of fibre-bundles',
+                        'author' => 'Atiyah, M. F.',
+                        'editor' => 'D. C. Spencer and S. Iyanaga',
+                        'booktitle' => 'Global Analysis. Papers in honor of K. Kodaira',
+                        'publisher' => 'Princeton Univ. Press',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-54} Auckly, D. R. (1995). Surgery numbers of 3-manifolds: a hyperbolic example. In W. H. Kazez (Ed.), Geometric Topology, Proc. of the 1993 Georgia International Topology Conference. International Press.',
+                    'type' => 'incollection',
+                    'bibtex' => [
+                        'year' => '1995',
+                        'title' => 'Surgery numbers of 3-manifolds: a hyperbolic example',
+                        'author' => 'Auckly, D. R.',
+                        'editor' => 'W. H. Kazez',
+                        'booktitle' => 'Geometric Topology, Proc. of the 1993 Georgia International Topology Conference',
+                        'publisher' => 'International Press',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-63} Bar-Natan, D. (1995b). Vassiliev homotopy string link invariants. To appear in J. Knot Theory Ramifications.  ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'note' => 'To appear',
+                        'year' => '1995',
+                        'title' => 'Vassiliev homotopy string link invariants',
+                        'author' => 'Bar-Natan, D.',
+                        'journal' => 'J. Knot Theory Ramifications',
+                        ]
+                ],                                                                                                                                                             
         ];
 
         DB::statement('DELETE FROM examples');

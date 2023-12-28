@@ -106,9 +106,9 @@ class Converter
         $this->volRegExp2 = '/^[Vv]ol(\.|ume)? ?/';
 
         $this->inRegExp1 = '/^[iI]n:? /';
-        $this->inRegExp2 = '/([iI]n: |, in)/';
+        $this->inRegExp2 = '/([iI]n: |, in| in\) )/';
 
-        $this->startForthcomingRegExp = '^forthcoming( at)?|^in press|^accepted( at)?|^to appear in';
+        $this->startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
         $this->endForthcomingRegExp = '(forthcoming|in press|accepted|to appear)\.?\)?$';
         $this->forthcomingRegExp1 = '/^[Ff]orthcoming/';
         $this->forthcomingRegExp2 = '/^[Ii]n [Pp]ress/';
@@ -827,7 +827,7 @@ class Converter
 
         if (preg_match($this->inRegExp2, $remainder)) {
             $containsIn = true;
-            $this->verbose("Contains \"in |In |in: |In: \".");
+            $this->verbose("Contains \"in |in) |In |in: |In: \".");
         }
 
         if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
@@ -986,7 +986,7 @@ class Converter
             || 
             ($italicStart
                 &&
-                ( $containsPageRange || $containsInteriorVolume)
+                ($containsPageRange || $containsInteriorVolume)
                 &&
                 ! $containsEditors
                 &&
@@ -1030,7 +1030,7 @@ class Converter
         } elseif ($containsIsbn || (isset($this->italicTitle) && (($containsCity || $containsPublisher) || isset($item->editor)))) {
             $this->verbose("Item type case 7");
             $itemKind = 'book';
-        } elseif ($pubInfoStartsWithForthcoming || $pubInfoEndsWithForthcoming) {
+        } elseif (!$containsIn && ($pubInfoStartsWithForthcoming || $pubInfoEndsWithForthcoming)) {
             $this->verbose("Item type case 9");
             $itemKind = 'article';
         } elseif ($endsWithInReview) {
@@ -1318,29 +1318,53 @@ class Converter
                     $item->booktitle = $booktitle;
                     if ($posStart > 0) {
                         // Pattern is <string1> <booktitle> <string2> (with <string1> nonempty).
-                        // Assume <string1> is editors and <string2> is publisher and address
-                        $possibleEditors = trim(substr($remainder, 0, $posStart), ',. ');
-                        if (preg_match($this->editorStartRegExp, $possibleEditors, $matches, PREG_OFFSET_CAPTURE)) {
-                            $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
+                        // Check whether <string1> starts with "forthcoming"
+                        $string1 = trim(substr($remainder, 0, $posStart), ',. ');
+                        if (preg_match('/' . $this->startForthcomingRegExp . '/i', $string1, $matches)) {
+                            $match = trim($matches[0], '() ');
+                            $match = Str::replaceEnd(' in', '', $match);
+                            $match = Str::replaceEnd(' at', '', $match);
+                            $item->note = isset($item->note) ? $item->note . ' ' . trim($match) : trim($match);
+                            $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
+                            $possibleEditors = strlen($matches[0]) - strlen($string1) ? substr($string1, strlen($matches[0])) : null;
+                        } else {
+                            // Assume <string1> is editors
+                            $possibleEditors = $string1;
                         }
-                        $conversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $isEditor, false);
-                        $item->editor = trim($conversion['authorstring']);
-                        $this->verbose('Editors: ' . $item->editor);
+                        if ($possibleEditors) {
+                            if (preg_match($this->editorStartRegExp, $possibleEditors, $matches, PREG_OFFSET_CAPTURE)) {
+                                $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
+                            }
+                            $conversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $isEditor, false);
+                            $item->editor = trim($conversion['authorstring']);
+                            $this->verbose('Editors: ' . $item->editor);
+                        } else {
+                            $this->verbose('No editors found');
+                        }
                         // What is left must be the publisher & address
                         $remainder = $newRemainder = trim(substr($remainder, $posEnd+1), '., ');
                     } else {
                         $remainder = ltrim($newRemainder, ', ');
                     }
                 }
-                
+
+                $this->verbose('[in0] Remainder: ' . $remainder);
                 $updateRemainder = false;
+
+                // If $remainder matches this pattern, it is consistent with its being publisher: address,
+                // without any editors.  $remainder will be '';
+                $result = $this->extractLabeledContent($remainder, '^[a-zA-Z]*:', '.*', true);
+                if ($result) {
+                    $item->address = substr($result['label'], 0, -1);
+                    $item->publisher = $result['content'];
+                }
 
                 // The only reason why $item->editor could be set other than by the previous code block is that the 
                 // item is a book with an editor rather than an author.  So probably the following condition could
                 // be replaced by } else {.
-                if (!isset($item->editor)) {
+                if ($remainder && !isset($item->editor)) {
                     $updateRemainder = true;
-                    // if a city or publisher has been found, temporarily remove it from remainder to see what is left
+                    // If a city or publisher has been found, temporarily remove it from remainder to see what is left
                     // and whether info can be extracted from what is left
                     $tempRemainder = $remainder;
                     if ($cityString) {
@@ -1399,7 +1423,7 @@ class Converter
                     }
                 }
 
-                if (!$booktitle) {
+                if ($remainder && !$booktitle) {
                     $updateRemainder = true;
                     // If no string is quoted or italic, try to determine whether $remainder starts with
                     // title or editors.
@@ -1659,11 +1683,12 @@ class Converter
                     // CASES 1, 3, and 4
                     // Case in which $booktitle is not defined: remainder presumably starts with booktitle
                     $remainder = trim($remainder, '., ');
-                    $this->verbose("[in5] Remainder: " . $remainder);
+                    $this->verbose("[in6] Remainder: " . $remainder);
                     // $remainder contains book title and publication info.  Need to find boundary.  Temporarily drop last
                     // word from remainder, then any initials (which are presumably part of the publisher's name), then
                     // the previous word.  In what is left, take the booktitle to end at the first period
                     $words = explode(" ", $remainder);
+                    $sentences = $this->splitIntoSentences(($words));
                     // if remainder contains a single period, take that as end of booktitle
                     if (substr_count($remainder, '.') == 1) {
                         $this->verbose("Remainder contains single period, so take that as end of booktitle");
@@ -1671,30 +1696,37 @@ class Converter
                         $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
                         $remainder = substr($remainder, $periodPos);
                     } else {
-                        $n = count($words);
-                        for ($j = $n - 2; $j > 0 && $this->isInitials($words[$j]); $j--) {
-
-                        }
-                        $potentialTitle = implode(" ", array_slice($words, 0, $j));
-                        $this->verbose("Potential title: " . $potentialTitle);
-                        $periodPos = strpos(rtrim($potentialTitle, '.'), '.');
-                        if ($periodPos !== false) {
-                            $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
-                            $remainder = substr($remainder, $periodPos);
+                        $sentences = $this->splitIntoSentences($words);
+                        // If two or more sentences, take all but last one to be booktitle.
+                        if (count($sentences) > 1) {
+                            $booktitle = implode(' ', array_slice($sentences, 0, count($sentences) - 1));
+                            $remainder = $sentences[count($sentences) -  1];
                         } else {
-                            // Does whole entry end in ')' or ').'?  If so, pubinfo is in parens, so booktitle ends
-                            // at previous '('; else booktitle is all of $potentialTitle
-                            if ($entry[strlen($entry) - 1] == ')' or $entry[strlen($entry) - 2] == ')') {
-                                $booktitle = substr($remainder, 0, strrpos($remainder, '('));
-                            } else {
-                                $booktitle = $potentialTitle;
+                            $n = count($words);
+                            for ($j = $n - 2; $j > 0 && $this->isInitials($words[$j]); $j--) {
+
                             }
-                            $remainder = substr($remainder, strlen($booktitle));
+                            $potentialTitle = implode(" ", array_slice($words, 0, $j));
+                            $this->verbose("Potential title: " . $potentialTitle);
+                            $periodPos = strpos(rtrim($potentialTitle, '.'), '.');
+                            if ($periodPos !== false) {
+                                $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
+                                $remainder = substr($remainder, $periodPos);
+                            } else {
+                                // Does whole entry end in ')' or ').'?  If so, pubinfo is in parens, so booktitle ends
+                                // at previous '('; else booktitle is all of $potentialTitle
+                                if ($entry[strlen($entry) - 1] == ')' or $entry[strlen($entry) - 2] == ')') {
+                                    $booktitle = substr($remainder, 0, strrpos($remainder, '('));
+                                } else {
+                                    $booktitle = $potentialTitle;
+                                }
+                                $remainder = substr($remainder, strlen($booktitle));
+                            }
                         }
                     }
                 }
 
-                if (isset($item->editor)) {
+                if (isset($item->editor) && $item->editor) {
                     $this->verbose(['fieldName' => 'Editors', 'content' => strip_tags($item->editor)]);
                 } else {
                     $warnings[] = "Editor not found.";
@@ -1873,6 +1905,10 @@ class Converter
         }
         if (isset($item->pages) && !$item->pages) {
             unset($item->pages);
+        }
+
+        if (isset($item->address) && !$item->address) {
+            unset($item->address);
         }
 
         if (isset($item->volume) && !$item->volume) {
@@ -2245,8 +2281,11 @@ class Converter
     }
 
     /*
-     * For $string that matches <label><content>, remove match for <label> and return match for <content>, where <label> and <content>
-     * are regular expressions (without delimiters).  Matching is case-insensitive.  If no matches, return false.
+     * If $reportLabel is false: 
+     * For $string that matches <label><content>, remove match for <label> and <content> and return match for <content>,
+     * where <label> and <content> are regular expressions (without delimiters).  Matching is case-insensitive.
+     * If no matches, return false.
+     * If $reportLabel is true, return array with components 'label' and 'content'.
      * Example: $doi = $this->extractLabeledContent($string, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._]+');
      */ 
     public function extractLabeledContent(string &$string, string $labelPattern, string $contentPattern, bool $reportLabel = false): false|string|array
@@ -2283,6 +2322,44 @@ class Converter
         // }
 
         return $returner;
+    }
+    
+    /*
+     * Split an array of words into sentences.  Each period that 
+     * does not follow a single uc letter 
+     * AND follows a word that is (EITHER in the dictionary OR follows an initial [in which case it is presumably a name])
+     * AND is not an excluded word
+     * ends a sentence.
+    */
+    public function splitIntoSentences(array $words): array
+    {
+        $aspell = Aspell::create();
+
+        $sentences = [];
+        $sentence = '';
+        $wordCount = count($words);
+        $prevWordInitial = false;
+        foreach ($words as $key => $word) {
+            $sentence .= ($sentence ? ' ' : '') . $word;
+            $isInitial = (strlen($word) == 2 && strtoupper($word) == $word);
+            if (
+                substr($word, -1) == '.' 
+                && ! $isInitial
+                && ($prevWordInitial || 0 == iterator_count($aspell->check($word)))
+                && !in_array(substr($word,0, -1), $this->excludedWords)
+            ) {
+                $sentences[] = $sentence;
+                $sentence = '';
+            } elseif ($key == $wordCount - 1) {
+                $sentences[] = $sentence;
+            }
+            $prevWordInitial = false;
+            if ($isInitial) {
+                $prevWordInitial = true;
+            }
+        }
+
+        return $sentences;
     }
 
     /**
@@ -3719,9 +3796,13 @@ class Converter
             // forthcoming at start
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
             $journal = $this->getQuotedOrItalic($result['content'], true, false, $remains, $posStart, $posEnd);
+            if (!$journal) {
+                $journal = $result['content'];
+            }
             $label = $result['label'];
-            if (Str::startsWith($label, ['forthcoming', 'accepted'])) {
-                $label = Str::before($label, ' ');
+            if (Str::startsWith($label, ['Forthcoming', 'forthcoming', 'Accepted', 'accepted', 'To appear', 'to appear'])) {
+                $label = Str::replaceEnd(' in', '', $label);
+                $label = Str::replaceEnd(' at', '', $label);
             }
             $item->note = $label;
         } elseif ($pubInfoEndsWithForthcoming) {
@@ -3792,8 +3873,8 @@ class Converter
             $this->verbose('Remainder is entirely numeric, so assume it is the volume');
             $item->volume = $remainder;
             $remainder = '';
-        } elseif (preg_match('/^[IVXLCDM]{0,8}$/', $remainder)) {
-            $this->verbose('Remainder is Roman numeral, so assume it is the volume');
+        } elseif ($remainder && preg_match('/^[IVXLCDM]{0,8}$/', $remainder)) {
+            $this->verbose('Remainder is Roman number, so assume it is the volume');
             $item->volume = $remainder;
             $remainder = '';
         } elseif ($this->containsFontStyle($remainder, false, 'bold', $startPos, $length)) {
