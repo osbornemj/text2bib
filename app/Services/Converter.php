@@ -809,9 +809,6 @@ class Converter
         $remainder = ltrim($remainder, '., ');
         $this->verbose("[type] Remainder: " . strip_tags($remainder));
         
-        // What is the reason for this line (because at some point  there was a loop?)
-        //unset($city, $publisher, $type, $number, $institution, $booktitle, $workingPaperMatches);
-        
         $inStart = $containsIn = $italicStart = $containsBoldface = $containsEditors = $containsThesis = false;
         $containsNumber = $containsInteriorVolume = $containsCity = $containsPublisher = false;
         $containsIsbn = $containsEdition = $containsWorkingPaper = false;
@@ -1439,7 +1436,7 @@ class Converter
                             // CASE 1
                             // $remainder starts with names, and so
                             // $remainder is <editors> (Eds.) <booktitle> <publicationInfo>
-                            $this->verbose("Remainder contains \"(Eds.)\" or similar && starts with string that looks like a name");
+                            $this->verbose("Remainder contains \"(Eds.)\" or similar and starts with string that looks like a name");
                             $editorStart = true;
                             $editorString = substr($remainder, 0, $matches[0][1]);
                             $determineEnd = false;
@@ -1805,7 +1802,8 @@ class Converter
                 }
 
                 // If remainder contains word 'volume', take next word to be volume number, and if
-                // following word is "in", take string up to next comma to be series name
+                // following word is "in" or "of", take string up to next comma or period, whichever
+                // comes first, to be series name
                 $this->verbose('Looking for volume');
                 foreach ($remainingWords as $key => $word) {
                     if (count($remainingWords) > $key + 1
@@ -1814,10 +1812,10 @@ class Converter
                         $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($item->volume)]);
                         array_splice($remainingWords, $key, 2);
                         $series = [];
-                        if (strtolower($remainingWords[$key]) == 'in') {
+                        if (in_array(strtolower($remainingWords[$key]), ['in', 'of'])) {
                             for ($k = $key + 1; $k < count($remainingWords); $k++) {
                                 $series[] = $remainingWords[$k];
-                                if (substr($remainingWords[$k], -1) == ',') {
+                                if (in_array(substr($remainingWords[$k], -1), [',', '.'])) {
                                     if ($series[0][0] == "\\" || substr($series[0], 0, 2) == "{\\") {
                                         array_shift($series);
                                     }
@@ -2501,27 +2499,35 @@ class Converter
         if ($this->isInitials($words[0]) && count($words) >= 2) {
             $this->verbose('First word is initials and at least 2 words in string');
             if ($this->isName(rtrim($word1, '.,')) && (ctype_alpha($word1) || count($words) == 2)) {
-                $this->verbose("isNameString: string is name (case 1): &lt;initial&gt; &lt;name&gt;");
+                $this->verbose("isNameString: string is name (case 1): <initial> <name>");
                 $result = true;
             } elseif (
                     $this->isInitials($word1)
-                    and count($words) >= 3
-                    and $this->isName(rtrim($words[2], '.,'))
-                    and ctype_alpha(rtrim($words[2], '.,'))
+                    && count($words) >= 3
+                    && $this->isName(rtrim($words[2], '.,'))
+                    && ctype_alpha(rtrim($words[2], '.,'))
             ) {
-                $this->verbose("isNameString: string is name (case 2): &lt;initial&gt; &lt;initial&gt; &lt;name&gt;");
+                $this->verbose("isNameString: string is name (case 2): <initial> <initial> <name>");
+                $result = true;
+            } elseif (
+                in_array($word1, $this->vonNames)
+                && count($words) >= 3
+                && $this->isName(rtrim($words[2], '.,'))
+                && ctype_alpha(rtrim($words[2], '.,'))
+            ){
+                $this->verbose("isNameString: string is name (case 3): <initial> <vonName> <name>");
                 $result = true;
             } else {
                 $this->verbose("isNameString: string is not name (1)");
             }
         } elseif ($this->isName($words[0], ',') && count($words) >= 2 && $this->isInitials($word1)) {
-            $this->verbose("isNameString: string is name (case 3): &lt;name&gt; &lt;initial&gt;");
+            $this->verbose("isNameString: string is name (case 4): <name> <initial>");
             $result = true;
         } elseif ($this->isName($words[0], ',') && count($words) == 2 && $this->isName($word1, '.')) {
-            $this->verbose("isNameString: string is name (case 4): &lt;name&gt; &lt;name&gt;");
+            $this->verbose("isNameString: string is name (case 5): <name> <name>");
             $result = true;
         } elseif ($this->isName($words[0], ',') && count($words) >= 2 && $this->isName($word1) && $words[2] == $phrases['and']) {
-            $this->verbose("isNameString: string is name (case 5): &lt;name&gt; &lt;name&gt; and");
+            $this->verbose("isNameString: string is name (case 6): <name> <name> and");
             $result = true;
         } else {
             $this->verbose("isNameString: string is not name (2)");
@@ -2531,9 +2537,9 @@ class Converter
     }
 
     /*
-        * Report whether string is a date, in a range of formats, including 2 June 2018, 2 Jun 2018, 2 Jun. 2018, June 2, 2018,
-        * 6-2-2018, 6/2/2018, 2-6-2018, 2/6/2018.
-        */
+     * Report whether string is a date, in a range of formats, including 2 June 2018, 2 Jun 2018, 2 Jun. 2018, June 2, 2018,
+     * 6-2-2018, 6/2/2018, 2-6-2018, 2/6/2018.
+    */
     public function isDate(string $string): bool
     {
         $str = str_replace([","], "", trim($string, ',. '));

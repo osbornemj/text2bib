@@ -1284,7 +1284,34 @@ class ExampleSeeder extends Seeder
                         'author' => 'Bar-Natan, D.',
                         'journal' => 'J. Knot Theory Ramifications',
                         ]
-                ],                                                                                                                                                             
+                ],
+                [
+                    'source' => '\bibitem{K2-69} Bass, H. \& Morgan, J. W. (1984a). The Smith Conjecture, Volume 112 of Pure and Applied Mathematics. Academic Press.  ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1984',
+                        'title' => 'The Smith Conjecture',
+                        'author' => 'Bass, H. and Morgan, J. W.',
+                        'volume' => '112',
+                        'series' => 'Pure and Applied Mathematics',
+                        'publisher' => 'Academic Press',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-70} Bauer, S. (1988). The homotopy type of a 4-manifold with finite fundamental group. In T. tom Dieck (Ed.), Algebraic Topology and Transformation Groups, Volume 1361 of Lecture Notes in Math., pp. 1-6. Springer-Verlag.',
+                    'type' => 'incollection',
+                    'bibtex' => [
+                        'year' => '1988',
+                        'pages' => '1-6',
+                        'title' => 'The homotopy type of a 4-manifold with finite fundamental group',
+                        'author' => 'Bauer, S.',
+                        'editor' => 'T. tom Dieck',
+                        'volume' => '1361',
+                        'series' => 'Lecture Notes in Math.',
+                        'publisher' => 'Springer-Verlag',
+                        'booktitle' => 'Algebraic Topology and Transformation Groups',
+                        ]
+                ],                                                                                                                                                                             
         ];
 
         DB::statement('DELETE FROM examples');
