@@ -104,6 +104,7 @@ class Converter
 
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
         $this->volRegExp2 = '/^[Vv]ol(\.|ume)? ?/';
+        $this->volumeRegExp1 = '[Vv]olume ?|[Vv]ol\.? ?';
 
         $this->inRegExp1 = '/^[iI]n:? /';
         $this->inRegExp2 = '/([iI]n: |, in| in\) )/';
@@ -135,7 +136,6 @@ class Converter
         $this->pagesRegExp3 = '/^pages |^pp\.?|^p\.|^p /i';
 
         $this->numberRegExp1 = '[Nn]os?\.?:?|[Nn]umbers?|[Ii]ssues?';
-        $this->volumeRegExp1 = '[Vv]ol\.? ?|[Vv]olume ?';
 
         $this->isbnRegExp = 'ISBN:? [0-9X]+';
         $this->oclcRegExp = 'OCLC:? [0-9]+';
@@ -1288,11 +1288,13 @@ class Converter
                 // Get pages and remove them from $remainder
                 $regExp = '(\()?(' . $this->pagesRegExp2 . ')?( )?([1-9][0-9]{0,4} ?-{1,2} ?[0-9]{1,5})(\))?';
                 // Return group 4 of match and remove whole match from $remainder
-                $pages = $this->findRemoveAndReturn($remainder, $regExp, 4);
+                $result = $this->findRemoveAndReturn($remainder, $regExp);
+                if ($result) {
+                    $pages = $result[4];
+                    $item->pages = $pages ? str_replace(['--', ' '], ['-', ''], $pages) : '';
+                }
 
-                $item->pages = $pages ? str_replace(['--', ' '], ['-', ''], $pages) : '';
-
-                if ($item->pages) {
+                if (isset($item->pages)) {
                     $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
                 } else {
                     $warnings[] = "Pages not found.";
@@ -1681,43 +1683,57 @@ class Converter
                     // Case in which $booktitle is not defined: remainder presumably starts with booktitle
                     $remainder = trim($remainder, '., ');
                     $this->verbose("[in6] Remainder: " . $remainder);
-                    // $remainder contains book title and publication info.  Need to find boundary.  Temporarily drop last
-                    // word from remainder, then any initials (which are presumably part of the publisher's name), then
-                    // the previous word.  In what is left, take the booktitle to end at the first period
-                    $words = explode(" ", $remainder);
-                    $sentences = $this->splitIntoSentences(($words));
-                    // if remainder contains a single period, take that as end of booktitle
-                    if (substr_count($remainder, '.') == 1) {
-                        $this->verbose("Remainder contains single period, so take that as end of booktitle");
-                        $periodPos = strpos($remainder, '.');
-                        $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
-                        $remainder = substr($remainder, $periodPos);
-                    } else {
-                        $sentences = $this->splitIntoSentences($words);
-                        // If two or more sentences, take all but last one to be booktitle.
-                        if (count($sentences) > 1) {
-                            $booktitle = implode(' ', array_slice($sentences, 0, count($sentences) - 1));
-                            $remainder = $sentences[count($sentences) -  1];
-                        } else {
-                            $n = count($words);
-                            for ($j = $n - 2; $j > 0 && $this->isInitials($words[$j]); $j--) {
+                    // $remainder contains book title and publication info.  Need to find boundary.  
 
-                            }
-                            $potentialTitle = implode(" ", array_slice($words, 0, $j));
-                            $this->verbose("Potential title: " . $potentialTitle);
-                            $periodPos = strpos(rtrim($potentialTitle, '.'), '.');
-                            if ($periodPos !== false) {
-                                $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
-                                $remainder = substr($remainder, $periodPos);
+                    // Check whether publication info matches pattern for book to be a volume in a series
+                    $result = $this->findRemoveAndReturn(
+                        $remainder,
+                        '(' . $this->volumeRegExp1 . ')( ([1-9][0-9]{0,4}))(( of| in|,) )([^\.,]*\.|,)'
+                        );
+                    if ($result) {
+                        $item->volume = $result[3];
+                        $item->series = $result[6];
+                        $booktitle = trim($result['before'], '., ');
+                        $remainder = trim($result['after'], ',. ');
+                        $this->verbose('Volume found, so book is part of a series');
+                        $this->verbose(['fieldName' => 'Volume', 'content' => $item->volume]);
+                        $this->verbose(['fieldName' => 'Series', 'content' => $item->series]);
+                        $this->verbose('Remainder (publisher and address): ' . $remainder);
+                    } else {
+                        // if remainder contains a single period, take that as end of booktitle
+                        if (substr_count($remainder, '.') == 1) {
+                            $this->verbose("Remainder contains single period, so take that as end of booktitle");
+                            $periodPos = strpos($remainder, '.');
+                            $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
+                            $remainder = substr($remainder, $periodPos);
+                        } else {
+                            $words = explode(" ", $remainder);
+                            $sentences = $this->splitIntoSentences($words);
+                            // If two or more sentences, take all but last one to be booktitle.
+                            if (count($sentences) > 1) {
+                                $booktitle = implode(' ', array_slice($sentences, 0, count($sentences) - 1));
+                                $remainder = $sentences[count($sentences) -  1];
                             } else {
-                                // Does whole entry end in ')' or ').'?  If so, pubinfo is in parens, so booktitle ends
-                                // at previous '('; else booktitle is all of $potentialTitle
-                                if ($entry[strlen($entry) - 1] == ')' or $entry[strlen($entry) - 2] == ')') {
-                                    $booktitle = substr($remainder, 0, strrpos($remainder, '('));
-                                } else {
-                                    $booktitle = $potentialTitle;
+                                $n = count($words);
+                                for ($j = $n - 2; $j > 0 && $this->isInitials($words[$j]); $j--) {
+
                                 }
-                                $remainder = substr($remainder, strlen($booktitle));
+                                $potentialTitle = implode(" ", array_slice($words, 0, $j));
+                                $this->verbose("Potential title: " . $potentialTitle);
+                                $periodPos = strpos(rtrim($potentialTitle, '.'), '.');
+                                if ($periodPos !== false) {
+                                    $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
+                                    $remainder = substr($remainder, $periodPos);
+                                } else {
+                                    // Does whole entry end in ')' or ').'?  If so, pubinfo is in parens, so booktitle ends
+                                    // at previous '('; else booktitle is all of $potentialTitle
+                                    if ($entry[strlen($entry) - 1] == ')' or $entry[strlen($entry) - 2] == ')') {
+                                        $booktitle = substr($remainder, 0, strrpos($remainder, '('));
+                                    } else {
+                                        $booktitle = $potentialTitle;
+                                    }
+                                    $remainder = substr($remainder, strlen($booktitle));
+                                }
                             }
                         }
                     }
@@ -1733,9 +1749,9 @@ class Converter
                 $this->verbose("[in6b] remainder: " . $remainder);
 
                 // If $remainder contains 'forthcoming' string, remove it and put it in $item->note.
-                $match = $this->findRemoveAndReturn($remainder, '^(Forthcoming|In press|Accepted)', 1);
-                if ($match) {
-                    $item->note .= ' ' . $match;
+                $result = $this->findRemoveAndReturn($remainder, '^(Forthcoming|In press|Accepted)');
+                if ($result) {
+                    $item->note .= ' ' . $result[0];
                     $this->verbose('"Forthcoming" string removed and put in note field');
                     $this->verbose('Remainder: ' . $remainder);
                     $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
@@ -1915,6 +1931,10 @@ class Converter
 
         if (isset($item->editor) && !$item->editor) {
             unset($item->editor);
+        }
+
+        if (isset($item->booktitle) && $item->booktitle) {
+            $item->booktitle = trim($booktitle, ' .,');
         }
 
         foreach ($warnings as $warning) {
@@ -2258,7 +2278,7 @@ class Converter
      * and remove entire match for $regExp from $string after triming ',. ' from substring preceding match.
      * If no match, return false (and do not alter $string).
      */
-    public function findRemoveAndReturn(string &$string, string $regExp, int $groupNumber = 0): false|string
+    public function findRemoveAndReturn(string &$string, string $regExp): false|string|array
     {
         $matched = preg_match(
             '%' . $regExp . '%i',
@@ -2271,11 +2291,29 @@ class Converter
             return false;
         }
 
-        $match = $matches[$groupNumber][0];
-        $string = trim(substr($string, 0, $matches[0][1]), ',. ') . substr($string, $matches[0][1] + strlen($matches[0][0]), strlen($string));
+        $result = [];
+        for ($i = 0; $i < 100; $i++) {
+            if (isset($matches[$i][0])) {
+                $result[$i] = $matches[$i][0];
+            } else {
+                break;
+            }
+        }
+        // if (is_array($groupNumber)) {
+        //     foreach ($groupNumber as $number) {
+        //         $result[] = $matches[$number][0];
+        //     }
+        // } else {
+        //     $result[] = $matches[$groupNumber][0];
+        // }
+
+        //$string = trim(substr($string, 0, $matches[0][1]), ',. ') . substr($string, $matches[0][1] + strlen($matches[0][0]), strlen($string));
+        $result['before'] = substr($string, 0, $matches[0][1]);
+        $result['after'] = substr($string, $matches[0][1] + strlen($matches[0][0]), strlen($string));
+        $string = substr($string, 0, $matches[0][1]) . substr($string, $matches[0][1] + strlen($matches[0][0]), strlen($string));
         $string = $this->regularizeSpaces(trim($string));
 
-        return $match;
+        return $result;
     }
 
     /*
@@ -2665,7 +2703,7 @@ class Converter
             }
 
             if ($case == 12 
-                    && ! in_array($word, ['Jr.', 'Jr.,', 'Sr.', 'Sr.,']) 
+                    && ! in_array($word, ['Jr.', 'Jr.,', 'Sr.', 'Sr.,', 'III', 'III,']) 
                     // deal with names like Bruine de Bruin, W.
                     && isset($words[$i+1]) // must be at least 2 words left
                     && ! $this->isAnd($words[$i+1]) // next word is not 'and'
@@ -2848,7 +2886,7 @@ class Converter
                 // However, it must have been included here for a reason, so probably it should be included under
                 // some conditions.
                 //$nameComponent = $this->trimRightBrace($this->spaceOutInitials(rtrim($word, ',;')));
-                if (Str::startsWith($word, ['Jr.', 'Sr.'])) {
+                if (Str::startsWith($word, ['Jr.', 'Sr.', 'III'])) {
                     $nameWords = explode(' ', trim($fullName, ' '));
                     if (count($nameWords) == 1) {
                         $fullName = $nameWords[0] . ' ' . $word;
