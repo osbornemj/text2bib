@@ -107,7 +107,7 @@ class Converter
         $this->volumeRegExp1 = '[Vv]olume ?|[Vv]ol\.? ?';
 
         $this->inRegExp1 = '/^[iI]n:? /';
-        $this->inRegExp2 = '/([iI]n: |, in| in\) )/';
+        $this->inRegExp2 = '/( [iI]n: |, in| in\) )/';
 
         $this->startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
         $this->endForthcomingRegExp = '(forthcoming|in press|accepted|to appear)\.?\)?$';
@@ -792,7 +792,7 @@ class Converter
             if (isset($month)) {
                 $containsMonth = true;
                 // translate 'Jan' or 'Jan.' or 'January', for example, to 'January'.
-                $item->month = Carbon::parse($month)->format('F');
+                $item->month = Carbon::parse('1 ' . $month)->format('F');
                 $this->verbose(['fieldName' => 'Month', 'content' => strip_tags($item->month)]);
             }
         }
@@ -814,7 +814,7 @@ class Converter
         $containsIsbn = $containsEdition = $containsWorkingPaper = false;
         $containsNumberedWorkingPaper = $containsNumber = $pubInfoStartsWithForthcoming = $pubInfoEndsWithForthcoming = false;
         $containsVolume = $endsWithInReview = false;
-        $cityLength = $publisherLength = 0;
+        $cityLength = 0;
         $publisherString = $cityString = '';
 
         if (preg_match($this->inRegExp1, $remainder)) {
@@ -938,10 +938,7 @@ class Converter
             if (Str::contains($remainder, $publisher)) {
                 $containsPublisher = true;
                 $publisherString = $publisher;
-                $publisherLength = strlen($publisher);
-                //dump($remainder, $publisher);
                 $remainderMinusPubInfo = Str::replaceFirst($publisher, '', $remainder);
-                //dd($remainderMinusPubInfo);
                 $this->verbose("Contains publisher \"" . $publisher . "\"");
                 break;
             }
@@ -1034,7 +1031,7 @@ class Converter
             $this->verbose("Item type case 9a");
             $itemKind = 'unpublished';
         } elseif ($containsPublisher || $inStart) {
-            if ((!$containsIn && ! $containsPageRange) || strlen($remainder) - $cityLength - $publisherLength < 30) {
+            if ((!$containsIn && ! $containsPageRange) || strlen($remainder) - $cityLength - strlen($publisher) < 30) {
                 $this->verbose("Item type case 10");
                 $itemKind = 'book';
             } else {
@@ -1818,54 +1815,165 @@ class Converter
                 }
 
                 // If remainder contains word 'volume', take next word to be volume number, and if
-                // following word is "in" or "of", take string up to next comma or period, whichever
-                // comes first, to be series name
+                // following word is "in" or "of", volume is part of series
                 $this->verbose('Looking for volume');
-                foreach ($remainingWords as $key => $word) {
-                    if (count($remainingWords) > $key + 1
-                            && in_array(strtolower(trim($word, ',. ()')), ['volume', 'vol'])) {
-                        $item->volume = trim($remainingWords[$key + 1], ',. ');
-                        $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($item->volume)]);
-                        array_splice($remainingWords, $key, 2);
-                        $series = [];
-                        if (in_array(strtolower($remainingWords[$key]), ['in', 'of'])) {
-                            for ($k = $key + 1; $k < count($remainingWords); $k++) {
-                                $series[] = $remainingWords[$k];
-                                if (in_array(substr($remainingWords[$k], -1), [',', '.'])) {
-                                    if ($series[0][0] == "\\" || substr($series[0], 0, 2) == "{\\") {
-                                        array_shift($series);
+                $done = false;
+                $newRemainder = null;
+                $remainder = implode(" ", $remainingWords);
+                $result = $this->findRemoveAndReturn(
+                    $remainder,
+                    '(' . $this->volumeRegExp1 . ')( ([1-9][0-9]{0,4}))(( of| in|,|.)? )(.*)$'
+                );
+                if ($result) {
+                    $item->volume = $result[3];
+                    if (in_array($result[5], ['.', ','])) {
+                        // Volume is volume of book, not part of series
+                        // Publisher and possibly address
+                        $newRemainder = $result[6];
+                    } else {
+                        // Volume is part of series
+                        $this->verbose('Volume is part of series: assume format is <series> <publisherAndAddress>');
+                        $this->verbose(['fieldName' => 'Volume', 'content' => $item->volume]);
+                        $seriesAndPublisher = $result[6];
+                        // Case in which  publisher has been identified
+                        if ($publisher) {
+                            $this->verbose('Publisher has been identified');
+                            $item->publisher = $publisher;
+                            $this->verbose(['fieldName' => 'Publisher', 'content' => $item->publisher]);
+                            $after = Str::after($seriesAndPublisher, $publisher);
+                            $before = Str::before($seriesAndPublisher, $publisher);
+                            if ($after) {
+                                // If anything comes after the publisher, it must be the address, and the string
+                                // before the publisher must be the series
+                                $item->address = trim($after, ',. ');
+                                $item->series = trim($before, '., ');
+                            } else {
+                                // If nothing comes after the publisher,
+                                if (Str::endsWith($before, ': ')) {
+                                    // if the string before the publisher ends with ': ', the string that precedes
+                                    // ':' back to the previous comma or period, whichever comes first, is the address
+                                    // and the string before that is the series.  If the string that precedes ':'
+                                    // contains no period or comma, the address is the string from the last space to
+                                    // ':'.
+                                    $containsComma = Str::contains($before, ',');
+                                    $containsPeriod = Str::contains($before, '.');
+                                    $beforeLastComma = Str::beforeLast($before, ',');
+                                    $beforeLastPeriod = Str::beforeLast($before, '.');
+                                    if ($containsComma && $containsPeriod) {
+                                        if (strlen($beforeLastComma > $beforeLastPeriod)) {
+                                            $item->address = trim(substr($before, strlen($beforeLastComma)), '.,: ');
+                                            $item->series = trim($beforeLastComma, '.,: ');
+                                        } else {
+                                            $item->address = trim(substr($before, strlen($beforeLastPeriod)), '.,: ');
+                                            $item->series = trim($beforeLastPeriod, '.,: ');
+                                        }
+                                    } elseif ($containsComma) {
+                                        $item->address = trim(substr($before, strlen($beforeLastComma)), '.,: ');
+                                        $item->series = trim($beforeLastComma, '.,: ');
+                                    } elseif ($containsPeriod) {
+                                        $item->address = trim(substr($before, strlen($beforeLastPeriod)), '.,: ');
+                                        $item->series = trim($beforeLastPeriod, '.,: ');
+                                    } else {
+                                        $beforeLastSpace = Str::beforeLast($before, ' ');
+                                        $item->address = trim(substr($before, strlen($beforeLastSpace)), '.,: ');
+                                        $item->series = trim($beforeLastSpace, '.,: ');
                                     }
-                                    $item->series = trim(implode(" ", $series), '.,}');
-                                    $this->verbose(['fieldName' => 'Series', 'content' => strip_tags($item->series)]);
-                                    array_splice($remainingWords, $key, $k - $key + 1);
-                                    break;
+                                    $this->verbose(['fieldName' => 'Series', 'content' => $item->series]);
+                                    $this->verbose(['fieldName' => 'Publication city', 'content' => $item->address]);
+                                } else {
+                                    // Otherwise there is no address, and the series is the string before the publisher
+                                    $item->series = trim($before, '.,: ');
+                                    $this->verbose(['fieldName' => 'Series', 'content' => $item->series]);
+                                }
+                            }
+                        } else {
+                            // Case in which no publisher has been identified so far
+                            $this->verbose('No publisher has yet been identified');
+                            $result1 = $this->findRemoveAndReturn(
+                                $seriesAndPublisher,
+                                '(.*)[.,]( ([^,.])*(,|:)) ([^,.]*)\.?$'
+                            );
+                            if ($result1) {
+                                $item->series = $result1[1];
+                                if ($result1[4] == ',') {
+                                    $this->verbose('Series case 1a: format is <publisher>, <address>');
+                                    $item->publisher = trim($result1[2], ' ,');
+                                    $item->address = $result1[5];
+                                } elseif ($result1[4] == ':') {
+                                    $this->verbose('Series case 1b: format is <address>: <publisher>');
+                                    $item->address = trim($result1[2], ' :');
+                                    $item->publisher = $result1[5];
+                                }
+                                $this->verbose(['fieldName' => 'Series', 'content' => $item->series]);
+                                $this->verbose(['fieldName' => 'Publisher', 'content' => $item->publisher]);
+                                $this->verbose(['fieldName' => 'Publication city', 'content' => $item->address]);
+                            } else {
+                                $result2 = $this->findRemoveAndReturn(
+                                    $seriesAndPublisher,
+                                    '(.*[^.,]*)\. (.*\.?)$'
+                                );
+                                if ($result2) {
+                                    $this->verbose('Series case 2: format is <publisher> (no address)');
+                                    $item->series = $result2[1];
+                                    $item->publisher = $result2[2];
+                                    $this->verbose(['fieldName' => 'Series', 'content' => $item->series]);
+                                    $this->verbose(['fieldName' => 'Publisher', 'content' => $item->publisher]);
                                 }
                             }
                         }
-                        break;
+                        $done = true;
                     }
                 }
 
-                $remainder = implode(" ", $remainingWords);
-                // If string is in italics, get rid of the italics
-                if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
-                    $remainder = rtrim(substr($remainder, $length), '}');
-                }
+                // Volume has been identified, but publisher and possibly address reamin
+                if (!$done) {
+                    $remainder = $newRemainder ? $newRemainder : implode(" ", $remainingWords);
 
-                $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher);
+                // foreach ($remainingWords as $key => $word) {
+                //     if (count($remainingWords) > $key + 1
+                //             && in_array(strtolower(trim($word, ',. ()')), ['volume', 'vol'])) {
+                //         $item->volume = trim($remainingWords[$key + 1], ',. ');
+                //         $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($item->volume)]);
+                //         array_splice($remainingWords, $key, 2);
+                //         $series = [];
+                //         if (in_array(strtolower($remainingWords[$key]), ['in', 'of'])) {
+                //             for ($k = $key + 1; $k < count($remainingWords); $k++) {
+                //                 $series[] = $remainingWords[$k];
+                //                 if (in_array(substr($remainingWords[$k], -1), [',', '.'])) {
+                //                     if ($series[0][0] == "\\" || substr($series[0], 0, 2) == "{\\") {
+                //                         array_shift($series);
+                //                     }
+                //                     $item->series = trim(implode(" ", $series), '.,}');
+                //                     $this->verbose(['fieldName' => 'Series', 'content' => strip_tags($item->series)]);
+                //                     array_splice($remainingWords, $key, $k - $key + 1);
+                //                     break;
+                //                 }
+                //             }
+                //         }
+                //         break;
+                //     }
+                // }
 
-                $item->publisher = $publisher;
-                if ($item->publisher) {
-                    $this->verbose(['fieldName' => 'Publisher', 'content' => strip_tags($item->publisher)]);
-                } else {
-                    $warnings[] = "No publisher identified.";
-                }
+                    // If string is in italics, get rid of the italics
+                    if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
+                        $remainder = rtrim(substr($remainder, $length), '}');
+                    }
 
-                $item->address = $address;
-                if ($item->address) {
-                    $this->verbose(['fieldName' => 'Publication city', 'content' => strip_tags($item->address)]);
-                } else {
-                    $warnings[] = "No place of publication identified.";
+                    $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher);
+
+                    $item->publisher = $publisher;
+                    if ($item->publisher) {
+                        $this->verbose(['fieldName' => 'Publisher', 'content' => strip_tags($item->publisher)]);
+                    } else {
+                        $warnings[] = "No publisher identified.";
+                    }
+
+                    $item->address = $address;
+                    if ($item->address) {
+                        $this->verbose(['fieldName' => 'Publication city', 'content' => strip_tags($item->address)]);
+                    } else {
+                        $warnings[] = "No place of publication identified.";
+                    }
                 }
 
                 break;
@@ -2010,7 +2118,7 @@ class Converter
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/', $remainder, $matches)
                         || preg_match($this->pagesRegExp3, $remainder, $matches)
-                        || preg_match('/^in |^' . $this->journalWord . ' |^Vol\.? |^Volume /', $remainder)
+                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Vol\.? |^Volume /', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9]\./', $remainder)
                         || Str::startsWith($remainder, $this->publishers)) {
                         $this->verbose("Ending title, case 1");
@@ -2029,20 +2137,20 @@ class Converter
                     if ($nextWord && (strtolower($nextWord[0]) == $nextWord[0] || Str::startsWith($remainder, ['I. ', 'II. ', 'III. ']))) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
                         $skipNextWord = true;
-                    // if next word is short and ends with period, assume it is the first word of the publication info, which
+                    // else if next word is short and ends with period, assume it is the first word of the publication info, which
                     // is an abbreviation,
                     } elseif ($nextWord && strlen($nextWord) < 8 && Str::endsWith($nextWord, '.')) {
                         $this->verbose("Ending title, case 2");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
-                    // if following string up to next period contains only letters and spaces and doesn't start with "in"
+                    // else if following string up to next period contains only letters and spaces and doesn't start with "in"
                     // (which is unlikely to be within a title following punctuation)
                     // and is followed by at least 40 characters (for the publication info), assume it is part of the title,
                     } elseif (preg_match('/[a-zA-Z ]+/', $stringToNextPeriod)
                             && !preg_match($this->inRegExp1, $remainder)
                             && strlen($remainder) > strlen($stringToNextPeriod) + 40) {
                         $this->verbose("Not ending title, case 2 (next word is " . $nextWord . ")");
-                    // if working paper string occurs later in remainder,
+                    // else if working paper string occurs later in remainder,
                     } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/', $remainder, $matches)) {
                         // if no intervening punctuation, end title
                         if (!Str::contains($matches[1], ['.', ',', ':'])) {
@@ -2053,12 +2161,16 @@ class Converter
                         } else {
                             $this->verbose("Not ending title, case 3 (working paper string is coming up)");
                         }
-                    // If there has been no period so far and italics is coming up, 
+                    // else if there has been no period so far and italics is coming up, 
                     // wait for the italics (journal name?)
                     } elseif (!$periodFound 
                             && $this->containsFontStyle($remainder, false, 'italics', $startPos, $length)) {
                                 //dd($remainder, $startPos, $word, $periodFound, $stringToNextPeriod);
                         $this->verbose("Not ending title, case 4 (italics is coming up)");
+                    // else if word ends with comma and volume info is coming up, wait for it
+                    // (if word ends in period, )
+                     } elseif (Str::endsWith($word, [',']) && preg_match('/' . $this->volumeRegExp1 . '/', $remainder)) {
+                         $this->verbose("Not ending title, case 5 (volume info is coming up)");
                     // otherwise assume the punctuation ends the title.
                     } else {
                         $this->verbose("Ending title, case 4");
@@ -2264,7 +2376,7 @@ class Converter
     }
 
     /*
-     * Remove all matches for $regExp (regular expression without delimiters) from $string
+     * Remove all matches for $regExp (regular expression without delimiters), case insensitive, from $string
      * and return resulting string (unaltered if there are no matches).
      */
     public function findAndRemove(string $string, string $regExp): string
@@ -2917,7 +3029,7 @@ class Converter
                             $done = 1;
                         }
                     }
-                    $this->verbose('Name with Jr. or Sr.; fullName: ' . $fullName);
+                    $this->verbose('Name with Jr., Sr., or III; fullName: ' . $fullName);
                     $case = 15;
                 } else {
                     $nameComponent = $this->spaceOutInitials(rtrim($word, ',;'));
@@ -2942,7 +3054,9 @@ class Converter
                         $case = 7;
                     } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), true, $remainder, false, $trash)) {
                         $done = 1;
+                        $fullName = ($fullName[0] != ' ' ? ' ' : '') . $fullName;
                         $authorstring .= $this->formatAuthor($fullName);
+                        //$authorstring .= (substr($authorstring, -1) != ' ' ? ' ' : '') . $this->formatAuthor($fullName);
                         $case = 8;
                         $reason = 'Remainder starts with year';
                     } elseif ($determineEnd && count($bareWords) > 2 && $nameScore['score'] / $nameScore['count'] < 0.25 && ! $this->isInitials($remainingWords[0])) {
@@ -3233,7 +3347,8 @@ class Converter
     }
 
     /**
-     * getYear: get *last* substring in $string that is a year, unless $start is true, in which case restrict to start of string and take only first match
+     * getYear: get *last* substring in $string that is a year, unless $start is true, in which case restrict to 
+     * start of string and take only first match
      * @param $string string
      * @param $start boolean (if true, check only for substring at start of string)
      * @param $remains what is left of the string after the substring is removed
@@ -3424,14 +3539,14 @@ class Converter
     }
 
     /**
-     * extractPublisherAndAddress
+     * Assuming $string contains exactly the publisher and address, break it into those two components;
+     * return remaining string (if any)
      * @param $string string
      * @param $address string
      * @param $publisher string
-     * Assuming $string contains exactly the publisher and address, break it into those two components;
-     * return remaining string (if any)
      */
-    public function extractPublisherAndAddress($string, &$address, &$publisher) {
+    public function extractPublisherAndAddress(string $string, string|null &$address, string|null &$publisher): string
+    {
         $containsPublisher = $containsCity = false;
         $string = trim($string, ' ().,');
         // If $string contains a single ':', take city to be preceding string and publisher to be
@@ -3630,28 +3745,35 @@ class Converter
      * isNotName: determine if array of words starts with a name
      * @param $words array
      */
-    public function isNotName($word1, $word2) {
+    public function isNotName(string $word1, string $word2): bool
+    {
         $words = [$word1, $word2];
         $this->verbose(['text' => 'Arguments of isNotName: ', 'words' => [$words[0], $words[1]]]);
         $result = false;
+        $accentRegExp = '/^(\\\"|\\\\\'|\\\`|\\\\\^|\\\H|\\\v|\\\~|\\\k|\\\c|\\\\\.)\{?[A-Z]\}?/';
+        
         for ($i = 0; $i < 2; $i++) {
-            if (preg_match('/^(\\\"|\\\\\'|\\`)\{?[A-Z]\}?/', $words[$i])) {
+            if (preg_match($accentRegExp, $words[$i])) {
                 $this->verbose(['text' => 'Name component ', 'words' => [$words[$i]], 'content' => ' starts with accented uppercase character']);
-            }
-            // not a name if is starts with l.c. and is not a von name and doesn't start with accented uppercase char
-            if (isset($words[$i][0]) and strtolower($words[$i][0]) == $words[$i][0]
-                    and ! preg_match('/^(\\\"|\\\\\'|\\`)\{?[A-Z]\}?/', $words[$i])
-                    and substr($words[$i], 0, 2) != "d'" and ! in_array($words[$i], $this->vonNames)) {
+            } elseif (
+                // not a name if doesn't start with an accented uppercase letter and it starts with l.c. and is not
+                // "d'" and is not a von name
+                isset($words[$i][0]) 
+                    && strtolower($words[$i][0]) == $words[$i][0]
+                    && substr($words[$i], 0, 2) != "d'" 
+                    && ! in_array($words[$i], $this->vonNames)
+                ) {
                 $this->verbose(['text' => 'isNotName: ', 'words' => [$words[$i]], 'content' => ' appears not to be a name']);
                 return true;
             }
         }
+
         $this->verbose(['text' => 'isNotName: ', 'words' => [$word1, $word2], 'content' => ' appear to be names']);
         return $result;
     }
 
     /**
-     * spaceOutInitials: regularize A.B. or A. B. to A. B. (but keep A.-B. as it is)
+     * Regularize A.B. or A. B. to A. B. (but keep A.-B. as it is)
      * @param $string string
      */
     public function spaceOutInitials(string $string): string
@@ -3664,7 +3786,8 @@ class Converter
      * In particular, change Smith AB to Smith, A. B. and A.B. SMITH to A. B. Smith
      * $nameString is a FULL name (e.g. first and last or first middle last)
      */
-    public function formatAuthor($nameString) {
+    public function formatAuthor(string $nameString): string
+    {
         $this->verbose(['text' => 'formatAuthor: argument ', 'words' => [$nameString]]);
         $names = explode(' ', $nameString);
         // $initialsStart is index of component (a) that is initials and (b) after which all components are initials
@@ -3711,7 +3834,7 @@ class Converter
             // in $name or a comma has occurred, and all letters in the name are uppercase, assume $name
             // is initials.  Put periods and spaces as appropriate.
             if (! $allUppercase && ! $initialPassed && (strlen($lettersOnlyName) < 3 || $commaPassed) 
-                        && strtoupper($lettersOnlyName) == $lettersOnlyName) {
+                        && strtoupper($lettersOnlyName) == $lettersOnlyName && $lettersOnlyName != 'III') {
                 // First deal with single accented initial
                 // Case of multiple accented initials not currently covered
                 if (preg_match('/^\\\\\S\{[a-zA-Z]\}\.$/', $name)) {  // e.g. \'{A}.
@@ -3737,9 +3860,12 @@ class Converter
                         }
                     }
                 }
+                // if (isset($fName[0]) && $fName[0] == 'M') {
+                //     dd($fName);
+                // }
             // if name is ALL uppercase and contains no period, translate uppercase component to an u.c. first letter and the rest l.c.
             // (Contains no period to deal with name H.-J., which should not be convered to H.-j.)
-            } elseif (strtoupper($lettersOnlyName) == $lettersOnlyName and strpos($name, '.') === false) {
+            } elseif (strtoupper($lettersOnlyName) == $lettersOnlyName && strpos($name, '.') === false && $lettersOnlyName != 'III') {
                 $fName .= ucfirst(strtolower($name));
             } else {
                 $fName .= $name;
@@ -3884,7 +4010,7 @@ class Converter
     // to start with uppercase letter only if first number in range does so---and if pp. is present, almost
     // anything following should be allowed as page numbers?
     // --- shouldn't delimit pages, but might be given by mistake
-    public function getPagesForArticle(string &$remainder, object &$item)
+    public function getPagesForArticle(string &$remainder, object &$item): void
     {
         $numberOfMatches = preg_match_all('/(' . $this->pagesRegExp1 . ')?( )?([A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})/', $remainder, $matches, PREG_OFFSET_CAPTURE);
         if ($numberOfMatches) {
@@ -3911,7 +4037,7 @@ class Converter
         $remainder = trim($remainder, ',. ');
     }
 
-    public function getVolumeAndNumberForArticle(string &$remainder, object &$item)
+    public function getVolumeAndNumberForArticle(string &$remainder, object &$item): void
     {
         if (ctype_digit($remainder)) {
             $this->verbose('Remainder is entirely numeric, so assume it is the volume');
@@ -4207,7 +4333,8 @@ class Converter
 
         $string = str_replace("\\ ", " ", $string);
         $string = str_replace("\\textbf{\\ }", " ", $string);
-        $string = str_replace("~", " ", $string);
+        // Replace ~ with space if not preceded by \
+        $string = preg_replace('/([^\\\])~/', '$1 ', $string);
         $string = str_replace("\\/", "", $string);
 
         // Delete ^Z and any trailing space (^Z is at end of last entry of DOS file)
@@ -4219,6 +4346,4 @@ class Converter
 
         return $string;
     }
-
-
 }

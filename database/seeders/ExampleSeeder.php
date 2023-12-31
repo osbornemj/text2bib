@@ -1311,7 +1311,131 @@ class ExampleSeeder extends Seeder
                         'publisher' => 'Springer-Verlag',
                         'booktitle' => 'Algebraic Topology and Transformation Groups',
                         ]
-                ],                                                                                                                                                                             
+                ],
+                [
+                    'source' => '\bibitem{K2-75} Baumslag, G., Dyer, E., \& Miller, III, C. F. (1983). On the integral homology of finitely presented groups. Topology Vol. 22, 27-46.',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1983',
+                        'pages' => '27-46',
+                        'title' => 'On the integral homology of finitely presented groups',
+                        'author' => 'Baumslag, G. and Dyer, E. and Miller, III, C. F.',
+                        'volume' => '22',
+                        'journal' => 'Topology',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-82} Besse, A. L. (1987). Einstein Manifolds, Volume 10 of Ergeb. Math. Grenzgeb. Springer-Verlag.',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1987',
+                        'title' => 'Einstein Manifolds',
+                        'author' => 'Besse, A. L.',
+                        'series' => 'Ergeb. Math. Grenzgeb',
+                        'volume' => '10',
+                        'publisher' => 'Springer-Verlag',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-82} Besse, A. L. (1987). Einstein Manifolds, Volume 10 of Ergeb. Math. Grenzgeb. Berlin: Springer-Verlag.',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1987',
+                        'title' => 'Einstein Manifolds',
+                        'author' => 'Besse, A. L.',
+                        'series' => 'Ergeb. Math. Grenzgeb',
+                        'volume' => '10',
+                        'address' => 'Berlin',
+                        'publisher' => 'Springer-Verlag',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-82} Besse, A. L. (1987). Einstein Manifolds, Volume 10 of Ergeb. Math. Grenzgeb. Springer-Verlag, Berlin.',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1987',
+                        'title' => 'Einstein Manifolds',
+                        'author' => 'Besse, A. L.',
+                        'series' => 'Ergeb. Math. Grenzgeb',
+                        'volume' => '10',
+                        'address' => 'Berlin',
+                        'publisher' => 'Springer-Verlag',
+                        ]
+                ],                                                                                                                              [
+                    'source' => '\bibitem{K2-82} Besse, A. L. (1987). Einstein Manifolds, Volume 10 of Ergeb. Math. Grenzgeb, Springer-Verlag, Berlin.',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1987',
+                        'title' => 'Einstein Manifolds',
+                        'author' => 'Besse, A. L.',
+                        'series' => 'Ergeb. Math. Grenzgeb',
+                        'volume' => '10',
+                        'address' => 'Berlin',
+                        'publisher' => 'Springer-Verlag',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-90} Birman, J. S. (1974). Braids, Links, and Mapping Class Groups, Volume 82 of Ann. of Math. Stud. Princeton Univ. Press.  ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1974',
+                        'title' => 'Braids, Links, and Mapping Class Groups',
+                        'author' => 'Birman, J. S.',
+                        'series' => 'Ann. of Math. Stud',
+                        'volume' => '82',
+                        'publisher' => 'Princeton Univ. Press',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-90} Birman, J. S. (1974). Braids, Links, and Mapping Class Groups, Volume 82 of Ann. of Math. Stud. Princeton: Princeton Univ. Press.',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1974',
+                        'title' => 'Braids, Links, and Mapping Class Groups',
+                        'author' => 'Birman, J. S.',
+                        'series' => 'Ann. of Math. Stud',
+                        'volume' => '82',
+                        'address' => 'Princeton',
+                        'publisher' => 'Princeton Univ. Press',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-90} Birman, J. S. (1974). Braids, Links, and Mapping Class Groups, Volume 82 of Ann. of Math. Stud. Princeton Univ. Press, Princeton.',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1974',
+                        'title' => 'Braids, Links, and Mapping Class Groups',
+                        'author' => 'Birman, J. S.',
+                        'series' => 'Ann. of Math. Stud',
+                        'volume' => '82',
+                        'address' => 'Princeton',
+                        'publisher' => 'Princeton Univ. Press',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-92} Birman, J. S., Gonzalez-Acu\~{n}a, E., \& Montesinos, J. M. (1976). Heegaard splittings of prime 3-manifolds are not unique. Michigan Math. J. Vol. 23, 97-103.',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1976',
+                        'pages' => '97-103',
+                        'title' => 'Heegaard splittings of prime 3-manifolds are not unique',
+                        'author' => 'Birman, J. S. and Gonzalez-Acu\~{n}a, E. and Montesinos, J. M.',
+                        'volume' => '23',
+                        'journal' => 'Michigan Math. J.',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-99} Bi\v{z}aca, \v{Z}. (1994). A handle decomposition of an exotic $\mathbb{R}^{4}$. J. Differential Geom. Vol. 39, 491-508.  ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1994',
+                        'pages' => '491-508',
+                        'title' => 'A handle decomposition of an exotic $\mathbb{R}^{4}$',
+                        'author' => 'Bi\v{z}aca, \v{Z}.',
+                        'volume' => '39',
+                        'journal' => 'J. Differential Geom.',
+                        ]
+                ],                                                                                                                                                                                                                                                                                                                                       
         ];
 
         DB::statement('DELETE FROM examples');
