@@ -1435,23 +1435,108 @@ class ExampleSeeder extends Seeder
                         'volume' => '39',
                         'journal' => 'J. Differential Geom.',
                         ]
-                ],                                                                                                                                                                                                                                                                                                                                       
-        ];
+                ],
+                [
+                    'source' => '\bibitem{K2-109} Bleiler, S. A. \& Scharlemann, M. G. (1988). A projective plane in $\mathbb{R}^{4}$ with three critical points is standard. Strongly invertible knots have property P. Topology Vol. 27, 519-540.  ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1988',
+                        'pages' => '519-540',
+                        'title' => 'A projective plane in $\mathbb{R}^{4}$ with three critical points is standard. Strongly invertible knots have property P',
+                        'author' => 'Bleiler, S. A. and Scharlemann, M. G.',
+                        'volume' => '27',
+                        'journal' => 'Topology',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{K2-110} Bo\\\'echat, J. \& Haefliger, A. (1970). Plongements diff\\\'erentiables des vari\\\'et\\\'es orient\\\'ees de dimension 4 dans $\mathbb{R}^{7}$. In A. Haefliger \& R. Narasimhan (Eds.), Essays on Topology and Related Topics. Memoires d\\\'edi\\\'es \`a Georges de Rham. Springer-Verlag.  ',
+                    'type' => 'incollection',
+                    'bibtex' => [
+                        'year' => '1970',
+                        'title' => 'Plongements diff\\\'erentiables des vari\\\'et\\\'es orient\\\'ees de dimension 4 dans $\mathbb{R}^{7}$',
+                        'author' => 'Bo\\\'echat, J. and Haefliger, A.',
+                        'editor' => 'A. Haefliger and R. Narasimhan',
+                        'booktitle' => 'Essays on Topology and Related Topics. Memoires d\\\'edi\\\'es \`a Georges de Rham',
+                        'publisher' => 'Springer-Verlag',
+                        ]
+                ],
+                [
+                    'source' => 'Šváb, L., Gross, J., & Langová, J. (1972). Stuttering and social isolation. The Journal of Nervous and Mental Disease, 155, 1–5. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1972',
+                        'pages' => '1-5',
+                        'title' => 'Stuttering and social isolation',
+                        'author' => '\v{S}v{\\\'a}b, L. and Gross, J. and Langov{\\\'a}, J.',
+                        'volume' => '155',
+                        'journal' => 'The Journal of Nervous and Mental Disease',
+                        ]
+                ],
+                [
+                    'source' => 'American Speech-Language-Hearing Association (1999). Terminology pertaining to fluency and fluency disorders: Guidelines. ASHA, 41(Suppl. 19), 29–36.  ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1999',
+                        'pages' => '29-36',
+                        'title' => 'Terminology pertaining to fluency and fluency disorders: Guidelines',
+                        'author' => 'American Speech-Language-Hearing Association',
+                        'volume' => '41(Suppl. 19)',
+                        'journal' => 'ASHA',
+                        ]
+                ],
+                [
+                    'source' => 'Prabhat, P., Rombouts, E., & Borry, P. (2022). The disabling nature of hope in discovering a biological explanation of stuttering. Journal of Fluency Disorders, 72, Article 105906. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '2022',
+                        'title' => 'The disabling nature of hope in discovering a biological explanation of stuttering',
+                        'author' => 'Prabhat, P. and Rombouts, E. and Borry, P.',
+                        'volume' => '72',
+                        'journal' => 'Journal of Fluency Disorders',
+                        'note' => 'Article 105906',
+                        ]
+                ],
+                [
+                    'source' => 'Tichenor, S., & Yaruss, J. S. (2018). A phenomenological analysis of the experience of stuttering. American Journal of Speech-Language Pathology, 27(3S), 1180–1194. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '2018',
+                        'pages' => '1180-1194',
+                        'title' => 'A phenomenological analysis of the experience of stuttering',
+                        'author' => 'Tichenor, S. and Yaruss, J. S.',
+                        'number' => '3S',
+                        'volume' => '27',
+                        'journal' => 'American Journal of Speech-Language Pathology',
+                        ]
+                ],
+                [
+                    'source' => 'Perkins, W. H. (1983). The problem of definition: Commentary on “stuttering.” Journal of Speech and Hearing Disorders, 48, 246–249. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1983',
+                        'title' => 'The problem of definition: Commentary on ``stuttering.\'\'',
+                        'author' => 'Perkins, W. H.',
+                        'journal' => 'Journal of Speech and Hearing Disorders',
+                        'volume' => '48',
+                        'pages' => '246-249',
+                        ]
+                ],
+            ];
 
-        DB::statement('DELETE FROM examples');
-        DB::statement('ALTER TABLE examples AUTO_INCREMENT 1');
-        DB::statement('ALTER TABLE example_fields AUTO_INCREMENT 1');
+            DB::statement('DELETE FROM examples');
+            DB::statement('ALTER TABLE examples AUTO_INCREMENT 1');
+            DB::statement('ALTER TABLE example_fields AUTO_INCREMENT 1');
 
-        foreach ($examples as $example) {
-            $ex = Example::create([
-                'source' => $example['source'],
-                'type' => $example['type'],
-            ]);
-            foreach ($example['bibtex'] as $key => $value) {
-                ExampleField::create([
-                    'example_id' => $ex->id,
-                    'name' => $key,
-                    'content' => $value
+            foreach ($examples as $example) {
+                $ex = Example::create([
+                    'source' => $example['source'],
+                    'type' => $example['type'],
+                ]);
+                foreach ($example['bibtex'] as $key => $value) {
+                    ExampleField::create([
+                        'example_id' => $ex->id,
+                        'name' => $key,
+                        'content' => $value
                 ]);
             }
         }

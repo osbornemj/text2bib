@@ -12,6 +12,12 @@
                 <ul class="mt-4 mb-4">
                     <li class="ml-6">{{ $convItem['source'] }}</li>
                 </ul>
+                or its conversion
+                <ul class="mt-4 mb-4">
+                @foreach ($convItem['item'] as $item)
+                    <li class="ml-6">{{ $item }}</li>
+                @endforeach
+                </ul>
                 contains at least one character that is not valid utf-8.
             </p>
             <p>

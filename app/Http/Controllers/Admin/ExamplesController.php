@@ -14,7 +14,7 @@ class ExamplesController extends Controller
 {
     public function index(): View
     {
-        $examples = Example::orderByDesc('created_at')
+        $examples = Example::orderByDesc('id')
             ->with('fields')
             ->paginate(100);
 

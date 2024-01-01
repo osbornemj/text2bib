@@ -36,7 +36,10 @@
                         @endforeach
                     </div>
                     <div>
-                        Check conversion: <x-link href="{{ url('admin/runExampleCheck/0/' . $example->id) }}">brief</x-link>, <x-link href="{{ url('admin/runExampleCheck/1/' . $example->id) }}">verbose</x-link>
+                        Check conversion: 
+                        <x-link href="{{ url('admin/runExampleCheck/0/' . $example->id) }}">brief</x-link>,
+                        <x-link href="{{ url('admin/runExampleCheck/1/' . $example->id) }}">verbose (convert utf8)</x-link>,
+                        <x-link href="{{ url('admin/runExampleCheck/1/' . $example->id . '/utf8leave') }}">verbose (leave utf8)</x-link>
                     </div>
                 @endforeach
             {{ $examples->links() }}

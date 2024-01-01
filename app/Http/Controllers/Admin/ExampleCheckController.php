@@ -25,11 +25,12 @@ class ExampleCheckController extends Controller
         $examples = Example::all();
     }
 
-    public function runExampleCheck(bool $verbose = false, int $id = null): View
+    public function runExampleCheck(bool $verbose = false, int $id = null, string $charEncoding = 'utf8'): View
     {
         $examples = $id ? [Example::find($id)] : Example::all();
 
         $conversion = new Conversion;
+        $conversion->char_encoding = $charEncoding ? $charEncoding : 'utf8';
 
         $results = [];
         foreach ($examples as $example) {

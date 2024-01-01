@@ -232,6 +232,10 @@
                     {/if}
                     --}}
 
+                    <div wire:loading>
+                        Working ...
+                    </div>
+                    
                     <div class="pt-4">
                         <x-primary-button class="ml-0">
                             {{ __('Submit') }}

@@ -934,10 +934,11 @@ class Converter
         }
 
         $remainderMinusPubInfo = $remainder;
-        foreach ($this->publishers as $publisher) {
-            if (Str::contains($remainder, $publisher)) {
+        $publisher = '';
+        foreach ($this->publishers as $pub) {
+            if (Str::contains($remainder, $pub)) {
                 $containsPublisher = true;
-                $publisherString = $publisher;
+                $publisherString = $publisher = $pub;
                 $remainderMinusPubInfo = Str::replaceFirst($publisher, '', $remainder);
                 $this->verbose("Contains publisher \"" . $publisher . "\"");
                 break;
@@ -1169,7 +1170,7 @@ class Converter
                     if (isset($matches[0][0][0]) && $matches[0][0][0]) {
                         $item->month = trim($matches[0][0][0], '()');
                         $this->verbose(['fieldName' => 'Month', 'content' => strip_tags($item->month)]);
-                        $remainder = substr($remainder, 0, $matches[0][0][1]) . substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0]));
+                        $remainder = substr($remainder, 0, $matches[0][0][1]) . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
                         $this->verbose('Remainder: ' . $remainder);
                     }
 
@@ -1688,6 +1689,7 @@ class Converter
                         '(' . $this->volumeRegExp1 . ')( ([1-9][0-9]{0,4}))(( of| in|,) )([^\.,]*\.|,)'
                         );
                     if ($result) {
+                        // Take series to be string following 'of' or 'in' or ',' up to next period or comma
                         $item->volume = $result[3];
                         $item->series = $result[6];
                         $booktitle = trim($result['before'], '., ');
@@ -1704,32 +1706,65 @@ class Converter
                             $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
                             $remainder = substr($remainder, $periodPos);
                         } else {
-                            $words = explode(" ", $remainder);
-                            $sentences = $this->splitIntoSentences($words);
-                            // If two or more sentences, take all but last one to be booktitle.
-                            if (count($sentences) > 1) {
-                                $booktitle = implode(' ', array_slice($sentences, 0, count($sentences) - 1));
-                                $remainder = $sentences[count($sentences) -  1];
-                            } else {
-                                $n = count($words);
-                                for ($j = $n - 2; $j > 0 && $this->isInitials($words[$j]); $j--) {
-
-                                }
-                                $potentialTitle = implode(" ", array_slice($words, 0, $j));
-                                $this->verbose("Potential title: " . $potentialTitle);
-                                $periodPos = strpos(rtrim($potentialTitle, '.'), '.');
-                                if ($periodPos !== false) {
-                                    $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
-                                    $remainder = substr($remainder, $periodPos);
-                                } else {
-                                    // Does whole entry end in ')' or ').'?  If so, pubinfo is in parens, so booktitle ends
-                                    // at previous '('; else booktitle is all of $potentialTitle
-                                    if ($entry[strlen($entry) - 1] == ')' or $entry[strlen($entry) - 2] == ')') {
-                                        $booktitle = substr($remainder, 0, strrpos($remainder, '('));
-                                    } else {
-                                        $booktitle = $potentialTitle;
+                            // If publisher has been identified, remove it from $remainder and check
+                            // whether it is preceded by a string that could be an address
+                            if (isset($publisher) && $publisher) {
+                                $item->publisher = $publisher;
+                                $tempRemainder = trim(Str::remove($publisher, $remainder), ' .');
+                                $afterPeriod = Str::afterLast($tempRemainder, '.');
+                                $afterComma = Str::afterLast($tempRemainder, ',');
+                                $afterPunc = (strlen($afterComma) < strlen($afterPeriod)) ? $afterComma : $afterPeriod;
+                                foreach ($this->cities as $city) {
+                                    if (Str::endsWith(trim($afterPunc, '():'), $city)) {
+                                        $item->address = $city;
+                                        $booktitle = substr($tempRemainder, 0, strlen($tempRemainder) - strlen($city) - 2);
+                                        $this->verbose('booktitle case 0');
+                                        break;
                                     }
-                                    $remainder = substr($remainder, strlen($booktitle));
+                                }
+                                if (!isset($item->address)) {
+                                    if (substr_count($afterPunc, ' ') == 1) {
+                                        $booktitle = substr($tempRemainder, 0, strlen($tempRemainder) - strlen($afterPunc));
+                                        $item->address = $afterPunc;
+                                        $this->verbose('booktitle case 1');
+                                    } else {
+                                        $booktitle = $tempRemainder;
+                                        $this->verbose('booktitle case 2');
+                                    }
+                                    $item->booktitle = $booktitle;
+                                    $remainder = '';
+                                }
+                            } else {
+                                $words = explode(" ", $remainder);
+                                $sentences = $this->splitIntoSentences($words);
+                                // If two or more sentences, take all but last one to be booktitle.
+                                if (count($sentences) > 1) {
+                                    $booktitle = implode(' ', array_slice($sentences, 0, count($sentences) - 1));
+                                    $remainder = $sentences[count($sentences) -  1];
+                                } else {
+                                    $n = count($words);
+                                    for ($j = $n - 2; $j > 0 && $this->isInitials($words[$j]); $j--) {
+
+                                    }
+                                    $potentialTitle = implode(" ", array_slice($words, 0, $j));
+                                    $this->verbose("Potential title: " . $potentialTitle);
+                                    $periodPos = strpos(rtrim($potentialTitle, '.'), '.');
+                                    if ($periodPos !== false) {
+                                        $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
+                                        $remainder = substr($remainder, $periodPos);
+                                        $this->verbose('booktitle case 3');
+                                    } else {
+                                        // Does whole entry end in ')' or ').'?  If so, pubinfo is in parens, so booktitle ends
+                                        // at previous '('; else booktitle is all of $potentialTitle
+                                        if ($entry[strlen($entry) - 1] == ')' or $entry[strlen($entry) - 2] == ')') {
+                                            $booktitle = substr($remainder, 0, strrpos($remainder, '('));
+                                            $this->verbose('booktitle case 4');
+                                        } else {
+                                            $booktitle = $potentialTitle;
+                                            $this->verbose('booktitle case 5');
+                                        }
+                                        $remainder = substr($remainder, strlen($booktitle));
+                                    }
                                 }
                             }
                         }
@@ -1769,12 +1804,13 @@ class Converter
                         $item->address = $address;
                     }
                 }
+
                 if ($item->publisher) {
                     $this->verbose(['fieldName' => 'Publisher', 'content' => strip_tags($item->publisher)]);
                 } else {
                     $warnings[] = "Publisher not found.";
                 }
-                if ($item->address) {
+                if (isset($item->address) && $item->address) {
                     $this->verbose(['fieldName' => 'Address', 'content' => strip_tags($item->address)]);
                 } else {
                     $warnings[] = "Address not found.";
@@ -1806,7 +1842,7 @@ class Converter
 
                 $this->verbose('Looking for edition');
                 foreach ($remainingWords as $key => $word) {
-                    if ($key && in_array(strtolower(trim($word, ',. ()')), ['edition', 'ed'])) {
+                    if ($key && in_array(mb_strtolower(trim($word, ',. ()')), ['edition', 'ed'])) {
                         $item->edition = trim($remainingWords[$key - 1], ',. )(');
                         $this->verbose(['fieldName' => 'Edition', 'content' => strip_tags($item->edition)]);
                         array_splice($remainingWords, $key - 1, 2);
@@ -1931,12 +1967,12 @@ class Converter
 
                 // foreach ($remainingWords as $key => $word) {
                 //     if (count($remainingWords) > $key + 1
-                //             && in_array(strtolower(trim($word, ',. ()')), ['volume', 'vol'])) {
+                //             && in_array(mb_strtolower(trim($word, ',. ()')), ['volume', 'vol'])) {
                 //         $item->volume = trim($remainingWords[$key + 1], ',. ');
                 //         $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($item->volume)]);
                 //         array_splice($remainingWords, $key, 2);
                 //         $series = [];
-                //         if (in_array(strtolower($remainingWords[$key]), ['in', 'of'])) {
+                //         if (in_array(mb_strtolower($remainingWords[$key]), ['in', 'of'])) {
                 //             for ($k = $key + 1; $k < count($remainingWords); $k++) {
                 //                 $series[] = $remainingWords[$k];
                 //                 if (in_array(substr($remainingWords[$k], -1), [',', '.'])) {
@@ -2134,7 +2170,7 @@ class Converter
                 if (Str::endsWith($word, ['.', '!', '?', ','])) {
                     // if next letter is lowercase (in which case '.' ended abbreviation?) or following string starts with
                     // a part designation, continue, skipping next word,
-                    if ($nextWord && (strtolower($nextWord[0]) == $nextWord[0] || Str::startsWith($remainder, ['I. ', 'II. ', 'III. ']))) {
+                    if ($nextWord && (mb_strtolower($nextWord[0]) == $nextWord[0] || Str::startsWith($remainder, ['I. ', 'II. ', 'III. ']))) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
                         $skipNextWord = true;
                     // else if next word is short and ends with period, assume it is the first word of the publication info, which
@@ -2168,14 +2204,32 @@ class Converter
                                 //dd($remainder, $startPos, $word, $periodFound, $stringToNextPeriod);
                         $this->verbose("Not ending title, case 4 (italics is coming up)");
                     // else if word ends with comma and volume info is coming up, wait for it
-                    // (if word ends in period, )
-                     } elseif (Str::endsWith($word, [',']) && preg_match('/' . $this->volumeRegExp1 . '/', $remainder)) {
+                    } elseif (Str::endsWith($word, [',']) && preg_match('/' . $this->volumeRegExp1 . '/', $remainder)) {
                          $this->verbose("Not ending title, case 5 (volume info is coming up)");
-                    // otherwise assume the punctuation ends the title.
                     } else {
-                        $this->verbose("Ending title, case 4");
-                        $title = rtrim(implode(' ', $initialWords), '.,');
-                        break;
+                        // else if word ends with period and there are 5 or more words till next punctuation, which is a period,
+                        // and at least three non-stopwords are all lowercase, continue [to catch Example 116]
+                        $wordsToNextPeriod = explode(' ',  $stringToNextPeriod);
+                        $lcWordCount = 0;
+                        foreach ($wordsToNextPeriod as $remainingWord) {
+                            if (!in_array($remainingWord, $this->stopwords) && mb_strtolower($remainingWord) == $remainingWord) {
+                                $lcWordCount++;
+                            }
+                        }
+                        if ($lcWordCount > 2
+                            && Str::endsWith($word, ['.']) 
+                            && substr_count($stringToNextPeriod, ',') == 0
+                            && substr_count($stringToNextPeriod, ':') == 0
+                            && substr_count($stringToNextPeriod, ' ') > 3
+
+                        ) {
+                            $this->verbose("Not ending title, case 6");
+                        // otherwise assume the punctuation ends the title.
+                        } else {
+                            $this->verbose("Ending title, case 4");
+                            $title = rtrim(implode(' ', $initialWords), '.,');
+                            break;
+                        }
                     }
                 } 
             }
@@ -2237,7 +2291,7 @@ class Converter
             $num = 0;
             // count total number of items
             foreach ($itemTypes as $itemType) {
-                $num += substr_count(strtolower($string), '@' . $itemType);
+                $num += substr_count(mb_strtolower($string), '@' . $itemType);
             }
 
             // no BibTeX entries in file
@@ -2253,7 +2307,7 @@ class Converter
                 $atPos = strpos($remains, '@');
                 // get item type
                 foreach ($itemTypes as $itemType) {
-                    if (strtolower(substr($remains, $atPos + 1, strlen($itemType) + 1)) == $itemType . '{') {
+                    if (mb_strtolower(substr($remains, $atPos + 1, strlen($itemType) + 1)) == $itemType . '{') {
                         $entryNumber++;
                         break;
                     }
@@ -2299,7 +2353,7 @@ class Converter
 
         while (strpos($entryRemains, '=') !== false) {
             $equalsPos = strpos($entryRemains, '=');
-            $field = strtolower(trim(substr($entryRemains, 0, $equalsPos)));
+            $field = mb_strtolower(trim(substr($entryRemains, 0, $equalsPos)));
 
             $entryRemains = substr($entryRemains, $equalsPos + 1);
 
@@ -2372,7 +2426,9 @@ class Converter
     // Replace every substring of multiple spaces with a single space.  (\h is a horizontal white space.)
     public function regularizeSpaces(string $string): string
     {
-        return preg_replace('%\h+%', ' ', $string);  
+        // Using \h seems to mess up utf-8
+        //return preg_replace('%\h+%', ' ', $string);  
+        return preg_replace('% +%', ' ', $string);  
     }
 
     /*
@@ -2563,7 +2619,7 @@ class Converter
             //print "word: " . $word . "<BR>";
             // if previous word was 'and' and this word starts with a lowercase letter, then the 'and' didn't end a segment
             // (because a segment cannot start with a lowercase letter)
-            if ($countAndAsSeparator && $isAnd && strtolower($word[0]) == $word[0]) {
+            if ($countAndAsSeparator && $isAnd && mb_strtolower($word[0]) == $word[0]) {
                 $segmentCount--;
             }
             $segment .= $word;
@@ -2704,7 +2760,7 @@ class Converter
 
     public function isAnd(string $string): bool
     {
-        return strtolower($string) == $this->phrases['and'] || in_array($string, ['\\&', '&']);
+        return mb_strtolower($string) == $this->phrases['and'] || in_array($string, ['\\&', '&']);
     }
 
     public function getStringBeforeChar(string $string, string $char): string
@@ -2896,7 +2952,7 @@ class Converter
                     $this->verbose("'et' not followed by 'al' or 'al.', so not sure what to do");
                 }
             } elseif ($determineEnd && substr($word, -1) == '.' && strlen($lettersOnlyWord) > 3
-                    && strtolower(substr($word, -2, 1)) == substr($word, -2, 1)) {
+                    && mb_strtolower(substr($word, -2, 1)) == substr($word, -2, 1)) {
                 // If $determineEnd and word ends in period and word has > 3 chars (hence not "St.") and previous letter
                 // is lowercase (hence not string of initials without spaces):
                 if ($namePart == 0) {
@@ -2963,9 +3019,9 @@ class Converter
                     }
                     //dd($authorstring);
                     $name = $this->spaceOutInitials($word);
-                    // If part of name is all uppercase and 3 or more letters long, convert it to ucfirst(strtolower())
+                    // If part of name is all uppercase and 3 or more letters long, convert it to ucfirst(mb_strtolower())
                     // For component with 1 or 2 letters, assume it's initials and leave it uc (to be processed by formatAuthor)
-                    $nameComponent = (strlen($name) > 2 && strtoupper($name) == $name && strpos($name, '.') === false) ? ucfirst(strtolower($name)) : $name;
+                    $nameComponent = (strlen($name) > 2 && strtoupper($name) == $name && strpos($name, '.') === false) ? ucfirst(mb_strtolower($name)) : $name;
                     $fullName .= ' ' . $nameComponent;
                     if (in_array($word, $this->vonNames)) {
                         $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name");
@@ -3692,7 +3748,7 @@ class Converter
         $score = 0;
         foreach ($words as $word) {
             // Names are in dictionary with initial u.c. letter, so convert word to l.c. to exclude them as regular words
-            $word = strtolower($word);
+            $word = mb_strtolower($word);
             if ($word != 'and' || !$ignoreAnd) {
                 $wordsToCheck[] = $word;
                 if (in_array($word, $this->stopwords)) {
@@ -3759,7 +3815,7 @@ class Converter
                 // not a name if doesn't start with an accented uppercase letter and it starts with l.c. and is not
                 // "d'" and is not a von name
                 isset($words[$i][0]) 
-                    && strtolower($words[$i][0]) == $words[$i][0]
+                    && mb_strtolower($words[$i][0]) == $words[$i][0]
                     && substr($words[$i], 0, 2) != "d'" 
                     && ! in_array($words[$i], $this->vonNames)
                 ) {
@@ -3866,7 +3922,7 @@ class Converter
             // if name is ALL uppercase and contains no period, translate uppercase component to an u.c. first letter and the rest l.c.
             // (Contains no period to deal with name H.-J., which should not be convered to H.-j.)
             } elseif (strtoupper($lettersOnlyName) == $lettersOnlyName && strpos($name, '.') === false && $lettersOnlyName != 'III') {
-                $fName .= ucfirst(strtolower($name));
+                $fName .= ucfirst(mb_strtolower($name));
             } else {
                 $fName .= $name;
             }
@@ -3947,7 +4003,7 @@ class Converter
             // if name is ALL uppercase and contains no period, translate uppercase component to an u.c. first letter and the rest l.c.
             // (Contains no period to deal with name H.-J., which should not be convered to H.-j.)
             } elseif (strtoupper($lettersOnlyName) == $lettersOnlyName and strpos($name, '.') === false) {
-                $fName .= ucfirst(strtolower($name));
+                $fName .= ucfirst(mb_strtolower($name));
             } else {
                 $fName .= $name;
             }
@@ -4074,7 +4130,8 @@ class Converter
                 $this->verbose('volume: ' . $item->volume);
                 $this->verbose('No number assigned');
             } else {
-                $numberOfMatches = preg_match('/(' . $this->volumeRegExp1 . ')?([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:|;)(' . $this->numberRegExp1 . ')?( )?(([1-9][0-9]{0,4})(-[1-9][0-9]{0,4})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                // A letter or sequence of letters is permitted after an issue number
+                $numberOfMatches = preg_match('/(' . $this->volumeRegExp1 . ')?([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:|;)(' . $this->numberRegExp1 . ')?( )?(([1-9][0-9]{0,4}[a-zA-Z]*)(-[1-9][0-9]{0,4})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
                 if ($numberOfMatches) {
                     $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : ''));
                     $item->volume = $matches[2][0];
@@ -4084,7 +4141,7 @@ class Converter
                     $drop = $matches[6][1] + strlen($matches[6][0]);
                     $this->verbose('take: ' . $take . ', drop: ' . $drop);
                     $this->verbose('volume: ' . $item->volume);
-                    $this->verbose('temporarily assign number: ' . $item->number);
+                    $this->verbose('number: ' . $item->number);
                 } else {
                     // Look for "vol" etc. followed possibly by volume number and then something other than an issue number
                     // (e.g. some extraneous text after the entry)
@@ -4095,14 +4152,22 @@ class Converter
                         $take = $drop = 0;
                     } else {
                         // Look for something like 123:xxx (where xxx is not a page range)
-                        $numberOfMatches = preg_match('/([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:)*/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                        $numberOfMatches = preg_match('/([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:)*(.*)/', $remainder, $matches, PREG_OFFSET_CAPTURE);
                         if ($numberOfMatches) {
                             $this->verbose('[p2d]');
-                            $item->volume = $matches[1][0];
+                            if (Str::startsWith($matches[3][0], ['Article', 'article'])) {
+                                $item->note = $matches[3][0];
+                                $item->volume = $matches[1][0];
+                            } else {
+                                // Assume all of $remainder is volume (might be something like '123 (Suppl. 19)')
+                                $item->volume = $remainder;
+                            }
                             unset($item->number);
-                            $take = $matches[1][1];
-                            $len = isset($matches[2][0]) ? strlen($matches[2][0]) : 0;
-                            $drop = $matches[1][1] + strlen($matches[1][0]) + $len;
+                            $take = 0;
+                            $drop = strlen($remainder);
+                            // $take = $matches[1][1];
+                            // $len = isset($matches[2][0]) ? strlen($matches[2][0]) : 0;
+                            // $drop = $matches[1][1] + strlen($matches[1][0]) + $len;
                         } else {
                             $this->verbose('[p2e]');
                             unset($item->volume);
@@ -4150,7 +4215,7 @@ class Converter
             $string = str_replace("\xC2\xAB", "``", $string);
             $string = str_replace("\xC2\xBB", "''", $string);
         }
-
+       
         if($charEncoding == 'utf8') {
             $string = str_replace("\xC3\x80", "{\`A}", $string);
             $string = str_replace("\xC3\x81", "{\'A}", $string);
@@ -4230,9 +4295,9 @@ class Converter
             $string = str_replace("\xC4\x89", "{\^c}", $string);
             $string = str_replace("\xC4\x8A", "{\.C}", $string);
             $string = str_replace("\xC4\x8B", "{\.c}", $string);
-            $string = str_replace("\xC4\x8C", "{\v{C}}", $string);
-            $string = str_replace("\xC4\x8D", "{\v{c}}", $string);
-            $string = str_replace("\xC4\x8E", "{\v{D}}", $string);
+            $string = str_replace("\xC4\x8C", "\\v{C}", $string);
+            $string = str_replace("\xC4\x8D", "\\v{c}", $string);
+            $string = str_replace("\xC4\x8E", "\\v{D}", $string);
 
             //$string = str_replace("\xC4\x90", "{}", $string);
             //$string = str_replace("\xC4\x91", "{}", $string);
@@ -4244,8 +4309,8 @@ class Converter
             $string = str_replace("\xC4\x97", "{\.e}", $string);
             $string = str_replace("\xC4\x98", "{\k{E}}", $string);
             $string = str_replace("\xC4\x99", "{\k{e}}", $string);
-            $string = str_replace("\xC4\x9A", "{\v{E}}", $string);
-            $string = str_replace("\xC4\x9B", "{\v{e}}", $string);
+            $string = str_replace("\xC4\x9A", "\\v{E}", $string);
+            $string = str_replace("\xC4\x9B", "\\v{e}", $string);
             $string = str_replace("\xC4\x9C", "{\^G}", $string);
             $string = str_replace("\xC4\x9D", "{\^g}", $string);
             //$string = str_replace("\xC4\x9E", "{\u{G}}", $string);
@@ -4284,8 +4349,11 @@ class Converter
             //$string = str_replace("\xC4\xbD", "", $string);
             //$string = str_replace("\xC4\xbE", "", $string);
             //$string = str_replace("\xC4\xbF", "", $string);
-        }
 
+            $string = str_replace("\xC5\xA0", "\\v{S}", $string);
+            $string = str_replace("\xC5\xA1", "\\v{s}", $string);
+        }
+        
         /*
         if($charEncoding == 'windows1252') {
             // Following two are windows encoding of opening and closing quotes(?) [might conflict with other encodings?---
@@ -4340,10 +4408,10 @@ class Converter
         // Delete ^Z and any trailing space (^Z is at end of last entry of DOS file)
         $string = rtrim($string, " \032");
         $string = ltrim($string, ' ');
-
+        
         // Regularize spaces
         $string = $this->regularizeSpaces($string);
-
+        
         return $string;
     }
 }
