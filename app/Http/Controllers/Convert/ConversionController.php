@@ -135,6 +135,7 @@ class ConversionController extends Controller
     private function isUtf8(string $string): bool
     {
         return mb_check_encoding($string, 'UTF-8');
+        // Following is from W3C site.
         // return preg_match('%^(?:
         //     [\x09\x0A\x0D\x20-\x7E]              # ASCII
         //     | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte

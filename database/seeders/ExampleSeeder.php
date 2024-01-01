@@ -1521,6 +1521,66 @@ class ExampleSeeder extends Seeder
                         'pages' => '246-249',
                         ]
                 ],
+                [
+                    'source' => 'Bloodstein, O. (1987). A handbook on stuttering (4th ed.). Chicago, IL: National Easter Seal Society. ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1987',
+                        'title' => 'A handbook on stuttering',
+                        'edition' => '4th',
+                        'author' => 'Bloodstein, O.',
+                        'address' => 'Chicago, IL',
+                        'publisher' => 'National Easter Seal Society',
+                        ]
+                ],
+                [
+                    'source' => 'Bloodstein, O. (1987). A handbook on stuttering, 4th ed. Chicago, IL: National Easter Seal Society. ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1987',
+                        'title' => 'A handbook on stuttering',
+                        'edition' => '4th',
+                        'author' => 'Bloodstein, O.',
+                        'address' => 'Chicago, IL',
+                        'publisher' => 'National Easter Seal Society',
+                        ]
+                ],
+                [
+                    'source' => 'Ingham, R. J. (1990). Commentary on Perkins (1990) and Moore and Perkins (1990): On the valid role of reliability in identifying "what is stuttering?" Journal of Speech and Hearing Disorders, 55, 394–397. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'journal' => 'Journal of Speech and Hearing Disorders',
+                        'volume' => '55',
+                        'pages' => '394-397',
+                        'year' => '1990',
+                        'title' => 'Commentary on Perkins (1990) and Moore and Perkins (1990): On the valid role of reliability in identifying ``what is stuttering?\'\'',
+                        'author' => 'Ingham, R. J.',
+                        ]
+                ],
+                [
+                    'source' => 'World Health Organization. (1977). Manual of the international statistical classification of diseases, injuries, and causes of death (Vol. 1). Geneva: World Health Organization. ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1977',
+                        'volume' => '1',
+                        'title' => 'Manual of the international statistical classification of diseases, injuries, and causes of death',
+                        'author' => 'World Health Organization',
+                        'publisher' => 'World Health Organization',
+                        'address' => 'Geneva',
+                        ]
+                ],
+                [
+                    'source' => 'World Health Organization. (2010). Stuttering (stammering). In International statistical classification of diseases and related health problems (10th Rev. ed.). Retrieved from http://apps.who.int/classifications/icd10/browse/2010/en#/F98.5 ',
+                    'type' => 'incollection',
+                    'bibtex' => [
+                        'year' => '2010',
+                        'title' => 'Stuttering (stammering)',
+                        'author' => 'World Health Organization',
+                        'booktitle' => 'International statistical classification of diseases and related health problems',
+                        'edition' => '10th Rev.',
+                        'url' => 'http://apps.who.int/classifications/icd10/browse/2010/en#/F98.5',
+                        ]
+                ],
             ];
 
             DB::statement('DELETE FROM examples');

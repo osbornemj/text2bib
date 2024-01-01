@@ -21,6 +21,7 @@ class Converter
     var $bookTitleAbbrevs;
     var $cities;
     var $displayLines;
+    var $editionRegExp;
     var $editorStartRegExp;
     var $editorRegExp;
     var $edsRegExp1;
@@ -101,6 +102,8 @@ class Converter
         $this->edsRegExp4 = '/( [Ee]d[\. ]|\([Ee]d\.?\)| [Ee]ds[\. ]|\([Ee]ds\.?\)| [Ee]ditor| [Ee]ditors| \([Ee]ditor\)| \([Ee]ditors\))/';
         $this->editorStartRegExp = '/^\(?[Ee]dited by|^\(?[Ee]ds?\.?|^\([Ee]ditors?/';
         $this->editorRegExp = '/\([Ee]ds?\.?\)|\([Ee]ditors?\)/';
+
+        $this->editionRegExp = '(1st|first|2nd|second|3rd|third|[4-9]th|fourth|fifth|sixth|seventh) (ed\.|edition)';
 
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
         $this->volRegExp2 = '/^[Vv]ol(\.|ume)? ?/';
@@ -621,7 +624,7 @@ class Converter
 
         // Entry contains "retrieved from http ... <access date>".
         // Assumes URL is at the end of entry.
-        $urlAndAccessDate = $this->extractLabeledContent($entry, ' [Rr]etrieved from ', 'http\S+ .*$');
+        $urlAndAccessDate = $this->extractLabeledContent($entry, ' [Rr]etrieved from ', 'http\S+( .*)?$');
 
         $accessDate = '';
         if ($urlAndAccessDate) {
@@ -760,7 +763,15 @@ class Converter
         }
 
         if (!$title) {
-            $title = $this->getTitle($remainder, $containsProceedings, $isArticle);
+            $title = $this->getTitle($remainder, $edition, $volume, $isArticle);
+            if ($edition) {
+                $item->edition = $edition;
+                $this->verbose(['fieldName' => 'Edition', 'content' => strip_tags($edition)]);
+            }
+            if ($volume) {
+                $item->volume = $volume;
+                $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($volume)]);
+            }
             $newRemainder = $remainder;
         }
 
@@ -1837,9 +1848,9 @@ class Converter
             //////////////////////////////////////////
 
             case 'book':
-                // If remainder contains word 'edition', take previous word as the edition number
                 $remainingWords = explode(" ", $remainder);
 
+                // If remainder contains word 'edition', take previous word as the edition number
                 $this->verbose('Looking for edition');
                 foreach ($remainingWords as $key => $word) {
                     if ($key && in_array(mb_strtolower(trim($word, ',. ()')), ['edition', 'ed'])) {
@@ -2112,7 +2123,7 @@ class Converter
 
     // Get title from a string that starts with title and then has publication information.
     // Case in which title is in quotation marks or italics is dealt with separately.
-    public function getTitle(string &$remainder, bool &$containsProceedings, bool &$isArticle): string|null
+    public function getTitle(string &$remainder, string|null &$edition, string|null &$volume, bool &$isArticle): string|null
     {
         $title = null;
         $originalRemainder = $remainder;
@@ -2124,12 +2135,19 @@ class Converter
 
         // Go through the words in $remainder one at a time.
         foreach ($words as $key => $word) {
+            if (substr($word, 0, 1) == '"') {
+                $word = '``' . substr($word, 1);
+            }
+            if (substr($word, -1) == '"') {
+                $word = substr($word, 0, -1) . "''";
+            }
+
             array_shift($remainingWords);
             $remainder = implode(' ', $remainingWords);
 
             // If $word is one of the italic codes ending in a space, stop and form title
             if (in_array($word . ' ', $this->italicCodes)) {
-                $this->verbose("Ending title, case 0");
+                $this->verbose("Ending title, case 1");
                 $title = rtrim(implode(' ', $initialWords), ',:;.');
                 break;
             }
@@ -2140,6 +2158,7 @@ class Converter
                 $skipNextWord = false;
             } else {
                 $nextWord = $words[$key + 1] ?? null;
+                $nextButOneWord = $words[$key + 2] ?? null;
                 $word = trim($word);
                 $nextWord = trim($nextWord);
                 $periodFound = Str::endsWith($word, '.');
@@ -2147,23 +2166,53 @@ class Converter
                 $stringToNextPeriod = strtok($remainder, '.?!');
 
                 // When a word ending in punctuation is encountered, check whether it is followed by
-                // italics OR a Working Paper string OR a pages string OR "in" OR "Journal" OR a volume designation
-                // OR a year OR the name of a publisher.
+                // italics
+                // OR a Working Paper string
+                // OR a pages string
+                // OR "in" OR "Journal" 
+                // OR a volume designation
+                // OR a year 
+                // OR the name of a publisher.
                 // If so, the title is $remainder up to the punctuation.
-                if (Str::endsWith($word, ['.', '!', '?', ':', ',', ';'])) {
+                // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
+                // of the cases ``<word>.'' and "<word>."
+                if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';'])) {
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
-                        || preg_match('/^' . $this->workingPaperRegExp . '/', $remainder, $matches)
-                        || preg_match($this->pagesRegExp3, $remainder, $matches)
-                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Vol\.? |^Volume /', $remainder)
+                        || preg_match('/^' . $this->workingPaperRegExp . '/', $remainder)
+                        || preg_match($this->pagesRegExp3, $remainder)
+                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^\(?Vol\.? |^\(?Volume /', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9]\./', $remainder)
-                        || Str::startsWith($remainder, $this->publishers)) {
-                        $this->verbose("Ending title, case 1");
+                        || Str::startsWith($remainder, $this->publishers)
+                        ) {
+                        $this->verbose("Ending title, case 2");
                         $title = rtrim(implode(' ', $initialWords), ',:;.');
                         if (preg_match('/^' . $this->journalWord . ' /', $remainder)) {
                             $isArticle = true;
                         }
                         break;
                     }
+                }
+
+                // Upcoming volume specification
+                $volumeRegExp = '/(^\(vol\.?|volume) (\d)\.?\)?[.,]?$/i';
+                if ($nextWord && $nextButOneWord && preg_match($volumeRegExp, $nextWord . ' ' . $nextButOneWord, $matches)) {
+                    $volume = $matches[2];
+                    $this->verbose("Ending title, case 3a");
+                    $title = rtrim(implode(' ', $initialWords), ' ,');
+                    array_splice($remainingWords, 0, 2);
+                    $remainder = implode(' ', $remainingWords);
+                    break;
+                }
+
+                // Upcoming edition specification
+                $editionRegExp = '/(^\(' . $this->editionRegExp . '\)|^' . $this->editionRegExp . ')[.,]?$/i';
+                if ($nextWord && $nextButOneWord && preg_match($editionRegExp, $nextWord . ' ' . $nextButOneWord, $matches)) {
+                    $edition = isset($matches[4]) ? $matches[4] : $matches[2];
+                    $this->verbose("Ending title, case 3b");
+                    $title = rtrim(implode(' ', $initialWords), ' ,');
+                    array_splice($remainingWords, 0, 2);
+                    $remainder = implode(' ', $remainingWords);
+                    break;
                 }
                 
                 // If end of title has not been detected and word ends in period-equivalent or comma,
@@ -2176,7 +2225,7 @@ class Converter
                     // else if next word is short and ends with period, assume it is the first word of the publication info, which
                     // is an abbreviation,
                     } elseif ($nextWord && strlen($nextWord) < 8 && Str::endsWith($nextWord, '.')) {
-                        $this->verbose("Ending title, case 2");
+                        $this->verbose("Ending title, case 4");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
                     // else if following string up to next period contains only letters and spaces and doesn't start with "in"
@@ -2190,7 +2239,7 @@ class Converter
                     } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/', $remainder, $matches)) {
                         // if no intervening punctuation, end title
                         if (!Str::contains($matches[1], ['.', ',', ':'])) {
-                            $this->verbose("Ending title, case 3");
+                            $this->verbose("Ending title, case 5");
                             $title = rtrim(Str::before($originalRemainder, $matches[0]), '., ');
                             break;
                         // otherwise keep going
@@ -2226,7 +2275,7 @@ class Converter
                             $this->verbose("Not ending title, case 6");
                         // otherwise assume the punctuation ends the title.
                         } else {
-                            $this->verbose("Ending title, case 4");
+                            $this->verbose("Ending title, case 6");
                             $title = rtrim(implode(' ', $initialWords), '.,');
                             break;
                         }

@@ -18,9 +18,9 @@
                 @else
                     <span class="bg-red-600">incorrect</span> 
                     &nbsp;&bull;&nbsp;
-                    <a href="{{ url('/admin/runExampleCheck/1/' . $id) }}">verbose conversion</a>
+                    <x-link href="{{ url('/admin/runExampleCheck/1/' . $id) }}">verbose conversion</x-link>
                     &nbsp;&bull;&nbsp;
-                    <a href="{{ url('/admin/runExampleCheck/0/' . $id) }}">brief conversion</a>
+                    <x-link href="{{ url('/admin/runExampleCheck/0/' . $id) }}">brief conversion</x-link>
                     <br/>
                     Source: {{ $result['source'] }}
                     @foreach ($result['errors'] as $key => $value)
