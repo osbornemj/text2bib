@@ -1570,15 +1570,74 @@ class ExampleSeeder extends Seeder
                         ]
                 ],
                 [
-                    'source' => 'World Health Organization. (2010). Stuttering (stammering). In International statistical classification of diseases and related health problems (10th Rev. ed.). Retrieved from http://apps.who.int/classifications/icd10/browse/2010/en#/F98.5 ',
+                    'source' => 'World Health Organization. (2010). Stuttering (stammering). In International statistical classification of diseases and related health problems (10th Rev. ed.). Retrieved from http://apps.who.int/classifications/icd10/browse/2010/en#/F98.5',
                     'type' => 'incollection',
                     'bibtex' => [
                         'year' => '2010',
                         'title' => 'Stuttering (stammering)',
                         'author' => 'World Health Organization',
-                        'booktitle' => 'International statistical classification of diseases and related health problems',
-                        'edition' => '10th Rev.',
+                        'booktitle' => 'International statistical classification of diseases and related health problems (10th Rev. ed.)',
                         'url' => 'http://apps.who.int/classifications/icd10/browse/2010/en#/F98.5',
+                        ]
+                ],
+                [
+                    'source' => ' Almudhi, A., Zafar, H., Anwer, S., & Alghadir, A. (2019). Effect of different body postures on the severity of stuttering in young adults with developmental stuttering. BioMed Research International, 2019, 1817906. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '2019',
+                        'title' => 'Effect of different body postures on the severity of stuttering in young adults with developmental stuttering',
+                        'author' => 'Almudhi, A. and Zafar, H. and Anwer, S. and Alghadir, A.',
+                        'note' => 'Article 1817906',
+                        'volume' => '2019',
+                        'journal' => 'BioMed Research International',
+                        ]
+                ],
+                [
+                    'source' => ' Kikuchi, Y., Umezaki, T., Adachi, K., Sawatsubashi, M., Taura, M., Tsuchihashi, N., Yamaguchi, Y., Murakami, D., & Nakagawa. T. (2022). Employment quotas for adults who stutter: A preliminary study. International Archives of Communication Disorder, 4(1), Article 020. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '2022',
+                        'title' => 'Employment quotas for adults who stutter: A preliminary study',
+                        'author' => 'Kikuchi, Y. and Umezaki, T. and Adachi, K. and Sawatsubashi, M. and Taura, M. and Tsuchihashi, N. and Yamaguchi, Y. and Murakami, D. and Nakagawa, T.',
+                        'volume' => '4',
+                        'number' => '1',
+                        'journal' => 'International Archives of Communication Disorder',
+                        'note' => 'Article 020',
+                        ]
+                ],
+                [
+                    'source' => ' Sønsterud, H., Howells, K., & Ward, D. (2022). Covert and overt stuttering: concepts and comparative findings. Journal of Communication Disorders, Article 106246. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '2022',
+                        'title' => 'Covert and overt stuttering: concepts and comparative findings',
+                        'author' => 'S{\o}nsterud, H. and Howells, K. and Ward, D.',
+                        'note' => 'Article 106246',
+                        'journal' => 'Journal of Communication Disorders',
+                        ]
+                ],
+                [
+                    'source' => ' Treon, M., Dempster, L., & Blaesing, K. (2006). MMPI-2/A assessed personality differences in people who do, and do not, stutter. Social Behavior and Personality: An International Journal, 34, 271–294. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'journal' => 'Social Behavior and Personality: An International Journal',
+                        'volume' => '34',
+                        'pages' => '271-294',
+                        'year' => '2006',
+                        'title' => 'MMPI-2/A assessed personality differences in people who do, and do not, stutter',
+                        'author' => 'Treon, M. and Dempster, L. and Blaesing, K.',
+                        ]
+                ],
+                [
+                    'source' => ' St. Louis, K. O. (2020). Comparing and predicting public attitudes toward stuttering, obesity, and mental illness. American Journal of Speech-Language Pathology, 29, 2023–2038.  ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '2020',
+                        'pages' => '2023-2038',
+                        'title' => 'Comparing and predicting public attitudes toward stuttering, obesity, and mental illness',
+                        'author' => 'St. Louis, K. O.',
+                        'volume' => '29',
+                        'journal' => 'American Journal of Speech-Language Pathology',
                         ]
                 ],
             ];
