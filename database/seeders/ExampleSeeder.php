@@ -1640,19 +1640,6 @@ class ExampleSeeder extends Seeder
                         'journal' => 'American Journal of Speech-Language Pathology',
                         ]
                 ],
-                [
-                    'source' => 'Kelso, J. S., Ding, M., & Schoner, G. (1992). Dynamic pattern formation: A primer. In SANTA FE INSTITUTE STUDIES IN THE SCIENCES OF COMPLEXITY-PROCEEDINGS VOLUME- (Vol. 13, pp. 397-397). ADDISON-WESLEY PUBLISHING CO.  ',
-                    'type' => 'incollection',
-                    'bibtex' => [
-                        'year' => '1992',
-                        'pages' => '397-397',
-                        'title' => 'Dynamic pattern formation: A primer',
-                        'author' => 'Kelso, J. S. and Ding, M. and Schoner, G.',
-                        'volume' => '13',
-                        'publisher' => 'ADDISON-WESLEY PUBLISHING CO',
-                        'booktitle' => 'SANTA FE INSTITUTE STUDIES IN THE SCIENCES OF COMPLEXITY-PROCEEDINGS VOLUME',
-                        ]
-                ],
             ];
 
             DB::statement('DELETE FROM examples');

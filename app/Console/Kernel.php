@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
                 }
             }
         })
-        ->daily()
+        ->dailyAt('19:30')
         ->emailOutputOnFailure('martin.j.osborne@gmail.com');
     }
 

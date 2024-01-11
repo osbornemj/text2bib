@@ -11,14 +11,24 @@ class IndexController extends Controller
 {
     public function index()
     {
+        return view('welcome');
+    }
+
+    public function convert()
+    {
         $user = Auth::user();
 
         if ($user) {
             $settings = UserSetting::where('user_id', $user->id)->first();
-            return view('dashboard')
+            return view('convert')
                 ->with('settings', $settings);
+        } else {
+            return view('welcome');
         }
+    }
 
-        return view('welcome');
+    public function versions()
+    {
+        return view('versions');
     }
 }

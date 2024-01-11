@@ -52,6 +52,11 @@
                 </x-link>
                 (words that are in the dictionary but are not standard words and are used as abbreviations in journal names)
             </p>
+            <p>
+                <x-link :href="route('versions.index')" :active="request()->routeIs('versions.index')">
+                    Converter versions
+                </x-link>
+            </p>
         </div>
     </div>
 </x-app-layout>

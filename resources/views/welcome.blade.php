@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-app-layout>
     @if (Route::has('login'))
         <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
             @auth
@@ -9,10 +9,10 @@
 
     <div class="px-4 sm:px-4 lg:px-4">
         <p class="my-4">
-            This site allows you to convert a file of references to a BibTeX file.
+            This site allows you to convert a text file of references to a BibTeX file.
         </p>
         <p class="mb-4">
-            You upload a <b>plain text</b> file that <i>either</i> has the references separated by blank lines, like this
+            You upload a <b>plain text</b> file using the <b>utf-8</b> encoding that <i>either</i> has the references separated by blank lines, like this
         </p>
         <div>
             <p class="m-4 ml-8">
@@ -40,11 +40,11 @@
             The script attempts to parse the references regardless of their format.
         </p>
         <p class="mb-4">
-            The system does not extract the references from a file, so the file you upload should contain only the list of references, not other text.  However,  each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem[&lt;label&gt;]{}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any digit or any of the characters <code>.</code>, <code>[</code>, <code>]</code>, <code>(</code>, or <code>)</code>.
+            The system does not extract the references from a file that contains other material, so the file you upload should contain <i>only</i> the list of references, not other text.  However,  each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem{&lt;label&gt;}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any digit or any of the characters <code>.</code>, <code>[</code>, <code>]</code>, <code>(</code>, or <code>)</code>.
         </p>
         <p class="mb-4">
-            To get started, register if you do not have an account, or log in if you do.
+            To get started, <x-link href="{{ url('register') }}">register</x-link> if you do not have an account, or <x-link href="{{ url('login') }}">log</x-link> in if you do.
         </p>
     </div>
 
-</x-guest-layout>
+</x-app-layout>

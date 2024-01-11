@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ItemTypesController;
 use App\Http\Controllers\Admin\NamesController;
 use App\Http\Controllers\Admin\PublishersController;
 use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\VersionsController;
 use App\Http\Controllers\Admin\VonNamesController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
@@ -41,10 +42,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [IndexController::class, 'index'])->name('dashboard');
+    Route::get('/convert', [IndexController::class, 'convert'])->name('convert');
     Route::get('/errorReports', [ErrorReportController::class, 'index'])->name('errorReports');
     Route::get('/errorReport/{id}', [ErrorReportController::class, 'show'])->name('errorReport');
     Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
+    Route::get('/versions', [IndexController::class, 'versions'])->name('versions');
 
     Route::controller(ConversionController::class)->group(function () {
         Route::get('/convert/{conversionId}/{userFileId?}/{itemSeparator?}', 'convert')->name('file.convert');
@@ -66,6 +68,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         '/admin/cities' => CitiesController::class,
         '/admin/names' => NamesController::class,
         '/admin/excludedWords' => ExcludedWordsController::class,
+        '/admin/versions' => VersionsController::class,
     ]);
 
     Route::get('/admin/index', [AdminController::class, 'index'])->name('admin.index');

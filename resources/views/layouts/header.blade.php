@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center text-blue-700 text-2xl font-bold">
-                    <a href="{{ route('dashboard') }}">
+                    <a href="{{ route('public.index') }}">
                         text2bib
                     </a>
                 </div>
