@@ -954,7 +954,7 @@ class Converter
         $remainderMinusPubInfo = $remainder;
         $publisher = '';
         foreach ($this->publishers as $pub) {
-            if (Str::contains($remainder, $pub)) {
+            if (Str::contains(mb_strtolower($remainder), mb_strtolower($pub))) {
                 $containsPublisher = true;
                 $publisherString = $publisher = $pub;
                 $remainderMinusPubInfo = Str::replaceFirst($publisher, '', $remainder);
@@ -1399,7 +1399,6 @@ class Converter
 
                     // If item doesn't contain string identifying editors, look more carefully to see whether
                     // it contains a string that could be editors' names.
-                    // The first case handles, for example, the Darby reference in the examples
                     if (!$containsEditors) {
                         if (strpos($tempRemainder, '.') === false && strpos($tempRemainder, ',') === false) {
                             $this->verbose("tempRemainder contains no period or comma, so appears to not contain editors' names");
@@ -1417,7 +1416,16 @@ class Converter
                             $possibleEds = null;
                             while (strpos($tempRemainderLeft, ',') !== false && ! $possibleEds) {
                                 $tempRemainderLeft = trim(strchr($tempRemainderLeft, ','), ', ');
-                                if ($this->isNameString($tempRemainderLeft)) {
+                                $tempRemainderWords = explode(' ', $tempRemainderLeft);
+                                $bareWordCount = 0;
+                                foreach ($tempRemainderWords as $word) {
+                                    if (!Str::endsWith($word, [',', '.'])) {
+                                        $bareWordCount++;
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                if ($bareWordCount < 4 && $this->isNameString($tempRemainderLeft)) {
                                     $possibleEds = $tempRemainderLeft;
                                 }
                             }
@@ -1426,6 +1434,8 @@ class Converter
 
                                 if ($cityString || $publisherString) {
                                     if (!$booktitle) {
+                                        // check for volume in title
+                                        
                                         $booktitle = $tempRemainder;
                                     }
                                     $item->editor = '';
@@ -2741,15 +2751,15 @@ class Converter
     public function isInitials(string $word): bool
     {
         $case = 0;
-        if (preg_match('/[A-Z]\.?$/', $word)) {
+        if (preg_match('/^[A-Z]\.?$/', $word)) {
             $case = 1;
-        } elseif (preg_match('/[A-Z]\.[A-Z]\.$/', $word)) {
+        } elseif (preg_match('/^[A-Z]\.[A-Z]\.$/', $word)) {
             $case = 2;
-        } elseif (preg_match('/[A-Z][A-Z]$/', $word)) {
+        } elseif (preg_match('/^[A-Z][A-Z]$/', $word)) {
             $case = 3;
-        } elseif (preg_match('/[A-Z]\.[A-Z]\.[A-Z]\.$/', $word)) {
+        } elseif (preg_match('/^[A-Z]\.[A-Z]\.[A-Z]\.$/', $word)) {
             $case = 4;
-        } elseif (preg_match('/[A-Z][A-Z][A-Z]$/', $word)) {
+        } elseif (preg_match('/^[A-Z][A-Z][A-Z]$/', $word)) {
             $case = 5;
         }
 
