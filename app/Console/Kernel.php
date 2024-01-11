@@ -5,6 +5,8 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+use Illuminate\Support\Facades\Storage;
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -16,6 +18,16 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            $files = Storage::disk('public')->files('files');
+            foreach ($files as $file) {
+                if (Storage::disk('public')->lastModified($file) < now()->subDays(14)->getTimestamp()) {
+                    Storage::disk('public')->delete($file);
+                }
+            }
+        })
+        ->daily()
+        ->emailOutputOnFailure('martin.j.osborne@gmail.com');
     }
 
     /**

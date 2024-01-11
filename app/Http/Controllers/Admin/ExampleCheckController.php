@@ -33,10 +33,13 @@ class ExampleCheckController extends Controller
         $conversion->char_encoding = $charEncoding ? $charEncoding : 'utf8';
 
         $results = [];
+        $allCorrect = true;
+
         foreach ($examples as $example) {
             $source = $example->source;
 
             $output = $this->converter->convertEntry($source, $conversion);
+            
             $unidentified = '';
             if (isset($output['item']->unidentified)) {
                 $unidentified = $output['item']->unidentified;
@@ -46,13 +49,9 @@ class ExampleCheckController extends Controller
             $diff1 = array_diff((array) $output['item'], (array) $example->bibtexFields());
             $diff2 = array_diff((array) $example->bibtexFields(), (array) $output['item']);
 
-            $result = [];
-            if (empty($diff1) && empty($diff2)) {
-                $result['result'] = 'correct';
-                if ($unidentified) {
-                    $result['unidentified'] = $unidentified;
-                }
-            } else {
+            if (!empty($diff1) || !empty($diff2)) {
+                $result = [];
+                $allCorrect = false;
                 $result['result'] = 'incorrect';
                 $result['source'] = $source;
                 $result['errors'] = [];
@@ -72,16 +71,16 @@ class ExampleCheckController extends Controller
                             'correct' => $content
                         ];
                 }
-            }
 
-            if ($verbose) {
-                $result['details'] = $output['details'];
+                if ($verbose) {
+                    $result['details'] = $output['details'];
+                }
+    
+                $results[$example->id] = $result;
             }
-
-            $results[$example->id] = $result;
         }
 
         return view('admin.examples.checkResult',
-            compact('results', 'verbose'));
+            compact('results', 'verbose', 'allCorrect'));
     }
 }

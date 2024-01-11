@@ -8,14 +8,11 @@
 
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
-            @foreach ($results as $id => $result)
-                <p>Example {{ $id }}
-                @if ($result['result'] == 'correct')
-                    <span class="bg-green-600">correct</span>
-                    @isset ($result['unidentified'])
-                        (but string "{{ $result['unidentified'] }}" not assigned to field)
-                    @endisset
-                @else
+            @if ($allCorrect) 
+                <span class="bg-green-600">All correct</span>
+            @else
+                @foreach ($results as $id => $result)
+                    <p>Example {{ $id }}
                     <span class="bg-red-600">incorrect</span> 
                     &nbsp;&bull;&nbsp;
                     <x-link href="{{ url('/admin/runExampleCheck/1/' . $id) }}">verbose conversion</x-link>
@@ -33,19 +30,19 @@
                         <br/>
                         {{ $value['correct']}}
                     @endforeach
-                @endif
-                @if ($verbose)
-                    <p>
-                    <i>Details of conversion:</i>
-                    <ul>
-                    @foreach ($result['details'] as $details)
-                        <li>
-                            @include('index.partials.conversionDetails')
-                        </li>
-                    @endforeach
-                    </ul>
-                @endif
-            @endforeach
+                    @if ($verbose)
+                        <p>
+                        <i>Details of conversion:</i>
+                        <ul>
+                        @foreach ($result['details'] as $details)
+                            <li>
+                                @include('index.partials.conversionDetails')
+                            </li>
+                        @endforeach
+                        </ul>
+                    @endif
+                @endforeach
+            @endif
         </div>
     </div>
 </x-app-layout>

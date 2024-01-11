@@ -595,7 +595,7 @@ class Converter
         // get the doi if any //
         ////////////////////////
 
-        $doi = $this->extractLabeledContent($entry, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._]+');
+        $doi = $this->extractLabeledContent($entry, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._\-]+');
 
         if ($doi) {
             $item->doi = $doi;

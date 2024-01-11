@@ -15,10 +15,8 @@ class ConversionRequest extends FormRequest
      */
     public function rules(): array
     {
-        // 'mimetypes:text/plain' restriction removed because it seemed to exclude
-        // legitimate text files
         return [
-            'file' => ['required', 'max:100'],
+            'file' => ['required', 'max:100', 'mimes:txt'],
             'item_separator' => ['required', 'string', 'in:line,cr'],
             'first_component' => ['required', 'string', 'in:authors,year'],
             'label_style' => ['required', 'string', 'in:short,long,gs'],
@@ -35,7 +33,7 @@ class ConversionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'file.mimetypes' => 'The file you selected is not plain text',
+            'file.mimes' => 'The file you selected is not plain text',
             'item_separator.required' => 'Please select an option',
             'first_component.required' => 'Please select an option',
             'label_style.required' => 'Please select an option',
