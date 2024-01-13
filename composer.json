@@ -12,7 +12,6 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.2",
-        "sarfraznawaz2005/loading": "^1.4",
         "tigitz/php-spellchecker": "^0.6.0"
     },
     "require-dev": {
