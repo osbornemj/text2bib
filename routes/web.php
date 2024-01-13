@@ -12,7 +12,6 @@ use App\Http\Controllers\Admin\ItemTypesController;
 use App\Http\Controllers\Admin\NamesController;
 use App\Http\Controllers\Admin\PublishersController;
 use App\Http\Controllers\Admin\UsersController;
-use App\Http\Controllers\Admin\VersionsController;
 use App\Http\Controllers\Admin\VonNamesController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
@@ -46,7 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/errorReports', [ErrorReportController::class, 'index'])->name('errorReports');
     Route::get('/errorReport/{id}', [ErrorReportController::class, 'show'])->name('errorReport');
     Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
-    Route::get('/versions', [IndexController::class, 'versions'])->name('versions');
+    Route::get('/about', [IndexController::class, 'about'])->name('about');
 
     Route::controller(ConversionController::class)->group(function () {
         Route::get('/convert/{conversionId}/{userFileId?}/{itemSeparator?}', 'convert')->name('file.convert');

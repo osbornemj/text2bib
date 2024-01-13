@@ -20,15 +20,14 @@ class IndexController extends Controller
 
         if ($user) {
             $settings = UserSetting::where('user_id', $user->id)->first();
-            return view('convert')
-                ->with('settings', $settings);
+            return view('convert', compact('settings'));
         } else {
             return view('welcome');
         }
     }
 
-    public function versions()
+    public function about()
     {
-        return view('versions');
+        return view('about');
     }
 }

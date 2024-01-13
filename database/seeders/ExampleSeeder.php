@@ -1640,6 +1640,42 @@ class ExampleSeeder extends Seeder
                         'journal' => 'American Journal of Speech-Language Pathology',
                         ]
                 ],
+                [
+                    'source' => 'Tramontana, F., Gardini, L., Dieci, R. and Westerhoff, F., 2009. Global bifurcations in a three-dimensional financial model of bull and bear interactions. In: Gian Italo Bischi, Carl Chiarella and Laura Gardini, eds. Nonlinear Dynamics in Economics, Finance and the Social Sciences. Springer-Verlag, Heidelberg, pp. 333-352. ',
+                    'type' => 'incollection',
+                    'bibtex' => [
+                        'year' => '2009',
+                        'pages' => '333-352',
+                        'title' => 'Global bifurcations in a three-dimensional financial model of bull and bear interactions',
+                        'author' => 'Tramontana, F. and Gardini, L. and Dieci, R. and Westerhoff, F.',
+                        'editor' => 'Gian Italo Bischi and Carl Chiarella and Laura Gardini',
+                        'booktitle' => 'Nonlinear Dynamics in Economics, Finance and the Social Sciences',
+                        'publisher' => 'Springer-Verlag',
+                        'address' => 'Heidelberg',
+                        ]
+                ],
+                [
+                    'source' => 'Werner F. M. DeBondt and Richard H. Thaler. Financial decision making in markets and firms: A Behavioral perspective. In R. A. Jarrow, V. Maksimovic, W. T. Ziemba (eds.) \emph{Handbook in Operations Research and Management Science, Volume 9, Finance}. Elsevier, 1995. ',
+                    'type' => 'incollection',
+                    'bibtex' => [
+                        'year' => '1995',
+                        'title' => 'Financial decision making in markets and firms: A Behavioral perspective',
+                        'author' => 'Werner F. M. DeBondt and Richard H. Thaler',
+                        'editor' => 'R. A. Jarrow and V. Maksimovic and W. T. Ziemba',
+                        'booktitle' => 'Handbook in Operations Research and Management Science, Volume 9, Finance',
+                        'publisher' => 'Elsevier',
+                        ]
+                ],
+                [
+                    'source' => 'Benz, Anton, Gerhard Jaeger, and Robert van Rooij. (eds.) (2005),\ \textit{Game Theory and Pragmatics}, by Palgrave MacMillan. ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '2005',
+                        'title' => 'Game Theory and Pragmatics',
+                        'editor' => 'Benz, Anton and Gerhard Jaeger and Robert van Rooij',
+                        'publisher' => 'Palgrave MacMillan',
+                        ]
+                ],
             ];
 
             DB::statement('DELETE FROM examples');

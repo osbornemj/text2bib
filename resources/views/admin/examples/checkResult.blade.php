@@ -9,7 +9,7 @@
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
             @if ($allCorrect) 
-                <span class="bg-green-600">All correct</span>
+                <span class="bg-green-600">All correct</span> ({{ $exampleCount }} {{ Str::plural('item', $exampleCount) }})
             @else
                 @foreach ($results as $id => $result)
                     <p>Example {{ $id }}

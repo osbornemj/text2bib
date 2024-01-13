@@ -105,7 +105,7 @@ class Converter
         $this->edsRegExp1 = '/\([Ee]ds?\.?\)|\([Ee]ditors?\)/';
         $this->edsRegExp2 = '/[Ee]dited by/';
         $this->edsRegExp3 = '/[Ee]ds?\.|^[Ee]ds?\.| [Ee]ditors?/';
-        $this->edsRegExp4 = '/( [Ee]d[\. ]|\([Ee]d\.?\)| [Ee]ds[\. ]|\([Ee]ds\.?\)| [Ee]ditor| [Ee]ditors| \([Ee]ditor\)| \([Ee]ditors\))/';
+        $this->edsRegExp4 = '/( [Ee]ds?[\. ]|\([Ee]ds?\.?\)| [Ee]ditors?| \([Ee]ditors?\))/';
         $this->editorStartRegExp = '/^\(?[Ee]dited by|^\(?[Ee]ds?\.?|^\([Ee]ditors?/';
         $this->editorRegExp = '/\([Ee]ds?\.?\)|\([Ee]ditors?\)/';
 
@@ -1148,8 +1148,26 @@ class Converter
                     // followed by editors, up to (Eds.).
                     $postEditorString = '';
 
-                    if (preg_match($this->edsRegExp1, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                        // $remainder contains "(Eds.)" or something similar
+                    $regExp = '/( [Ee]ds?[\. ]|\([Ee]ds?\.?\)| [Ee]ditors?| \([Ee]ditors?\))/';
+                    $remainderContainsEds = false;
+                    if (preg_match($regExp, $remainder, $matches)) {
+                        $eds = $matches[0];
+                        $before = Str::before($remainder, $eds);
+                        $after = Str::after($remainder, $eds);
+                        $publisherPosition = strpos($after, $publisher);
+                        $remainderContainsEds = true;
+                    }
+
+                    // Require string for editors to have at least 6 characters and string for booktitle to have at least 10 characters
+                    if ($remainderContainsEds && $before > 5 && $publisherPosition !== false && $publisherPosition > 10) {
+                            // $remainder is <editors> eds <booktitle> <publicationInfo>
+                            $this->verbose("Remainder seems to be <editors> eds <booktitle> <publicationInfo>");
+                            $editorStart = true;
+                            $editorString = $before;
+                            $determineEnd = false;
+                            $postEditorString = $after;
+                    } elseif (preg_match($this->edsRegExp1, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                        // $remainder contains "(Eds.)" (parens required) or similar
                         if ($this->isNameString($remainder)) {
                             // CASE 1
                             // $remainder starts with names, and so
@@ -1195,7 +1213,7 @@ class Converter
                         if ($this->isNameString($remainder)) {
                             // CASE 4
                             // $remainder is <editors> <booktitle> <publicationInfo>
-                            $this->verbose("Remainder does not contain \"(Eds.)\" or similar and does not start with \"Eds\" or similar, but starts with a string that looks like a name");
+                            $this->verbose("Remainder does not contain \"(Eds.)\" or similar string in parentheses and does not start with \"Eds\" or similar, but starts with a string that looks like a name");
                             $editorStart = true;
                             $editorString = $remainder;
                             $determineEnd = true;
@@ -1285,7 +1303,7 @@ class Converter
                             }
                         }
                         $this->verbose("booktitle: " . $booktitle);
-                        if ($endAuthorPos) {
+                        if (isset($endAuthorPos) && $endAuthorPos) {
                             // CASE 2
                             $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
                             $conversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $isEditor, false);
@@ -1833,6 +1851,9 @@ class Converter
         }
         $item->title = $this->requireUc($item->title);
 
+        $scholarTitle = str_replace(' ', '+', $item->title);
+        $scholarTitle = str_replace(["'", '"', "{", "}", "\\"], "", $scholarTitle);
+
         $returner = [
             'source' => $originalEntry,
             'item' => $item,
@@ -1840,7 +1861,8 @@ class Converter
             'itemType' => $itemKind,
             'warnings' => $warnings,
             'notices' => $notices,
-            'details' => $this->displayLines
+            'details' => $this->displayLines,
+            'scholarTitle' => $scholarTitle,
         ];
 
         return $returner;
@@ -2594,7 +2616,7 @@ class Converter
     public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, bool &$isEditor, bool $determineEnd = true): array
     {
         $namePart = $prevWordAnd = $done = $authorIndex = $case = 0;
-        $isEditor = $hasAnd = false;
+        $isEditor = $hasAnd = $multipleAuthors = false;
         $authorstring = $fullName = '';
         $remainingWords = $words;
         $warnings = [];
@@ -2687,10 +2709,14 @@ class Converter
             // remove first word from $remainingWords
             array_shift($remainingWords);
 
+            if ($authorIndex > 1) {
+                $multipleAuthors = true;
+            }
+
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
-            } elseif ($this->isEd($word, $hasAnd)) {
-                $this->verbose('String for editors, so ending name string');
+            } elseif ($this->isEd($word, $multipleAuthors)) {
+                $this->verbose("String for editors, so ending name string (word: " . $word .")");
                 // word is 'ed' or 'ed.' if $hasAnd is false, or 'eds' or 'eds.' if $hasAnd is true
                 $isEditor = true;
                 $remainder = implode(" ", $remainingWords);
@@ -2700,11 +2726,14 @@ class Converter
                 // Check for year following editors
                 if ($year = $this->getYear($remainder, true, $remains, false, $trash)) {
                     $remainder = $remains;
-                    $this->verbose("Year detected, so ending name string");
+                    $this->verbose("Year detected, so ending name string (word: " . $word .")");
                 } else {
                     $this->verbose("String indicating editors (e.g. 'eds') detected, so ending name string");
                 }
-                $authorstring .= $fullName;
+                // Under some conditions (von name?), $fullName has already been added to $authorstring.
+                if (!Str::endsWith($authorstring, $fullName)) {
+                    $authorstring .= $fullName;
+                }
                 break;  // exit from foreach
             } elseif ($determineEnd && $done) {
                 break;  // exit from foreach

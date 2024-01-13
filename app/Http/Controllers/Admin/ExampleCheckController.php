@@ -80,7 +80,9 @@ class ExampleCheckController extends Controller
             }
         }
 
+        $exampleCount = count($examples);
+
         return view('admin.examples.checkResult',
-            compact('results', 'verbose', 'allCorrect'));
+            compact('results', 'verbose', 'allCorrect', 'exampleCount'));
     }
 }
