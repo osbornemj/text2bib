@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Conversion;
+//use App\Models\Conversion;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+//use Illuminate\Validation\Rule;
 
 class ConversionRequest extends FormRequest
 {

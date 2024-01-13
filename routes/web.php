@@ -49,7 +49,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::controller(ConversionController::class)->group(function () {
         Route::get('/convert/{conversionId}/{userFileId?}/{itemSeparator?}', 'convert')->name('file.convert');
-        Route::get('/convertIncremental/{conversionId}/{index?}', 'convertIncremental')->name('file.convertIncremental');
+        Route::get('/redo/{id}', 'redo')->name('redo');
+    //    Route::get('/convertIncremental/{conversionId}/{index?}', 'convertIncremental')->name('file.convertIncremental');
     //    Route::post('/addToBibtex/{conversionId}', 'addToBibtex')->name('file.addToBibtex');
         Route::post('/addOutput/{conversionId}', 'addOutput')->name('conversion.addOutput');
         Route::get('/showBibtex/{conversionId}', 'showBibtex')->name('conversion.showBibtex');
@@ -67,7 +68,6 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         '/admin/cities' => CitiesController::class,
         '/admin/names' => NamesController::class,
         '/admin/excludedWords' => ExcludedWordsController::class,
-        '/admin/versions' => VersionsController::class,
     ]);
 
     Route::get('/admin/index', [AdminController::class, 'index'])->name('admin.index');

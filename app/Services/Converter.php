@@ -495,8 +495,13 @@ class Converter
             }
             if (isset($month)) {
                 $containsMonth = true;
+                // If month is parsable, parse it: 
                 // translate 'Jan' or 'Jan.' or 'January', for example, to 'January'.
-                $item->month = Carbon::parse('1 ' . $month)->format('F');
+                if (preg_match('/^[a-zA-Z.]*$/', $month)) {
+                    $item->month = Carbon::parse('1 ' . $month)->format('F');
+                } else {
+                    $item->month = $month;
+                }
                 $this->verbose(['fieldName' => 'Month', 'content' => strip_tags($item->month)]);
             }
         }

@@ -49,6 +49,23 @@ class ConversionController extends Controller
         $filestring = $this->regularizeLineEndings($filestring);
         $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
 
+        if (count($entries) == 1 && strlen($entries[0]) > 500) {
+            $entry = $entries[0];
+            return view('index.itemSeparatorError', compact('entry', 'conversionId'));
+        }
+
+        // Check for utf-8
+        $nonUtf8Entries = [];
+        foreach ($entries as $entry) {
+            if (!mb_check_encoding($entry)) {
+                $nonUtf8Entries[] = $entry;
+            }
+        }
+
+        if (count($nonUtf8Entries)) {
+            return view('index.encodingError', compact('nonUtf8Entries'));
+        }
+
         $convItems = [];
         foreach ($entries as $entry) {
             // $convItems is array with components 'source', 'item', 'itemType', 'label', 'warnings',
@@ -67,52 +84,14 @@ class ConversionController extends Controller
         // Write converted items to database and key array to output ids
         $convertedItems = [];
         foreach ($convItems as $i => $convItem) {
-            $encodingValid = true;
-            if (!mb_check_encoding($convItem['source'])) {
-                $encodingValid = false;
-            }
-            foreach ($convItem['item'] as $it) {
-                if (!mb_check_encoding($it)) {
-                    $encodingValid = false;
-                    break;
-                }
-            }
-        
-            if ($encodingValid) {
-                $output = Output::create([
-                    'source' => $convItem['source'],
-                    'conversion_id' => $conversion->id,
-                    'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
-                    'label' => $convItem['label'],
-                    'item' => $convItem['item'],
-                    'seq' => $i,
-                ]);
-            } else {
-                return view('index.encodingError',
-                    compact('convItem')
-                );
-            }
-
-            // if ($this->isUtf8($convItem['source'])) {
-            //     try {
-            //         $output = Output::create([
-            //             'source' => $convItem['source'],
-            //             'conversion_id' => $conversion->id,
-            //             'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
-            //             'label' => $convItem['label'],
-            //             'item' => $convItem['item'],
-            //             'seq' => $i,
-            //         ]);
-            //     } catch (Throwable $e) {
-            //         echo 'Error in ' . $convItem['source'];
-            //         return false;
-            //     }
-            // } else {
-            //     return view('index.encodingError',
-            //         compact('convItem')
-            //     );
-            // }
-    
+            $output = Output::create([
+                'source' => $convItem['source'],
+                'conversion_id' => $conversion->id,
+                'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
+                'label' => $convItem['label'],
+                'item' => $convItem['item'],
+                'seq' => $i,
+            ]);
             $convertedItems[$output->id] = $convItem;
         }
 
@@ -132,9 +111,17 @@ class ConversionController extends Controller
         );
     }
 
-    private function isUtf8(string $string): bool
+    public function redo(int $conversionId): RedirectResponse
     {
-        return mb_check_encoding($string, 'UTF-8');
+        $conversion = Conversion::find($conversionId);
+        $conversion->update(['item_separator' => 'cr']);
+
+        return redirect('convert/' . $conversion->id);
+    }
+
+    // private function isUtf8(string $string): bool
+    // {
+    //     return mb_check_encoding($string, 'UTF-8');
         // Following is from W3C site.
         // return preg_match('%^(?:
         //     [\x09\x0A\x0D\x20-\x7E]              # ASCII
@@ -146,7 +133,7 @@ class ConversionController extends Controller
         //     | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
         //     |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
         //     )*$%xs', $string);
-    }
+    // }
 
     public function addLabels(array $convertedItems, Conversion $conversion): array
     {

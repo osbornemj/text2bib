@@ -20,6 +20,9 @@
                 <li>
                     Your file must be plain text (txt), with character encoding utf-8.
                 </li>
+                <li>
+                    The size of your file must be at most 100K.
+                </li>
             </ul>
         </div>
     </div>
