@@ -1,7 +1,7 @@
 <?php
 namespace App\Traits;
 
-trait StopWords
+trait Stopwords
 {
     // Taken, with some deletions, from https://github.com/voku/stop-words
     var $stopwords = [

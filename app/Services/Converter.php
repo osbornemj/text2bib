@@ -74,7 +74,7 @@ class Converter
     var $workingPaperRegExp;
     var $workingPaperNumberRegExp;
 
-    use StopWords;
+    use Stopwords;
 
     public function __construct()
     {

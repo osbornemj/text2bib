@@ -18,5 +18,4 @@ class OutputField extends Model
     {
         return $this->belongsTo(ItemField:: class);
     }
-
 }
