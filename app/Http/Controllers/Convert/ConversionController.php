@@ -189,21 +189,21 @@ class ConversionController extends Controller
         }
 
         if ($conversion->label_style == 'short') {
-            $label = strtolower($label) . substr($item->year, 2);
+            $label = mb_strtolower($label) . substr($item->year, 2);
         } elseif ($conversion->label_style == 'gs') {
             $firstAuthor = count($authors) ? $authors[0] : 'none';
 
             if (strpos($firstAuthor, ',') === false) {
                 // assume last name is last segment
                 if (strpos($firstAuthor, ' ') === false) {
-                    $label = strtolower($firstAuthor);
+                    $label = mb_strtolower($firstAuthor);
                 } else {
                     $r = strrpos($firstAuthor, ' ');
-                    $label = strtolower(substr($firstAuthor, $r+1));
+                    $label = mb_strtolower(substr($firstAuthor, $r+1));
                 }
             } else {
                 // last name is segment up to comma
-                $label = strtolower(substr($firstAuthor, 0, strpos($firstAuthor, ',')));
+                $label = mb_strtolower(substr($firstAuthor, 0, strpos($firstAuthor, ',')));
             }
             $label .= $item->year;
             $title = $item->title;
@@ -213,7 +213,7 @@ class ConversionController extends Controller
             
             $firstTitleWord = Str::before($title, ' ');
 
-            $label .= strtolower($this->onlyLetters($firstTitleWord));
+            $label .= mb_strtolower($this->onlyLetters($firstTitleWord));
         } else {
             $label .= $item->year;
         }

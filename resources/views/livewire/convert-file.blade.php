@@ -1,11 +1,11 @@
 <div>
 
-    <form method="POST" action="{{ route('file.upload') }}" method="POST" accept="txt" enctype="multipart/form-data" class="mt-0 space-y-0">
+    <form method="POST" wire:submit="submit()" method="POST" accept="txt" enctype="multipart/form-data" class="mt-0 space-y-0">
         @csrf
 
         <div>
             <x-input-label for="file" :value="__('File')" />
-            <x-text-input id="file" class="block mt-1 max-w-xl w-full" type="file" name="file" accept="txt"
+            <x-text-input id="file" class="block mt-1 max-w-xl w-full" type="file" name="file" wire:model="form.file" accept="txt"
                 required autofocus />
             <x-input-error :messages="$errors->get('file')" class="mt-2" />
         </div>
@@ -13,10 +13,10 @@
         <div>
             <x-input-label for="item_separator" :value="__('Item separator')"  class="mt-4"/>
         
-            <x-radio-input name="item_separator" id="item_separator" value="line" class="peer/line" :checked="old('item_separator', !isset($settings) || $settings->item_separator == 'line')" /> 
+            <x-radio-input wire:model="form.item_separator" value="line" class="peer/line" /> 
             <x-value-label for="line" class="peer-checked/line:text-blue-600 ml-1" :value="__('Blank line')" />
 
-            <x-radio-input name="item_separator" id="item_separator" value="cr" class="peer/cr ml-4" :checked="old('item_separator', isset($settings) && $settings->item_separator == 'cr')" />
+            <x-radio-input wire:model="form.item_separator" value="cr" class="peer/cr ml-4" />
             <x-value-label for="cr" class="peer-checked/cr:text-blue-600 ml-1" :value="__('Carriage return')" />
 
             <x-input-error :messages="$errors->get('item_separator')" class="mt-2" />
@@ -32,10 +32,10 @@
         <div>
             <x-input-label for="first_component" :value="__('First component of each item in your file')" class="mt-4" />
         
-            <x-radio-input name="first_component" id="first_component" value="authors" class="peer/authors" :checked="old('first_component', !isset($settings) || $settings->first_component == 'authors')" /> 
+            <x-radio-input wire:model="form.first_component" value="authors" class="peer/authors" /> 
             <x-value-label for="authors" class="peer-checked/authors:text-blue-600 ml-1" :value="__('Authors')" />
 
-            <x-radio-input name="first_component" id="first_component" value="year" class="peer/year ml-4" :checked="old('first_component', isset($settings) && $settings->first_component == 'year')"/>
+            <x-radio-input wire:model="form.first_component" value="year" class="peer/year ml-4" />
             <x-value-label for="year" class="peer-checked/year:text-blue-600 ml-1" :value="__('Year')" />
 
             <x-input-error :messages="$errors->get('first_component')" class="mt-2" />
@@ -44,13 +44,13 @@
         <div>
             <x-input-label for="label_style" :value="__('Label style')" class="mt-4" />
         
-            <x-radio-input name="label_style" id="label_style" value="short" class="peer/short" :checked="old('label_style', !isset($settings) || (isset($settings) && $settings->label_style == 'short'))" /> 
+            <x-radio-input name="label_style" wire:model="form.label_style" value="short" class="peer/short" /> 
             <x-value-label for="short" class="peer-checked/short:text-blue-600 ml-1" :value="__('Short')" />
 
-            <x-radio-input name="label_style" id="label_style" value="long" class="peer/long ml-4"  :checked="old('label_style', isset($settings) && $settings->label_style == 'long')" />
+            <x-radio-input name="label_style" wire:model="form.label_style" value="long" class="peer/long ml-4" />
             <x-value-label for="long" class="peer-checked/long:text-blue-600 ml-1" :value="__('Long')" />
 
-            <x-radio-input name="label_style" id="label_style" value="gs" class="peer/gs ml-4" :checked="old('label_style', isset($settings) && $settings->label_style == 'gs')" />
+            <x-radio-input name="label_style" wire:model="form.label_style" value="gs" class="peer/gs ml-4" />
             <x-value-label for="gs" class="peer-checked/gs:text-blue-600 ml-1" :value="__('Google Scholar')" />
 
             <x-input-error :messages="$errors->get('label_style')" class="mt-2" />
@@ -69,10 +69,10 @@
         <div>
             <x-input-label for="override_labels" :value="__('Override labels in file (if any)?')" class="mt-4" />
         
-            <x-radio-input name="override_labels" id="override_labels" value="1" class="peer/1" :checked="old('override_labels', $settings->override_labels ?? true)" /> 
+            <x-radio-input wire:model="form.override_labels" value="1" class="peer/1" /> 
             <x-value-label for="1" class="peer-checked/1:text-blue-600 ml-1" :value="__('Yes')" />
 
-            <x-radio-input name="override_labels" id="override_labels" value="0" class="peer/0 ml-4" :checked="old('override_labels', !($settings->override_labels ?? true))" />
+            <x-radio-input wire:model="form.override_labels" value="0" class="peer/0 ml-4" />
             <x-value-label for="0" class="peer-checked/0:text-blue-600 ml-1" :value="__('No')" />
 
             <x-input-error :messages="$errors->get('override_labels')" class="mt-2" />
@@ -88,10 +88,10 @@
         <div>
             <x-input-label for="line_endings" :value="__('Line-ending style for output')" class="mt-4" />
         
-            <x-radio-input name="line_endings" id="line_endings" value="w" class="peer/w" :checked="old('line_endings', !isset($settings) || $settings->line_endings == 'w')" /> 
+            <x-radio-input wire:model="form.line_endings" value="w" class="peer/w" /> 
             <x-value-label for="w" class="peer-checked/w:text-blue-600 ml-1" :value="__('Windows')" />
 
-            <x-radio-input name="line_endings" id="line_endings" value="l" class="peer/l ml-4" :checked="old('line_endings', isset($settings) && $settings->line_endings == 'l')" />
+            <x-radio-input wire:model="form.line_endings" value="l" class="peer/l ml-4" />
             <x-value-label for="l" class="peer-checked/l:text-blue-600 ml-1" :value="__('Linux')" />
 
             <x-input-error :messages="$errors->get('line_endings')" class="mt-2" />
@@ -100,10 +100,10 @@
         <div>
             <x-input-label for="char_encoding" :value="__('Convert accented characters to TeX?')" class="mt-4" />
         
-            <x-radio-input name="char_encoding" id="char_encoding" value="utf8" class="peer/utf8" :checked="old('char_encoding', !isset($settings) || $settings->char_encoding == 'utf8')" /> 
+            <x-radio-input wire:model="form.char_encoding" value="utf8" class="peer/utf8" /> 
             <x-value-label for="utf8" class="peer-checked/utf8:text-blue-600 ml-1" :value="__('Yes')" />
 
-            <x-radio-input name="char_encoding" id="char_encoding" value="utf8leave" class="peer/utf8leave ml-4" :checked="old('char_encoding', isset($settings) && $settings->char_encoding == 'utf8leave')" />
+            <x-radio-input wire:model="form.char_encoding" value="utf8leave" class="peer/utf8leave ml-4" />
             <x-value-label for="l" class="peer-checked/utf8leave:text-blue-600 ml-1" :value="__('No')" />
 
             <x-input-error :messages="$errors->get('char_encoding')" class="mt-2" />
@@ -116,10 +116,10 @@
         <div>
             <x-input-label for="percent_comment" :value="__('Treat % as starting a comment?')" class="mt-4" />
         
-            <x-radio-input name="percent_comment" id="percent_comment" value="1" class="peer/1" :checked="old('percent_comment', $settings->percent_comment ?? true)" /> 
+            <x-radio-input wire:model="form.percent_comment" value="1" class="peer/1" /> 
             <x-value-label for="1" class="peer-checked/1:text-blue-600 ml-1" :value="__('Yes')" />
 
-            <x-radio-input name="percent_comment" id="percent_comment" value="0" class="peer/0 ml-4" :checked="old('percent_comment', !($settings->percent_comment ?? true))" />
+            <x-radio-input wire:model="form.percent_comment" value="0" class="peer/0 ml-4" />
             <x-value-label for="0" class="peer-checked/0:text-blue-600 ml-1" :value="__('No')" />
 
             <x-input-error :messages="$errors->get('percent_comment')" class="mt-2" />
@@ -135,10 +135,10 @@
         <div>
             <x-input-label for="include_source" :value="__('Include each reference as comment above entry in BibTeX file?')" class="mt-4" />
         
-            <x-radio-input name="include_source" id="include_source" value="1" class="peer/1" :checked="old('include_source', $settings->include_source ?? true)" /> 
+            <x-radio-input wire:model="form.include_source" value="1" class="peer/1" /> 
             <x-value-label for="1" class="peer-checked/1:text-blue-600 ml-1" :value="__('Yes')" />
 
-            <x-radio-input name="include_source" id="include_source" value="0" class="peer/0 ml-4" :checked="old('include_source', !($settings->include_source ?? true))" />
+            <x-radio-input wire:model="form.include_source" value="0" class="peer/0 ml-4" />
             <x-value-label for="0" class="peer-checked/0:text-blue-600 ml-1" :value="__('No')" />
 
             <x-input-error :messages="$errors->get('include_source')" class="mt-2" />
@@ -154,10 +154,10 @@
         <div>
             <x-input-label for="report_type" :value="__('Report type')"  class="mt-4"/>
         
-            <x-radio-input name="report_type" id="report_type" value="standard" class="peer/standard" :checked="old('report_type', !isset($settings) || $settings->report_type == 'standard')" /> 
+            <x-radio-input wire:model="form.report_type" value="standard" class="peer/standard" /> 
             <x-value-label for="standard" class="peer-checked/standard:text-blue-600 ml-1" :value="__('Standard')" />
 
-            <x-radio-input name="report_type" id="report_type" value="detailed" class="peer/detailed ml-4" :checked="old('report_type', isset($settings) && $settings->report_type == 'detailed')" />
+            <x-radio-input wire:model="form.report_type" value="detailed" class="peer/detailed ml-4" />
             <x-value-label for="detailed" class="peer-checked/detailed:text-blue-600 ml-1" :value="__('Detailed')" />
 
             <x-input-error :messages="$errors->get('report_type')" class="mt-2" />
@@ -173,38 +173,12 @@
         <div>
             <x-input-label for="save_settings" :value="__('Save settings as default for future conversions?')" class="mt-4" />
 
-            <x-radio-input name="save_settings" id="save_settings" value="1" class="peer/1" :checked="old('save_settings', $settings->save_settings ?? true)" /> 
+            <x-radio-input wire:model="form.save_settings" value="1" class="peer/1" /> 
             <x-value-label for="1" class="peer-checked/1:text-blue-600 ml-1" :value="__('Yes')" />
 
-            <x-radio-input name="save_settings" id="save_settings" value="0" class="peer/0 ml-4" :checked="old('save_settings', !($settings->save_settings ?? true))" />
+            <x-radio-input wire:model="form.save_settings" value="0" class="peer/0 ml-4" />
             <x-value-label for="0" class="peer-checked/0:text-blue-600 ml-1" :value="__('No')" />
         </div>
-
-        {{-- 
-        {if $citationUserGroups and !$citationUserGroups->wasEmpty()}
-            {assign var="first" value=1}
-            <tr>
-                <td class="label">Verified citation user group</td>
-                <td class="value">
-                    {iterate from=citationUserGroups item=group}
-                    <input type="radio" name="citationUserGroupId" value="{$group->getGroupId()}"{if $first} checked="checked"{assign var="first" value=0}{/if} />{$group->getGroupName()}
-                    {/iterate}
-                </td>
-            </tr>
-        {else}
-            <input type="hidden" name="citationUserGroupId" value="0" />
-        {/if}
-        {if $isSiteAdmin}
-            <tr>
-                <td class="label">Debug?</td>
-                <td class="value"><input type="radio" name="debug" value="1" checked="checked" />Yes
-                    <input type="radio" name="debug" value="0" />No
-                </td>
-            </tr>
-        {else}
-            <input type="hidden" name="debug" value="0" />
-        {/if}
-        --}}
 
         <div wire:loading>
             Working ...
