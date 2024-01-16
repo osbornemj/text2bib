@@ -1,9 +1,9 @@
 <div>
-    {{ '@' }}{{ $convertedItem['itemType'] }}{{ '{' }}{{ $convertedItem['label'] }},
+    {{ '@' }}{{ $convertedItem['itemType']->name }}{{ '{' }}{{ $convertedItem['label'] }},
         <ul class="ml-6">
             @foreach ($fields as $field)
-                @isset($convertedItem['item']->$field)
-                    <li>{{ $field }} = {{ '{' }}{{ $convertedItem['item']->$field }}{{ '}' }},</li>
+                @isset($convertedItem['item'][$field])
+                    <li>{{ $field }} = {{ '{' }}{{ $convertedItem['item'][$field] }}{{ '}' }},</li>
                 @endisset
             @endforeach
         </ul>

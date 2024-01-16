@@ -15,6 +15,8 @@ use App\Models\UserFile;
 use App\Models\UserSetting;
 
 use Livewire\Component;
+use Livewire\Attributes\On;
+
 use App\Livewire\Forms\ConvertFileForm;
 
 use App\Services\Converter;
@@ -24,6 +26,8 @@ class ConvertFile extends Component
     use WithFileUploads;
 
     public ConvertFileForm $form;
+
+    public $numberProcessed = 0;
 
     private Converter $converter;
 
@@ -77,14 +81,9 @@ class ConvertFile extends Component
         $conversion->user_id = Auth::id();
         $conversion->save();
 
-        //$this->redirect('convert/' . $conversion->id);
-
-        //$conversion = Conversion::find($conversionId);
-
         // Get file that user uploaded
         $filestring = Storage::disk('public')->get('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
 
-        //// $filestring = $this->regularizeLineEndings($filestring);
         $filestring = str_replace(["\r\n", "\r"], "\n", $filestring);
         $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
 
@@ -92,8 +91,8 @@ class ConvertFile extends Component
 
         if (count($entries) == 1 && strlen($entries[0]) > 500) {
             $entry = $entries[0];
-            die;
-            //return view('index.itemSeparatorError', compact('entry', 'conversionId'));
+            $this->redirect('???');
+            //$this->render('itemSeparatorError');
         }
 
         // Check for utf-8
@@ -105,8 +104,8 @@ class ConvertFile extends Component
         }
 
         if (count($nonUtf8Entries)) {
-            die;
-            //return view('index.encodingError', compact('nonUtf8Entries'));
+            $this->redirect('???');
+            //$this->render('encodingError');
         }
 
         $convItems = [];
@@ -117,6 +116,8 @@ class ConvertFile extends Component
             $convertedEntry = $this->converter->convertEntry($entry, $conversion);
             if ($convertedEntry) {
                 $convItems[] = $convertedEntry;
+                $this->numberProcessed++;
+                $this->dispatch('update-number-processed', numberProcessed: $this->numberProcessed);
             }
         }
 
@@ -124,10 +125,10 @@ class ConvertFile extends Component
 
         $itemTypes = ItemType::all();
 
-        // Write converted items to database and key array to output ids
-        $convertedItems = [];
+        // Write converted items to database
+        //$convertedItems = [];
         foreach ($convItems as $i => $convItem) {
-            $output = Output::create([
+            Output::create([
                 'source' => $convItem['source'],
                 'conversion_id' => $conversion->id,
                 'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
@@ -135,24 +136,25 @@ class ConvertFile extends Component
                 'item' => $convItem['item'],
                 'seq' => $i,
             ]);
-            $convertedItems[$output->id] = $convItem;
+            //$convertedItems[$output->id] = $convItem;
         }
 
-        $itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
-        $includeSource = $conversion->include_source;
-        $reportType = $conversion->report_type;
+        //$itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
+        //$includeSource = $conversion->include_source;
+        //$reportType = $conversion->report_type;
 
-        dd($convertedItems);
-        // return view('index.bibtex',
-        //     compact(
-        //         'convertedItems',
-        //         'itemTypes',
-        //         'itemTypeOptions',
-        //         'conversionId',
-        //         'includeSource',
-        //         'reportType'
-        //     )
-        // );
+        $this->redirect('showBibtex/' . $conversionId);
+
+    //     return view('index.bibtex',
+    //     compact(
+    //         'convertedItems',
+    //         'itemTypes',
+    //         'itemTypeOptions',
+    //         'conversionId',
+    //         'includeSource',
+    //         'reportType'
+    //     )
+    // );
     }
 
     public function addLabels(array $convertedItems, Conversion $conversion): array

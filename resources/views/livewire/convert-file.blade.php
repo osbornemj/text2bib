@@ -180,10 +180,18 @@
             <x-value-label for="0" class="peer-checked/0:text-blue-600 ml-1" :value="__('No')" />
         </div>
 
-        <div wire:loading>
-            Working ...
+        <div id="numberProcessed">
+            0
         </div>
-        
+
+        <!--
+        <div>
+            <p>
+                Number of items processed: <input type="text" wire:model="numberProcessed" value="{{ $numberProcessed }}" />
+            </p>
+        </div>
+        -->
+
         <div class="pt-4">
             <x-primary-button class="ml-0">
                 {{ __('Submit') }}
@@ -192,4 +200,15 @@
 
     </form>
 
+    @script
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('update-number-processed', (numberProcessed) => {
+                document.getElementById("numberProcessed").innerText = numberProcessed;
+            });
+        });
+    </script>
+    @endscript
+
 </div>
+

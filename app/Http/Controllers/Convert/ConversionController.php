@@ -31,6 +31,19 @@ class ConversionController extends Controller
         $this->converter = new Converter;
     }
 
+    ///////////////////////////////////////////////
+    // FOR TESTING
+    ///////////////////////////////////////////////
+    public function process()
+    {
+        return view('index.process');
+    }
+
+    public function bibtex()
+    {
+        return view('index.bibtex');
+    }
+
     public function convert(int $conversionId): View|bool
     {
         $user = Auth::user();
@@ -415,27 +428,41 @@ class ConversionController extends Controller
         $user = Auth::user();
 
         $conversion = Conversion::find($conversionId);
-        $includeSource = $conversion->include_source;
 
         if ($conversion->user_id != $user->id)  {
             die('Invalid');
         }                   
 
-        $outputs = Output::where('conversion_id', $conversionId)
-                    ->with('fields.itemField')
-                    ->with('itemType')
-                    ->get();
+        $convertedItems = Output::where('conversion_id', $conversionId)
+            ->orderBy('seq')
+            ->get();
+
+        foreach ($convertedItems as $i => $convertedItem) {
+            $scholarTitle = '';
+            if (isset($convertedItem['item']['title'])) {
+                $scholarTitle = str_replace(' ', '+', $convertedItem['item']['title']);
+                $scholarTitle = Str::remove(["'", '"', "{", "}", "\\"], $scholarTitle);
+            }
+            $convertedItems[$i]['scholarTitle'] = $scholarTitle;
+        }    
 
         $itemTypes = ItemType::all();
-        $itemTypeOptions = [];
-        foreach ($itemTypes as $itemType) {
-            $itemTypeOptions[$itemType->id] = $itemType->name;
-        }
+        $itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
+        $conversionId = $conversion->id;
+        $includeSource = $conversion->include_source;
+        $reportType = $conversion->report_type;
 
-        $fields = [];
-        $itemTypeId = 0;
-
-        return view('index.bibtex', compact('outputs', 'fields', 'itemTypeId', 'itemTypeOptions', 'conversionId', 'includeSource'));
+        return view('index.bibtex', 
+            compact(
+                'convertedItems',
+                'itemTypes',
+                'itemTypeOptions',
+                'conversionId',
+                'includeSource',
+                'reportType'
+            )
+        );
+//        compact('outputs', 'fields', 'itemTypeId', 'itemTypeOptions', 'conversionId', 'includeSource'));
     }
 
     /*

@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Livewire\Forms\ShowConvertedItemForm;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 use App\Models\ErrorReport;
 use App\Models\ErrorReportComment;
@@ -42,10 +43,11 @@ class ShowConvertedItem extends Component
             $this->form->{$name} = $content;
         }
 
-        $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
+//        $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
+        $itemType = $this->itemTypes->find($this->convertedItem['item_type_id']);
         $this->itemTypeId = $itemType->id;
         $this->fields = $itemType->fields;
-        
+
         $this->displayState = 'none';
 
         //$errorReport = ErrorReport::where('output_id', $this->outputId)->first();
@@ -53,6 +55,7 @@ class ShowConvertedItem extends Component
         $this->form->reportTitle = '';
         $this->errorReportExists = false;
         $this->priorReportExists = false;
+
         /*
         if ($errorReport) {
             $this->form->reportTitle = $errorReport->title;
