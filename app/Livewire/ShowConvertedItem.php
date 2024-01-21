@@ -43,8 +43,8 @@ class ShowConvertedItem extends Component
             $this->form->{$name} = $content;
         }
 
-//        $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
-        $itemType = $this->itemTypes->find($this->convertedItem['item_type_id']);
+        $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
+//        $itemType = $this->itemTypes->find($this->convertedItem['item_type_id']);
         $this->itemTypeId = $itemType->id;
         $this->fields = $itemType->fields;
 

@@ -35,7 +35,24 @@ class ConvertFile extends Component
 
     public function mount()
     {
-        //
+        $userSettings = UserSetting::where('user_id', Auth::id())->first();
+
+        $defaults = [
+            'item_separator' => 'line',
+            'first_component' => 'authors',
+            'label_style' => 'short',
+            'override_labels' => '1',
+            'line_endings' => 'w',
+            'char_encoding' => 'utf8',
+            'percent_comment' => '1',
+            'include_source' => '1',
+            'report_type' => 'standard',
+            'save_settings' => '1',
+        ];
+
+        foreach ($defaults as $setting => $default) {
+            $this->form->{$setting} = $userSettings ? $userSettings->{$setting} : $default;
+        }
     }
 
     public function submit()
@@ -83,15 +100,14 @@ class ConvertFile extends Component
         // Get file that user uploaded
         $filestring = Storage::disk('public')->get('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
 
+        // Regularlize line-endings
         $filestring = str_replace(["\r\n", "\r"], "\n", $filestring);
-        $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
 
-        $conversionId = $conversion->id;
+        $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
 
         if (count($entries) == 1 && strlen($entries[0]) > 500) {
             $entry = $entries[0];
-            $this->redirect('???');
-            //$this->render('itemSeparatorError');
+            return redirect('itemSeparatorError/' . $conversion->id)->with(['entry' => $entry]);
         }
 
         // Check for utf-8
@@ -103,28 +119,27 @@ class ConvertFile extends Component
         }
 
         if (count($nonUtf8Entries)) {
-            $this->redirect('???');
-            //$this->render('encodingError');
+            return redirect('encodingError/' . $conversion->id)->with(['nonUtf8Entries' => $nonUtf8Entries]);
         }
 
-        $convItems = [];
+        $convertedEntries = [];
         foreach ($entries as $entry) {
-            // $convItems is array with components 'source', 'item', 'itemType', 'label', 'warnings',
+            // $convertedEntries is array with components 'source', 'item', 'itemType', 'label', 'warnings',
             // 'notices', 'details'.
             // 'label' (which depends on whole set of converted items) is updated later
             $convertedEntry = $this->converter->convertEntry($entry, $conversion);
             if ($convertedEntry) {
-                $convItems[] = $convertedEntry;
+                $convertedEntries[] = $convertedEntry;
             }
         }
 
-        $convItems = $this->addLabels($convItems, $conversion);
+        $convertedEntries = $this->addLabels($convertedEntries, $conversion);
 
         $itemTypes = ItemType::all();
 
         // Write converted items to database
         //$convertedItems = [];
-        foreach ($convItems as $i => $convItem) {
+        foreach ($convertedEntries as $i => $convItem) {
             Output::create([
                 'source' => $convItem['source'],
                 'conversion_id' => $conversion->id,
@@ -133,29 +148,18 @@ class ConvertFile extends Component
                 'item' => $convItem['item'],
                 'warnings' => $convItem['warnings'],
                 'notices' => $convItem['notices'],
-                'details' => $convItems['details'] ?? [],
-                'scholar_title' => $convItems['scholarTitle'] ?? '',
+                'details' => $convItem['details'],
+                'scholar_title' => $convItem['scholarTitle'],
                 'seq' => $i,
             ]);
-            //$convertedItems[$output->id] = $convItem;
         }
 
-        //$itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
-        //$includeSource = $conversion->include_source;
-        //$reportType = $conversion->report_type;
-
-        $this->redirect('showBibtex/' . $conversionId);
-
-    //     return view('index.bibtex',
-    //     compact(
-    //         'convertedItems',
-    //         'itemTypes',
-    //         'itemTypeOptions',
-    //         'conversionId',
-    //         'includeSource',
-    //         'reportType'
-    //     )
-    // );
+        return redirect('showBibtex/' . $conversion->id)
+            ->with([
+                'convertedEntries' => $convertedEntries,
+                'itemTypes' => $itemTypes,
+                'conversion' => $conversion,
+            ]);
     }
 
     public function addLabels(array $convertedItems, Conversion $conversion): array
@@ -252,6 +256,6 @@ class ConvertFile extends Component
 
     public function render()
     {
-            return view('livewire.convert-file');
+        return view('livewire.convert-file');
     }
 }

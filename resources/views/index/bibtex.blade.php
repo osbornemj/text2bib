@@ -11,7 +11,7 @@
                 <x-link href="{{ url('downloadBibtex/' . $conversionId) }}">Download BibTeX file</x-link>
             </p>
             <ul>
-                @foreach ($convertedItems as $outputId => $convertedItem)
+                @foreach ($convertedEntries as $outputId => $convertedItem)
                 <div class="mt-4">
                     <li>
                         @if (Auth::user()->is_admin)

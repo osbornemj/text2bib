@@ -23,7 +23,7 @@ class Converter
     var $articleRegExp;
     var $bookTitleAbbrevs;
     var $cities;
-    var $displayLines;
+    var $detailLines;
     var $editionRegExp;
     var $editorStartRegExp;
     var $editorRegExp;
@@ -78,9 +78,6 @@ class Converter
 
     public function __construct()
     {
-        $this->displayLines = [];
-        $this->itemType = null;
-
         // words that are in dictionary but are abbreviations in journal names
         //$this->excludedWords = ['Trans', 'Ind', 'Int', 'Soc', 'Proc', 'Phys', 'Rev', 'Amer', 'Math', 'Meth', 'Geom', 'Univ', 'Nat', 'Sci',
         //'Austral'];
@@ -211,6 +208,8 @@ class Converter
         // dd($x);
 
         $warnings = $notices = [];
+        $this->detailLines = [];
+        $this->itemType = null;
 
         // Remove comments and concatenate lines in entry
         // (do so before cleaning text, otherwise \textquotedbleft, e.g., at end of line will not be cleaned)
@@ -394,11 +393,11 @@ class Converter
         $isEditor = false;
 
         $remainder = $entry;
-        $conversion = $this->convertToAuthors($words, $remainder, $year, $isEditor, true, true);
-        $authorstring = $conversion['authorstring'];
-        $oneWordAuthor = $conversion['oneWordAuthor'];
+        $authorConversion = $this->convertToAuthors($words, $remainder, $year, $isEditor, true, true);
+        $authorstring = $authorConversion['authorstring'];
+        $oneWordAuthor = $authorConversion['oneWordAuthor'];
 
-        foreach ($conversion['warnings'] as $warning) {
+        foreach ($authorConversion['warnings'] as $warning) {
             $warnings[] = $warning;
         }
         $authorstring = trim($authorstring, ',: ');
@@ -1047,8 +1046,8 @@ class Converter
                             if (preg_match($this->editorStartRegExp, $possibleEditors, $matches, PREG_OFFSET_CAPTURE)) {
                                 $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
                             }
-                            $conversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $isEditor, false);
-                            $item->editor = trim($conversion['authorstring']);
+                            $editorConversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $isEditor, false);
+                            $item->editor = trim($editorConversion['authorstring']);
                             $this->verbose('Editors: ' . $item->editor);
                         } else {
                             $this->verbose('No editors found');
@@ -1241,9 +1240,9 @@ class Converter
                         // $isEditor is used only for a book (with an editor, not an author)
                         $isEditor = false;
 
-                        $conversion = $this->convertToAuthors($words, $remainder, $trash2, $isEditor, $determineEnd);
-                        $editorString = trim($conversion['authorstring'], '() ');
-                        foreach ($conversion['warnings'] as $warning) {
+                        $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $isEditor, $determineEnd);
+                        $editorString = trim($editorConversion['authorstring'], '() ');
+                        foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
                         }
 
@@ -1311,9 +1310,9 @@ class Converter
                         if (isset($endAuthorPos) && $endAuthorPos) {
                             // CASE 2
                             $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
-                            $conversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $isEditor, false);
-                            $item->editor = trim($conversion['authorstring'], ' ');
-                            foreach ($conversion['warnings'] as $warning) {
+                            $authorConversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $isEditor, false);
+                            $item->editor = trim($authorConversion['authorstring'], ' ');
+                            foreach ($authorConversion['warnings'] as $warning) {
                                 $warnings[] = $warning;
                             }
                             $newRemainder = trim(substr($remainder, $endAuthorPos + $edStrLen), ',:. ');
@@ -1346,7 +1345,7 @@ class Converter
                             // At least last word must be city or part of city name, so remove it
                             $spacePos = strrpos($remainderBeforeColon, ' ');
                             $possibleEditors = trim(substr($remainderBeforeColon, 0, $spacePos));
-                            $conversion = $this->convertToAuthors(explode(' ', $possibleEditors), $trash1, $trash2, $isEditor, true);
+                            //$editorConversion = $this->convertToAuthors(explode(' ', $possibleEditors), $trash1, $trash2, $isEditor, true);
 
                             //dd($conversion);
                             // find previous period
@@ -1357,9 +1356,9 @@ class Converter
                             // Previous version---why drop first 3 chars?
                             // $editor = trim(substr($remainder, 3, $j-3), ' .,');
 
-                            $conversion = $this->convertToAuthors(explode(' ', trim(substr($remainder, 0, $j), ' .,')), $trash1, $trash2, $isEditor, false);
-                            $editor = $conversion['authorstring'];
-                            foreach ($conversion['warnings'] as $warning) {
+                            $editorConversion = $this->convertToAuthors(explode(' ', trim(substr($remainder, 0, $j), ' .,')), $trash1, $trash2, $isEditor, false);
+                            $editor = $editorConversion['authorstring'];
+                            foreach ($editorConversion['warnings'] as $warning) {
                                 $warnings[] = $warning;
                             }
 
@@ -1382,9 +1381,9 @@ class Converter
                         $this->verbose("[ed6] Remainder starts with editor string");
                         $editorString = substr($remainder, 0, $matches[0][1]);
                         $this->verbose("editorString is " . $editorString);
-                        $conversion = $this->convertToAuthors(explode(' ', $editorString), $trash1, $trash2, $isEditor, false);
-                        $editor = $conversion['authorstring'];
-                        foreach ($conversion['warnings'] as $warning) {
+                        $editorConversion = $this->convertToAuthors(explode(' ', $editorString), $trash1, $trash2, $isEditor, false);
+                        $editor = $editorConversion['authorstring'];
+                        foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
                         }
                         $item->editor = trim($editor, ', ');
@@ -1392,9 +1391,9 @@ class Converter
                         $remainder = substr($remainder, $matches[0][1] + strlen($matches[0][0]));
                     } elseif ($this->initialNameString($remainder)) {
                         $this->verbose("[ed4] Remainder starts with editor string");
-                        $conversion = $this->convertToAuthors(explode(' ', $remainder), $remainder, $trash2, $isEditor, true);
-                        $editor = $conversion['authorstring'];
-                        foreach ($conversion['warnings'] as $warning) {
+                        $editorConversion = $this->convertToAuthors(explode(' ', $remainder), $remainder, $trash2, $isEditor, true);
+                        $editor = $editorConversion['authorstring'];
+                        foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
                         }
 
@@ -1419,10 +1418,10 @@ class Converter
                         // convertToAuthors determine end of string, need to redefine remainder below.
                         $isEditor = false;
 
-                        $conversion = $this->convertToAuthors($words, $remainder, $trash2, $isEditor, true);
-                        $authorstring = $conversion['authorstring'];
+                        $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $isEditor, true);
+                        $authorstring = $editorConversion['authorstring'];
                         $item->editor = trim($authorstring, '() ');
-                        foreach ($conversion['warnings'] as $warning) {
+                        foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
                         }
 
@@ -1866,7 +1865,7 @@ class Converter
             'itemType' => $itemKind,
             'warnings' => $warnings,
             'notices' => $notices,
-            'details' => $this->displayLines,
+            'details' => $conversion->report_type == 'detailed' ? $this->detailLines : [],
             'scholarTitle' => $scholarTitle,
         ];
 
@@ -2604,7 +2603,7 @@ class Converter
 
     public function verbose(string|array $arg)
     {
-        $this->displayLines[] = $arg;
+        $this->detailLines[] = $arg;
     }
 
     /**

@@ -44,6 +44,20 @@ class ConversionController extends Controller
         return view('index.bibtex');
     }
 
+    public function encodingError($conversionId)
+    {
+        $nonUtf8Entries = session()->get('nonUtf8Entries');
+        return view('index.encodingError', compact('nonUtf8Entries', 'conversionId'));
+    }
+
+    public function itemSeparatorError($conversionId)
+    {
+        $entry = session()->get('entry');
+        return view('index.itemSeparatorError', compact('entry', 'conversionId'));
+    }
+
+    /*
+    // Superseded by Livewire component ConvertFile
     public function convert(int $conversionId): View|bool
     {
         $user = Auth::user();
@@ -123,6 +137,7 @@ class ConversionController extends Controller
             )
         );
     }
+    */
 
     public function redo(int $conversionId): RedirectResponse
     {
@@ -148,6 +163,8 @@ class ConversionController extends Controller
         //     )*$%xs', $string);
     // }
 
+    /*
+    // Superseded by method in Livewire component ConvertFile
     public function addLabels(array $convertedItems, Conversion $conversion): array
     {
         $baseLabels = [];
@@ -171,7 +188,10 @@ class ConversionController extends Controller
 
         return $convertedItems;
     }
+    */
 
+    /*
+    // Superseded by method in Livewire component ConvertFile
     public function makeLabel(object $item, Conversion $conversion): string
     {
         $label = '';
@@ -233,6 +253,7 @@ class ConversionController extends Controller
 
         return $label;
     }
+    */
 
     public function downloadBibtex(int $conversionId): StreamedResponse
     {
@@ -283,17 +304,23 @@ class ConversionController extends Controller
         );
     }
 
+    /*
+    // Unused
     // Replace \r\n and \r with \n
     public function regularizeLineEndings(string $string): string
     {
         return str_replace(["\r\n", "\r"], "\n", $string);
     }
+    */
 
+    /*
+    // Superseded by method in Livewire component ConvertFile
     // Returns string consisting only of letters and spaces in $string
     public function onlyLetters(string $string): string
     {
         return preg_replace("/[^a-z\s]+/i", "", $string);
     }
+    */
 
     ///////////////// REMAINING METHODS PROBABLY NOT USED ///////////////////////
     /*
@@ -425,36 +452,17 @@ class ConversionController extends Controller
 
     public function showBibtex(int $conversionId): View
     {
-        $user = Auth::user();
+        $conversion = session()->get('conversion');
+        $convertedEntries = session()->get('convertedEntries');
+        $itemTypes = session()->get('itemTypes');
 
-        $conversion = Conversion::find($conversionId);
-
-        if (!$conversion || $conversion->user_id != $user->id)  {
-            die('Invalid');
-        }                   
-
-        $convertedItems = Output::where('conversion_id', $conversionId)
-            ->orderBy('seq')
-            ->get();
-
-        foreach ($convertedItems as $i => $convertedItem) {
-            $scholarTitle = '';
-            if (isset($convertedItem['item']['title'])) {
-                $scholarTitle = str_replace(' ', '+', $convertedItem['item']['title']);
-                $scholarTitle = Str::remove(["'", '"', "{", "}", "\\"], $scholarTitle);
-            }
-            $convertedItems[$i]['scholarTitle'] = $scholarTitle;
-        }    
-
-        $itemTypes = ItemType::all();
         $itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
-        $conversionId = $conversion->id;
         $includeSource = $conversion->include_source;
         $reportType = $conversion->report_type;
 
         return view('index.bibtex', 
             compact(
-                'convertedItems',
+                'convertedEntries',
                 'itemTypes',
                 'itemTypeOptions',
                 'conversionId',
@@ -462,7 +470,6 @@ class ConversionController extends Controller
                 'reportType'
             )
         );
-//        compact('outputs', 'fields', 'itemTypeId', 'itemTypeOptions', 'conversionId', 'includeSource'));
     }
 
     /*

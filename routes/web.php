@@ -58,6 +58,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //    Route::post('/addToBibtex/{conversionId}', 'addToBibtex')->name('file.addToBibtex');
         Route::post('/addOutput/{conversionId}', 'addOutput')->name('conversion.addOutput');
         Route::get('/showBibtex/{conversionId}', 'showBibtex')->name('conversion.showBibtex');
+        Route::get('/encodingError/{conversionId}', 'encodingError')->name('conversion.encodingError');
+        Route::get('/itemSeparatorError/{conversionId}', 'itemSeparatorError')->name('conversion.itemSeparatorError');
         Route::get('/downloadBibtex/{conversionId}', 'downloadBibtex')->name('conversion.downloadBibtex');
     });
 });

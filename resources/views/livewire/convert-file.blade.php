@@ -1,6 +1,7 @@
 <div>
+
     <div wire:loading.delay.longer wire:target="submit">
-        <div class="flex justify-center items-center bg-black-300 dark:bg-zinc-300 fixed z-50 inset-y-0 w-full opacity-75">
+        <div class="flex justify-center items-center bg-black-300 dark:bg-zinc-300 fixed z-50 inset-y-0 w-[54rem] opacity-75">
             <div class="la-ball-spin-clockwise-fade la-3x">
                 <div></div>
                 <div></div>
@@ -36,7 +37,7 @@
         <x-input-error :messages="$errors->get('item_separator')" class="mt-2" />
 
         <x-option-info class="peer-checked/line:block">
-            The items  in your file are separated by blank lines.  Carriage returns within items will be treated as spaces.
+            The items in your file are separated by blank lines.  Carriage returns within items will be treated as spaces.
         </x-option-info>
         <x-option-info class="peer-checked/cr:block">
             Every line in your file is a separate item.

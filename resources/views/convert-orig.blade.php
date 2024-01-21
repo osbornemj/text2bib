@@ -51,7 +51,7 @@
                         <x-input-error :messages="$errors->get('item_separator')" class="mt-2" />
 
                         <x-option-info class="peer-checked/line:block">
-                            The items  in your file are separated by blank lines.  Carriage returns within items will be treated as spaces.
+                            The items in your file are separated by blank lines.  Carriage returns within items will be treated as spaces.
                         </x-option-info>
                         <x-option-info class="peer-checked/cr:block">
                             Every line in your file is a separate item.
