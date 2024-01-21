@@ -1,7 +1,22 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+<div wire:loading.delay>
+    <div style="display: flex; justify-content: center; align-items: center; background-color: white; position: fixed; top: 0px; z-index: 9999; width: 100%; height: 100%; opacity: .75;">
+    </div>
+    <div class="ball-spin-clockwise-fade">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
 
+@push('style')
+<style>
 /*!
  * Load Awesome v1.1.0 (http://github.danielcardoso.net/load-awesome/)
  * Copyright 2015 Daniel Cardoso <@DanielCardoso>
@@ -215,3 +230,5 @@
                 transform: scale(1);
     }
 }
+</style>
+@endpush

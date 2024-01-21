@@ -31,7 +31,6 @@
                             <br/>
                         @endif
 
-                        {{--
                         @if (count($convertedItem['warnings']))
                         <ul>
                             @foreach ($convertedItem['warnings'] as $warning)
@@ -51,7 +50,6 @@
                             @endforeach
                         </ul>
                         @endif
-                        --}}
 
                         @if ($reportType == 'detailed') 
                         <ul>

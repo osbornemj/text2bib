@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-//use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,7 +14,10 @@ class Output extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'item' => 'array'
+        'item' => 'array',
+        'warnings' => 'array',
+        'notices' => 'array',
+        'details' => 'array',
     ];
 
     public function conversion(): BelongsTo
@@ -32,9 +34,4 @@ class Output extends Model
     {
         return $this->belongsTo(ItemType:: class);
     }
-
-    // public function fields(): HasMany
-    // {
-    //     return $this->hasMany(OutputField:: class)->orderBy('item_field_id');
-    // }
 }

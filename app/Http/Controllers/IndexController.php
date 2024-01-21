@@ -14,7 +14,7 @@ class IndexController extends Controller
         return view('welcome');
     }
 
-    public function convert()
+    public function fileUpload()
     {
         $user = Auth::user();
 

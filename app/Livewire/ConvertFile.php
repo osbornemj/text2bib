@@ -15,7 +15,6 @@ use App\Models\UserFile;
 use App\Models\UserSetting;
 
 use Livewire\Component;
-use Livewire\Attributes\On;
 
 use App\Livewire\Forms\ConvertFileForm;
 
@@ -26,8 +25,6 @@ class ConvertFile extends Component
     use WithFileUploads;
 
     public ConvertFileForm $form;
-
-    public $numberProcessed = 0;
 
     private Converter $converter;
 
@@ -67,7 +64,7 @@ class ConvertFile extends Component
         unset($settingValues['save_settings']);
 
         if ($this->form->save_settings) {
-            $userSetting = UserSetting::firstOrNew(
+            $userSetting = UserSetting::firstOrNew( 
                 ['user_id' => Auth::id()]
             );
             $userSetting->fill($settingValues);
@@ -80,6 +77,8 @@ class ConvertFile extends Component
         $conversion->fill($settingValues);
         $conversion->user_id = Auth::id();
         $conversion->save();
+
+//        $this->redirect('convert/' . $conversion->id);
 
         // Get file that user uploaded
         $filestring = Storage::disk('public')->get('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
@@ -116,8 +115,6 @@ class ConvertFile extends Component
             $convertedEntry = $this->converter->convertEntry($entry, $conversion);
             if ($convertedEntry) {
                 $convItems[] = $convertedEntry;
-                $this->numberProcessed++;
-                $this->dispatch('update-number-processed', numberProcessed: $this->numberProcessed);
             }
         }
 
@@ -134,6 +131,10 @@ class ConvertFile extends Component
                 'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
                 'label' => $convItem['label'],
                 'item' => $convItem['item'],
+                'warnings' => $convItem['warnings'],
+                'notices' => $convItem['notices'],
+                'details' => $convItems['details'] ?? [],
+                'scholar_title' => $convItems['scholarTitle'] ?? '',
                 'seq' => $i,
             ]);
             //$convertedItems[$output->id] = $convItem;
@@ -251,6 +252,6 @@ class ConvertFile extends Component
 
     public function render()
     {
-        return view('livewire.convert-file');
+            return view('livewire.convert-file');
     }
 }

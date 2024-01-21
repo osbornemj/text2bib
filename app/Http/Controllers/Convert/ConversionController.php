@@ -429,7 +429,7 @@ class ConversionController extends Controller
 
         $conversion = Conversion::find($conversionId);
 
-        if ($conversion->user_id != $user->id)  {
+        if (!$conversion || $conversion->user_id != $user->id)  {
             die('Invalid');
         }                   
 
