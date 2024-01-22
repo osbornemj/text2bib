@@ -14,7 +14,7 @@
             </div>
         </div>
     </div>
-    
+
     <form method="POST" accept="txt" wire:submit="submit" enctype="multipart/form-data" class="mt-0 space-y-0">
     @csrf
 
@@ -22,7 +22,7 @@
         <x-input-label for="file" :value="__('File')" />
         <x-text-input id="file" class="block mt-1 max-w-xl w-full" type="file" name="file" wire:model="form.file" accept="txt"
             required autofocus />
-        <x-input-error :messages="$errors->get('file')" class="mt-2" />
+        <x-input-error :messages="$errors->get('form.file')" class="mt-2" />
     </div>
 
     <div>
@@ -34,7 +34,7 @@
         <x-radio-input wire:model="form.item_separator" value="cr" class="peer/cr ml-4" />
         <x-value-label for="cr" class="peer-checked/cr:text-blue-600 ml-1" :value="__('Carriage return')" />
 
-        <x-input-error :messages="$errors->get('item_separator')" class="mt-2" />
+        <x-input-error :messages="$errors->get('form.item_separator')" class="mt-2" />
 
         <x-option-info class="peer-checked/line:block">
             The items in your file are separated by blank lines.  Carriage returns within items will be treated as spaces.
@@ -53,7 +53,7 @@
         <x-radio-input wire:model="form.first_component" value="year" class="peer/year ml-4" />
         <x-value-label for="year" class="peer-checked/year:text-blue-600 ml-1" :value="__('Year')" />
 
-        <x-input-error :messages="$errors->get('first_component')" class="mt-2" />
+        <x-input-error :messages="$errors->get('form.first_component')" class="mt-2" />
     </div>
 
     <div>
@@ -68,7 +68,7 @@
         <x-radio-input name="label_style" wire:model="form.label_style" value="gs" class="peer/gs ml-4" />
         <x-value-label for="gs" class="peer-checked/gs:text-blue-600 ml-1" :value="__('Google Scholar')" />
 
-        <x-input-error :messages="$errors->get('label_style')" class="mt-2" />
+        <x-input-error :messages="$errors->get('form.label_style')" class="mt-2" />
 
         <x-option-info class="peer-checked/short:block">
             Concatenation of lowercased first letter of each author's last name and last two digits of year.  E.g. Arrow and Hahn (1971) &rArr; ah71
@@ -90,7 +90,7 @@
         <x-radio-input wire:model="form.override_labels" value="0" class="peer/0 ml-4" />
         <x-value-label for="0" class="peer-checked/0:text-blue-600 ml-1" :value="__('No')" />
 
-        <x-input-error :messages="$errors->get('override_labels')" class="mt-2" />
+        <x-input-error :messages="$errors->get('form.override_labels')" class="mt-2" />
 
         <x-option-info class="peer-checked/1:block">
             For any item in your file that starts with <code>\bibitem{&lt;label&gt;}</code>, where <code>&lt;label&gt;</code> is a string, that string is ignored and a label is constructed according to the option you have selected.
@@ -109,7 +109,7 @@
         <x-radio-input wire:model="form.line_endings" value="l" class="peer/l ml-4" />
         <x-value-label for="l" class="peer-checked/l:text-blue-600 ml-1" :value="__('Linux')" />
 
-        <x-input-error :messages="$errors->get('line_endings')" class="mt-2" />
+        <x-input-error :messages="$errors->get('form.line_endings')" class="mt-2" />
     </div>
 
     <div>
@@ -121,7 +121,7 @@
         <x-radio-input wire:model="form.char_encoding" value="utf8leave" class="peer/utf8leave ml-4" />
         <x-value-label for="l" class="peer-checked/utf8leave:text-blue-600 ml-1" :value="__('No')" />
 
-        <x-input-error :messages="$errors->get('char_encoding')" class="mt-2" />
+        <x-input-error :messages="$errors->get('form.char_encoding')" class="mt-2" />
 
         <div class="mt-2 dark:text-gray-300">
             If you are using biblatex to process your BibTeX file, you can safely choose "No". 
@@ -137,7 +137,7 @@
         <x-radio-input wire:model="form.percent_comment" value="0" class="peer/0 ml-4" />
         <x-value-label for="0" class="peer-checked/0:text-blue-600 ml-1" :value="__('No')" />
 
-        <x-input-error :messages="$errors->get('percent_comment')" class="mt-2" />
+        <x-input-error :messages="$errors->get('form.percent_comment')" class="mt-2" />
 
         <x-option-info class="peer-checked/1:block">
             Every "%" not preceded by "\" and the characters that follow up to the end of the line will be removed before the item is processed.
@@ -156,7 +156,7 @@
         <x-radio-input wire:model="form.include_source" value="0" class="peer/0 ml-4" />
         <x-value-label for="0" class="peer-checked/0:text-blue-600 ml-1" :value="__('No')" />
 
-        <x-input-error :messages="$errors->get('include_source')" class="mt-2" />
+        <x-input-error :messages="$errors->get('form.include_source')" class="mt-2" />
 
         <x-option-info class="peer-checked/1:block">
             The original reference will be included as a comment above each item in the BibTeX file that the system creates (making it easier for you to check the correctness of the conversion).
@@ -175,7 +175,7 @@
         <x-radio-input wire:model="form.report_type" value="detailed" class="peer/detailed ml-4" />
         <x-value-label for="detailed" class="peer-checked/detailed:text-blue-600 ml-1" :value="__('Detailed')" />
 
-        <x-input-error :messages="$errors->get('report_type')" class="mt-2" />
+        <x-input-error :messages="$errors->get('form.report_type')" class="mt-2" />
 
         <x-option-info class="peer-checked/standard:block">
             Standard information is provided about the conversion of each item.
@@ -193,7 +193,9 @@
 
         <x-radio-input wire:model="form.save_settings" value="0" class="peer/0 ml-4" />
         <x-value-label for="0" class="peer-checked/0:text-blue-600 ml-1" :value="__('No')" />
-    </div>
+
+        <x-input-error :messages="$errors->get('form.save_settings')" class="mt-2" />
+        </div>
 
     <div class="pt-4">
         <x-primary-button wire:click="submit" class="ml-0">

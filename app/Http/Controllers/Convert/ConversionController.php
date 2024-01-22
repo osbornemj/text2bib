@@ -19,10 +19,14 @@ use App\Models\ItemField;
 use App\Models\Output;
 use App\Models\OutputField;
 
+use App\Traits\AddLabels;
+
 use App\Services\Converter;
 
 class ConversionController extends Controller
 {
+
+    use AddLabels;
 
     private Converter $converter;
 
@@ -56,24 +60,20 @@ class ConversionController extends Controller
         return view('index.itemSeparatorError', compact('entry', 'conversionId'));
     }
 
-    /*
-    // Superseded by Livewire component ConvertFile
+    // Converts entries in exising file according to parameters of Conversion with id = $conversionId.
+    // Duplicate of code in Livewire component ConvertFile (with minor changes: return ... -> redirect ...).
+    // Used by redo method and by Admin.
+    // Can duplication be avoided?
     public function convert(int $conversionId): View|bool
     {
-        $user = Auth::user();
-
         $conversion = Conversion::find($conversionId);
 
         // Get file that user uploaded
-        $filestring = Storage::disk('public')->get('files/' . $user->id . '-' . $conversion->user_file_id . '-source.txt');
+        $filestring = Storage::disk('public')->get('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
 
-        // if (mb_detect_encoding($filestring, 'UTF-8, ISO-8859-1', true) === 'UTF-8'){
-        //      dd('utf-8');
-        // } else {
-        //      dd('not utf-8');
-        // }
+        // Regularlize line-endings
+        $filestring = str_replace(["\r\n", "\r"], "\n", $filestring);
 
-        $filestring = $this->regularizeLineEndings($filestring);
         $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
 
         if (count($entries) == 1 && strlen($entries[0]) > 500) {
@@ -93,24 +93,25 @@ class ConversionController extends Controller
             return view('index.encodingError', compact('nonUtf8Entries'));
         }
 
-        $convItems = [];
+        $convertedEntries = [];
         foreach ($entries as $entry) {
-            // $convItems is array with components 'source', 'item', 'itemType', 'label', 'warnings',
+            // $convertedEntries is array with components 'source', 'item', 'itemType', 'label', 'warnings',
             // 'notices', 'details'.
             // 'label' (which depends on whole set of converted items) is updated later
             $convertedEntry = $this->converter->convertEntry($entry, $conversion);
             if ($convertedEntry) {
-                $convItems[] = $convertedEntry;
+                $convertedEntries[] = $convertedEntry;
             }
         }
 
-        $convItems = $this->addLabels($convItems, $conversion);
+        // $this->addLabels from AddLabbels trait
+        $convertedEntries = $this->addLabels($convertedEntries, $conversion);
 
         $itemTypes = ItemType::all();
 
         // Write converted items to database and key array to output ids
         $convertedItems = [];
-        foreach ($convItems as $i => $convItem) {
+        foreach ($convertedEntries as $i => $convItem) {
             $output = Output::create([
                 'source' => $convItem['source'],
                 'conversion_id' => $conversion->id,
@@ -123,12 +124,13 @@ class ConversionController extends Controller
         }
 
         $itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
+        $conversionId = $conversion->id;
         $includeSource = $conversion->include_source;
         $reportType = $conversion->report_type;
 
         return view('index.bibtex',
             compact(
-                'convertedItems',
+                'convertedEntries',
                 'itemTypes',
                 'itemTypeOptions',
                 'conversionId',
@@ -137,7 +139,6 @@ class ConversionController extends Controller
             )
         );
     }
-    */
 
     public function redo(int $conversionId): RedirectResponse
     {
@@ -164,7 +165,7 @@ class ConversionController extends Controller
     // }
 
     /*
-    // Superseded by method in Livewire component ConvertFile
+    // Moved to trait (to re-use in Livewire component ConvertFile)
     public function addLabels(array $convertedItems, Conversion $conversion): array
     {
         $baseLabels = [];
@@ -191,7 +192,7 @@ class ConversionController extends Controller
     */
 
     /*
-    // Superseded by method in Livewire component ConvertFile
+    // Moved to trait (to re-use in Livewire component ConvertFile)
     public function makeLabel(object $item, Conversion $conversion): string
     {
         $label = '';

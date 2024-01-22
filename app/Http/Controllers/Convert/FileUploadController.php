@@ -6,13 +6,14 @@ use App\Http\Requests\ConversionRequest;
 use App\Http\Controllers\Controller;
 //use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+//use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
 
 use App\Models\Conversion;
 use App\Models\UserFile;
 use App\Models\UserSetting;
 
+// Not used?  (Replaced by Livewire component ConvertFile.)
 class FileUploadController extends Controller
 {
     public function upload(ConversionRequest $request): RedirectResponse

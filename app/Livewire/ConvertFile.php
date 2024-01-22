@@ -14,6 +14,8 @@ use App\Models\Output;
 use App\Models\UserFile;
 use App\Models\UserSetting;
 
+use App\Traits\AddLabels;
+
 use Livewire\Component;
 
 use App\Livewire\Forms\ConvertFileForm;
@@ -23,6 +25,8 @@ use App\Services\Converter;
 class ConvertFile extends Component
 {
     use WithFileUploads;
+
+    use AddLabels;
 
     public ConvertFileForm $form;
 
@@ -95,8 +99,9 @@ class ConvertFile extends Component
         $conversion->user_id = Auth::id();
         $conversion->save();
 
-//        $this->redirect('convert/' . $conversion->id);
-
+        // Variant of convert method of ConversionController (with some adaptations for Livewire).
+        // (Using Livewire so that loading indicator can be displayed easily.)
+        // Is there a way to avoid the duplication?
         // Get file that user uploaded
         $filestring = Storage::disk('public')->get('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
 
@@ -125,7 +130,7 @@ class ConvertFile extends Component
         $convertedEntries = [];
         foreach ($entries as $entry) {
             // $convertedEntries is array with components 'source', 'item', 'itemType', 'label', 'warnings',
-            // 'notices', 'details'.
+            // 'notices', 'details', 'scholarTitle'.
             // 'label' (which depends on whole set of converted items) is updated later
             $convertedEntry = $this->converter->convertEntry($entry, $conversion);
             if ($convertedEntry) {
@@ -137,7 +142,7 @@ class ConvertFile extends Component
 
         $itemTypes = ItemType::all();
 
-        // Write converted items to database
+        // Write converted entries to database
         //$convertedItems = [];
         foreach ($convertedEntries as $i => $convItem) {
             Output::create([
@@ -146,10 +151,6 @@ class ConvertFile extends Component
                 'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
                 'label' => $convItem['label'],
                 'item' => $convItem['item'],
-                'warnings' => $convItem['warnings'],
-                'notices' => $convItem['notices'],
-                'details' => $convItem['details'],
-                'scholar_title' => $convItem['scholarTitle'],
                 'seq' => $i,
             ]);
         }
@@ -160,102 +161,5 @@ class ConvertFile extends Component
                 'itemTypes' => $itemTypes,
                 'conversion' => $conversion,
             ]);
-    }
-
-    public function addLabels(array $convertedItems, Conversion $conversion): array
-    {
-        $baseLabels = [];
-        foreach ($convertedItems as $key => $convertedItem) {
-            if ($convertedItem['label'] && !$conversion->override_labels) {
-                $baseLabel = $convertedItem['label'];
-            } else {
-                $baseLabel = $this->makeLabel($convertedItem['item'], $conversion);
-            }
-
-            $label = $baseLabel;
-            // if $baseLabel already used, add a suffix to it
-            if (in_array($baseLabel, $baseLabels)) {
-                $values = array_count_values($baseLabels);
-                $label .= chr(96 + $values[$baseLabel]);
-            }
-
-            $baseLabels[] = $baseLabel;
-            $convertedItems[$key]['label'] = $label;
-        }
-
-        return $convertedItems;
-    }
-
-    public function makeLabel(object $item, Conversion $conversion): string
-    {
-        $label = '';
-        if (isset($item->author) && $item->author) {
-            $authors = explode(" and ", $item->author);
-        } elseif (isset($item->editor)) {
-            $authors = explode(" and ", $item->editor);
-        } else {
-            $authors = [];
-        }
-        if (isset($authors) && $authors) {
-            foreach ($authors as $author) {
-                $authorLetters = $this->onlyLetters(Str::ascii($author));
-                if ($pos = strpos($author, ',')) {
-                    if ($conversion->label_style == 'short') {
-                        $label .= $authorLetters[0];
-                    } else {
-                        $label .= substr($authorLetters, 0, $pos);
-                    }
-                } else {
-                    if ($conversion->label_style == 'short') {
-                        $label .= substr(trim(strrchr($authorLetters, ' '), ' '), 0, 1);
-                    } else {
-                        $label .= trim(strrchr($authorLetters, ' '), ' ');
-                    }
-                }
-            }
-        }
-
-        if ($conversion->label_style == 'short') {
-            $label = mb_strtolower($label) . substr($item->year, 2);
-        } elseif ($conversion->label_style == 'gs') {
-            $firstAuthor = count($authors) ? $authors[0] : 'none';
-
-            if (strpos($firstAuthor, ',') === false) {
-                // assume last name is last segment
-                if (strpos($firstAuthor, ' ') === false) {
-                    $label = mb_strtolower($firstAuthor);
-                } else {
-                    $r = strrpos($firstAuthor, ' ');
-                    $label = mb_strtolower(substr($firstAuthor, $r+1));
-                }
-            } else {
-                // last name is segment up to comma
-                $label = mb_strtolower(substr($firstAuthor, 0, strpos($firstAuthor, ',')));
-            }
-            $label .= $item->year;
-            $title = $item->title;
-            if (Str::startsWith($title, ['A ', 'The ', 'On ', 'An '])) {
-                $title = Str::after($title, ' ');   
-            }
-            
-            $firstTitleWord = Str::before($title, ' ');
-
-            $label .= mb_strtolower($this->onlyLetters($firstTitleWord));
-        } else {
-            $label .= $item->year;
-        }
-
-        return $label;
-    }
-
-    // Returns string consisting only of letters and spaces in $string
-    public function onlyLetters(string $string): string
-    {
-        return preg_replace("/[^a-z\s]+/i", "", $string);
-    }
-
-    public function render()
-    {
-        return view('livewire.convert-file');
     }
 }
