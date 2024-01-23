@@ -46,7 +46,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
     ];
 
-    public function fullName($lastNameFirst = false)
+    public function fullName(bool $lastNameFirst = false): string
     {
         if ($lastNameFirst) {
             return ($this->last_name != '*' ? $this->last_name . ', ' : '') . $this->first_name . ($this->middle_name ? ' ' . $this->middle_name : '');

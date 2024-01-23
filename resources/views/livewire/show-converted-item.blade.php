@@ -1,4 +1,30 @@
 <div>
+    @if ($status == 'changes' && (count($convertedItem['warnings']) || count($convertedItem['notices'])))
+        <p>
+            <i>Warnings/notices from original conversion:</i>
+        </p>
+    @endif
+
+    @if (count($convertedItem['warnings']))
+    <ul>
+        @foreach ($convertedItem['warnings'] as $warning)
+            <li>
+                <span class="text-red-600">{{ $warning }}</span>
+            </li>
+        @endforeach
+    </ul>
+    @endif
+    
+    @if (count($convertedItem['notices']))
+    <ul>
+        @foreach ($convertedItem['notices'] as $notice)
+            <li>
+                <span class="text-orange-600">{{ $notice }}</span>
+            </li>
+        @endforeach
+    </ul>
+    @endif
+
     {{ '@' }}{{ $convertedItem['itemType'] }}{{ '{' }}{{ $convertedItem['label'] }},
         <ul class="ml-6">
             @foreach ($fields as $field)
@@ -37,7 +63,7 @@
     </div>
 
     <div style="display:{{ $displayState }};" class="dark:bg-slate-600 bg-slate-300 p-4 mt-4" id="reportForm{{ $outputId }}">
-        <form method="POST" wire:submit="submit" id="form{{ $outputId }}">
+        <form method="POST" wire:submit="submit()" id="form{{ $outputId }}">
             @csrf
             <div class="mb-2">
                 @php
@@ -66,7 +92,7 @@
                         <x-input-label for="reportTitle" value="Title of report (short description of error, max 60 characters)" />
                         <x-text-input id="reportTitle" class="block mt-1 w-full" type="text" maxlength="60" name="reportTitle" value="form.reportTitle" wire:model="form.reportTitle"/>
                         <div role="alert" class="mt-4 mb-4">
-                            @error('form.reportTitle') <span class="bg-red-500 text-white font-bold rounded px-2 py-1">{{ $message }}</span> @enderror 
+                            @error('form.reportTitle') <span class="text-red-800 rounded px-0 py-0">{{ $message }}</span> @enderror 
                         </div>
 
                         <x-input-label for="comment" value="Comment on error (optional)" />

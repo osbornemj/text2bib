@@ -44,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // TEST
     Route::get('/process', [ConversionController::class, 'process'])->name('process');
     //
+    Route::get('/dashboard', [IndexController::class, 'index'])->name('dashboard');
     Route::get('/fileUpload', [IndexController::class, 'fileUpload'])->name('fileUpload');
     Route::post('/fileUpload', [IndexController::class, 'fileUpload'])->name('fileUpload');
     Route::get('/errorReports', [ErrorReportController::class, 'index'])->name('errorReports');

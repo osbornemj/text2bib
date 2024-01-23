@@ -109,6 +109,24 @@
                 </div>
 
                 <div class="mt-3 space-y-1">
+                    <x-responsive-nav-link :href="route('fileUpload')">
+                        {{ __('Convert') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('errorReports')">
+                        {{ __('Error reports') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('about')">
+                        {{ __('About') }}
+                    </x-responsive-nav-link>
+
+                    @if (Auth::user()->is_admin)
+                        <x-responsive-nav-link :href="route('admin.index')">
+                            {{ __('Admin') }}
+                        </x-responsive-nav-link>
+                    @endif
+
                     <x-responsive-nav-link :href="route('profile.edit')">
                         {{ __('Profile') }}
                     </x-responsive-nav-link>

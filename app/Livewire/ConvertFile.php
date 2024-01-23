@@ -142,10 +142,10 @@ class ConvertFile extends Component
 
         $itemTypes = ItemType::all();
 
-        // Write converted entries to database
-        //$convertedItems = [];
+        // Write converted items to database **and key array to output ids**
+        $convertedItems = [];
         foreach ($convertedEntries as $i => $convItem) {
-            Output::create([
+            $output = Output::create([
                 'source' => $convItem['source'],
                 'conversion_id' => $conversion->id,
                 'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
@@ -153,11 +153,12 @@ class ConvertFile extends Component
                 'item' => $convItem['item'],
                 'seq' => $i,
             ]);
+            $convertedItems[$output->id] = $convItem;
         }
 
         return redirect('showBibtex/' . $conversion->id)
             ->with([
-                'convertedEntries' => $convertedEntries,
+                'convertedItems' => $convertedItems,
                 'itemTypes' => $itemTypes,
                 'conversion' => $conversion,
             ]);

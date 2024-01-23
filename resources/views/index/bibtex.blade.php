@@ -11,7 +11,7 @@
                 <x-link href="{{ url('downloadBibtex/' . $conversionId) }}">Download BibTeX file</x-link>
             </p>
             <ul>
-                @foreach ($convertedEntries as $outputId => $convertedItem)
+                @foreach ($convertedItems as $outputId => $convertedItem)
                 <div class="mt-4">
                     <li>
                         @if (Auth::user()->is_admin)
@@ -29,26 +29,6 @@
                         @if ($includeSource) 
                             % {{ $convertedItem['source'] }}
                             <br/>
-                        @endif
-
-                        @if (count($convertedItem['warnings']))
-                        <ul>
-                            @foreach ($convertedItem['warnings'] as $warning)
-                                <li>
-                                    <span class="text-red-600">{{ $warning }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-                        @endif
-                        
-                        @if (count($convertedItem['notices']))
-                        <ul>
-                            @foreach ($convertedItem['notices'] as $notice)
-                                <li>
-                                    <span class="text-orange-600">{{ $notice }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
                         @endif
 
                         @if ($reportType == 'detailed') 

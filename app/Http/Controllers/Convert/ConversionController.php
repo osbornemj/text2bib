@@ -130,7 +130,7 @@ class ConversionController extends Controller
 
         return view('index.bibtex',
             compact(
-                'convertedEntries',
+                'convertedItems',
                 'itemTypes',
                 'itemTypeOptions',
                 'conversionId',
@@ -454,7 +454,7 @@ class ConversionController extends Controller
     public function showBibtex(int $conversionId): View
     {
         $conversion = session()->get('conversion');
-        $convertedEntries = session()->get('convertedEntries');
+        $convertedItems = session()->get('convertedItems');
         $itemTypes = session()->get('itemTypes');
 
         $itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
@@ -463,7 +463,7 @@ class ConversionController extends Controller
 
         return view('index.bibtex', 
             compact(
-                'convertedEntries',
+                'convertedItems',
                 'itemTypes',
                 'itemTypeOptions',
                 'conversionId',

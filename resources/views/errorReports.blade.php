@@ -5,6 +5,12 @@
         </h2>
     </x-slot>
 
+    @if (!count($errorReports))
+        <div class="ml-4">
+            None so far.
+        </div>
+    @endif
+
     @foreach ($errorReports as $errorReport)
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-8 sm:ml-4">
             <div class="col-span-5">
@@ -19,4 +25,4 @@
         </div>
     @endforeach
 
-    </x-app-layout>
+</x-app-layout>
