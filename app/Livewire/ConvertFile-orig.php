@@ -28,20 +28,9 @@ class ConvertFile extends Component
 
     use AddLabels;
 
-    public ConvertFileForm $uploadForm;
+    public ConvertFileForm $form;
 
     private Converter $converter;
-
-    public $conversionExists = false;
-
-    public $convertedItems;
-    public $conversionId;
-    public $outputId;
-    public $includeSource;
-    public $reportType;
-
-    public $itemTypeOptions;
-    public $itemTypes;
 
     public function boot()
     {
@@ -66,16 +55,15 @@ class ConvertFile extends Component
         ];
 
         foreach ($defaults as $setting => $default) {
-            $this->uploadForm->{$setting} = $userSettings ? $userSettings->{$setting} : $default;
+            $this->form->{$setting} = $userSettings ? $userSettings->{$setting} : $default;
         }
-
     }
 
     public function submit()
     {
-        $this->uploadForm->validate();
+        $this->validate();
 
-        $file = $this->uploadForm->file;
+        $file = $this->form->file;
 
         // write file to user_files table
         $sourceFile = new UserFile;
@@ -92,11 +80,11 @@ class ConvertFile extends Component
             'public',
         );
 
-        $settingValues = $this->uploadForm->toArray();
+        $settingValues = $this->form->toArray();
         unset($settingValues['file']);
         unset($settingValues['save_settings']);
 
-        if ($this->uploadForm->save_settings) {
+        if ($this->form->save_settings) {
             $userSetting = UserSetting::firstOrNew( 
                 ['user_id' => Auth::id()]
             );
@@ -168,13 +156,11 @@ class ConvertFile extends Component
             $convertedItems[$output->id] = $convItem;
         }
 
-        $this->conversionExists = true;
-
-        $this->convertedItems = $convertedItems;
-        $this->conversionId = $conversion->id;
-        $this->includeSource = $conversion->include_source;
-        $this->reportType = $conversion->report_type;
-        $this->itemTypes = $itemTypes;
-        $this->itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
+        return redirect('showBibtex/' . $conversion->id)
+            ->with([
+                'convertedItems' => $convertedItems,
+                'itemTypes' => $itemTypes,
+                'conversion' => $conversion,
+            ]);
     }
 }

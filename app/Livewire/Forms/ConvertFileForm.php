@@ -5,8 +5,6 @@ namespace App\Livewire\Forms;
 use Livewire\Attributes\Rule;
 use Livewire\Form;
 
-use App\Models\UserSetting;
-
 class ConvertFileForm extends Form
 {
     #[Rule('required', message: 'Please select a file to upload')]    
@@ -14,8 +12,6 @@ class ConvertFileForm extends Form
     #[Rule('mimes:txt', message: 'Your file is not plain text')]    
     public $file;
 
-    // Default values: need to take into account old: something like
-    // "old('first_component', isset($settings) && $settings->first_component == 'year')"?
     #[Rule('required', message: 'Please choose an option')]    
     #[Rule('string', message: 'The value of this field must be a string')]    
     #[Rule('in:line,cr', message: 'The value of this field must be "line" or "cr"')]    
