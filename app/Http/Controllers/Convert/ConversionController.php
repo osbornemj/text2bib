@@ -38,27 +38,27 @@ class ConversionController extends Controller
     ///////////////////////////////////////////////
     // FOR TESTING
     ///////////////////////////////////////////////
-    public function process()
-    {
-        return view('index.process');
-    }
+    // public function process()
+    // {
+    //     return view('index.process');
+    // }
 
     public function bibtex()
     {
         return view('index.bibtex');
     }
 
-    public function encodingError($conversionId)
-    {
-        $nonUtf8Entries = session()->get('nonUtf8Entries');
-        return view('index.encodingError', compact('nonUtf8Entries', 'conversionId'));
-    }
+    // public function encodingError($conversionId)
+    // {
+    //     $nonUtf8Entries = session()->get('nonUtf8Entries');
+    //     return view('index.encodingError', compact('nonUtf8Entries', 'conversionId'));
+    // }
 
-    public function itemSeparatorError($conversionId)
-    {
-        $entry = session()->get('entry');
-        return view('index.itemSeparatorError', compact('entry', 'conversionId'));
-    }
+    // public function itemSeparatorError($conversionId)
+    // {
+    //     $entry = session()->get('entry');
+    //     return view('index.itemSeparatorError', compact('entry', 'conversionId'));
+    // }
 
     // Converts entries in exising file according to parameters of Conversion with id = $conversionId.
     // Duplicate of code in Livewire component ConvertFile (with minor changes: return ... -> redirect ...).
@@ -140,13 +140,13 @@ class ConversionController extends Controller
         );
     }
 
-    public function redo(int $conversionId): RedirectResponse
-    {
-        $conversion = Conversion::find($conversionId);
-        $conversion->update(['item_separator' => 'cr']);
+    // public function redo(int $conversionId): RedirectResponse
+    // {
+    //     $conversion = Conversion::find($conversionId);
+    //     $conversion->update(['item_separator' => 'cr']);
 
-        return redirect('convert/' . $conversion->id);
-    }
+    //     return redirect('convert/' . $conversion->id);
+    // }
 
     // private function isUtf8(string $string): bool
     // {

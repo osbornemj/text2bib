@@ -19,7 +19,7 @@
 
         @include('livewire.partials.item-separator-error')
 
-    @elseif (count($nonUtf8Entries))
+    @elseif (count($this->nonUtf8Entries))
 
         @include('livewire.partials.non-utf8-entries')
 

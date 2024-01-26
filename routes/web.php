@@ -42,7 +42,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // TEST
-    Route::get('/process', [ConversionController::class, 'process'])->name('process');
+    //Route::get('/process', [ConversionController::class, 'process'])->name('process');
     //
     Route::get('/dashboard', [IndexController::class, 'index'])->name('dashboard');
     Route::get('/convertFile', [IndexController::class, 'convertFile'])->name('convertFile');

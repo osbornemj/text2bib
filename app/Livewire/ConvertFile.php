@@ -70,13 +70,15 @@ class ConvertFile extends Component
         ];
 
         foreach ($defaults as $setting => $default) {
-            $this->uploadForm->{$setting} = $userSettings ? $userSettings->{$setting} : $default;
+            $this->uploadForm->$setting = $userSettings ? $userSettings->$setting : $default;
         }
 
     }
 
     public function submit(int $conversionId = null): void
     {
+        // $conversionId is set if user is re-doing a conversion
+        // that had 'line' as item_separator but should have 'cr'.
         if ($conversionId) {
             $conversion = Conversion::find($conversionId);
             $conversion->update(['item_separator' => 'cr']);
@@ -135,7 +137,9 @@ class ConvertFile extends Component
         // Check for utf-8
         foreach ($entries as $entry) {
             if (!mb_check_encoding($entry)) {
-                $this->nonUtf8Entries[] = $entry;
+                // Need to convert to UTF-8 because Livewire uses json encoding
+                // (and will crash if non-utf-8 string is passed to it)
+                $this->nonUtf8Entries[] = mb_convert_encoding($entry, "UTF-8");
             }
         }
 
@@ -145,6 +149,7 @@ class ConvertFile extends Component
                 $this->itemSeparatorError = true;
         }
 
+        // If item_separator and encoding seems correct, perform the conversion
         if ($this->itemSeparatorError == false && count($this->nonUtf8Entries) == 0) {
             $convertedEntries = [];
             foreach ($entries as $entry) {

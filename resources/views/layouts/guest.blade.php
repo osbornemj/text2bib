@@ -11,10 +11,12 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 max-w-4xl mx-auto antialiased">
-        @include('layouts.header')
+        <div class="min-h-screen">
+            @include('layouts.header')
 
-        <div class="h-screen flex justify-center">
-            {{ $slot }}
+            <div class="h-screen flex justify-center">
+                {{ $slot }}
+            </div>
         </div>
     </body>
 </html>

@@ -6,5 +6,11 @@
         </div>
     </div>
 
+    @section('scripts')
+        <script>
+            document.body.scrollIntoView({behavior: "smooth"});
+        </script>
+    @endsection
+
 </x-app-layout>
 

@@ -60,14 +60,14 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-link href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </x-link>
-
-            <x-primary-button class="ml-4">
+        <div class="flex items-center mt-4">
+            <x-primary-button>
                 {{ __('Register') }}
             </x-primary-button>
+
+            <x-link href="{{ route('login') }}" class="ml-6">
+                {{ __('Already registered?') }}
+            </x-link>
         </div>
     </form>
 </x-guest-layout>
