@@ -112,7 +112,7 @@
     </div>
 
     <div>
-        <x-input-label for="line_endings" :value="__('Line-ending style for output')" class="mt-4" />
+        <x-input-label for="line_endings" :value="__('Line-ending style for generated bibtex.bib file')" class="mt-4" />
     
         <x-radio-input wire:model="uploadForm.line_endings" value="w" class="peer/w" /> 
         <x-value-label for="w" class="peer-checked/w:text-blue-600 ml-1" :value="__('Windows')" />

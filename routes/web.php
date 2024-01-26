@@ -45,8 +45,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/process', [ConversionController::class, 'process'])->name('process');
     //
     Route::get('/dashboard', [IndexController::class, 'index'])->name('dashboard');
-    Route::get('/fileUpload', [IndexController::class, 'fileUpload'])->name('fileUpload');
-    Route::post('/fileUpload', [IndexController::class, 'fileUpload'])->name('fileUpload');
+    Route::get('/convertFile', [IndexController::class, 'convertFile'])->name('convertFile');
+    Route::post('/convertFile', [IndexController::class, 'convertFile'])->name('convertFile');
     Route::get('/errorReports', [ErrorReportController::class, 'index'])->name('errorReports');
     Route::get('/errorReport/{id}', [ErrorReportController::class, 'show'])->name('errorReport');
     Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');

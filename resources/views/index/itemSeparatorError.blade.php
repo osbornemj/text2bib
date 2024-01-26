@@ -16,7 +16,7 @@
                 </li>
             </ul>
             <p class="mt-4">
-                <x-link href="{{ route('redo', $conversionId) }}">Re-try with carriage return as item separator</x-link>
+                <x-link href="{{ url('convertFile/' . $conversionId) }}">Re-try with carriage return as item separator</x-link>
             </p>
         </div>
     </div>

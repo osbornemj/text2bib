@@ -15,7 +15,15 @@
         </div>
     </div>
 
-    @if ($conversionExists)
+    @if ($itemSeparatorError)
+
+        @include('livewire.partials.item-separator-error')
+
+    @elseif (count($nonUtf8Entries))
+
+        @include('livewire.partials.non-utf8-entries')
+
+    @elseif ($conversionExists)
     
         @include('livewire.partials.bibtex-output')
 
@@ -26,3 +34,4 @@
     @endif
 
 </div>
+

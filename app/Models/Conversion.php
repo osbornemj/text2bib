@@ -17,6 +17,7 @@ class Conversion extends Model
         'first_component' => 'authors',
         'label_style' => 'short',
         'override_labels' => false,
+        'line_endings' => 'w',
         'char_encoding' => 'utf8',
         'percent_comment' => true,
         'include_source' => true,
