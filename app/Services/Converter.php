@@ -1875,7 +1875,7 @@ class Converter
         return $returner;
     }
 
-    public function addToAuthorString(&$string, $addition)
+    public function addToAuthorString(string &$string, string $addition): void
     {
         $string .= $addition;
         $this->verbose(['addition' => "Added \"" . $addition . "\" to list of authors"]);
@@ -2745,8 +2745,7 @@ class Converter
                 }
                 // Under some conditions (von name?), $fullName has already been added to $authorstring.
                 if (!Str::endsWith($authorstring, $fullName)) {
-                    $authorstring .= $fullName;
-                    $this->verbose("Adding \"" . $fullName . "\" to \$authorstring");
+                    $this->addToAuthorString($authorstring, $fullName);
                 }
                 break;  // exit from foreach
             } elseif ($determineEnd && $done) {
@@ -2787,8 +2786,7 @@ class Converter
                         //$nameComponent = $this->spaceOutInitials($word);
                         $nameComponent = $word;
                         $fullName .= trim($nameComponent, '.');
-                        $authorstring .= $fullName;
-                        $this->verbose("Adding \"" . $fullName . "\" to \$authorstring");
+                        $this->addToAuthorString($authorstring, $fullName);
                         $case = 2;
                         $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, namePart is 0, and remaining string starts with year';
                         $oneWordAuthor = true;
