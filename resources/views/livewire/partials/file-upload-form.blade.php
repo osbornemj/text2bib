@@ -22,6 +22,9 @@
                 <li>
                     The size of your file must be at most 100K.
                 </li>
+                <li>
+                    The file you upload will be visible to the administrator of the site and potentially to other users.  Do not upload a file that contains personal information.
+                </li>
             </ul>
         </div>
     </div>

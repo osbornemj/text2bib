@@ -276,9 +276,9 @@ class Converter
 
         $isArticle = $containsPageRange = $containsProceedings = false;
 
-        ////////////////////////
-        // get the doi if any //
-        ////////////////////////
+        ////////////////////
+        // get doi if any //
+        ////////////////////
 
         $doi = $this->extractLabeledContent($entry, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._\-]+');
 
@@ -292,9 +292,9 @@ class Converter
             $this->verbose("No doi found.");
         }
 
-        ///////////////////////////////
-        // get the arXiv info if any //
-        ///////////////////////////////
+        ///////////////////////////
+        // get arXiv info if any //
+        ///////////////////////////
 
         $eprint = $this->extractLabeledContent($entry, ' arxiv: ?', '\S+');
 
@@ -306,9 +306,9 @@ class Converter
             $this->verbose("No arXiv info found.");
         }
 
-        ////////////////////////
-        // get the url if any //
-        ////////////////////////
+        ////////////////////
+        // get url if any //
+        ////////////////////
 
         // Entry contains "retrieved from http ... <access date>".
         // Assumes URL is at the end of entry.
@@ -335,9 +335,9 @@ class Converter
                 }
                 $entry = Str::before($entry, $matches[0]);
             } else {
-                $urlPlus = $this->extractLabeledContent($entry, '', 'https?://\S+ .*$');
+                $urlPlus = $this->extractLabeledContent($entry, '', 'https?://\S+ ?.*$');
                 $url = trim(Str::before($urlPlus, ' '), ',.;');
-                $afterUrl = Str::after($urlPlus, ' ');
+                $afterUrl = (strpos($urlPlus, ' ') !== false) ? Str::after($urlPlus, ' ') : '';
                 if ($afterUrl) {
                     $warnings[] = "The string \"" . $afterUrl . "\" remains unidentified.";
                 }
@@ -936,6 +936,9 @@ class Converter
                 $remainder = '';
                 if ($item->note) {
                     $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
+                } elseif (isset($item->url) && $item->url) {
+                    $item->note = $item->url;
+                    unset($item->url);
                 } else {
                     $warnings[] = "Mandatory 'note' field missing.";
                 }
@@ -1872,6 +1875,12 @@ class Converter
         return $returner;
     }
 
+    public function addToAuthorString(&$string, $addition)
+    {
+        $string .= $addition;
+        $this->verbose(['addition' => "Added \"" . $addition . "\" to list of authors"]);
+    }
+
     // Get title from a string that starts with title and then has publication information.
     // Case in which title is in quotation marks or italics is dealt with separately.
     public function getTitle(string &$remainder, string|null &$edition, string|null &$volume, bool &$isArticle): string|null
@@ -2713,7 +2722,7 @@ class Converter
             // remove first word from $remainingWords
             array_shift($remainingWords);
 
-            if ($authorIndex > 1) {
+            if ($authorIndex > 0) {
                 $multipleAuthors = true;
             }
 
@@ -2737,6 +2746,7 @@ class Converter
                 // Under some conditions (von name?), $fullName has already been added to $authorstring.
                 if (!Str::endsWith($authorstring, $fullName)) {
                     $authorstring .= $fullName;
+                    $this->verbose("Adding \"" . $fullName . "\" to \$authorstring");
                 }
                 break;  // exit from foreach
             } elseif ($determineEnd && $done) {
@@ -2744,7 +2754,7 @@ class Converter
             } elseif ($this->isAnd($word)) {
                 // word is 'and' or equivalent
                 $hasAnd = $prevWordAnd = true;
-                $authorstring .= $this->formatAuthor($fullName) . ' and';
+                $this->addToAuthorString($authorstring, $this->formatAuthor($fullName) . ' and');
                 $fullName = '';
                 $namePart = 0;
                 $authorIndex++;
@@ -2755,7 +2765,7 @@ class Converter
                 $nextWord = rtrim($words[$i+1], ',');
                 $this->verbose('nextWord: ' . $nextWord);
                 if (in_array($nextWord, ['al.', 'al'])) {
-                    $authorstring .= $this->formatAuthor($fullName) . ' and others';
+                    $this->addToAuthorString($authorstring, $this->formatAuthor($fullName) . ' and others');
                     array_shift($remainingWords);
                     $remainder = implode(" ", $remainingWords);
                     $done = 1;
@@ -2778,6 +2788,7 @@ class Converter
                         $nameComponent = $word;
                         $fullName .= trim($nameComponent, '.');
                         $authorstring .= $fullName;
+                        $this->verbose("Adding \"" . $fullName . "\" to \$authorstring");
                         $case = 2;
                         $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, namePart is 0, and remaining string starts with year';
                         $oneWordAuthor = true;
@@ -2803,7 +2814,7 @@ class Converter
                     // If $namePart > 0
                     $nameComponent = $this->trimRightBrace($this->spaceOutInitials(rtrim($word, '.')));
                     $fullName .= " " . $nameComponent;
-                    $authorstring .= $this->formatAuthor($fullName);
+                    $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
                     $remainder = implode(" ", $remainingWords);
                     $case = 4;
                     $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, and namePart is > 0';
@@ -2820,7 +2831,7 @@ class Converter
                 if ($determineEnd && isset($remainingWords[0]) && $this->isNotName($word, $remainingWords[0])) {
                     $fullName .= $word;
                     $remainder = implode(" ", $remainingWords);
-                    $authorstring .= $this->formatAuthor($fullName);
+                    $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
                     if ($year = $this->getYear($remainder, true, $remains, false, $trash)) {
                         $remainder = $remains;
                         $this->verbose("Year detected");
@@ -2829,7 +2840,7 @@ class Converter
                     $done = 1;
                 } else {
                     if (!$prevWordAnd && $authorIndex) {
-                        $authorstring .= $this->formatAuthor($fullName) . ' and';
+                        $this->addToAuthorString($authorstring, $this->formatAuthor($fullName) . ' and');
                         $fullName = '';
                         $prevWordAnd = 1;
                     }
@@ -2897,7 +2908,7 @@ class Converter
                         $authorIndex++;
                         if ($year = $this->getYear(implode(" ", $remainingWords), true, $remains, false, $trash)) {
                             $remainder = $remains;
-                            $authorstring .= $this->formatAuthor($fullName);
+                            $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
                             $done = 1;
                         }
                     }
@@ -2922,13 +2933,12 @@ class Converter
                     if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd)) {
                         $remainder = implode(" ", $remainingWords);
                         $done = 1;
-                        $authorstring .= $this->formatAuthor($fullName);
+                        $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
                         $case = 7;
                     } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), true, $remainder, false, $trash)) {
                         $done = 1;
                         $fullName = ($fullName[0] != ' ' ? ' ' : '') . $fullName;
-                        $authorstring .= $this->formatAuthor($fullName);
-                        //$authorstring .= (substr($authorstring, -1) != ' ' ? ' ' : '') . $this->formatAuthor($fullName);
+                        $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
                         $case = 8;
                         $reason = 'Remainder starts with year';
                     } elseif ($determineEnd && count($bareWords) > 2 && $nameScore['score'] / $nameScore['count'] < 0.25 && ! $this->isInitials($remainingWords[0])) {
@@ -2938,7 +2948,7 @@ class Converter
                         // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
                         // at comma.
                         $done = 1;
-                        $authorstring .= $this->formatAuthor($fullName);
+                        $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
                         $case = 9;
                     } elseif (Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $hasAnd)) {
                         // $word ends in comma or semicolon and next word is not string for editors
@@ -2957,7 +2967,7 @@ class Converter
                                 $case = 10;
                             } else {
                                 $done = 1;
-                                $authorstring .= $this->formatAuthor($fullName);
+                                $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
                                 $case = 11;
                             }
                         } else {
@@ -2983,7 +2993,7 @@ class Converter
                                 }
                                 // Low name score relative to number of bareWords (e.g. less than 25% of words not in dictionary)
                                 if ($nameScore['count'] > 2 && $nameScore['score'] / $nameScore['count'] < 0.25) {
-                                        $authorstring .= $this->formatAuthor($fullName);
+                                    $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
                                     $done = 1;
                                 }
                                 $case = 12;
@@ -2996,7 +3006,7 @@ class Converter
                             $namePart++;
                         }
                         if ($i + 1 == count($words)) {
-                            $authorstring .= $this->formatAuthor($fullName);
+                            $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
                         }
                         //$this->verbose("authorstring: " . $authorstring);
                         $case = 13;

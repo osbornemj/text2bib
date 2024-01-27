@@ -13,6 +13,9 @@
                         <span class="text-blue-700 bg-slate-400">{{ $word }}</span>
                     @endforeach
                     @break
+                @case ('addition')
+                    <span class="text-green-500">{{ $value }}</span>
+                    @break
                 @case ('item')
                     <span class="text-blue-300">{{ $value }}</span>
                     @break

@@ -8,7 +8,11 @@
 
     @section('scripts')
         <script>
-            document.body.scrollIntoView({behavior: "smooth"});
+            history.scrollRestoration = "manual";
+            window.onbeforeunload = function () {
+                window.scrollTo(0, 0);
+            }
+            /*document.body.scrollIntoView({behavior: "smooth"});*/
         </script>
     @endsection
 

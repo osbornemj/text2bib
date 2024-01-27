@@ -149,7 +149,7 @@ class ConvertFile extends Component
                 $this->itemSeparatorError = true;
         }
 
-        // If item_separator and encoding seems correct, perform the conversion
+        // If item_separator and encoding seem correct, perform the conversion
         if ($this->itemSeparatorError == false && count($this->nonUtf8Entries) == 0) {
             $convertedEntries = [];
             foreach ($entries as $entry) {

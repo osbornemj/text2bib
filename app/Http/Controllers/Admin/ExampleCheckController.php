@@ -31,11 +31,14 @@ class ExampleCheckController extends Controller
 
         $conversion = new Conversion;
         $conversion->char_encoding = $charEncoding ? $charEncoding : 'utf8';
+        $conversion->report_type = $verbose ? 'detailed' : 'standard';
 
         $results = [];
         $allCorrect = true;
 
         foreach ($examples as $example) {
+            $correctType = $correctContent = true;
+
             $source = $example->source;
 
             $output = $this->converter->convertEntry($source, $conversion);
@@ -46,28 +49,44 @@ class ExampleCheckController extends Controller
                 unset($output['item']->unidentified);
             }
 
-            $diff1 = array_diff((array) $output['item'], (array) $example->bibtexFields());
-            $diff2 = array_diff((array) $example->bibtexFields(), (array) $output['item']);
+            if ($output['itemType'] != $example->type) {
+                $correctType = false;
+            }
 
-            if (!empty($diff1) || !empty($diff2)) {
+            if ((array) $output['item'] != (array) $example->bibtexFields()) {
+                $correctContent = false;
+            }
+
+            $diff1 = array_diff_assoc((array) $output['item'], (array) $example->bibtexFields());
+            $diff2 = array_diff_assoc((array) $example->bibtexFields(), (array) $output['item']);
+
+            if (!$correctType || !$correctContent) {
                 $result = [];
                 $allCorrect = false;
                 $result['result'] = 'incorrect';
                 $result['source'] = $source;
                 $result['errors'] = [];
+            }
+
+            if (!$correctType) {
+                $result['typeError']['content'] = $output['itemType'];
+                $result['typeError']['correct'] = $example->type;
+            }
+
+            if (!$correctContent) {
                 foreach ($diff1 as $key => $content) {
                     $bibtexFields = $example->bibtexFields();
                     $result['errors'][$key] = 
                         [
                             'content' => $content,
-                            'correct' => isset($bibtexFields->{$key}) ? $bibtexFields->{$key} : ''
+                            'correct' => isset($bibtexFields->$key) ? $bibtexFields->$key : ''
                         ];
                 }
                 foreach ($diff2 as $key => $content) {
                     $outputFields = $output['item'];
                     $result['errors'][$key] = 
                         [
-                            'content' => isset($outputFields->{$key}) ? $outputFields->{$key} : '',
+                            'content' => isset($outputFields->$key) ? $outputFields->$key : '',
                             'correct' => $content
                         ];
                 }
@@ -75,7 +94,9 @@ class ExampleCheckController extends Controller
                 if ($verbose) {
                     $result['details'] = $output['details'];
                 }
-    
+            }
+
+            if (isset($result) && $result['result'] == 'incorrect') {
                 $results[$example->id] = $result;
             }
         }

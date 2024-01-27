@@ -19,19 +19,25 @@
                     &nbsp;&bull;&nbsp;
                     <x-link href="{{ url('/admin/runExampleCheck/0/' . $id) }}">brief conversion</x-link>
                     <br/>
-                    Source: {{ $result['source'] }}
+                    <i>Source</i>: {{ $result['source'] }}
+                    @if (isset($result['typeError']))
+                        <div class="mt-4">
+                        Type <span class="text-blue-700 dark:bg-rose-300 bg-rose-400">{{ $result['typeError']['content'] }}</span> instead of <span class="text-blue-700 dark:bg-green-300 bg-green-400">{{ $result['typeError']['correct']}}</span>
+                        </div>
+                    @endif
                     @foreach ($result['errors'] as $key => $value)
+                        <div class="mt-4">
+                        <span class="text-blue-700 dark:bg-slate-200 bg-slate-400">{{ $key }}</span>
                         <br/>
-                        {{ $key }}:
+                        {{ $value['content'] ?: '[null]' }}
                         <br/>
-                        {{ $value['content'] }}
+                        <i>instead of</i>
                         <br/>
-                        instead of
-                        <br/>
-                        {{ $value['correct']}}
+                        {{ $value['correct'] ?: '[null]' }}
+                        </div>
                     @endforeach
                     @if ($verbose)
-                        <p>
+                        <div class="mt-4">
                         <i>Details of conversion:</i>
                         <ul>
                         @foreach ($result['details'] as $details)
@@ -40,6 +46,7 @@
                             </li>
                         @endforeach
                         </ul>
+                        </div>
                     @endif
                 @endforeach
             @endif

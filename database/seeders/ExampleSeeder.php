@@ -1676,6 +1676,29 @@ class ExampleSeeder extends Seeder
                         'publisher' => 'Palgrave MacMillan',
                         ]
                 ],
+                [
+                    'source' => '\bibitem{} Bergemann, D. and S. Morris (2001). \textquotedblleft Robust Mechanism Design,\textquotedblright\ http://www.princeton.edu/\symbol{126}smorris/pdfs/robustmechanism2001.pdf. ',
+                    'type' => 'unpublished',
+                    'bibtex' => [
+                        'year' => '2001',
+                        'title' => 'Robust Mechanism Design',
+                        'author' => 'Bergemann, D. and S. Morris',
+                        'note' => 'http://www.princeton.edu/\symbol{126}smorris/pdfs/robustmechanism2001.pdf',
+                        ]
+                ],
+                [
+                    'source' => '\bibitem{ } Kagel, J. (1995), ``Auctions:  A Survey of Experimental Research," in {\it The Handbook of Experimental Economics}, J.H. Kagel and A.E. Roth Eds., Princeton University Press, New Jersey. ',
+                    'type' => 'incollection',
+                    'bibtex' => [
+                        'year' => '1995',
+                        'title' => 'Auctions: A Survey of Experimental Research',
+                        'author' => 'Kagel, J.',
+                        'editor' => 'J. H. Kagel and A. E. Roth',
+                        'address' => 'New Jersey',
+                        'booktitle' => 'The Handbook of Experimental Economics',
+                        'publisher' => 'Princeton University Press',
+                        ]
+                ],
             ];
 
             DB::statement('DELETE FROM examples');
