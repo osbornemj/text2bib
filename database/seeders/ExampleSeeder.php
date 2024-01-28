@@ -1699,7 +1699,30 @@ class ExampleSeeder extends Seeder
                         'publisher' => 'Princeton University Press',
                         ]
                 ],
-            ];
+                [
+                    'source' => '\noindent {\sc Mark Feldman \& Christian Gilles,} ``An Expository Note on Individual Risk  without Aggregate Uncertainty,\'\'  {\em Journal of Economic Theory} {\bf 35} (1985), 26-32. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1985',
+                        'pages' => '26-32',
+                        'title' => 'An Expository Note on Individual Risk without Aggregate Uncertainty',
+                        'author' => 'Mark Feldman and Christian Gilles',
+                        'volume' => '35',
+                        'journal' => 'Journal of Economic Theory',
+                        ]
+                ],
+                [
+                    'source' => 'Lipman, Barton L. and Duane J.Seppi (1995), Robust Inference in Communication Games with Partial Provability, \textit{Journal of Economic Theory, 66, 370-405.} ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1995',
+                        'title' => 'Robust Inference in Communication Games with Partial Provability',
+                        'author' => 'Lipman, Barton L. and Duane J. Seppi',
+                        'journal' => 'Journal of Economic Theory',
+                        'volume' => '66',
+                        'pages' => '370-405',
+                        ]
+                ],            ];
 
             DB::statement('DELETE FROM examples');
             DB::statement('ALTER TABLE examples AUTO_INCREMENT 1');

@@ -8,11 +8,16 @@
 
     @section('scripts')
         <script>
+            /*
             history.scrollRestoration = "manual";
             window.onbeforeunload = function () {
                 window.scrollTo(0, 0);
             }
+            */
             /*document.body.scrollIntoView({behavior: "smooth"});*/
+            document.addEventListener('livewire:navigated', () => {
+                window.scrollTo(0,0);
+            })
         </script>
     @endsection
 

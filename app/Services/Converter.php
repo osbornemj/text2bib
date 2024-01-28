@@ -380,13 +380,25 @@ class Converter
         // Look for authors //
         //////////////////////
 
-        $words = explode(" ", $entry);
-        /*
-        $this->verbose("Words in entry are");
-        foreach ($words as $word) {
-            $this->verbose(['words' => [$word]]);
+        //$words = explode(" ", $entry);
+        
+        // Splitting on spaces isn't exactly right, because a word containing an accented letter
+        // can have a space in it --- e.g. Oblo{\v z}insk{\' y}
+        $chars = str_split($entry);
+
+        $word = '';
+        $words = [];
+        foreach ($chars as $i => $char) {
+            if ($char != ' ' || (isset($chars[$i-3]) && $chars[$i-3] == '{' && $chars[$i-2] == '\\')) {
+                $word .= $char;
+            } else {
+                $words[] = $word;
+                $word = '';
+            }
         }
-        */
+        if ($word) {
+            $words[] = $word;
+        }
 
         $this->verbose("Looking for authors ...");
 
@@ -445,7 +457,7 @@ class Converter
         unset($this->italicTitle);
 
         $remainder = ltrim($remainder, ': ');
-        $title = $this->getQuotedOrItalic($remainder, true, false, $newRemainder, $posStart, $posEnd);
+        $title = $this->getQuotedOrItalic($remainder, true, false, $newRemainder, $posStart, $posEnd, $stringMinusQuoteDelimiters);
 
         // Website
         if (isset($item->url) && $oneWordAuthor) {
@@ -1026,7 +1038,7 @@ class Converter
                 $newRemainder = $remainder;
                 
                 // If a string in $remainder is quoted or italicized, take that to be book title
-                $booktitle = $this->getQuotedOrItalic($remainder, false, false, $newRemainder, $posStart, $posEnd);
+                $booktitle = $this->getQuotedOrItalic($remainder, false, false, $newRemainder, $posStart, $posEnd, $stringMinusQuoteDelimiters);
 
                 if ($booktitle) {
                     $item->booktitle = $booktitle;
@@ -1852,6 +1864,7 @@ class Converter
 
         if (isset($item->author)) {
             $item->author = trim($item->author);
+            $item->author = rtrim($item->author, ',');
         }
         if (isset($item->journal)) {
             $item->journal = trim($item->journal, '} ');
@@ -2913,6 +2926,7 @@ class Converter
                     $this->verbose('Name with Jr., Sr., or III; fullName: ' . $fullName);
                     $case = 15;
                 } else {
+                    // Don't rtrim '}' because it could be part of the name: e.g. Oblo{\v z}insk{\' y}.
                     $nameComponent = $this->spaceOutInitials(rtrim($word, ',;'));
                     $fullName .= " " . $nameComponent;
                     //$authorstring .= " " . $nameComponent;
@@ -2928,7 +2942,7 @@ class Converter
                         $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                     }
 
-                    if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd)) {
+                    if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd, $stringMinusQuoteDelimiters)) {
                         $remainder = implode(" ", $remainingWords);
                         $done = 1;
                         $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
@@ -2939,7 +2953,13 @@ class Converter
                         $this->addToAuthorString($authorstring, $this->formatAuthor($fullName));
                         $case = 8;
                         $reason = 'Remainder starts with year';
-                    } elseif ($determineEnd && count($bareWords) > 2 && $nameScore['score'] / $nameScore['count'] < 0.25 && ! $this->isInitials($remainingWords[0])) {
+                    } elseif (
+                            $determineEnd &&
+                            count($bareWords) > 2 && 
+                            !$this->isAnd($remainingWords[0]) && 
+                            $nameScore['score'] / $nameScore['count'] < 0.25 &&
+                            ! $this->isInitials($remainingWords[0])
+                        ) {
                         // Low nameScore relative to number of bareWords (e.g. less than 25% of words not in dictionary)
                         // Note that this check occurs only when $namePart > 0---so it rules out double-barelled
                         // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
@@ -3045,7 +3065,7 @@ class Converter
      * @param $remains what is left of the string after the substring is removed
      * return quoted or italic substring
      */
-    public function getQuotedOrItalic($string, $start, $italicsOnly, &$remains, &$posStart, &$posEnd) {
+    public function getQuotedOrItalic($string, $start, $italicsOnly, &$remains, &$posStart, &$posEnd, &$stringMinusQuoteDelimiters) {
         $quoted = '';
         $remains = $string;
         $quoteExists = 0;
@@ -3060,19 +3080,19 @@ class Converter
             $posQuote1 = (strpos($string, "``") !== false) ? strpos($string, "``") : strlen($string);
             $lenQuote1 = 2;
 
-            for ($j = 0; $j < strlen($string) and!($string[$j] == '"' and ( $j == 0 or $string[$j - 1] != '\\')); $j++) {
+            for ($j = 0; $j < strlen($string) && !($string[$j] == '"' && ( $j == 0 || $string[$j - 1] != '\\')); $j++) {
 
             }
             $posQuote2 = $j < strlen($string) ? $j : strlen($string);
             $lenQuote2 = 1;
 
-            for ($j = 0; $j < strlen($string) and!($string[$j] == "'" and ( $j == 0 or $string[$j - 1] == ' ')); $j++) {
+            for ($j = 0; $j < strlen($string) && !($string[$j] == "'" && ( $j == 0 || $string[$j - 1] == ' ')); $j++) {
 
             }
             $posQuote3 = $j < strlen($string) ? $j : strlen($string);
             $lenQuote3 = 1;
 
-            for ($j = 0; $j < strlen($string) and!($string[$j] == "`" and ( $j == 0 or $string[$j - 1] == ' ')); $j++) {
+            for ($j = 0; $j < strlen($string) && !($string[$j] == "`" && ( $j == 0 || $string[$j - 1] == ' ')); $j++) {
 
             }
             $posQuote4 = $j < strlen($string) ? $j : strlen($string);
@@ -3110,9 +3130,9 @@ class Converter
         if (
         // quotation marks come first
                 ($containsQuote and $containsItalics
-                and ( ($start and $posQuote == 0) or ( !$start and $posQuote < $posItalics)))
-                or ( $containsQuote and ! $containsItalics
-                and ( ($start and $posQuote == 0) or ! $start))) {
+                && ( ($start and $posQuote == 0) or ( !$start and $posQuote < $posItalics)))
+                || ( $containsQuote and ! $containsItalics
+                && ( ($start and $posQuote == 0) or ! $start))) {
             $quoteLevel = 0;
             $break = false;
             for ($j = $posQuote + $lenQuote; $j < strlen($string); $j++) {
@@ -3158,13 +3178,14 @@ class Converter
             $posEnd = $j;
             $posStart = $posQuote;
             $quoteDelimiterLen = $lenQuote;
+            $quoteEndDelimiterLen = $lenQuote;
             $quoteExists = 1;
         } elseif (
         // italics come first
                 ($containsQuote and $containsItalics
-                and ( ($start and $posItalics == 0) or ( !$start and $posItalics < $posQuote)))
-                or ( !$containsQuote and $containsItalics
-                and ( ($start and $posItalics == 0) or ! $start))) {
+                && ( ($start and $posItalics == 0) || ( !$start && $posItalics < $posQuote)))
+                || ( !$containsQuote and $containsItalics
+                && ( ($start and $posItalics == 0) || ! $start))) {
             $this->italicTitle = true;
             // look for matching }
             $bracketLevel = 0;
@@ -3182,6 +3203,7 @@ class Converter
             $posEnd = $j;
             $posStart = $posItalics;
             $quoteDelimiterLen = $lenItalics;
+            $quoteEndDelimiterLen = 1;
             $quoteExists = 1;
         }
 
@@ -3189,6 +3211,9 @@ class Converter
             $quoted = rtrim(substr($string, $posStart + $quoteDelimiterLen, $posEnd - $quoteDelimiterLen - $posStart), ',.');
             $quoted = $this->trimRightPeriod($quoted);
             $remains = substr($string, 0, $posStart) . ltrim(substr($string, $posEnd + 1), ".' ");
+            $stringMinusQuoteDelimiters = substr($string, 0, $posStart) . 
+                substr($string, $posStart + $quoteDelimiterLen, $posEnd - $quoteDelimiterLen - $posStart) .
+                substr($string, $posEnd + $quoteEndDelimiterLen);
         }
         
         return $quoted;
@@ -3530,7 +3555,7 @@ class Converter
         $barewords = [];
         foreach ($words as $j => $word) {
             $stop = false;
-            if (Str::endsWith($word, ['.', ',', ')', ':'])) {
+            if (Str::endsWith($word, ['.', ',', ')', ':', '}'])) {
                 $stop = true;
             }
             if (preg_match('/(\(|\[)(18|19|20)([0-9][0-9])(\)|\])/', $word)) {
@@ -3841,11 +3866,20 @@ class Converter
     public function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming): string
     {
         if ($italicStart) {
-            $journal = $this->getQuotedOrItalic($remainder, true, false, $remainder, $posStart, $posEnd);
-        } elseif ($pubInfoStartsWithForthcoming) {
+            $italicText = $this->getQuotedOrItalic($remainder, true, false, $remainder, $posStart, $posEnd, $stringMinusQuoteDelimiters);
+            if (preg_match('/ [0-9]/', $italicText)) {
+                // Seems that more than just the journal name is included in the italics/quotes, so forget the quotes/italics
+                // and continue
+                $remainder = $stringMinusQuoteDelimiters;
+            } else {
+                return $italicText;
+            }
+        }
+
+        if ($pubInfoStartsWithForthcoming) {
             // forthcoming at start
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
-            $journal = $this->getQuotedOrItalic($result['content'], true, false, $remains, $posStart, $posEnd);
+            $journal = $this->getQuotedOrItalic($result['content'], true, false, $remains, $posStart, $posEnd, $stringMinusQuoteDelimiters);
             if (!$journal) {
                 $journal = $result['content'];
             }

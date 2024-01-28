@@ -8,6 +8,9 @@
             <p>
                 <x-link href="{{ url('downloadBibtex/' . $conversionId) }}">Download BibTeX file</x-link>
             </p>
+            <div>
+                <livewire:rating :conversionId="$conversionId" />
+            </div>
             <ul>
                 @foreach ($convertedItems as $outputId => $convertedItem)
                 <div class="mt-4">

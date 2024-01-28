@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <form method="POST" accept="txt" wire:submit="submit" enctype="multipart/form-data" class="mt-0 space-y-0">
+    <form method="POST" accept="txt" wire:submit="submit" onsubmit="window.scrollTo(0, 0);" enctype="multipart/form-data" class="mt-0 space-y-0">
     @csrf
 
     <div>

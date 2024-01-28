@@ -3,7 +3,7 @@
 
 If you want to convert a file of references to BibTeX format, go to
 
-(https://text2bib.economics.utoronto.ca)
+https://text2bib.economics.utoronto.ca
 
 where an implementation of this system is publicly available.
 
@@ -50,4 +50,4 @@ If you would like to modify the Converter to deal with a reference that is not c
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project, including Laravel framework, is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
