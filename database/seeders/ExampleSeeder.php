@@ -1722,7 +1722,22 @@ class ExampleSeeder extends Seeder
                         'volume' => '66',
                         'pages' => '370-405',
                         ]
-                ],            ];
+                ],
+                [
+                    'source' => ' \bibitem{Conway} John B. Conway, {\em A Course in Functional Analysis}, Second Edition, volume 96 in {\em Graduate Texts in Mathematics}, Springer-Verlag, New York, 1990. ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'year' => '1990',
+                        'title' => 'A Course in Functional Analysis',
+                        'author' => 'John B. Conway',
+                        'series' => 'Graduate Texts in Mathematics',
+                        'volume' => '96',
+                        'address' => 'New York',
+                        'edition' => 'Second',
+                        'publisher' => 'Springer-Verlag',
+                        ]
+                ],
+            ];
 
             DB::statement('DELETE FROM examples');
             DB::statement('ALTER TABLE examples AUTO_INCREMENT 1');

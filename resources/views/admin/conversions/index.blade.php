@@ -22,17 +22,24 @@
                         {{ $conversion->userFile->user->fullName() }}
                         &nbsp;&bull;&nbsp;
                         {{ $conversion->created_at }}
-                        <br/>
-                        {{ $conversion->incremental ? 'incremental' : 'one-shot' }}
-                        &nbsp;&bull;&nbsp;
+                        &nbsp;
+                        <div class="flex items-center">
+                            @for ($i = 0; $i < $conversion->rating; $i++)
+                            <svg class="w-4 h-4 fill-current text-yellow-600"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z">
+                                </path>
+                            </svg>
+                            @endfor
+                        </div>
                         sep = {{ $conversion->item_separator}}
                         &nbsp;&bull;&nbsp;
                         first = {{ $conversion->first_component }}
                         &nbsp;&bull;&nbsp;
                         labels = {{ $conversion->label_style }}
-                        <br/>
-                        line endings = {{ $conversion->line_endings }}
                         &nbsp;&bull;&nbsp;
+                        line endings = {{ $conversion->line_endings }}
+                        <br/>
                         {{ $conversion->char_encoding }}
                         &nbsp;&bull;&nbsp;
                         {{ $conversion->percent_comment ? '% = comment' : '% != comment' }}
