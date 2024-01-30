@@ -125,7 +125,8 @@ class Converter
         $this->forthcomingRegExp6 = '/[Aa]ccepted\.?\)?$/';
         $this->forthcomingRegExp7 = '/^[Tt]o appear in/';
 
-        $this->proceedingsRegExp = 'proceedings of |conference on |symposium on |proc\. .*(conf\.|conference)';
+        // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
+        $this->proceedingsRegExp = 'proceedings of |conference on |symposium on |proc\..*(conf\.|conference)?';
         $this->proceedingsExceptions = ['Proceedings of the National Academy', 'Proceedings of the Royal Society'];
 
         $this->thesisRegExp = '( [Tt]hesis| [Dd]issertation)';
@@ -137,8 +138,8 @@ class Converter
         $this->inReviewRegExp2 = '/^[Ii]n [Rr]eview/';
         $this->inReviewRegExp3 = '/(\(?[Ii]n [Rr]eview\.?\)?)$/';
 
-        $this->pagesRegExp1 = 'pp\.?|p\.';
-        $this->pagesRegExp2 = 'pp\.?|[pP]ages?';
+        $this->pagesRegExp1 = '[Pp]p\.?|[Pp]\.';
+        $this->pagesRegExp2 = '[Pp]p\.?|[pP]ages?';
         $this->pagesRegExp3 = '/^pages |^pp\.?|^p\.|^p /i';
 
         $this->numberRegExp1 = '[Nn]os?\.?:?|[Nn]umbers?|[Ii]ssues?';
@@ -480,9 +481,10 @@ class Converter
         }
 
         $remainder = $newRemainder;
-        $item->title = rtrim($title, '.');
 
+        $item->title = rtrim($title, '.');
         $this->verbose(['fieldName' => 'Title', 'content' => strip_tags($title)]);
+        
         $this->verbose("Remainder: " . strip_tags($remainder));
 
         ///////////////////////////////////////////////////////////
@@ -508,11 +510,23 @@ class Converter
                 $containsMonth = true;
                 // If month is parsable, parse it: 
                 // translate 'Jan' or 'Jan.' or 'January', for example, to 'January'.
-                if (preg_match('/^[a-zA-Z.]*$/', $month)) {
-                    $item->month = Carbon::parse('1 ' . $month)->format('F');
+                $month1 = Str::before($month, '-');
+                if (preg_match('/^[a-zA-Z.]*$/', $month1)) {
+                    $fullMonth1 = Carbon::parse('1 ' . $month1)->format('F');
                 } else {
-                    $item->month = $month;
+                    $fullMonth1 = $month1;
                 }
+
+                $month2 = Str::contains($month, '-') ? Str::after($month, '-') : null;
+                if ($month2 && preg_match('/^[a-zA-Z.]*$/', $month2)) {
+                    $fullMonth2 = Carbon::parse('1 ' . $month2)->format('F');
+                } elseif ($month2) {
+                    $fullMonth2 = $month2;
+                } else {
+                    $fullMonth2 = null;
+                }
+
+                $item->month = $fullMonth1 . ($fullMonth2 ? '-' . $fullMonth2 : '');
                 $this->verbose(['fieldName' => 'Month', 'content' => strip_tags($item->month)]);
             }
         }
@@ -671,10 +685,9 @@ class Converter
             if (Str::contains($remainderMinusPubInfo, $city)) {
                 $containsCity = true;
                 $afterCity = Str::after($remainderMinusPubInfo, $city);
-                $afterCityTrimmed = trim($afterCity, ', ');
                 // Is city followed by US State abbreviation?
-                if (strlen($afterCityTrimmed) == 2 && strtoupper($afterCityTrimmed) == $afterCityTrimmed) {
-                    $cityString = trim($city . $afterCity);
+                if (preg_match('/^(,? ?[A-Z][A-Z])[,. ]/', $afterCity, $matches)) {
+                    $cityString = trim($city . $matches[1]);
                 } else {
                     $cityString = $city;
                 }
@@ -1899,10 +1912,15 @@ class Converter
             $item->author = trim($item->author);
             $item->author = rtrim($item->author, ',');
         }
+
         if (isset($item->journal)) {
             $item->journal = trim($item->journal, '} ');
         }
+
         $item->title = $this->requireUc($item->title);
+        if (isset($item->title)) {
+            $item->title = trim($item->title);
+        }
 
         $scholarTitle = str_replace(' ', '+', $item->title);
         $scholarTitle = str_replace(["'", '"', "{", "}", "\\"], "", $scholarTitle);
@@ -3305,18 +3323,12 @@ class Converter
         $months = $this->monthsRegExp;
         $monthRegExp = '((' . $months . ')([-\/](' . $months . '))?)?';
         $yearRegExp = '((18|19|20)([0-9]{2})(-[0-9]{1,2}|\/[0-9]{1,2})?)[a-z]?';
-        $regExp0 = $allowMonth ? $monthRegExp . ' ?' . $yearRegExp : $yearRegExp;
-        // following line might work to allow format '(1980, April)', but yearIndexes and $monthIndexes would have to be adjusted,
-        // which seems very painful ...
-        // $regExp0 = $allowMonth ? '(' . $monthRegExp . ' ?' . $yearRegExp .')|(' . $yearRegExp . ', ?' . $monthRegExp . ')' : $yearRegExp;
-        /*
-          $regExp1 = $yearRegExp . '[ .,)]';
-          $regExp2 = $yearRegExp . '$';
-         */
-        // require space in front of year if search is not restricte to start or in parens or brackets,
-        // to avoid picking up second part of page range (e.g. 1913-1920)
-        $regExp1 = ($start ? '' : ' ') . $regExp0 . '[ .,):;]';
-        $regExp2 = ' ' . $regExp0 . '$';
+        $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
+
+        // require space or ',' in front of year if search is not restricted to start or in parens or brackets,
+        // to avoid picking up second part of page range (e.g. 1913-1920).  (Comma allowed in case of no space: e.g. 'vol. 17,1983'.)
+        $regExp1 = ($start ? '' : '[ ,]') . $regExp0 . '[ .,):;]';
+        $regExp2 = '[ ,]' . $regExp0 . '$';
         $regExp3 = '\(' . $regExp0 . '\)';
         $regExp4 = '\[' . $regExp0 . '\]';
 
@@ -3937,7 +3949,7 @@ class Converter
     // Allows page number to be preceded by uppercase letter.  Second number in range should really be allowed
     // to start with uppercase letter only if first number in range does so---and if pp. is present, almost
     // anything following should be allowed as page numbers?
-    // --- shouldn't delimit pages, but might be given by mistake
+    // '---' shouldn't be used in page range, but might be used by mistake
     public function getPagesForArticle(string &$remainder, object &$item): void
     {
         $numberOfMatches = preg_match_all('/(' . $this->pagesRegExp1 . ')?( )?([A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})/', $remainder, $matches, PREG_OFFSET_CAPTURE);
@@ -3990,8 +4002,20 @@ class Converter
             $this->verbose('[v3]');
             $this->verbose('Remainder: ' . $remainder);
             // 'Volume? 123$'
-            $numberOfMatches = preg_match('/^(' . $this->volumeRegExp1 . ')?([1-9][0-9]{0,3})$/', $remainder, $matches, PREG_OFFSET_CAPTURE);
-            if($numberOfMatches) {
+            $numberOfMatches1 = preg_match('/^(' . $this->volumeRegExp1 . ')?([1-9][0-9]{0,3})$/', $remainder, $matches1, PREG_OFFSET_CAPTURE);
+            // $this->volumeRegExp1 has space at end of it, but no further space is allowed.
+            // So 'Vol. A2' is matched but not 'Vol. 2, no. 3'
+            $numberOfMatches2 = preg_match('/^(' . $this->volumeRegExp1 . ')([^ 0-9]*[1-9][0-9]{0,3})$/', $remainder, $matches2, PREG_OFFSET_CAPTURE);
+
+            if ($numberOfMatches1) {
+                $matches = $matches1;
+            } elseif ($numberOfMatches2) {
+                $matches = $matches2;
+            } else {
+                $matches = null;
+            }
+
+            if ($matches) {
                 $this->verbose('[p2a] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0]);
                 $item->volume = $matches[2][0];
                 unset($item->number);

@@ -7,7 +7,7 @@
 
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
-            <a href="/admin/cities/create">Add publication city</a>
+            <x-link href="/admin/cities/create">Add publication city</x-link>
             <ul>
                 @foreach ($cities as $city)
                     <li>

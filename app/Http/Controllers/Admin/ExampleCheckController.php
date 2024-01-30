@@ -38,6 +38,7 @@ class ExampleCheckController extends Controller
 
         foreach ($examples as $example) {
             $correctType = $correctContent = true;
+            $result = null;
 
             $source = $example->source;
 

@@ -1748,6 +1748,68 @@ class ExampleSeeder extends Seeder
                         'booktitle' => 'Proc. Amer. Control Conf.',
                         ]
                 ],
+                [
+                    'source' => 'R.F Wilson and J.R Cloutier. ``Generalized and robust eigenstructure assignment,\'\' in Proc.AIAA Missile Sci. Conf., Monterey, CA, Dec. 1990. ',
+                    'type' => 'inproceedings',
+                    'bibtex' => [
+                        'year' => '1990',
+                        'month' => 'December',
+                        'title' => 'Generalized and robust eigenstructure assignment',
+                        'author' => 'R. F Wilson and J. R Cloutier',
+                        'address' => 'Monterey, CA',
+                        'booktitle' => 'Proc.AIAA Missile Sci. Conf.',
+                        ]
+                ],
+                [
+                    'source' => 'A.N. Andry, E.Y. Sharpiro, and J.C. Chung. ``Eigenstructure assignment for linear systems,\'\' IEEE Trans.Aero.Elec.Syst., vol. AES-19, pp.711-729, Sept,1983. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1983',
+                        'month' => 'September',
+                        'pages' => '711-729',
+                        'title' => 'Eigenstructure assignment for linear systems',
+                        'author' => 'A. N. Andry and E. Y. Sharpiro and J. C. Chung',
+                        'volume' => 'AES-19',
+                        'journal' => 'IEEE Trans.Aero.Elec.Syst.',
+                        ]
+                ],
+                [
+                    'source' => 'R.K. Cavin and S.P. Bhattacharyya. ``Robust and well-conditioned eigenstructure assignment via sylvester\'s equation .\'\' J.Opt. Cont., Appl.Meth., vol.4 no.3, pp.205-212,1983. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'year' => '1983',
+                        'pages' => '205-212',
+                        'title' => 'Robust and well-conditioned eigenstructure assignment via sylvester\'s equation',
+                        'author' => 'R. K. Cavin and S. P. Bhattacharyya',
+                        'number' => '3',
+                        'volume' => '4',
+                        'journal' => 'J.Opt. Cont., Appl.Meth.',
+                        ]
+                ],
+                [
+                    'source' => 'M.M. Fahmy and J. O\'Reilly. ``Eigenstructure assignment in linear multivariable systems-A parametric solution,\'\'in Proc. 21st  IEEE Conf. Decision and Control, Orlando, FL. Pp.1308-1311,1982. ',
+                    'type' => 'inproceedings',
+                    'bibtex' => [
+                        'year' => '1982',
+                        'pages' => '1308-1311',
+                        'title' => 'Eigenstructure assignment in linear multivariable systems-A parametric solution',
+                        'author' => 'M. M. Fahmy and J. O\'Reilly',
+                        'address' => 'Orlando, FL',
+                        'booktitle' => 'Proc. 21st IEEE Conf. Decision and Control',
+                        ]
+                ],
+                [
+                    'source' => 'K.E. Simonyi and N.K. Loh . ``Robust constrained eigensystem assignment,\'\' in Proc. Amer. Cont. Conf., Pittsburg, PA, June 1989. ',
+                    'type' => 'inproceedings',
+                    'bibtex' => [
+                        'year' => '1989',
+                        'month' => 'June',
+                        'title' => 'Robust constrained eigensystem assignment',
+                        'author' => 'K. E. Simonyi and N. K. Loh',
+                        'address' => 'Pittsburg, PA',
+                        'booktitle' => 'Proc. Amer. Cont. Conf.',
+                        ]
+                ],                
             ];
 
             DB::statement('DELETE FROM examples');
