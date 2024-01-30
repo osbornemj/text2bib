@@ -1,6 +1,6 @@
 <div>
     <div class="flex items-center mt-0">
-        Click to rate the quality of this conversion:
+        Click to rate the accuracy of this conversion:
         <div class="flex items-center ml-2">
 
             @for ($i = 0; $i < 5; $i++)

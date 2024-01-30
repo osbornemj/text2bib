@@ -72,15 +72,25 @@ class ConvertFile extends Component
         foreach ($defaults as $setting => $default) {
             $this->uploadForm->$setting = $userSettings ? $userSettings->$setting : $default;
         }
-
     }
 
-    public function submit(int $conversionId = null): void
+    /*
+    protected function queryString()
+    {
+        return [
+            'conversionId' => [
+                'as' => 'id'
+            ]
+        ];
+    }
+    */
+    
+    public function submit(int $reConversionId = null): void
     {
         // $conversionId is set if user is re-doing a conversion
         // that had 'line' as item_separator but should have 'cr'.
-        if ($conversionId) {
-            $conversion = Conversion::find($conversionId);
+        if ($reConversionId) {
+            $conversion = Conversion::find($reConversionId);
             $conversion->update(['item_separator' => 'cr']);
         } else {
             $this->uploadForm->validate();

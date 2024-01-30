@@ -1736,6 +1736,17 @@ class ExampleSeeder extends Seeder
                         'edition' => 'Second',
                         'publisher' => 'Springer-Verlag',
                         ]
+                ],[
+                    'source' => 'R.F Wilson and J.R Cloutier. ``Optimal eigenstructure achievement with robustness guarantees,\'\'  in Proc. Amer. Control Conf., San Diego, CA, May 1990 ',
+                    'type' => 'inproceedings',
+                    'bibtex' => [
+                        'year' => '1990',
+                        'month' => 'May',
+                        'title' => 'Optimal eigenstructure achievement with robustness guarantees',
+                        'author' => 'R. F Wilson and J. R Cloutier',
+                        'address' => 'San Diego, CA',
+                        'booktitle' => 'Proc. Amer. Control Conf.',
+                        ]
                 ],
             ];
 

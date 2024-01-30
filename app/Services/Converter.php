@@ -125,7 +125,7 @@ class Converter
         $this->forthcomingRegExp6 = '/[Aa]ccepted\.?\)?$/';
         $this->forthcomingRegExp7 = '/^[Tt]o appear in/';
 
-        $this->proceedingsRegExp = '[Pp]roceedings of |[Cc]onference on |[Ss]ymposium on |Proc\. *[Cc]onference ';
+        $this->proceedingsRegExp = 'proceedings of |conference on |symposium on |proc\. .*(conf\.|conference)';
         $this->proceedingsExceptions = ['Proceedings of the National Academy', 'Proceedings of the Royal Society'];
 
         $this->thesisRegExp = '( [Tt]hesis| [Dd]issertation)';
@@ -627,7 +627,8 @@ class Converter
             $this->verbose("Contains thesis.");
         }
 
-        if ($this->isProceedings($remainder)) {
+        $testString = $inStart ? Str::after($remainder, ' ') : $remainder;
+        if ($this->isProceedings($testString)) {
             $containsProceedings = true;
             $this->verbose("Contains a string suggesting conference proceedings.");
         }
@@ -669,10 +670,16 @@ class Converter
         foreach ($this->cities as $city) {
             if (Str::contains($remainderMinusPubInfo, $city)) {
                 $containsCity = true;
-                $cityString = $city;
-                $cityLength = strlen($city);
-                $remainderMinusPubInfo = Str::replaceFirst($city, '', $remainderMinusPubInfo);
-                $this->verbose("Contains city \"" . $city . "\"");
+                $afterCity = Str::after($remainderMinusPubInfo, $city);
+                $afterCityTrimmed = trim($afterCity, ', ');
+                // Is city followed by US State abbreviation?
+                if (strlen($afterCityTrimmed) == 2 && strtoupper($afterCityTrimmed) == $afterCityTrimmed) {
+                    $cityString = trim($city . $afterCity);
+                } else {
+                    $cityString = $city;
+                }
+                $remainderMinusPubInfo = Str::replaceFirst($cityString, '', $remainderMinusPubInfo);
+                $this->verbose("Contains city \"" . $cityString . "\"");
                 break;
             }
         }
@@ -1039,9 +1046,11 @@ class Converter
                 
                 // If a string in $remainder is quoted or italicized, take that to be book title
                 $booktitle = $this->getQuotedOrItalic($remainder, false, false, $newRemainder, $posStart, $posEnd, $stringMinusQuoteDelimiters);
+                $this->verbose('booktitle case 1');
 
                 if ($booktitle) {
                     $item->booktitle = $booktitle;
+                    $this->verbose(['fieldName' => 'Booktitle', 'content' => strip_tags($item->booktitle)]);
                     if ($posStart > 0) {
                         // Pattern is <string1> <booktitle> <string2> (with <string1> nonempty).
                         // Check whether <string1> starts with "forthcoming"
@@ -1109,6 +1118,7 @@ class Converter
                             $this->verbose("tempRemainder contains no period or comma, so appears to not contain editors' names");
                             if (!$booktitle) {
                                 $booktitle = $tempRemainder;
+                                $this->verbose('booktitle case 2');
                             }
                             $item->editor = '';
                             $warnings[] = 'No editor found';
@@ -1140,6 +1150,7 @@ class Converter
                                 if ($cityString || $publisherString) {
                                     if (!$booktitle) {
                                         $booktitle = $tempRemainder;
+                                        $this->verbose("Booktitle case 3");
                                     }
                                     $item->editor = '';
                                     $warnings[] = 'No editor found';
@@ -1316,8 +1327,8 @@ class Converter
                                         )
                                     )
                                 ) {
-                                $booktitle = substr($remainder, 0, $j+1);
-                                $this->verbose("[booktitle1] Booktitle is: " . $booktitle);
+                                $booktitle = trim(substr($remainder, 0, $j+1), ', ');
+                                $this->verbose('booktitle case 4');
                                 $newRemainder = rtrim(substr($remainder, $j + 1), ',. ');
                             }
                         }
@@ -1343,8 +1354,14 @@ class Converter
                 }
                 $this->verbose("[in9] Remainder: " . $remainder);
 
+                if ($remainder && $remainder == $cityString) {
+                    $item->address = $cityString;
+                    $this->verbose(['fieldName' => 'Address', 'content' => $item->address]);
+                    $remainder = '';
+                }
+
                 // Get editors
-                if ($booktitle && ! isset($item->editor)) {
+                if ($remainder && $booktitle && ! isset($item->editor)) {
                     // CASE 2
                     if (preg_match($this->editorStartRegExp, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
                         $this->verbose("[ed3] Remainder starts with editor string");
@@ -1461,6 +1478,7 @@ class Converter
                         $item->volume = $result[3];
                         $item->series = $result[6];
                         $booktitle = trim($result['before'], '., ');
+                        $this->verbose('booktitle case 5');
                         $remainder = trim($result['after'], ',. ');
                         $this->verbose('Volume found, so book is part of a series');
                         $this->verbose(['fieldName' => 'Volume', 'content' => $item->volume]);
@@ -1472,6 +1490,7 @@ class Converter
                             $this->verbose("Remainder contains single period, so take that as end of booktitle");
                             $periodPos = strpos($remainder, '.');
                             $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
+                            $this->verbose('booktitle case 6');
                             $remainder = substr($remainder, $periodPos);
                         } else {
                             // If publisher has been identified, remove it from $remainder and check
@@ -1486,7 +1505,7 @@ class Converter
                                     if (Str::endsWith(trim($afterPunc, '():'), $city)) {
                                         $item->address = $city;
                                         $booktitle = substr($tempRemainder, 0, strlen($tempRemainder) - strlen($city) - 2);
-                                        $this->verbose('booktitle case 0');
+                                        $this->verbose('booktitle case 7');
                                         break;
                                     }
                                 }
@@ -1494,12 +1513,13 @@ class Converter
                                     if (substr_count($afterPunc, ' ') == 1) {
                                         $booktitle = substr($tempRemainder, 0, strlen($tempRemainder) - strlen($afterPunc));
                                         $item->address = $afterPunc;
-                                        $this->verbose('booktitle case 1');
+                                        $this->verbose('booktitle case 8');
                                     } else {
                                         $booktitle = $tempRemainder;
-                                        $this->verbose('booktitle case 2');
+                                        $this->verbose('booktitle case 9');
                                     }
                                     $item->booktitle = $booktitle;
+                                    $this->verbose(['fieldName' => 'Booktitle', 'content' => $item->booktitle]);
                                     $remainder = '';
                                 }
                             } else {
@@ -1508,6 +1528,7 @@ class Converter
                                 // If two or more sentences, take all but last one to be booktitle.
                                 if (count($sentences) > 1) {
                                     $booktitle = implode(' ', array_slice($sentences, 0, count($sentences) - 1));
+                                    $this->verbose('booktitle case 10');
                                     $remainder = $sentences[count($sentences) -  1];
                                 } else {
                                     $n = count($words);
@@ -1520,16 +1541,16 @@ class Converter
                                     if ($periodPos !== false) {
                                         $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
                                         $remainder = substr($remainder, $periodPos);
-                                        $this->verbose('booktitle case 3');
+                                        $this->verbose('booktitle case 11');
                                     } else {
                                         // Does whole entry end in ')' or ').'?  If so, pubinfo is in parens, so booktitle ends
                                         // at previous '('; else booktitle is all of $potentialTitle
                                         if ($entry[strlen($entry) - 1] == ')' or $entry[strlen($entry) - 2] == ')') {
                                             $booktitle = substr($remainder, 0, strrpos($remainder, '('));
-                                            $this->verbose('booktitle case 4');
+                                            $this->verbose('booktitle case 12');
                                         } else {
                                             $booktitle = $potentialTitle;
-                                            $this->verbose('booktitle case 5');
+                                            $this->verbose('booktitle case 13');
                                         }
                                         $remainder = substr($remainder, strlen($booktitle));
                                     }
@@ -1584,10 +1605,13 @@ class Converter
                     $warnings[] = "Address not found.";
                 }
 
-                $booktitle = rtrim($booktitle, '.');
+                $lastWordInBooktitle = Str::afterLast($booktitle, ' ');
+                if ($this->inDict($lastWordInBooktitle)) {
+                    $booktitle = rtrim($booktitle, '.');
+                }
                 $item->booktitle = trim($booktitle);
                 if ($item->booktitle) {
-                    $this->verbose(['fieldName' => 'Book title', 'content' => strip_tags($item->booktitle)]);
+                    $this->verbose(['fieldName' => 'Booktitle', 'content' => strip_tags($item->booktitle)]);
                 } else {
                     $warnings[] = "Book title not found.";
                 }
@@ -1650,7 +1674,15 @@ class Converter
                                 // If anything comes after the publisher, it must be the address, and the string
                                 // before the publisher must be the series
                                 $item->address = trim($after, ',. ');
-                                $item->series = trim($before, '., ');
+                                $this->verbose(['fieldName' => 'Address', 'content' => $item->address]);
+                                $series = trim($before, '., ');
+                                if ($this->containsFontStyle($series, true, 'italics', $startPos, $length)) {
+                                    $item->series = rtrim(substr($series, $length), '}');
+                                    $this->verbose('Removed italic formatting from series name');
+                                } else {
+                                    $item->series = $series;
+                                }
+                                $this->verbose(['fieldName' => 'Series', 'content' => $item->series]);
                             } else {
                                 // If nothing comes after the publisher,
                                 if (Str::endsWith($before, ': ')) {
@@ -1851,7 +1883,8 @@ class Converter
         }
 
         if (isset($item->booktitle) && $item->booktitle) {
-            $item->booktitle = trim($booktitle, ' .,');
+            $item->booktitle = trim($item->booktitle, ' ,');
+            $this->verbose(['fieldName' => 'Booktitle', 'content' => $item->booktitle]);
         }
 
         foreach ($warnings as $warning) {
@@ -3538,7 +3571,7 @@ class Converter
         $isProceedings = false;
 
         if (!Str::startsWith($string, $this->proceedingsExceptions) 
-                && preg_match('/^' . $this->proceedingsRegExp . '/', $string)) {
+                && preg_match('/^' . $this->proceedingsRegExp . '/i', $string)) {
             $isProceedings = true;
         }
 
@@ -3620,31 +3653,11 @@ class Converter
     /*
      * Determine whether $word is in the dictionary
      */
-    /* Not currently used.
     public function inDict(string $word): bool
     {
-        // enchant_broker_init seems to not be installed and currently not to be available
-        return true;
-        // $tag = 'en_US';
-        // $r = enchant_broker_init();
-        // if (enchant_broker_dict_exists($r, $tag)) {
-        //     $d = enchant_broker_request_dict($r, $tag);
-        //     //$dprovides = enchant_dict_describe($d);
-        //     $correct = enchant_dict_check($d, $word);
-        //     $this->verbose("\"" . $word . "\" is " . ($correct ? "" : "NOT ") . "in dictionary");
-        //     if (in_array($word, $this->excludedWords)) {
-        //         $this->verbose("but is in the list of excluded words");
-        //     }
-        //     //enchant_broker_free_dict($d);
-        //     unset($d);
-        // }
-
-        // //enchant_broker_free($r);
-        // unset($r);
-
-        // return $correct;
+        $aspell = Aspell::create();
+        return 0 == iterator_count($aspell->check($word));
     }
-    */
 
     /**
      * isNotName: determine if array of words starts with a name
