@@ -1799,17 +1799,40 @@ class ExampleSeeder extends Seeder
                         ]
                 ],
                 [
-                    'source' => 'K.E. Simonyi and N.K. Loh . ``Robust constrained eigensystem assignment,\'\' in Proc. Amer. Cont. Conf., Pittsburg, PA, June 1989. ',
+                    'source' => 'K.E. Simonyi and N.K. Loh . ``Robust constrained eigensystem assignment,\'\' in Proc. Amer. Cont. Conf., Pittsburgh, PA, June 1989. ',
                     'type' => 'inproceedings',
                     'bibtex' => [
                         'year' => '1989',
                         'month' => 'June',
                         'title' => 'Robust constrained eigensystem assignment',
                         'author' => 'K. E. Simonyi and N. K. Loh',
-                        'address' => 'Pittsburg, PA',
+                        'address' => 'Pittsburgh, PA',
                         'booktitle' => 'Proc. Amer. Cont. Conf.',
                         ]
-                ],                
+                ],
+                [
+                    'source' => '\bibitem[Gustafson(2010)]{6} R. J. Gustafson, B. C. White, M. J. Fidler, A. C. Muscatello, Demonstrating the Solar Carbothermal Reduction of Lunar Regolith to Produce Oxygen, 48th AIAA Aerospace Sciences Meeting Including the New Horizons Forum and Aerospace Exposition (2010) 4-12.',
+                    'type' => 'inproceedings',
+                    'bibtex' => [
+                        'year' => '2010',
+                        'pages' => '4-12',
+                        'title' => 'Demonstrating the Solar Carbothermal Reduction of Lunar Regolith to Produce Oxygen',
+                        'author' => 'R. J. Gustafson and B. C. White and M. J. Fidler and A. C. Muscatello',
+                        'booktitle' => '48th AIAA Aerospace Sciences Meeting Including the New Horizons Forum and Aerospace Exposition',
+                    ]
+                    ],
+                    [
+                        'source' => 'K.M. Sobel and W.Yu. ``Flight control application of eigenstructure assignment with optimization of robustness to structure state space uncertainty,\'\' in Proc. 28th IEEE Conf. Decision and Control, Tampa,FL, pp. 1705-1707, 1989. ',
+                        'type' => 'inproceedings',
+                        'bibtex' => [
+                            'year' => '1989',
+                            'pages' => '1705-1707',
+                            'title' => 'Flight control application of eigenstructure assignment with optimization of robustness to structure state space uncertainty',
+                            'author' => 'K. M. Sobel and W.Yu.',
+                            'address' => 'Tampa,FL',
+                            'booktitle' => 'Proc. 28th IEEE Conf. Decision and Control',
+                            ]
+                    ],                                    
             ];
 
             DB::statement('DELETE FROM examples');
