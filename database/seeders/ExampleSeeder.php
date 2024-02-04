@@ -1744,8 +1744,7 @@ class ExampleSeeder extends Seeder
                         'month' => 'May',
                         'title' => 'Optimal eigenstructure achievement with robustness guarantees',
                         'author' => 'R. F Wilson and J. R Cloutier',
-                        'address' => 'San Diego, CA',
-                        'booktitle' => 'Proc. Amer. Control Conf.',
+                        'booktitle' => 'Proc. Amer. Control Conf., San Diego, CA',
                         ]
                 ],
                 [
@@ -1756,8 +1755,7 @@ class ExampleSeeder extends Seeder
                         'month' => 'December',
                         'title' => 'Generalized and robust eigenstructure assignment',
                         'author' => 'R. F Wilson and J. R Cloutier',
-                        'address' => 'Monterey, CA',
-                        'booktitle' => 'Proc. AIAA Missile Sci. Conf.',
+                        'booktitle' => 'Proc. AIAA Missile Sci. Conf., Monterey, CA',
                         ]
                 ],
                 [
@@ -1794,8 +1792,7 @@ class ExampleSeeder extends Seeder
                         'pages' => '1308-1311',
                         'title' => 'Eigenstructure assignment in linear multivariable systems-A parametric solution',
                         'author' => 'M. M. Fahmy and J. O\'Reilly',
-                        'address' => 'Orlando, FL',
-                        'booktitle' => 'Proc. 21st IEEE Conf. Decision and Control',
+                        'booktitle' => 'Proc. 21st IEEE Conf. Decision and Control, Orlando, FL',
                         ]
                 ],
                 [
@@ -1806,8 +1803,7 @@ class ExampleSeeder extends Seeder
                         'month' => 'June',
                         'title' => 'Robust constrained eigensystem assignment',
                         'author' => 'K. E. Simonyi and N. K. Loh',
-                        'address' => 'Pittsburgh, PA',
-                        'booktitle' => 'Proc. Amer. Cont. Conf.',
+                        'booktitle' => 'Proc. Amer. Cont. Conf., Pittsburgh, PA',
                         ]
                 ],
                 [
@@ -1829,8 +1825,7 @@ class ExampleSeeder extends Seeder
                             'pages' => '1705-1707',
                             'title' => 'Flight control application of eigenstructure assignment with optimization of robustness to structure state space uncertainty',
                             'author' => 'K. M. Sobel and W. Yu.',
-                            'address' => 'Tampa,FL',
-                            'booktitle' => 'Proc. 28th IEEE Conf. Decision and Control',
+                            'booktitle' => 'Proc. 28th IEEE Conf. Decision and Control, Tampa,FL',
                             ]
                     ],
                     [
@@ -1860,19 +1855,6 @@ class ExampleSeeder extends Seeder
                             ]
                     ],
                     [
-                        'source' => 'R.K. Yedavalli. ``On measure of stability robustness for linear uncertain systems,\'\' in Proc. Int. Workshops Robustness in Identification and Control. New York  Plenum, pp.303-310,1989. ',
-                        'type' => 'inproceedings',
-                        'bibtex' => [
-                            'year' => '1989',
-                            'pages' => '303-310',
-                            'title' => 'On measure of stability robustness for linear uncertain systems',
-                            'author' => 'R. K. Yedavalli',
-                            'address' => 'New York',
-                            'booktitle' => 'Proc. Int. Workshops Robustness in Identification and Control',
-                            'publisher' => 'Plenum',
-                            ]
-                    ],
-                    [
                         'source' => 'B.R. Barmish. ``Necessary and  sufficient conditions for quadratic stabilizability of uncertain linear systems,\'\' J. Optim. Theory Appl. 46 (1985) 399. ',
                         'type' => 'article',
                         'bibtex' => [
@@ -1884,7 +1866,29 @@ class ExampleSeeder extends Seeder
                             'journal' => 'J. Optim. Theory Appl.',
                             ]
                     ],
-            ];
+                    [
+                        'source' => 'Barmish, B.R. and Wei, K.H.  ``Simultaneous Stabilizability of Single Input-Single Output Systems,\'\' Proceedings of 7th Int. Symp. On Math Theory of Networks and Systems, Stockholm, Sweden, 1985. ',
+                        'type' => 'inproceedings',
+                        'bibtex' => [
+                            'year' => '1985',
+                            'title' => 'Simultaneous Stabilizability of Single Input-Single Output Systems',
+                            'author' => 'Barmish, B. R. and Wei, K. H.',
+                            'booktitle' => 'Proceedings of 7th Int. Symp. On Math Theory of Networks and Systems, Stockholm, Sweden',
+                            ]
+                    ],
+                    [
+                        'source' => 'Soh, Y.C. and Evans, R.J. \'\'Robust Multivariable Regulator Design- General Case & Special Cases,\'\' Proc. of 1985 Conference on Decision & Control, Dec. 1985, pp. 1323-1332. ',
+                        'type' => 'inproceedings',
+                        'bibtex' => [
+                            'year' => '1985',
+                            'month' => 'December',
+                            'pages' => '1323-1332',
+                            'title' => 'Robust Multivariable Regulator Design- General Case & Special Cases',
+                            'booktitle' => 'Proc. of 1985 Conference on Decision & Control',
+                            'author' => 'Soh, Y. C. and Evans, R. J.',
+                            ]
+                    ],
+                ];
 
             DB::statement('DELETE FROM examples');
             DB::statement('ALTER TABLE examples AUTO_INCREMENT 1');
