@@ -16,6 +16,7 @@ use App\Models\VonName;
 use App\Traits\Stopwords;
 
 use PhpSpellcheck\Spellchecker\Aspell;
+use stdClass;
 
 class Converter
 {
@@ -149,12 +150,12 @@ class Converter
 
         $this->journalWord = 'Journal';
 
-        $this->bookTitleAbbrevs = ['Proc', 'Amer', 'Conf', 'Cont', 'Sci'];
+        $this->bookTitleAbbrevs = ['Proc', 'Amer', 'Conf', 'Cont', 'Sci', 'Int', "Auto", 'Symp'];
 
-        $this->workingPaperRegExp = '([Pp]reprint|[Ww]orking [Pp]aper|[Dd]iscussion [Pp]aper|[Tt]echnical [Rr]eport|'
-                . '[Rr]esearch [Pp]aper|[Mi]meo|[Uu]npublished [Pp]aper|[Uu]npublished [Mm]anuscript|'
-                . '[Uu]nder [Rr]eview)';
-        $this->workingPaperNumberRegExp = ' (\\\\#|[Nn]umber|[Nn]o\.?)? ?(\d{1,5}),?/';
+        $this->workingPaperRegExp = '(preprint|working paper|discussion paper|technical report|'
+                . 'research paper|mimeo|unpublished paper|unpublished manuscript|'
+                . 'under review|submitted)';
+        $this->workingPaperNumberRegExp = ' (\\\\#|number|no\.?)? ?(\d{1,5}),?';
 
         $this->monthsRegExp = 'January|Jan\.?|February|Feb\.?|March|Mar\.?|April|Apr\.?|May|June|Jun\.?|July|Jul\.?|'
                 . 'August|Aug\.?|September|Sept\.?|Sep\.?|October|Oct\.?|November|Nov\.?|December|Dec\.?';
@@ -282,11 +283,10 @@ class Converter
         $doi = $this->extractLabeledContent($entry, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._\-]+');
 
         if ($doi) {
-            $item->doi = $doi;
             if (!preg_match('/[0-9]+/', $doi)) {
                 $warnings[] = 'The doi appears to be invalid.';
             }
-            $this->verbose(['fieldName' => 'doi', 'content' => $item->doi]);
+            $this->setField($item, 'doi', $doi);
         } else {
             $this->verbose("No doi found.");
         }
@@ -298,9 +298,8 @@ class Converter
         $eprint = $this->extractLabeledContent($entry, ' arxiv: ?', '\S+');
 
         if ($eprint) {
-            $item->archiveprefix = 'arXiv';
-            $item->eprint = $eprint;
-            $this->verbose(['fieldName' => 'arXiv info', 'content' => $item->archiveprefix . ':' . $item->eprint]);
+            $this->setField($item, 'archiveprefix', 'arXiv');
+            $this->setField($item, 'eprint', $eprint);
         } else {
             $this->verbose("No arXiv info found.");
         }
@@ -344,11 +343,9 @@ class Converter
         }
 
         if (isset($url) && $url) {
-            $item->url = $url;
-            $this->verbose(['fieldName' => 'URL', 'content' => $item->url]);
+            $this->setField($item, 'url', $url);
             if ($accessDate) {
-                $item->urldate = $accessDate;
-                $this->verbose(['fieldName' => 'URL access date', 'content' => $item->urldate]);
+                $this->setField($item, 'urldate', $accessDate);
             }
         } else {
             $this->verbose("No url found.");
@@ -368,7 +365,7 @@ class Converter
             } else {
                 $year = $matches[1][0];
                 $entry = trim(substr($entry, $matches[1][1] + strlen($year)), ' ');
-                $item->year = $year;
+                $this->setField($item, 'year', $year);
                 if (strlen($year) != 4) {
                     $warnings[] = "Year contains " . strlen($year) . " digits!";
                 }
@@ -385,10 +382,21 @@ class Converter
         // can have a space in it --- e.g. Oblo{\v z}insk{\' y}
         $chars = str_split($entry);
 
+        // If period is not followed by space, another period, a comma, a semicolon, a dash, a quotation mark
+        // or a lowercase letter (might be within a URL --- the "name" when citing a web page), treat it as ending
+        // word.
+
         $word = '';
         $words = [];
         foreach ($chars as $i => $char) {
-            if ($char != ' ' || (isset($chars[$i-3]) && $chars[$i-3] == '{' && $chars[$i-2] == '\\')) {
+            if ($char == '.' 
+                    && isset($chars[$i+1]) 
+                    && !in_array($chars[$i+1], [' ', '.', ',', ';', '-', '"', "'"]) 
+                    && mb_strtolower($chars[$i+1]) != $chars[$i+1]) {
+                $word .= $char;
+                $words[] = $word;
+                $word = '';
+            } elseif ($char != ' ' || (isset($chars[$i-3]) && $chars[$i-3] == '{' && $chars[$i-2] == '\\')) {
                 $word .= $char;
             } else {
                 $words[] = $word;
@@ -429,9 +437,9 @@ class Converter
         ];
 
         if ($isEditor === false && !Str::contains($authorstring, $editorPhrases)) {
-            $item->author = $authorstring;
+            $this->setField($item, 'author', $authorstring);
         } else {
-            $item->editor = trim(str_replace($editorPhrases, "", $authorstring), ' .,');
+            $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' .,'));
         }
 
         if (isset($item->author)) {
@@ -443,7 +451,7 @@ class Converter
         }
 
         if ($year) {
-            $item->year = $year;
+            $this->setField($item, 'year', $year);
         }
 
         $remainder = trim($remainder, '.}, ');
@@ -468,20 +476,17 @@ class Converter
         if (!$title) {
             $title = $this->getTitle($remainder, $edition, $volume, $isArticle);
             if ($edition) {
-                $item->edition = $edition;
-                $this->verbose(['fieldName' => 'Edition', 'content' => strip_tags($edition)]);
+                $this->setField($item, 'edition', $edition);
             }
             if ($volume) {
-                $item->volume = $volume;
-                $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($volume)]);
+                $this->setField($item, 'volume', $volume);
             }
             $newRemainder = $remainder;
         }
 
         $remainder = $newRemainder;
 
-        $item->title = rtrim($title, '.');
-        $this->verbose(['fieldName' => 'Title', 'content' => strip_tags($title)]);
+        $this->setField($item, 'title', rtrim($title, '.'));
         
         $this->verbose("Remainder: " . strip_tags($remainder));
 
@@ -499,9 +504,9 @@ class Converter
             }
 
             if ($year) {
-                $item->year = $year;
+                $this->setField($item, 'year', $year);
             } else {
-                $item->year = '';
+                $this->setField($item, 'year', '');
                 $warnings[] = "No year found.";
             }
             if (isset($month)) {
@@ -524,14 +529,11 @@ class Converter
                     $fullMonth2 = null;
                 }
 
-                $item->month = $fullMonth1 . ($fullMonth2 ? '-' . $fullMonth2 : '');
-                $this->verbose(['fieldName' => 'Month', 'content' => strip_tags($item->month)]);
+                $this->setField($item, 'month', $fullMonth1 . ($fullMonth2 ? '-' . $fullMonth2 : ''));
             }
         }
 
         $remainder = ltrim($newRemainder, ' ');
-
-        $this->verbose(['fieldName' => 'Year', 'content' => strip_tags($item->year)]);
 
         ///////////////////////////////////////////////////////////////////////////////
         // To determine type of item, first record some features of publication info //
@@ -607,7 +609,7 @@ class Converter
             $this->verbose("Contains page range.");
         }
 
-        $regExp = '/' . $this->workingPaperRegExp . $this->workingPaperNumberRegExp;
+        $regExp = '/' . $this->workingPaperRegExp . $this->workingPaperNumberRegExp . '/i';
         if (preg_match($regExp, $remainder, $workingPaperMatches, PREG_OFFSET_CAPTURE)) {
             if ($italicStart) {
                 // remove italic code at start and recompute $workingPaperMatches (used later)
@@ -620,7 +622,7 @@ class Converter
             $this->verbose("Contains string for numbered working paper.");
         }
 
-        if (preg_match('/' . $this->workingPaperRegExp . '/', $remainder)) {
+        if (preg_match('/' . $this->workingPaperRegExp . '/i', $remainder)) {
             $containsWorkingPaper = true;
         }
 
@@ -684,12 +686,20 @@ class Converter
                 $containsCity = true;
                 $afterCity = Str::after($remainderMinusPubInfo, $city);
                 // Is city followed by US State abbreviation?
-                if (preg_match('/^(,? ?[A-Z][A-Z])[,. ]/', $afterCity, $matches)) {
-                    $cityString = trim($city . $matches[1]);
+                $state = $this->getUsState($afterCity);
+
+                if ($state) {
+                    $cityString = trim($city . $state);
                 } else {
                     $cityString = $city;
                 }
-                $remainderMinusPubInfo = Str::replaceFirst($cityString, '', $remainderMinusPubInfo);
+
+                // if (preg_match('/^(,? ?[A-Z][A-Z])[,. ]/', $afterCity, $matches)) {
+                //     $cityString = trim($city . $matches[1]);
+                // } else {
+                //     $cityString = $city;
+                // }
+                // $remainderMinusPubInfo = Str::replaceFirst($cityString, '', $remainderMinusPubInfo);
                 $this->verbose("Contains city \"" . $cityString . "\"");
                 break;
             }
@@ -817,14 +827,12 @@ class Converter
         if ($itemKind == 'book' || $itemKind == 'incollection') {
             $match = $this->extractLabeledContent($remainder, ' ISBN:? ', '[0-9X]+');
             if ($match) {
-                $item->isbn = $match;
-                $this->verbose(['fieldName' => 'ISBN', 'content' => strip_tags($item->isbn)]);
+                $this->setField($item, 'isbn', $match);
             }
 
             $match = $this->extractLabeledContent($remainder, ' OCLC:? ', '[0-9]+');
             if ($match) {
-                $item->oclc = $match;
-                $this->verbose(['fieldName' => 'OCLC', 'content' => strip_tags($item->oclc)]);
+                $this->setField($item, 'oclc', $match);
             }
         }
 
@@ -833,10 +841,9 @@ class Converter
         if ($itemKind != 'unpublished') {
             $match = $this->extractLabeledContent($remainder, '', '\(?[Ii]n [Rr]eview\.?\)?$');
             if ($match) {
-                $item->note = $match;
+                $this->setField($item, 'note', $match);
                 $this->verbose('"In review" string removed and put in note field');
                 $this->verbose('Remainder: ' . $remainder);
-                $this->verbose(['fieldName' => 'Note', 'content' => strip_tags($item->note)]);
             }
         }
 
@@ -874,19 +881,17 @@ class Converter
                 $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming);
                 $journal = rtrim($journal, ' ,');
 
-                $this->verbose('Journal: ' . isset($journal) ? $journal : '');
-                $item->journal = isset($journal) ? $journal : '';
-                if ($item->journal) {
-                    $this->verbose(['fieldName' => 'Journal', 'content' => strip_tags($item->journal)]);
-                } else {
+                $this->setField($item, 'journal', $journal);
+                if (!$journal) {
                     $warnings[] = "'Journal' field not found.";
+                    $itemKind = 'unpublished';  // but continue processing as if journal
                 }
                 $remainder = trim($remainder, ' ,.');
                 $this->verbose("Remainder: " . $remainder);
 
                 // If $remainder ends with 'forthcoming' phrase, put that in note.  Else look for pages & volume etc.
                 if (preg_match('/' . $this->endForthcomingRegExp . '/', $remainder)) {
-                    $item->note = $remainder;
+                    $this->setField($item, 'note', $remainder);
                     $remainder = '';
                 } else {
                     // get pages
@@ -1022,7 +1027,6 @@ class Converter
             case 'incollection':
             case 'inproceedings':
                 $leftover = '';
-                $pubInfoInParens = false;
                 $this->verbose("[in1] Remainder: " . $remainder);
 
                 // If $remainder starts with "in", remove it
@@ -1366,10 +1370,16 @@ class Converter
                 }
                 $this->verbose("[in9] Remainder: " . $remainder);
 
-                if ($remainder && $remainder == $cityString) {
-                    $item->address = $cityString;
-                    $this->verbose(['fieldName' => 'Address', 'content' => $item->address]);
-                    $remainder = '';
+                if ($remainder && Str::startsWith($remainder, $cityString)) {
+                    // Does US state abbreviation follow $cityString?
+                    $state = $this->getUsState(Str::after($remainder, $cityString));
+                    if ($state) {
+                        $cityString = trim($cityString . $state);
+                    } 
+
+                    $this->setField($item, 'address', $cityString);
+
+                    $remainder = ltrim(Str::after($remainder, $cityString), ':, ');
                 }
 
                 // Get editors
@@ -1938,7 +1948,23 @@ class Converter
         return $returner;
     }
 
-    public function addToAuthorString(int $i, string &$string, string $addition): void
+    private function setField(stdClass &$item, string $fieldName, string $string)
+    {
+        $item->$fieldName = $string;
+        $this->verbose(['fieldName' => ucfirst($fieldName), 'content' => strip_tags($string)]);
+    }
+
+    // Does $string start with US State abbreviation, possibly preceded by ', '?
+    private function getUsState(string $string): string|bool
+    {
+        if (preg_match('/^(,? ?[A-Z][A-Z])[,.: ]/', $string, $matches)) {
+            return $matches[1];
+        }
+        
+        return false;
+    }
+
+    private function addToAuthorString(int $i, string &$string, string $addition): void
     {
         $string .= $addition;
         $this->verbose(['addition' => "(" . $i . ") Added \"" . $addition . "\" to list of authors"]);
@@ -2001,7 +2027,7 @@ class Converter
                 // of the cases ``<word>.'' and "<word>."
                 if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';'])) {
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
-                        || preg_match('/^' . $this->workingPaperRegExp . '/', $remainder)
+                        || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->pagesRegExp3, $remainder)
                         || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^\(?Vol\.? |^\(?Volume /', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9]\./', $remainder)
@@ -2065,7 +2091,7 @@ class Converter
                             && strlen($remainder) > strlen($stringToNextPeriod) + 40) {
                         $this->verbose("Not ending title, case 2 (next word is " . $nextWord . ")");
                     // else if working paper string occurs later in remainder,
-                    } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/', $remainder, $matches)) {
+                    } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/i', $remainder, $matches)) {
                         // if no intervening punctuation, end title
                         if (!Str::contains($matches[1], ['.', ',', ':'])) {
                             $this->verbose("Ending title, case 5");
@@ -2817,7 +2843,7 @@ class Converter
             } elseif ($this->isAnd($word)) {
                 // word is 'and' or equivalent
                 $hasAnd = $prevWordAnd = true;
-                $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName) . ' and ');
+                $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName) . ' and');
                 $fullName = '';
                 $namePart = 0;
                 $authorIndex++;
@@ -2827,7 +2853,7 @@ class Converter
                 // word is 'et'
                 $nextWord = rtrim($words[$i+1], ',');
                 $this->verbose('nextWord: ' . $nextWord);
-                if (in_array($nextWord, ['al.', 'al'])) {
+                if (in_array($nextWord, ['al..', 'al.', 'al'])) {
                     $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
                     array_shift($remainingWords);
                     $remainder = implode(" ", $remainingWords);
@@ -2893,7 +2919,7 @@ class Converter
                 if ($determineEnd && isset($remainingWords[0]) && $this->isNotName($word, $remainingWords[0])) {
                     $fullName .= $word;
                     $remainder = implode(" ", $remainingWords);
-                    $this->addToAuthorString(6, $authorstring, $this->formatAuthor($fullName));
+                    $this->addToAuthorString(6, $authorstring, ' ' . $this->formatAuthor($fullName));
                     if ($year = $this->getYear($remainder, true, $remains, false, $trash)) {
                         $remainder = $remains;
                         $this->verbose("Year detected");
@@ -2981,8 +3007,8 @@ class Converter
                     $nameComponent = $this->spaceOutInitials(rtrim($word, ',;'));
                     $fullName .= " " . $nameComponent;
                     //$authorstring .= " " . $nameComponent;
-                    // $bareWords is array of words at start of $remainingWords that don't end in ',' or '.' or ')' or ':' and
-                    // are not year in parens or brackets and
+                    // $bareWords is array of words at start of $remainingWords that don't end ends in ','
+                    // or '.' or ')' or ':' or is a year in parens or brackets or starts with quotation mark
                     $bareWords = $this->bareWords($remainingWords, false);
                     // If 'and' has not already occurred ($hasAnd is false), its occurrence in $barewords is compatible
                     // with $barewords being part of the authors' names OR being part of the title, so should be ignored.
@@ -3592,8 +3618,8 @@ class Converter
 
     /**
      * bareWords: in array $words of strings, report the elements at the start up until one ends
-     * in ',' or '.' or ')' or ':' or is a year in parens or brackets or, if $stopAtAnd is true,
-     * is 'and'.
+     * in ',' or '.' or ')' or ':' or is a year in parens or brackets or starts with quotation mark
+     * or, if $stopAtAnd is true, is 'and'.
      */
     public function bareWords(array $words, bool $stopAtAnd): array
     {
@@ -3606,9 +3632,9 @@ class Converter
             if (preg_match('/(\(|\[)(18|19|20)([0-9][0-9])(\)|\])/', $word)) {
                 $stop = true;
             }
-            // if (Str::startsWith($word, ['`', '"', "'"])) {
-            //     $stop = true;
-            // }
+            if (Str::startsWith($word, ['`', '"', "'"])) {
+                $stop = true;
+            }
 
             // 'et' deals with the case 'et al.'
             if ($word == 'et') {
@@ -3950,6 +3976,10 @@ class Converter
                 }
             }
         }
+
+        // To deal with (erroneous) extra quotes at start
+        $journal = ltrim($journal, "' ");
+
         return $journal;
     }
 
@@ -4070,6 +4100,9 @@ class Converter
                             if (Str::startsWith($matches[3][0], ['Article', 'article'])) {
                                 $item->note = $matches[3][0];
                                 $item->volume = $matches[1][0];
+                            } elseif (preg_match('/^([0-9]*) *([0-9]*)[ ]*$/', $remainder, $matches)) {
+                                $item->volume = $matches[1];
+                                $item->pages = $matches[2];
                             } else {
                                 // Assume all of $remainder is volume (might be something like '123 (Suppl. 19)')
                                 $item->volume = $remainder;

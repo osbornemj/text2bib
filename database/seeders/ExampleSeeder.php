@@ -52,7 +52,7 @@ class ExampleSeeder extends Seeder
                 ]
             ],
             [
-                'source' => 'Tipparaju, Suresh K et al. "Identification and development of novel inhibitors of Toxoplasma gondii enoyl reductase." Journal of medicinal chemistry 53.17 (2010): 6287-6300.',
+                'source' => 'Tipparaju, Suresh K et al.. "Identification and development of novel inhibitors of Toxoplasma gondii enoyl reductase." Journal of medicinal chemistry 53.17 (2010): 6287-6300.',
                 'type' => 'article',
                 'bibtex' => [
                     'author' => 'Tipparaju, Suresh K. and others',
@@ -96,7 +96,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Helle, S. and V. Lummaa and J. Jokela',
                     'title' => 'Accelerated immunosenescence in preindustrial twin mothers',
-                    'journal' => 'Proceedings of the National Academy of Science of U.S.A.',
+                    'journal' => 'Proceedings of the National Academy of Science of U. S. A.',
                     'year' => '2004',
                     'volume' => '101',
                     'pages' => '12391-12396',
@@ -1757,7 +1757,7 @@ class ExampleSeeder extends Seeder
                         'title' => 'Generalized and robust eigenstructure assignment',
                         'author' => 'R. F Wilson and J. R Cloutier',
                         'address' => 'Monterey, CA',
-                        'booktitle' => 'Proc.AIAA Missile Sci. Conf.',
+                        'booktitle' => 'Proc. AIAA Missile Sci. Conf.',
                         ]
                 ],
                 [
@@ -1770,7 +1770,7 @@ class ExampleSeeder extends Seeder
                         'title' => 'Eigenstructure assignment for linear systems',
                         'author' => 'A. N. Andry and E. Y. Sharpiro and J. C. Chung',
                         'volume' => 'AES-19',
-                        'journal' => 'IEEE Trans.Aero.Elec.Syst.',
+                        'journal' => 'IEEE Trans. Aero. Elec. Syst.',
                         ]
                 ],
                 [
@@ -1783,7 +1783,7 @@ class ExampleSeeder extends Seeder
                         'author' => 'R. K. Cavin and S. P. Bhattacharyya',
                         'number' => '3',
                         'volume' => '4',
-                        'journal' => 'J.Opt. Cont., Appl.Meth.',
+                        'journal' => 'J. Opt. Cont., Appl. Meth.',
                         ]
                 ],
                 [
@@ -1828,11 +1828,62 @@ class ExampleSeeder extends Seeder
                             'year' => '1989',
                             'pages' => '1705-1707',
                             'title' => 'Flight control application of eigenstructure assignment with optimization of robustness to structure state space uncertainty',
-                            'author' => 'K. M. Sobel and W.Yu.',
+                            'author' => 'K. M. Sobel and W. Yu.',
                             'address' => 'Tampa,FL',
                             'booktitle' => 'Proc. 28th IEEE Conf. Decision and Control',
                             ]
-                    ],                                    
+                    ],
+                    [
+                        'source' => 'S.Garg. ``Robust eigenspace assignment using singular value sensitivies,\'\' ,\'\' J. Guid. Cont. Dyn., vol. 14 pp. 416-424, Mar.-Apr. 1991. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '1991',
+                            'month' => 'March-April',
+                            'pages' => '416-424',
+                            'title' => 'Robust eigenspace assignment using singular value sensitivies',
+                            'author' => 'S. Garg',
+                            'volume' => '14',
+                            'journal' => 'J. Guid. Cont. Dyn.',
+                            ]
+                    ],
+                    [
+                        'source' => 'E.Soroka and U.Shaked. ``On the robustness of LQ regulators ,\'\'IEEE Trans. Auto. Cont., vol. AC-29 pp.664-665, Jul 1984. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '1984',
+                            'month' => 'July',
+                            'pages' => '664-665',
+                            'title' => 'On the robustness of LQ regulators',
+                            'author' => 'E. Soroka and U. Shaked',
+                            'volume' => 'AC-29',
+                            'journal' => 'IEEE Trans. Auto. Cont.',
+                            ]
+                    ],
+                    [
+                        'source' => 'R.K. Yedavalli. ``On measure of stability robustness for linear uncertain systems,\'\' in Proc. Int. Workshops Robustness in Identification and Control. New York  Plenum, pp.303-310,1989. ',
+                        'type' => 'inproceedings',
+                        'bibtex' => [
+                            'year' => '1989',
+                            'pages' => '303-310',
+                            'title' => 'On measure of stability robustness for linear uncertain systems',
+                            'author' => 'R. K. Yedavalli',
+                            'address' => 'New York',
+                            'booktitle' => 'Proc. Int. Workshops Robustness in Identification and Control',
+                            'publisher' => 'Plenum',
+                            ]
+                    ],
+                    [
+                        'source' => 'B.R. Barmish. ``Necessary and  sufficient conditions for quadratic stabilizability of uncertain linear systems,\'\' J. Optim. Theory Appl. 46 (1985) 399. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '1985',
+                            'title' => 'Necessary and sufficient conditions for quadratic stabilizability of uncertain linear systems',
+                            'author' => 'B. R. Barmish',
+                            'volume' => '46',
+                            'pages' => '399',
+                            'journal' => 'J. Optim. Theory Appl.',
+                            ]
+                    ],
             ];
 
             DB::statement('DELETE FROM examples');

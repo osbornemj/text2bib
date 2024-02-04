@@ -2,6 +2,13 @@
 
 namespace App\Console;
 
+use Carbon\Carbon;
+
+use DB;
+use App\Models\Conversion;
+use App\Models\Output;
+use App\Models\Statistic;
+
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -27,6 +34,16 @@ class Kernel extends ConsoleKernel
             }
         })
         ->dailyAt('2:30')
+        ->emailOutputOnFailure('martin.j.osborne@gmail.com');
+
+        $schedule->call(function () {
+            $input['stat_date'] = Carbon::yesterday()->format('Y-m-d');
+            $input['user_count'] = DB::table('conversions')->whereDate('created_at', $input['stat_date'])->distinct('user_id')->count();
+            $input['conversion_count'] = Conversion::whereDate('created_at', $input['stat_date'])->count();
+            $input['item_count'] = Output::whereDate('created_at', $input['stat_date'])->count();
+            Statistic::create($input);
+        })
+        ->daily()
         ->emailOutputOnFailure('martin.j.osborne@gmail.com');
     }
 
