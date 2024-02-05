@@ -193,13 +193,8 @@ class Converter
     public function convertEntry(string $rawEntry, Conversion $conversion): array|null
     {
 
-        $string = "abc 'DDD' mm" . 'a "zz" b "' . "d's gef'' \\\"uber" . ' so" and so hku ';
-        $remains = '';
-        $posStart = $posEnd = 0;
-        $stringMinusQuoteDelimiters = '';
-        $this->getQuotedOrItalic($string, false, false, $remains, $posStart, $posEnd, $stringMinusQuoteDelimiters);
-
-
+        // $string = "abc mm" . 'a \textit{"zz"} "and hence" b "' . "d's gef'' \\\"uber" . ' so" and so hku ';
+        // $this->getQuotedOrItalic($string, false, false, $before, $after);
 
         // $aspell = Aspell::create();
         // 'john' and 'martin' and 'smith' are in dictionary all lowercase
@@ -409,6 +404,7 @@ class Converter
 
         $remainder = $entry;
         $authorConversion = $this->convertToAuthors($words, $remainder, $year, $isEditor, true, true);
+
         $authorstring = $authorConversion['authorstring'];
         $oneWordAuthor = $authorConversion['oneWordAuthor'];
 
@@ -452,7 +448,8 @@ class Converter
         unset($this->italicTitle);
 
         $remainder = ltrim($remainder, ': ');
-        $title = $this->getQuotedOrItalic($remainder, true, false, $newRemainder, $posStart, $posEnd, $stringMinusQuoteDelimiters);
+        $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after);
+        $newRemainder = $before . ltrim($after, "., ");
 
         // Website
         if (isset($item->url) && $oneWordAuthor) {
@@ -1042,16 +1039,17 @@ class Converter
                 $newRemainder = $remainder;
                 
                 // If a string in $remainder is quoted or italicized, take that to be book title
-                $booktitle = $this->getQuotedOrItalic($remainder, false, false, $newRemainder, $posStart, $posEnd, $stringMinusQuoteDelimiters);
+                $booktitle = $this->getQuotedOrItalic($remainder, false, false, $before, $after);
+                $newRemainder = $before . ltrim($after, ".,' ");
                 $this->verbose('booktitle case 1');
 
                 if ($booktitle) {
                     $item->booktitle = $booktitle;
                     $this->verbose(['fieldName' => 'Booktitle', 'content' => strip_tags($item->booktitle)]);
-                    if ($posStart > 0) {
+                    if (strlen($before) > 0) {
                         // Pattern is <string1> <booktitle> <string2> (with <string1> nonempty).
                         // Check whether <string1> starts with "forthcoming"
-                        $string1 = trim(substr($remainder, 0, $posStart), ',. ');
+                        $string1 = trim(substr($remainder, 0, strlen($before)), ',. ');
                         if (preg_match('/' . $this->startForthcomingRegExp . '/i', $string1, $matches)) {
                             $match = trim($matches[0], '() ');
                             $match = Str::replaceEnd(' in', '', $match);
@@ -1074,7 +1072,7 @@ class Converter
                             $this->verbose('No editors found');
                         }
                         // What is left must be the publisher & address
-                        $remainder = $newRemainder = trim(substr($remainder, $posEnd+1), '., ');
+                        $remainder = $newRemainder = trim(substr($remainder, strlen($before) + 1), '., ');
                     } else {
                         $remainder = ltrim($newRemainder, ', ');
                     }
@@ -2727,9 +2725,10 @@ class Converter
 
         $this->verbose('convertToAuthors: Looking at each word in turn');
         foreach ($words as $i => $word) {
+            dump($word, $case);
             $prevWordHasComma = $wordHasComma;
             $wordHasComma = (substr($word,-1) == ',');
-            // Get letters in word, eliminating accents, to get accurate length
+            // Get letters in word, eliminating accents & other non-letters, to get accurate length
             $lettersOnlyWord = preg_replace("/[^A-Za-z]/", '', $word);
 
             // Deal with specific cases of no space at end of authors.  Note that case Smith~(1980) is
@@ -2993,11 +2992,9 @@ class Converter
                     if ($nameScore['count']) {
                         $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                     }
-if ($remainingWords[0] == "''Robust") {
-    $x = $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd, $stringMinusQuoteDelimiters);
-    dd($x);
-}                    
-                    if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $remains, $posStart, $posEnd, $stringMinusQuoteDelimiters)) {
+
+                    //if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after)) {
+                    if ($determineEnd) {
                         $remainder = implode(" ", $remainingWords);
                         $done = 1;
                         $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
@@ -3111,65 +3108,96 @@ die;
 
     /**
      * Find first quoted or italicized substring in $string, restricting to start if $start is true
-     * and getting only italics if $italicsOnly is true.
+     * and getting only italics if $italicsOnly is true.  Return false if no quoted or italicized string found.
      * Quoted means:
      * starts with `` and ends with ''
      * OR starts with '' and ends with '' 
      * OR starts with unescaped " and ends with unescaped "
-     * OR starts with <space>' and ends with '<not letter>
-     * OR starts with ` and ends with '<not letter>
+     * OR starts with <space>'<not '> and ends with <not \>'<not letter>
+     * OR starts with ` and ends with <not \>'<not letter>
      * @param $string string
      * @param $start boolean (if true, check only for substring at start of string)
      * @param $italicsOnly boolean (if true, get only italic string, not quoted string)
-     * @param $remains what is left of the string after the substring is removed
+     * @param $before part of $string preceding left delimiter and matched text
+     * @param $after part of $string following matched text and right delimiter
      * return quoted or italic substring
      */
-    private function getQuotedOrItalic(string $string, bool $start, bool $italicsOnly, string &$remains, int &$posStart, int &$posEnd, string &$stringMinusQuoteDelimiters): string
+    private function getQuotedOrItalic(string $string, bool $start, bool $italicsOnly, string|null &$before, string|null &$after): string|bool
+//    , string &$remains, int &$posStart, int &$posEnd, string &$stringMinusQuoteDelimiters): string|bool
     {
-        $quoted = '';
+        $matchedText = false;
+        $quotedText = $italicText = false;
+        $beforeQuote = $afterQuote = null;
 
-        $quoteRegExps = [];
-        // ``...''
-        $quoteRegExps[0] = "/^(.*?)``(.*?)''(.*)$/";
-        // ''...''
-        $quoteRegExps[1] = "/^(.*?)''(.*?)''(.*)$/";
-        // "..."
-        $quoteRegExps[2] = '/^(.*?[^\\\\])"(.*?[^\\\\])"(.*)$/';
-        // '...'
-        $quoteRegExps[3] = "/^(.*?) '([^'].*?[^\\\\])'[^a-zA-Z](.*)$/";
-        // `...'
-        $quoteRegExps[4] = "/^(.*?) `([^'].*?[^\\\\])'[^a-zA-Z](.*)$/";
+        if (!$italicsOnly) {
+            $quoteRegExps = [];
+            // ``...''
+            $quoteRegExps[0] = "/^(.*?)``(.*?)''(.*)$/";
+            // ''...''
+            $quoteRegExps[1] = "/^(.*?)''(.*?)''(.*)$/";
+            // "..."
+            $quoteRegExps[2] = '/^(.*?[^\\\\])"(.*?[^\\\\])"(.*)$/';
+            // '...'
+            $quoteRegExps[3] = "/^(.*? )'([^'].*?[^\\\\])'([^a-zA-Z].*)$/";
+            // `...'
+            $quoteRegExps[4] = "/^(.*? )`([^'].*?[^\\\\])'([^a-zA-Z].*)$/";
 
-        // Find which pattern matches first, if any
-        $results = [];
-        $quoteStartIndex = strlen($string);
-        // key on $quoteRegExps that matches; -1 means no matches
-        $matchKey = -1;
-        foreach ($quoteRegExps as $i => $regExp) {
-            $results[$i] = preg_match($regExp, $string, $match, PREG_OFFSET_CAPTURE);
-            $matches[$i] = $match;
-            if ($results[$i] && $matches[$i][2][1] < $quoteStartIndex) {
-                $quoteStartIndex = $matches[$i][2][1];
-                $matchKey = $i;
+            // Find which pattern matches first, if any
+            $results = [];
+            $quoteStartIndex = strlen($string);
+            // key on $quoteRegExps that matches; -1 means no matches
+            $matchKey = -1;
+            foreach ($quoteRegExps as $i => $regExp) {
+                $results[$i] = preg_match($regExp, $string, $match, PREG_OFFSET_CAPTURE);
+                $matches[$i] = $match;
+                if ($results[$i] && $matches[$i][2][1] < $quoteStartIndex) {
+                    $quoteStartIndex = $matches[$i][2][1];
+                    $matchKey = $i;
+                }
+            }
+
+            //$quoteExists = in_array(1, $results);
+            if ($matchKey >= 0) {
+                $quotedText = $matches[$matchKey][2][0];
+                $beforeQuote = $matches[$matchKey][1][0];
+                $afterQuote = $matches[$matchKey][3][0];
             }
         }
 
-        $quoteExists = in_array(1, $results);
-        // Position in string where matching quote starts
-        $quoteStartIndex = $matches[$matchKey][2][1];
+        $italicText = $this->getStyledText($string, $start, 'italics', $beforeItalics, $afterItalics, $remains);
 
-        // Need to find out where italic text starts
-        $italicText = $this->getStyledText($string, $start, 'italics', $before, $after, $remains);
+        if ($italicsOnly) {
+            if ($italicText && (!$start || strlen($beforeItalics) == 0)) {
+                $before = $beforeItalics;
+                $after = $afterItalics;
+                $matchedText = $italicText;
+            }
+        } elseif ($quotedText && $italicText) {
+            $quoteFirst = strlen($beforeQuote) < strlen($beforeItalics);
+            $before =  $quoteFirst ? $beforeQuote : $beforeItalics;
+            $after= $quoteFirst ? $afterQuote : $afterItalics;
+            if (!$start || strlen($before) == 0) {
+                $matchedText = $quoteFirst ? $quotedText : $italicText;
+            }
+        } elseif ($quotedText) {
+            $before = $beforeQuote;
+            $after = $afterQuote;
+            if (!$start || strlen($before) == 0) {
+                $matchedText = $quotedText;
+            }
+        } elseif ($italicText) {
+            $before = $beforeItalics;
+            $after = $afterItalics;
+            if (!$start || strlen($before) == 0) {
+                $matchedText = $italicText;
+            }
+        }
 
-        $quoteFirst = $quoteStartIndex < strlen($before);
+        //dd($matchedText, $before, $after, isset($results) ? $results : null, isset($matches) ? $matches : null);
 
-        dd($matchKey, $results, $matches);
-
-
-
-
-
-
+        return $matchedText;
+    }
+        /*
         $quoted = '';
         $remains = $string;
         $quoteExists = false;
@@ -3271,13 +3299,11 @@ die;
                 if ($break) {
                     break;
                 }
-                /*
-                  if(($string[$j] == "\"" or ($string[$j] == "'" and $string[$j+1] == "'")) and $string[$j-1] == " ") $quoteLevel++;
-                  elseif(($string[$j] == "'" and $string[$j+1] == "'") or ($string[$j] == "\"" and $string[$j-1] != "\\")) {
-                  if($quoteLevel > 0) $quoteLevel--;
-                  else break;
-                  }
-                 */
+                //   if(($string[$j] == "\"" or ($string[$j] == "'" and $string[$j+1] == "'")) and $string[$j-1] == " ") $quoteLevel++;
+                //   elseif(($string[$j] == "'" and $string[$j+1] == "'") or ($string[$j] == "\"" and $string[$j-1] != "\\")) {
+                //   if($quoteLevel > 0) $quoteLevel--;
+                //   else break;
+                //   }
             }
             $posEnd = $j;
             $posStart = $posQuote;
@@ -3324,19 +3350,23 @@ if ($string[0] == "'" && $string[2] == 'R') {
         }
 
         return $quoted;
-    }
+        */
 
     /**
-     * Get first styled substring in $string, restricting to start if $start is true
+     * Get first styled substring in $string, restricting to start if $start is true.  Return false if 
+     * string contains no styled text.
      * @param $string string
      * @param $start boolean (if true, check only for substring at start of string)
-     * @param $style 'bold' or 'italics'
-     * @param $remains what is left of the string after the substring is removed
+     * @param $style: 'bold' or 'italics'
+     * @param $before: the string preceding the styled text; null if none 
+     * @param $after: the string following the styled text; null if none 
+     * @param $remains: $before rtrimmed of ' .,' concatenated with $after ltrimmed to ' .,'
      * return bold substring
      */
-    private function getStyledText(string $string, bool $start, string $style, string &$before, string &$after, string &$remains): string
+    private function getStyledText(string $string, bool $start, string $style, string|null &$before, string|null &$after, string|null &$remains): string|bool
     {
-        $styledText = '';
+        $styledText = false;
+        $before = $after = null;
         $remains = $string;
 
         $bracketLevel = 0;
@@ -3356,7 +3386,7 @@ if ($string[0] == "'" && $string[2] == 'R') {
             $styledText = $this->trimRightPeriod($styledText);
             $before = substr($string, 0, $position);
             $after = substr($string, $j + 1);
-            $remains = rtrim(substr($string, 0, $position), ' .,') . ltrim(substr($string, $j + 1), ' ,.');
+            $remains = rtrim($before, ' .,') . ltrim($after, ' ,.');
         }
 
         return $styledText;
@@ -3956,11 +3986,11 @@ if ($string[0] == "'" && $string[2] == 'R') {
     public function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming): string
     {
         if ($italicStart) {
-            $italicText = $this->getQuotedOrItalic($remainder, true, false, $remainder, $posStart, $posEnd, $stringMinusQuoteDelimiters);
+            $italicText = $this->getQuotedOrItalic($remainder, true, false, $before, $after);
             if (preg_match('/ [0-9]/', $italicText)) {
                 // Seems that more than just the journal name is included in the italics/quotes, so forget the quotes/italics
                 // and continue
-                $remainder = $stringMinusQuoteDelimiters;
+                $remainder = $before . $italicText . $after;
             } else {
                 return $italicText;
             }
@@ -3969,7 +3999,7 @@ if ($string[0] == "'" && $string[2] == 'R') {
         if ($pubInfoStartsWithForthcoming) {
             // forthcoming at start
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
-            $journal = $this->getQuotedOrItalic($result['content'], true, false, $remains, $posStart, $posEnd, $stringMinusQuoteDelimiters);
+            $journal = $this->getQuotedOrItalic($result['content'], true, false, $before, $after);
             if (!$journal) {
                 $journal = $result['content'];
             }
