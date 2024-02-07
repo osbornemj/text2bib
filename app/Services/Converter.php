@@ -68,6 +68,7 @@ class Converter
     var $publishers;
     var $startForthcomingRegExp;
     var $thesisRegExp;
+    var $volRegExp0;
     var $volRegExp1;
     var $volRegExp2;
     var $volumeRegExp1;
@@ -109,6 +110,7 @@ class Converter
 
         $this->editionRegExp = '(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh) (rev\. |revised )?(ed\.|edition)';
 
+        $this->volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
         $this->volRegExp2 = '/^[Vv]ol(\.|ume)? ?/';
         $this->volumeRegExp1 = '[Vv]olume ?|[Vv]ol\.? ?';
@@ -193,8 +195,66 @@ class Converter
     public function convertEntry(string $rawEntry, Conversion $conversion): array|null
     {
 
-        // $string = "abc mm" . 'a \textit{"zz"} "and hence" b "' . "d's gef'' \\\"uber" . ' so" and so hku ';
-        // $this->getQuotedOrItalic($string, false, false, $before, $after);
+/*
+        $string = "Gerhard Jaeger, and Robert van Rooij. (eds.) (2005), \textit{Game Theory and Pragmatics}, by Palgrave MacMillan.";
+        $result1 = $this->getQuotedOrItalic($string, false, false, $before, $after);
+        $before1 = $before;
+        $after1 = $after;
+        dd($result1, $before1, $after1);
+        */
+        /*
+         $string = "'On rob's Learning \'to\' Play \"Bayesian\" Games', \\textit{Games and Economic Behavior}, hello \\textbf{46}, 282-303";
+         $result1 = $this->getQuotedOrItalic($string, true, false, $before, $after);
+         $before1 = $before;
+         $after1 = $after;
+
+         $string = '"On rob\'s Learning \'to\' Play \"Bayesian\" Games", \\textit{Games and Economic Behavior}, hello \\textbf{46}, 282-303';
+         $result2 = $this->getQuotedOrItalic($string, true, false, $before, $after);
+         $before2 = $before;
+         $after2 = $after;
+
+         $string = "`On rob's Learning \'to\' Play \"Bayesian\" Games', \\textit{Games and Economic Behavior}, hello \\textbf{46}, 282-303";
+         $result3 = $this->getQuotedOrItalic($string, true, false, $before, $after);
+         $before3 = $before;
+         $after3 = $after;
+
+         $string = "``On rob's Learning \'to\' Play \"Bayesian\" Games'', \\textit{Games and Economic Behavior}, hello \\textbf{46}, 282-303";
+         $result4 = $this->getQuotedOrItalic($string, true, false, $before, $after);
+         $before4 = $before;
+         $after4 = $after;
+
+         $string = "''On rob's Learning \'to\' Play \"Bayesian\" Games'', \\textit{Games and Economic Behavior}, hello \\textbf{46}, 282-303";
+         $result5 = $this->getQuotedOrItalic($string, true, false, $before, $after);
+         $before5 = $before;
+         $after5 = $after;
+
+         $string = "On 'rob's Learning \'to\' Play \"Bayesian\" Games', \\textit{Games and Economic Behavior}, hello \\textbf{46}, 282-303";
+         $result6 = $this->getQuotedOrItalic($string, true, false, $before, $after);
+         $before6 = $before;
+         $after6 = $after;
+
+         $string = 'On "rob\'s Learning \'to\' Play \"Bayesian\" Games", \\textit{Games and Economic Behavior}, hello \\textbf{46}, 282-303';
+         $result7 = $this->getQuotedOrItalic($string, true, false, $before, $after);
+         $before7 = $before;
+         $after7 = $after;
+
+         $string = "On `rob's Learning \'to\' Play \"Bayesian\" Games', \\textit{Games and Economic Behavior}, hello \\textbf{46}, 282-303";
+         $result8 = $this->getQuotedOrItalic($string, true, false, $before, $after);
+         $before8 = $before;
+         $after8 = $after;
+
+         $string = "On ``rob's Learning \'to\' Play \"Bayesian\" Games'', \\textit{Games and Economic Behavior}, hello \\textbf{46}, 282-303";
+         $result9 = $this->getQuotedOrItalic($string, true, false, $before, $after);
+         $before9 = $before;
+         $after9 = $after;
+
+         $string = "On ''rob's Learning \'to\' Play \"Bayesian\" Games'', \\textit{Games and Economic Behavior}, hello \\textbf{46}, 282-303";
+         $result10 = $this->getQuotedOrItalic($string, true, false, $before, $after);
+         $before10 = $before;
+         $after10 = $after;
+
+         dd($result1, $before1, $after1, $result2, $before2, $after2, $result3, $before3, $after3, $result4, $before4, $after4, $result5, $before5, $after5, $result6, $before6, $after6, $result7, $before7, $after7, $result8, $before8, $after8, $result9, $before9, $after9, $result10, $before10, $after10);
+        */
 
         // $aspell = Aspell::create();
         // 'john' and 'martin' and 'smith' are in dictionary all lowercase
@@ -320,7 +380,7 @@ class Converter
                 if ($this->isDate($possibleDate)) {
                     $accessDate = $possibleDate;
                 } else {
-                    $warnings[] = "The string \"" . $possibleDate . "\" remains unidentified.";
+                    $warnings[] = "[u1] The string \"" . $possibleDate . "\" remains unidentified.";
                 }
                 $entry = Str::before($entry, $matches[0]);
             } else {
@@ -328,7 +388,7 @@ class Converter
                 $url = trim(Str::before($urlPlus, ' '), ',.;');
                 $afterUrl = (strpos($urlPlus, ' ') !== false) ? Str::after($urlPlus, ' ') : '';
                 if ($afterUrl) {
-                    $warnings[] = "The string \"" . $afterUrl . "\" remains unidentified.";
+                    $warnings[] = "[u2] The string \"" . $afterUrl . "\" remains unidentified.";
                 }
             }
         }
@@ -403,7 +463,9 @@ class Converter
         $isEditor = false;
 
         $remainder = $entry;
+//dump('aaa');
         $authorConversion = $this->convertToAuthors($words, $remainder, $year, $isEditor, true, true);
+//dump('bbb');
 
         $authorstring = $authorConversion['authorstring'];
         $oneWordAuthor = $authorConversion['oneWordAuthor'];
@@ -450,7 +512,7 @@ class Converter
         $remainder = ltrim($remainder, ': ');
         $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after);
         $newRemainder = $before . ltrim($after, "., ");
-
+//dump($remainder, $title);
         // Website
         if (isset($item->url) && $oneWordAuthor) {
             $itemKind = 'online';
@@ -533,6 +595,8 @@ class Converter
         $containsIsbn = $containsEdition = $containsWorkingPaper = false;
         $containsNumberedWorkingPaper = $containsNumber = $pubInfoStartsWithForthcoming = $pubInfoEndsWithForthcoming = false;
         $containsVolume = $endsWithInReview = false;
+        $containsDigitOutsideVolume = true;
+        $containsNumberDesignation = false;
         $cityLength = 0;
         $publisherString = $cityString = '';
 
@@ -563,9 +627,19 @@ class Converter
         }
 
         // contains volume designation
-        if (preg_match($this->volRegExp1, $remainder)) {
-            $containsVolume = true;
-            $this->verbose("Contains a volume.");
+        if (preg_match($this->volRegExp1, $remainder, $matches)) {
+            $match = $matches[0];
+            if ($match) {
+                $containsVolume = true;
+                $this->verbose("Contains a volume designation.");
+                $remainderMinusVolume = $this->findAndRemove($remainder, $this->volRegExp0);
+                $containsDigitOutsideVolume = Str::contains($remainderMinusVolume, range('0','9'));
+                if ($containsDigitOutsideVolume) {
+                    $this->verbose('Contains digits outside the volume designation');
+                } else {
+                    $this->verbose('Contains no digits outside the volume designation');
+                }
+            }
         }
 
         // test for 1st, 2nd etc. in third preg_match is to exclude a string like '1st ed.' (see Exner et al. in examples)
@@ -787,11 +861,17 @@ class Converter
             if (!$this->itemType) {
                 $warnings[] = "Not sure of type; contains \"edition\", so set to " . $itemKind . ".";
             }
-        } else {
+        } elseif ($containsDigitOutsideVolume) {
             $this->verbose("Item type case 17");
             $itemKind = 'article';
             if (!$this->itemType) {
-                $warnings[] = "Really not sure of type; has to be something, so set to " . $itemKind . ".";
+                $warnings[] = "Really not sure of type; has to be something; set to " . $itemKind . ".";
+            }
+        } else {
+            $this->verbose("Item type case 18");
+            $itemKind = 'book';
+            if (!$this->itemType) {
+                $warnings[] = "Really not sure of type; has to be something; set to " . $itemKind . ".";
             }
         }
 
@@ -850,7 +930,7 @@ class Converter
                     if (preg_match('/^[0-9]*$/', $firstWord)) {
                         $remainderAfterFirstWord = trim(substr($remainder, strlen($firstWord)));
                         if ($this->containsFontStyle($remainderAfterFirstWord, true, 'italics', $startPos, $length)) {
-                            $warnings[] = "The string \"" . $firstWord . "\" remains unidentified.";
+                            $warnings[] = "[u3] The string \"" . $firstWord . "\" remains unidentified.";
                             $remainder = $remainderAfterFirstWord;
                             $italicStart = true;
                         }
@@ -859,7 +939,7 @@ class Converter
 
                 $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming);
                 $journal = rtrim($journal, ' ,');
-
+//dd($journal, $remainder);
                 $this->setField($item, 'journal', $journal);
                 if (!$journal) {
                     $warnings[] = "'Journal' field not found.";
@@ -898,13 +978,13 @@ class Converter
                     }
 
                     // get volume and number
-                    $this->getVolumeAndNumberForArticle($remainder, $item);
+                    $this->getVolumeAndNumberForArticle($remainder, $item, $containsNumberDesignation);
                 
                     $result = $this->findRemoveAndReturn($remainder, $this->articleRegExp);
                     if ($result) {
                         // If remainder contains article number, put it in the note field
                         $item->note = $result[0];
-                    } elseif (!$item->pages && isset($item->number) && $item->number) {
+                    } elseif (!$item->pages && isset($item->number) && $item->number && !$containsNumberDesignation) {
                         // else if no pages have been found and a number has been set, assume the previously assigned number
                         // is in fact a single page
                         $item->pages = $item->number;
@@ -1040,7 +1120,7 @@ class Converter
                 
                 // If a string in $remainder is quoted or italicized, take that to be book title
                 $booktitle = $this->getQuotedOrItalic($remainder, false, false, $before, $after);
-                $newRemainder = $before . ltrim($after, ".,' ");
+                $newRemainder = $remainder = $before . ltrim($after, ".,' ");
                 $this->verbose('booktitle case 1');
 
                 if ($booktitle) {
@@ -1072,7 +1152,7 @@ class Converter
                             $this->verbose('No editors found');
                         }
                         // What is left must be the publisher & address
-                        $remainder = $newRemainder = trim(substr($remainder, strlen($before) + 1), '., ');
+                        $remainder = $newRemainder = trim(substr($remainder, strlen($before)), '., ');
                     } else {
                         $remainder = ltrim($newRemainder, ', ');
                     }
@@ -1286,7 +1366,7 @@ class Converter
                         $this->verbose("Remainder: " . $remainder);
                         $this->verbose("[ed2] Remainder starts with book title");
 
-                        // Take book title to be string up to first comma or period
+                        // Take book title to be string up to first comma or period that does not follow an uppercase letter
                         $leftParenCount = $rightParenCount = 0;
                         for ($j = 0; $j < strlen($remainder) && ! $booktitle; $j++) {
                             $stringTrue = true;
@@ -1309,6 +1389,8 @@ class Converter
                                         ||
                                         (
                                             $remainder[$j] == '.'
+                                            &&
+                                            !($remainder[$j-2] == ' ' && strtoupper($remainder[$j-1]) == $remainder[$j-1])
                                             &&
                                             $stringTrue
                                         )
@@ -1649,7 +1731,7 @@ class Converter
                 $remainder = implode(" ", $remainingWords);
                 $result = $this->findRemoveAndReturn(
                     $remainder,
-                    '(' . $this->volumeRegExp1 . ')( ([1-9][0-9]{0,4}))(( of| in|,|.)? )(.*)$'
+                    '(\(?' . $this->volumeRegExp1 . ')( ([1-9][0-9]{0,4})\)?)(( of| in|,|.)? )(.*)$'
                 );
                 if ($result) {
                     $item->volume = $result[3];
@@ -1858,7 +1940,7 @@ class Converter
         $remainder = trim($remainder, '.,:;}{ ');
 
         if ($remainder && !in_array($remainder, ['pages', 'Pages', 'pp', 'pp.'])) {
-            $warnings[] = "The string \"" . $remainder . "\" remains unidentified.";
+            $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
         }
 
         if (isset($item->pages) && !$item->pages) {
@@ -1905,7 +1987,7 @@ class Converter
 
         $item->title = $this->requireUc($item->title);
         if (isset($item->title)) {
-            $item->title = trim($item->title);
+            $item->title = trim($item->title, ' ,');
         }
 
         $scholarTitle = str_replace(' ', '+', $item->title);
@@ -1959,6 +2041,18 @@ class Converter
         $remainingWords = $words;
         $skipNextWord = false;
 
+        // If $remainder ends with  string in parenthesis, look at the string
+        if (preg_match('/\((.*?)\)$/', rtrim($remainder, '. '), $matches)) {
+            $match = $matches[1];
+            if (Str::contains($match, $this->publishers)) {
+                // String in parentheses seems like it's the publication info; set $title equal to preceding string
+                $title = rtrim(Str::before($remainder, $match), ' (');
+                $remainder = $match;
+                $this->verbose('Taking title to be string preceding string in parentheses, which is taken to be publication info');
+                return $title;
+            }
+        }
+
         // Go through the words in $remainder one at a time.
         foreach ($words as $key => $word) {
             if (substr($word, 0, 1) == '"') {
@@ -1991,24 +2085,25 @@ class Converter
 
                 $stringToNextPeriod = strtok($remainder, '.?!');
 
-                // When a word ending in punctuation is encountered, check whether it is followed by
+                // When a word ending in punctuation or preceding a word starting with ( is encountered, check whether
+                // it is followed by
                 // italics
                 // OR a Working Paper string
                 // OR a pages string
-                // OR "in" OR "Journal" 
+                // OR "in" OR "Journal"
                 // OR a volume designation
                 // OR a year 
                 // OR the name of a publisher.
                 // If so, the title is $remainder up to the punctuation.
                 // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
                 // of the cases ``<word>.'' and "<word>."
-                if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';'])) {
+                if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && $nextWord[0] == '(')) {
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->pagesRegExp3, $remainder)
                         || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^\(?Vol\.? |^\(?Volume /', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9]\./', $remainder)
-                        || Str::startsWith($remainder, $this->publishers)
+                        || Str::startsWith(ltrim($remainder, '('), $this->publishers)
                         ) {
                         $this->verbose("Ending title, case 2");
                         $title = rtrim(implode(' ', $initialWords), ',:;.');
@@ -2719,13 +2814,13 @@ class Converter
           $maxAuthors = max($i, 1);
           } else $maxAuthors = 100;
          */
-
+//dump('Running convertToAuthors');
         $maxAuthors = 100;
         $wordHasComma = $prevWordHasComma = $oneWordAuthor = false;
 
         $this->verbose('convertToAuthors: Looking at each word in turn');
         foreach ($words as $i => $word) {
-            dump($word, $case);
+//dump($word, 'case ' . $case);
             $prevWordHasComma = $wordHasComma;
             $wordHasComma = (substr($word,-1) == ',');
             // Get letters in word, eliminating accents & other non-letters, to get accurate length
@@ -2749,6 +2844,8 @@ class Converter
                 $remainingWords = array_merge([$firstWord, '(' . Str::after($word, '(')], $remain);
                 $word = $firstWord;
             }
+
+//dump('1');
 
             if ($case == 12 
                     && ! in_array($word, ['Jr.', 'Jr.,', 'Sr.', 'Sr.,', 'III', 'III,']) 
@@ -2791,9 +2888,14 @@ class Converter
                 $multipleAuthors = true;
             }
 
+//dump('2', $this->isAnd($word), $this->isEd($word, $multipleAuthors), $determineEnd, $done);
+            
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
             } elseif ($this->isEd($word, $multipleAuthors)) {
+                       
+//dump('2a');
+                
                 $this->verbose("String for editors, so ending name string (word: " . $word .")");
                 // word is 'ed' or 'ed.' if $hasAnd is false, or 'eds' or 'eds.' if $hasAnd is true
                 $isEditor = true;
@@ -2814,8 +2916,13 @@ class Converter
                 }
                 break;  // exit from foreach
             } elseif ($determineEnd && $done) {
+
+//dump('2b');
                 break;  // exit from foreach
             } elseif ($this->isAnd($word)) {
+
+//dump('2c');
+                
                 // word is 'and' or equivalent
                 $hasAnd = $prevWordAnd = true;
                 $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName) . ' and');
@@ -2840,6 +2947,9 @@ class Converter
                 }
             } elseif ($determineEnd && substr($word, -1) == '.' && strlen($lettersOnlyWord) > 3
                     && mb_strtolower(substr($word, -2, 1)) == substr($word, -2, 1)) {
+
+//dump('3');
+
                 // If $determineEnd and word ends in period and word has > 3 chars (hence not "St.") and previous letter
                 // is lowercase (hence not string of initials without spaces):
                 if ($namePart == 0) {
@@ -2889,6 +2999,9 @@ class Converter
                 $this->verbose("Remains: " . $remains);
                 $done = 1;
             } elseif ($namePart == 0) {
+
+//dump('4');
+                
                 namePart0:
                 // Check if $word and first word of $remainingWords are plausibly a name.  If not, end search if $determineEnd.
                 if ($determineEnd && isset($remainingWords[0]) && $this->isNotName($word, $remainingWords[0])) {
@@ -2936,6 +3049,9 @@ class Converter
                     $case = 6;
                 }
             } else {
+
+//dump('5');
+
                 // namePart > 0 and word doesn't end in some character, then lowercase letter, then period
                 $prevWordAnd = 0;
 
@@ -2977,6 +3093,7 @@ class Converter
                     $this->verbose('Name with Jr., Sr., or III; fullName: ' . $fullName);
                     $case = 15;
                 } else {
+//dump('6');
                     // Don't rtrim '}' because it could be part of the name: e.g. Oblo{\v z}insk{\' y}.
                     $nameComponent = $this->spaceOutInitials(rtrim($word, ',;'));
                     $fullName .= " " . $nameComponent;
@@ -2992,9 +3109,10 @@ class Converter
                     if ($nameScore['count']) {
                         $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                     }
+//dump('7', $remainingWords, implode(" ", $remainingWords));                        
 
-                    //if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after)) {
-                    if ($determineEnd) {
+                    if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after)) {
+//dump('8');                        
                         $remainder = implode(" ", $remainingWords);
                         $done = 1;
                         $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
@@ -3070,6 +3188,7 @@ class Converter
                             }
                         }
                     } else {
+//dump($word, '9');
                         if (in_array($word, $this->vonNames)) {
                             $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name, so 'namePart' not incremented");
                         } else {
@@ -3084,7 +3203,7 @@ class Converter
                 }
             }
         }
-die;
+//dump($authorstring);
         return ['authorstring' => $authorstring, 'warnings' => $warnings, 'oneWordAuthor' => $oneWordAuthor];
     }
 
@@ -3110,11 +3229,11 @@ die;
      * Find first quoted or italicized substring in $string, restricting to start if $start is true
      * and getting only italics if $italicsOnly is true.  Return false if no quoted or italicized string found.
      * Quoted means:
-     * starts with `` and ends with ''
-     * OR starts with '' and ends with '' 
+     * starts with `` and ends with '' or "
+     * OR starts with '' and ends with '' or "
      * OR starts with unescaped " and ends with unescaped "
      * OR starts with <space>'<not '> and ends with <not \>'<not letter>
-     * OR starts with ` and ends with <not \>'<not letter>
+     * OR starts with unescaped `<not `> and ends with <not \>'<not letter>
      * @param $string string
      * @param $start boolean (if true, check only for substring at start of string)
      * @param $italicsOnly boolean (if true, get only italic string, not quoted string)
@@ -3123,12 +3242,96 @@ die;
      * return quoted or italic substring
      */
     private function getQuotedOrItalic(string $string, bool $start, bool $italicsOnly, string|null &$before, string|null &$after): string|bool
-//    , string &$remains, int &$posStart, int &$posEnd, string &$stringMinusQuoteDelimiters): string|bool
     {
+
+        $matchedText = $quotedText = $beforeQuote = $afterQuote = '';
+
+        /* 
+         * Rather than using the following loop, could use regular expressions.  Versions of expressions
+         * are given in a comment after the loop.  However, these expressions are incomplete, and are complex
+         * because of the need to exclude escaped quotes.  I find the loop easier to understand and maintain.
+        */
+        if (!$italicsOnly) {
+            $skip = false;
+            $begin = '';
+            $end = false;
+//            $matchStartKey = -1;
+
+            $chars = str_split($string);
+
+            foreach ($chars as $i => $char) {
+                if ($skip) {
+                    $skip = false;
+                // after match has ended
+                } elseif ($end) {
+                    $afterQuote .= $char;
+                // inside match
+                } elseif ($begin == '``' || $begin == "''") {
+                    if ($char == "'" && $chars[$i-1] != '\\' && $chars[$i+1] && $chars[$i+1] == "'") {
+                        $end = true;
+                        $skip = true;
+                    } elseif ($char == '"') {
+                        $end = true;
+                    } else {
+                        $quotedText .= $char;
+                    }
+                } elseif ($begin == '`' || $begin == "'") {
+                    if ($char == "'" && $chars[$i-1] != '\\' 
+                                && (!isset($chars[$i+1]) || !in_array(strtolower($chars[$i+1]), range('a', 'z')))) {
+                        $end = true;
+                    } else {
+                        $quotedText .= $char;
+                    }
+                } elseif ($begin == '"') {
+                    if ($char == '"' && $chars[$i-1] != '\\') {
+                        $end = true;
+                    } else {
+                        $quotedText .= $char;
+                    }
+                // before match has begun
+                } elseif ($char == '`') {
+                    if ((!isset($chars[$i-1]) || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "`") {
+                        $begin = '``';
+                        $skip = true;
+//                        $matchStartKey = $i+2;
+                    } elseif (!isset($chars[$i-1]) || $chars[$i-1] != '\\') {
+                        $begin = '`';
+                    } else {
+                        $beforeQuote .= $char;
+                    }
+                } elseif ($char == "'") {
+                    if (($i == 0 || $chars[$i-1] != '\\') && $chars[$i+1] == "'") {
+                        $begin = "''";
+                        $skip = true;
+//                        $matchStartKey = $i+2;
+                    } elseif ($i == 0 || $chars[$i-1] == ' ') {
+                        $begin = "'";
+//                        $matchStartKey = $i+1;
+                    } else {
+                        $beforeQuote .= $char;
+                    }
+                } elseif ($char == '"') {
+                    if ($i == 0 || $chars[$i-1] != '\\') {
+                        $begin = '"';
+//                        $matchStartKey = $i+1;
+                    } else {
+                        $beforeQuote .= $char;
+                    }
+                } else {
+                    $beforeQuote .= $char;
+                }
+            }
+        }
+
+        $before = $beforeQuote;
+        $after = $afterQuote;
+
+        /*
         $matchedText = false;
         $quotedText = $italicText = false;
         $beforeQuote = $afterQuote = null;
 
+        // regular expressions need some work: e.g. do not detect quote in string that starts with ".
         if (!$italicsOnly) {
             $quoteRegExps = [];
             // ``...''
@@ -3163,6 +3366,7 @@ die;
                 $afterQuote = $matches[$matchKey][3][0];
             }
         }
+        */
 
         $italicText = $this->getStyledText($string, $start, 'italics', $beforeItalics, $afterItalics, $remains);
 
@@ -3193,164 +3397,8 @@ die;
             }
         }
 
-        //dd($matchedText, $before, $after, isset($results) ? $results : null, isset($matches) ? $matches : null);
-
         return $matchedText;
     }
-        /*
-        $quoted = '';
-        $remains = $string;
-        $quoteExists = false;
-
-        if ($italicsOnly) {
-            $containsQuote = 0;
-        } else {
-            // Could use the following?
-            //  if(preg_match('/``|[^\\\\]"/', $string, $matches, PREG_OFFSET_CAPTURE)) {}
-
-            // check for `` or " or ' or ` in string
-            $posQuote1 = (strpos($string, "``") !== false) ? strpos($string, "``") : strlen($string);
-            $lenQuote1 = 2;
-
-            for ($j = 0; $j < strlen($string) && !($string[$j] == '"' && ( $j == 0 || $string[$j - 1] != '\\')); $j++) {
-
-            }
-            $posQuote2 = $j < strlen($string) ? $j : strlen($string);
-            $lenQuote2 = 1;
-
-            for ($j = 0; $j < strlen($string) && !($string[$j] == "'" && ( $j == 0 || $string[$j - 1] == ' ')); $j++) {
-
-            }
-            $posQuote3 = $j < strlen($string) ? $j : strlen($string);
-            $lenQuote3 = 1;
-
-            for ($j = 0; $j < strlen($string) && !($string[$j] == "`" && ( $j == 0 || $string[$j - 1] == ' ')); $j++) {
-
-            }
-            $posQuote4 = $j < strlen($string) ? $j : strlen($string);
-            $lenQuote4 = 1;
-
-            $containsQuote = 1;
-            // if string contains at least one of ``, ", and ', take first one to start quote.
-            if (min([$posQuote1, $posQuote2, $posQuote3, $posQuote4]) < strlen($string)) {
-                // Note: $posQuote1 is either equal to $posQuote4 or is strlen($string)
-                if ($posQuote1 < min([$posQuote2, $posQuote3])) {
-                    $posQuote = $posQuote1;
-                    $lenQuote = $lenQuote1;
-                    $quoteCharacterType = 1;
-                } elseif ($posQuote2 < min([$posQuote1, $posQuote3, $posQuote4])) {
-                    $posQuote = $posQuote2;
-                    $lenQuote = $lenQuote2;
-                    $quoteCharacterType = 2;
-                } elseif ($posQuote3 < min([$posQuote1, $posQuote2, $posQuote4])) {
-                    $posQuote = $posQuote3;
-                    $lenQuote = $lenQuote3;
-                    $quoteCharacterType = 3;
-                } else {
-                    $posQuote = $posQuote4;
-                    $lenQuote = $lenQuote4;
-                    $quoteCharacterType = 4;
-                }
-            } else {
-                $containsQuote = 0;
-            }
-        }
-
-        $containsItalics = $this->containsFontStyle($string, $start, 'italics', $posItalics, $lenItalics);
-
-        // Now look for end of quote/italics
-        if (
-        // quotation marks come first
-                ($containsQuote && $containsItalics
-                && ( ($start && $posQuote == 0) || ( !$start && $posQuote < $posItalics)))
-                || ( $containsQuote && ! $containsItalics
-                && ( ($start && $posQuote == 0) || ! $start))) {
-            $quoteLevel = 0;
-            $break = false;
-            for ($j = $posQuote + $lenQuote; $j < strlen($string); $j++) {
-                //$this->verbose("string[j]: " . $string[$j] . ". quoteLevel: " . $quoteLevel);
-                // Handle case of embedded quote: e.g. "Bugs and "features""
-                switch ($quoteCharacterType) {
-                    case 1:
-                    case 2:
-                        if (($string[$j] == "\"" or ( $string[$j] == "'" && $string[$j + 1] == "'") or ( $string[$j] == "`" && $string[$j + 1] == "`")) && $string[$j - 1] == " ") {
-                            $quoteLevel++;
-                        } elseif (($string[$j] == "'" && $string[$j + 1] == "'") or ( $string[$j] == "\"" && $string[$j - 1] != "\\")) {
-                            if ($quoteLevel > 0) {
-                                $quoteLevel--;
-                            } else {
-                                $break = true;
-                            }
-                        }
-                        break;
-                    case 3:
-                    case 4:
-                        if (($string[$j] == "'" or $string[$j] == "`") && $string[$j - 1] == " ") {
-                            $quoteLevel++;
-                        } elseif ($string[$j] == "'" && $string[$j - 1] != "\\") {
-                            if ($quoteLevel > 0) {
-                                $quoteLevel--;
-                            } else {
-                                $break = true;
-                            }
-                        }
-                        break;
-                }
-                if ($break) {
-                    break;
-                }
-                //   if(($string[$j] == "\"" or ($string[$j] == "'" and $string[$j+1] == "'")) and $string[$j-1] == " ") $quoteLevel++;
-                //   elseif(($string[$j] == "'" and $string[$j+1] == "'") or ($string[$j] == "\"" and $string[$j-1] != "\\")) {
-                //   if($quoteLevel > 0) $quoteLevel--;
-                //   else break;
-                //   }
-            }
-            $posEnd = $j;
-            $posStart = $posQuote;
-            $quoteDelimiterLen = $lenQuote;
-            $quoteEndDelimiterLen = $lenQuote;
-            $quoteExists = true;
-        } elseif (
-        // italics come first
-                ($containsQuote && $containsItalics
-                && ( ($start && $posItalics == 0) || ( !$start && $posItalics < $posQuote)))
-                || ( !$containsQuote && $containsItalics
-                && ( ($start && $posItalics == 0) || ! $start))) {
-            $this->italicTitle = true;
-            // look for matching }
-            $bracketLevel = 0;
-            for ($j = $posItalics + $lenItalics; $j < strlen($string); $j++) {
-                if ($string[$j] == '{') {
-                    $bracketLevel++;
-                } elseif ($string[$j] == '}') {
-                    if ($bracketLevel) {
-                        $bracketLevel--;
-                    } else {
-                        break;
-                    }
-                }
-            }
-            $posEnd = $j;
-            $posStart = $posItalics;
-            $quoteDelimiterLen = $lenItalics;
-            $quoteEndDelimiterLen = 1;
-            $quoteExists = true;
-        }
-
-        if ($quoteExists) {
-            $quoted = rtrim(substr($string, $posStart + $quoteDelimiterLen, $posEnd - $quoteDelimiterLen - $posStart), ',.');
-if ($string[0] == "'" && $string[2] == 'R') {
-    dd($posStart, $quoteDelimiterLen, $posEnd, $quoted, $start, $string, $containsQuote);
-}
-            $quoted = $this->trimRightPeriod($quoted);
-            $remains = substr($string, 0, $posStart) . ltrim(substr($string, $posEnd + 1), ".' ");
-            $stringMinusQuoteDelimiters = substr($string, 0, $posStart) . 
-                substr($string, $posStart + $quoteDelimiterLen, $posEnd - $quoteDelimiterLen - $posStart) .
-                substr($string, $posEnd + $quoteEndDelimiterLen);
-        }
-
-        return $quoted;
-        */
 
     /**
      * Get first styled substring in $string, restricting to start if $start is true.  Return false if 
@@ -3992,6 +4040,7 @@ if ($string[0] == "'" && $string[2] == 'R') {
                 // and continue
                 $remainder = $before . $italicText . $after;
             } else {
+                $remainder = $before . $after;
                 return $italicText;
             }
         }
@@ -4076,7 +4125,7 @@ if ($string[0] == "'" && $string[2] == 'R') {
         $remainder = trim($remainder, ',. ');
     }
 
-    public function getVolumeAndNumberForArticle(string &$remainder, object &$item): void
+    public function getVolumeAndNumberForArticle(string &$remainder, object &$item, bool &$containsNumberDesignation): void
     {
         if (ctype_digit($remainder)) {
             $this->verbose('Remainder is entirely numeric, so assume it is the volume');
@@ -4134,6 +4183,9 @@ if ($string[0] == "'" && $string[2] == 'R') {
                     if (strlen($matches[7][0]) < 5) {
                         $item->number = $matches[6][0];
                         $this->verbose('number: ' . $item->number);
+                        if ($matches[4][0]) {
+                            $containsNumberDesignation = true;
+                        }
                     } else {
                         $item->note = 'Article ' . $matches[6][0];
                         $this->verbose('note: ' . $item->note);

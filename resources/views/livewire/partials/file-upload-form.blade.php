@@ -212,7 +212,7 @@
         </div>
 
     <div class="pt-4">
-        <x-primary-button wire:click="submit" class="ml-0">
+        <x-primary-button class="ml-0">
             {{ __('Submit') }}
         </x-primary-button>
     </div>

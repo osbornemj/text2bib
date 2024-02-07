@@ -1888,6 +1888,71 @@ class ExampleSeeder extends Seeder
                             'author' => 'Soh, Y. C. and Evans, R. J.',
                             ]
                     ],
+                    [
+                        'source' => 'M. Vidysagar, Nonlinear Systems Analysis (Prentice-Hall, Engelwood Cliffs, NJ, 1978). ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1978',
+                            'title' => 'Nonlinear Systems Analysis',
+                            'author' => 'M. Vidysagar',
+                            'address' => 'Engelwood Cliffs, NJ',
+                            'publisher' => 'Prentice-Hall',
+                            ]
+                    ],
+                    [
+                        'source' => 'D.H. Jacobson, Extensions of Linear-Quadratic Control, Optimization and Matrix Theory (Academic Press, New York, 1977). ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1977',
+                            'title' => 'Extensions of Linear-Quadratic Control, Optimization and Matrix Theory',
+                            'author' => 'D. H. Jacobson',
+                            'address' => 'New York',
+                            'publisher' => 'Academic Press',
+                            ]
+                    ],
+                    [
+                        'source' => 'J.C. Geromel, G. Garcia, and J. Bernussou. ``H^2 robust control with pole placement,\'\' in Proc. 12th World I.F.A.C. Congress, Sydney, Australia, 1993. ',
+                        'type' => 'inproceedings',
+                        'bibtex' => [
+                            'year' => '1993',
+                            'title' => 'H^2 robust control with pole placement',
+                            'author' => 'J. C. Geromel and G. Garcia and J. Bernussou',
+                            'booktitle' => 'Proc. 12th World I. F. A. C. Congress, Sydney, Australia',
+                            ]
+                    ],
+                    [
+                        'source' => 'W.M. Haddad, D.S. Bernstein. ``Controller design with regional pole constraints,\'\' IEEE Trans. Automat. Contr., vol. 37, no. 1, 1992. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '1992',
+                            'number' => '1',
+                            'title' => 'Controller design with regional pole constraints',
+                            'author' => 'W. M. Haddad and D. S. Bernstein',
+                            'volume' => '37',
+                            'journal' => 'IEEE Trans. Automat. Contr.',
+                            ]
+                    ],[
+                        'source' => 'M. Vidyasagar, Nonlinear Systems Analysis. Englewood Cliffs, NJ  Prentice-Hall, 1978. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1978',
+                            'title' => 'Nonlinear Systems Analysis',
+                            'author' => 'M. Vidyasagar',
+                            'address' => 'Englewood Cliffs, NJ',
+                            'publisher' => 'Prentice-Hall',
+                            ]
+                    ],
+                    [
+                        'source' => 'R.H. Martin, Jr., Nonlinear Operators and Differential Equations in Banach Space. New York  Wiley, 1976. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1976',
+                            'address' => 'New York',
+                            'publisher' =>  'Wiley',
+                            'author' => 'R. H. Martin, Jr.',
+                            'title' => 'Nonlinear Operators and Differential Equations in Banach Space',
+                            ]
+                    ],                                                                                                    
                 ];
 
             DB::statement('DELETE FROM examples');

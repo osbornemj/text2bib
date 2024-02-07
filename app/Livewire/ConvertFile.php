@@ -84,7 +84,7 @@ class ConvertFile extends Component
         ];
     }
     */
-    
+
     public function submit(int $reConversionId = null): void
     {
         // $conversionId is set if user is re-doing a conversion
@@ -105,7 +105,7 @@ class ConvertFile extends Component
             $sourceFile->original_filename = $file->getClientOriginalName();
             $sourceFile->type = 'SRC';
             $sourceFile->save();
-
+//dump('AAAAAA');
             $file->storeAs(
                 'files',
                 Auth::id() . '-' . $sourceFile->id . '-source.txt',
@@ -158,20 +158,27 @@ class ConvertFile extends Component
                 $this->entry = $entries[0];
                 $this->itemSeparatorError = true;
         }
-
+//dump($entries);       
         // If item_separator and encoding seem correct, perform the conversion
         if ($this->itemSeparatorError == false && count($this->nonUtf8Entries) == 0) {
             $convertedEntries = [];
+            $i = 0;
             foreach ($entries as $entry) {
-                // $convertedEntries is array with components 'source', 'item', 'itemType', 'label', 'warnings',
-                // 'notices', 'details', 'scholarTitle'.
-                // 'label' (which depends on whole set of converted items) is updated later
-                $convertedEntry = $this->converter->convertEntry($entry, $conversion);
-                if ($convertedEntry) {
-                    $convertedEntries[] = $convertedEntry;
+//dump('Entry:', $entry);
+                $i++;
+                if ($entry) {
+                    
+                    // $convertedEntries is array with components 'source', 'item', 'itemType', 'label', 'warnings',
+                    // 'notices', 'details', 'scholarTitle'.
+                    // 'label' (which depends on whole set of converted items) is updated later
+                    $convertedEntry = $this->converter->convertEntry($entry, $conversion);
+//dump($i, $convertedEntry);
+                    if ($convertedEntry) {
+                        $convertedEntries[] = $convertedEntry;
+                    }
                 }
             }
-
+//dump('QQQQQ');
             $convertedEntries = $this->addLabels($convertedEntries, $conversion);
 
             $itemTypes = ItemType::all();
@@ -189,6 +196,7 @@ class ConvertFile extends Component
                 ]);
                 $convertedItems[$output->id] = $convItem;
             }
+//dump('RRRRR');
 
             $this->conversionExists = true;
 
