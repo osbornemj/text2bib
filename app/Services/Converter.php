@@ -1747,8 +1747,7 @@ class Converter
                         // Case in which  publisher has been identified
                         if ($publisher) {
                             $this->verbose('Publisher has been identified');
-                            $item->publisher = $publisher;
-                            $this->verbose(['fieldName' => 'Publisher', 'content' => $item->publisher]);
+                            $this->setField($item, 'publisher', $publisher);
                             $after = Str::after($seriesAndPublisher, $publisher);
                             $before = Str::before($seriesAndPublisher, $publisher);
                             if ($after) {
@@ -1846,50 +1845,32 @@ class Converter
                 if (!$done) {
                     $remainder = $newRemainder ? $newRemainder : implode(" ", $remainingWords);
 
-                // foreach ($remainingWords as $key => $word) {
-                //     if (count($remainingWords) > $key + 1
-                //             && in_array(mb_strtolower(trim($word, ',. ()')), ['volume', 'vol'])) {
-                //         $item->volume = trim($remainingWords[$key + 1], ',. ');
-                //         $this->verbose(['fieldName' => 'Volume', 'content' => strip_tags($item->volume)]);
-                //         array_splice($remainingWords, $key, 2);
-                //         $series = [];
-                //         if (in_array(mb_strtolower($remainingWords[$key]), ['in', 'of'])) {
-                //             for ($k = $key + 1; $k < count($remainingWords); $k++) {
-                //                 $series[] = $remainingWords[$k];
-                //                 if (in_array(substr($remainingWords[$k], -1), [',', '.'])) {
-                //                     if ($series[0][0] == "\\" || substr($series[0], 0, 2) == "{\\") {
-                //                         array_shift($series);
-                //                     }
-                //                     $item->series = trim(implode(" ", $series), '.,}');
-                //                     $this->verbose(['fieldName' => 'Series', 'content' => strip_tags($item->series)]);
-                //                     array_splice($remainingWords, $key, $k - $key + 1);
-                //                     break;
-                //                 }
-                //             }
-                //         }
-                //         break;
-                //     }
-                // }
-
-                    // If string is in italics, get rid of the italics
-                    if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
-                        $remainder = rtrim(substr($remainder, $length), '}');
-                    }
-
-                    $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher);
-
-                    $item->publisher = $publisher;
-                    if ($item->publisher) {
-                        $this->verbose(['fieldName' => 'Publisher', 'content' => strip_tags($item->publisher)]);
+                    if ($publisherString && $cityString) {
+                        $this->setField($item, 'publisher', $publisherString);
+                        $this->setField($item, 'address', $cityString);
+                        $remainder = $this->findAndRemove($remainder, '/' . $publisherString . '/');
+                        $remainder = $this->findAndRemove($remainder, '/' . $cityString . '/');
                     } else {
-                        $warnings[] = "No publisher identified.";
-                    }
+                        // If string is in italics, get rid of the italics
+                        if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
+                            $remainder = rtrim(substr($remainder, $length), '}');
+                        }
 
-                    $item->address = $address;
-                    if ($item->address) {
-                        $this->verbose(['fieldName' => 'Publication city', 'content' => strip_tags($item->address)]);
-                    } else {
-                        $warnings[] = "No place of publication identified.";
+                        $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher);
+
+                        $item->publisher = $publisher;
+                        if ($item->publisher) {
+                            $this->verbose(['fieldName' => 'Publisher', 'content' => strip_tags($item->publisher)]);
+                        } else {
+                            $warnings[] = "No publisher identified.";
+                        }
+
+                        $item->address = $address;
+                        if ($item->address) {
+                            $this->verbose(['fieldName' => 'Publication city', 'content' => strip_tags($item->address)]);
+                        } else {
+                            $warnings[] = "No place of publication identified.";
+                        }
                     }
                 }
 
@@ -2814,15 +2795,13 @@ class Converter
           $maxAuthors = max($i, 1);
           } else $maxAuthors = 100;
          */
-//dump('Running convertToAuthors');
         $maxAuthors = 100;
         $wordHasComma = $prevWordHasComma = $oneWordAuthor = false;
 
         $this->verbose('convertToAuthors: Looking at each word in turn');
         foreach ($words as $i => $word) {
-//dump($word, 'case ' . $case);
             $prevWordHasComma = $wordHasComma;
-            $wordHasComma = (substr($word,-1) == ',');
+            $wordHasComma = substr($word,-1) == ',';
             // Get letters in word, eliminating accents & other non-letters, to get accurate length
             $lettersOnlyWord = preg_replace("/[^A-Za-z]/", '', $word);
 
@@ -2844,9 +2823,6 @@ class Converter
                 $remainingWords = array_merge([$firstWord, '(' . Str::after($word, '(')], $remain);
                 $word = $firstWord;
             }
-
-//dump('1');
-
             if ($case == 12 
                     && ! in_array($word, ['Jr.', 'Jr.,', 'Sr.', 'Sr.,', 'III', 'III,']) 
                     // deal with names like Bruine de Bruin, W.
@@ -2859,18 +2835,23 @@ class Converter
             if ($authorIndex >= $maxAuthors) {
                 break;  // exit from foreach
             }
+
             $vString = $case ? "[convertToAuthors case " . $case . "] authorstring: " . ($authorstring ? $authorstring : '[empty]') . "." : "";
             $this->verbose($vString);
+
             if (isset($bareWords)) {
                 $this->verbose("bareWords: " . implode(' ', $bareWords));
             }
             unset($bareWords);
+
             if (isset($reason)) {
                 $this->verbose('Reason: ' . $reason);
             }
+
             if (in_array($case, [11, 12, 14]) && $done) {  // 14: et al.
                 break;
             }
+
             $this->verbose(['text' => 'Word ' . $i . ": ", 'words' => [$word], 'content' => " - authorIndex: " . $authorIndex . ", namePart: " . $namePart]);
             $this->verbose("fullName: " . $fullName);
             
@@ -2888,14 +2869,9 @@ class Converter
                 $multipleAuthors = true;
             }
 
-//dump('2', $this->isAnd($word), $this->isEd($word, $multipleAuthors), $determineEnd, $done);
-            
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
             } elseif ($this->isEd($word, $multipleAuthors)) {
-                       
-//dump('2a');
-                
                 $this->verbose("String for editors, so ending name string (word: " . $word .")");
                 // word is 'ed' or 'ed.' if $hasAnd is false, or 'eds' or 'eds.' if $hasAnd is true
                 $isEditor = true;
@@ -2916,13 +2892,8 @@ class Converter
                 }
                 break;  // exit from foreach
             } elseif ($determineEnd && $done) {
-
-//dump('2b');
                 break;  // exit from foreach
             } elseif ($this->isAnd($word)) {
-
-//dump('2c');
-                
                 // word is 'and' or equivalent
                 $hasAnd = $prevWordAnd = true;
                 $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName) . ' and');
@@ -2947,9 +2918,6 @@ class Converter
                 }
             } elseif ($determineEnd && substr($word, -1) == '.' && strlen($lettersOnlyWord) > 3
                     && mb_strtolower(substr($word, -2, 1)) == substr($word, -2, 1)) {
-
-//dump('3');
-
                 // If $determineEnd and word ends in period and word has > 3 chars (hence not "St.") and previous letter
                 // is lowercase (hence not string of initials without spaces):
                 if ($namePart == 0) {
@@ -2999,9 +2967,6 @@ class Converter
                 $this->verbose("Remains: " . $remains);
                 $done = 1;
             } elseif ($namePart == 0) {
-
-//dump('4');
-                
                 namePart0:
                 // Check if $word and first word of $remainingWords are plausibly a name.  If not, end search if $determineEnd.
                 if ($determineEnd && isset($remainingWords[0]) && $this->isNotName($word, $remainingWords[0])) {
@@ -3049,9 +3014,6 @@ class Converter
                     $case = 6;
                 }
             } else {
-
-//dump('5');
-
                 // namePart > 0 and word doesn't end in some character, then lowercase letter, then period
                 $prevWordAnd = 0;
 
@@ -3061,6 +3023,8 @@ class Converter
                 //$nameComponent = $this->trimRightBrace($this->spaceOutInitials(rtrim($word, ',;')));
                 if (Str::startsWith($word, ['Jr.', 'Sr.', 'III'])) {
                     $nameWords = explode(' ', trim($fullName, ' '));
+                    //dd($nameWords);
+                    //$hasComma = strpos($fullName, ',') !== false;
                     if (count($nameWords) == 1) {
                         $fullName = $nameWords[0] . ' ' . $word;
                     } else {
@@ -3071,9 +3035,10 @@ class Converter
                         // put Jr. after the last name
                         $k = 0;
                         foreach ($nameWords as $j => $nameWord) {
-                            if (substr($nameWord, -1) == ',') {
+                            if (substr($nameWord, -1) == ',') { // || (!$hasComma && $j == count($nameWords) - 1)) {
                                 $fullName .= $nameWord . ' ' . rtrim($word, ',') . ',';
                                 $k = $j;
+                                break;
                             }
                         }
                         // put the rest of the names after Jr.
@@ -3093,10 +3058,11 @@ class Converter
                     $this->verbose('Name with Jr., Sr., or III; fullName: ' . $fullName);
                     $case = 15;
                 } else {
-//dump('6');
                     // Don't rtrim '}' because it could be part of the name: e.g. Oblo{\v z}insk{\' y}.
+                    //$nameComponent = (strpos($word, '.') !== false) ? $this->spaceOutInitials(rtrim($word, ',;')) : $word;
                     $nameComponent = $this->spaceOutInitials(rtrim($word, ',;'));
                     $fullName .= " " . $nameComponent;
+                    //dump('A', $word, $nameComponent, $fullName);
                     //$authorstring .= " " . $nameComponent;
                     // $bareWords is array of words at start of $remainingWords that don't end ends in ','
                     // or '.' or ')' or ':' or is a year in parens or brackets or starts with quotation mark
@@ -3109,10 +3075,8 @@ class Converter
                     if ($nameScore['count']) {
                         $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                     }
-//dump('7', $remainingWords, implode(" ", $remainingWords));                        
 
                     if ($determineEnd && $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after)) {
-//dump('8');                        
                         $remainder = implode(" ", $remainingWords);
                         $done = 1;
                         $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
@@ -3180,7 +3144,7 @@ class Converter
                                     $possibleLastWord = $i;
                                 }
                                 // Low name score relative to number of bareWords (e.g. less than 25% of words not in dictionary)
-                                if ($nameScore['count'] > 2 && $nameScore['score'] / $nameScore['count'] < 0.25) {
+                                if ($nameScore['count'] > 1 && $nameScore['score'] / $nameScore['count'] < 0.25) {
                                     $this->addToAuthorString(13, $authorstring, $this->formatAuthor($fullName));
                                     $done = 1;
                                 }
@@ -3188,7 +3152,6 @@ class Converter
                             }
                         }
                     } else {
-//dump($word, '9');
                         if (in_array($word, $this->vonNames)) {
                             $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name, so 'namePart' not incremented");
                         } else {

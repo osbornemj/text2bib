@@ -316,7 +316,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '1',
                     'year' => '1993',
                     'address' => 'New York',
-                    'publisher' => 'John Wiley & Sons',
+                    'publisher' => 'Wiley',
                 ]
             ],
             [
@@ -1949,7 +1949,7 @@ class ExampleSeeder extends Seeder
                             'year' => '1976',
                             'address' => 'New York',
                             'publisher' =>  'Wiley',
-                            'author' => 'R. H. Martin, Jr.',
+                            'author' => 'Martin, Jr., R. H.',
                             'title' => 'Nonlinear Operators and Differential Equations in Banach Space',
                             ]
                     ],                                                                                                    
