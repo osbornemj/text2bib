@@ -16,7 +16,7 @@ class ExampleSeeder extends Seeder
     {
         $examples = [
             [
-                'source' => 'Lizzeri A. and N. Persico (2002), \textquotedblleft The Drawbacks of Electoral Competition\textquotedblright , \textit{Journal of the European Economic Association}, forthcoming.',
+                'source' => 'Lizzeri A. and N. Persico (2002), \textquotedblleft The Drawbacks of Electoral Competition\textquotedblright , \textit{Journal of the European Economic Association}, forthcoming.% First item',
                 'type' => 'article',
                 'bibtex' => [
                     'author' => 'Lizzeri, A. and N. Persico',
@@ -307,10 +307,10 @@ class ExampleSeeder extends Seeder
                 ]
             ],
             [
-                'source' => 'Exner, J. E., Jr., Smith, A. B., Sr., and X. Y. Jones, Jr. (1993). The Rorschach: A comprehensive system, Vol. 1. (3rd ed.), New York: John Wiley & Sons.',
+                'source' => 'Exner, J. E., Jr., Smith, A. B., Sr., Xavier Y. Biden, Jr., and X. Y. Jones, Jr. (1993). The Rorschach: A comprehensive system, Vol. 1. (3rd ed.), New York: John Wiley & Sons.',
                 'type' => 'book',
                 'bibtex' => [
-                    'author' => 'Exner, Jr., J. E. and Smith, Sr., A. B. and Jones, Jr., X. Y.',
+                    'author' => 'Exner, Jr., J. E. and Smith, Sr., A. B. and Biden, Jr., Xavier Y. and Jones, Jr., X. Y.',
                     'title' => 'The Rorschach: A comprehensive system',
                     'edition' => '3rd',
                     'volume' => '1',
@@ -1950,7 +1950,7 @@ class ExampleSeeder extends Seeder
                             'address' => 'New York',
                             'publisher' =>  'Wiley',
                             'author' => 'Martin, Jr., R. H.',
-                            'title' => 'Nonlinear Operators and Differential Equations in Banach Space',
+                            'title' => 'Nonlinear Operators and Differential Equations in {B}anach Space',
                             ]
                     ],                                                                                                    
                 ];
