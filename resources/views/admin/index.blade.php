@@ -7,14 +7,21 @@
 
     <div class="sm:px-4 lg:px-4 space-y-6">
         <div class="sm:p-0 pt-0 sm:pt-0">
-            <x-link :href="route('itemTypes.index')" :active="request()->routeIs('itemTypes.index')">
-                Types and fields
-            </x-link>
+            <h3 class="font-semibold text-l">
+                Examples
+            </h3>
+            <p>
+                The database table <code>examples</code> contains the source and correct <code>BibTeX</code> code for a large number of references.
+            </p>
             <p>
                 <x-link :href="route('examples.index')" :active="request()->routeIs('examples.index')">
-                    Examples
+                    View, check, and edit examples.
                 </x-link>
             </p>
+
+            <h3 class="font-semibold text-l mt-2">
+                Users and conversions
+            </h3>
             <p>
                 <x-link :href="route('admin.users')" :active="request()->routeIs('admin.users')">
                     Users
@@ -23,6 +30,15 @@
             <p>
                 <x-link :href="route('admin.conversions')" :active="request()->routeIs('admin.conversions')">
                     Conversions
+                </x-link>
+            </p>
+
+            <h3 class="font-semibold text-l mt-2">
+                Information in database tables used by conversion algorithm
+            </h3>
+            <p>
+                <x-link :href="route('itemTypes.index')" :active="request()->routeIs('itemTypes.index')">
+                    Types and fields
                 </x-link>
             </p>
             <p>

@@ -7,11 +7,28 @@
 
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="px-4 sm:px-4 sm:rounded-lg">
-            <ul>
+            <!-- Grid wrapper -->
             @foreach ($users as $user)
-                <li>{{  $user->fullName(true) }} ({{ $user->email }}    )</li>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4">
+                    <div>
+                        {{ $user->fullName(true) }}
+                        @if ($user->is_admin)
+                            (admin)
+                        @endif
+                    </div>
+                    <div>
+                        {{ $user->email }}
+                    </div>
+                    <div>
+                        {{ $user->email_verified_at }}
+                    </div>
+                    <div>
+                        {{ $user->wants_messages }}
+                    </div>
+                </div>
             @endforeach
-            </ul>
+
+
             {{ $users->links() }}
         </div>
     </div>

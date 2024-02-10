@@ -80,9 +80,7 @@ class Converter
 
     public function __construct()
     {
-        // words that are in dictionary but are abbreviations in journal names
-        //$this->excludedWords = ['Trans', 'Ind', 'Int', 'Soc', 'Proc', 'Phys', 'Rev', 'Amer', 'Math', 'Meth', 'Geom', 'Univ', 'Nat', 'Sci',
-        //'Austral'];
+        // Words that are in dictionary but are abbreviations in journal names
         $this->excludedWords = ExcludedWord::all()->pluck('word')->toArray();
 
         // Introduced to facilitate a variety of languages, but the assumption that the language of the 
