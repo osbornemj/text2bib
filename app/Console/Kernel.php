@@ -8,7 +8,7 @@ use DB;
 use App\Models\Conversion;
 use App\Models\Output;
 use App\Models\Statistic;
-
+        
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 

@@ -25,7 +25,7 @@ class ExampleCheckController extends Controller
         $examples = Example::all();
     }
 
-    public function runExampleCheck(bool $verbose = false, int $id = null, string $charEncoding = 'utf8'): View
+    public function runExampleCheck(bool $verbose = false, bool $showDetailsIfCorrect = false, int $id = null, string $charEncoding = 'utf8'): View
     {
         $examples = $id ? [Example::find($id)] : Example::all();
 
@@ -40,9 +40,7 @@ class ExampleCheckController extends Controller
             $correctType = $correctContent = true;
             $result = null;
 
-            $source = $example->source;
-
-            $output = $this->converter->convertEntry($source, $conversion);
+            $output = $this->converter->convertEntry($example->source, $conversion);
             
             $unidentified = '';
             if (isset($output['item']->unidentified)) {
@@ -61,12 +59,15 @@ class ExampleCheckController extends Controller
             $diff1 = array_diff_assoc((array) $output['item'], (array) $example->bibtexFields());
             $diff2 = array_diff_assoc((array) $example->bibtexFields(), (array) $output['item']);
 
-            if (!$correctType || !$correctContent) {
-                $result = [];
+            $result = [];
+            $result['source'] = $example->source;
+            $result['errors'] = [];
+    
+            if ($correctType && $correctContent) {
+                $result['result'] = 'correct';
+            } else {
                 $allCorrect = false;
                 $result['result'] = 'incorrect';
-                $result['source'] = $source;
-                $result['errors'] = [];
             }
 
             if (!$correctType) {
@@ -91,13 +92,13 @@ class ExampleCheckController extends Controller
                             'correct' => $content
                         ];
                 }
-
-                if ($verbose) {
-                    $result['details'] = $output['details'];
-                }
             }
 
-            if (isset($result) && $result['result'] == 'incorrect') {
+            if (($verbose && $result['result'] == 'incorrect') || $showDetailsIfCorrect) {
+                $result['details'] = $output['details'];
+            }
+
+            if (isset($result) && ($result['result'] == 'incorrect' || $showDetailsIfCorrect)) {
                 $results[$example->id] = $result;
             }
         }
@@ -105,6 +106,6 @@ class ExampleCheckController extends Controller
         $exampleCount = count($examples);
 
         return view('admin.examples.checkResult',
-            compact('results', 'verbose', 'allCorrect', 'exampleCount'));
+            compact('results', 'verbose', 'showDetailsIfCorrect', 'allCorrect', 'exampleCount'));
     }
 }

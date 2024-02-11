@@ -80,7 +80,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/admin/index', [AdminController::class, 'index'])->name('admin.index');
 
     Route::controller(ConversionAdminController::class)->group(function () {
-        Route::get('/admin/showFile/{fileId}', 'showFile')->name('admin.showFile');
+        Route::get('/admin/showConversion/{conversionId}', 'showConversion')->name('admin.showConversion');
         Route::get('/admin/convert/{fileId}/{itemSeparator?}', 'convert')->name('admin.convert');
         Route::get('/admin/conversions', 'index')->name('admin.conversions');
         Route::get('/admin/formatExample/{outputId}', 'formatExample')->name('admin.formatExample');
@@ -96,7 +96,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/itemTypeField/remove/{itemField}/{itemTypeId}', 'remove')->name('itemTypeField.remove');
     });
 
-    Route::get('/admin/runExampleCheck/{verbose?}/{id?}/{charEncoding?}', [ExampleCheckController::class, 'runExampleCheck'])->name('admin.examples.runCheck');
+    Route::get('/admin/runExampleCheck/{verbose?}/{showDetailsIfCorrect?}/{id?}/{charEncoding?}', [ExampleCheckController::class, 'runExampleCheck'])->name('admin.examples.runCheck');
 
     Route::get('/admin/users', [UsersController::class, 'index'])->name('admin.users');
 });

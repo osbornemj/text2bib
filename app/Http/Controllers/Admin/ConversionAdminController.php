@@ -26,16 +26,14 @@ class ConversionAdminController extends Controller
         return view('admin.conversions.index', compact('conversions'));
     }
 
-    public function showFile(int $fileId): View
+    public function showConversion(int $conversionId): View
     {
-        $userFile = UserFile::find($fileId);
-        $suffix = $userFile->type == 'SRC' ? 'source.txt' : ($userFile->type == 'BIB' ? 'bib.bib' : '');
+        $outputs = Output::where('conversion_id', $conversionId)
+                    ->with('itemType')
+                    ->orderBy('seq')
+                    ->get();
 
-        $userId = $userFile->user->id;
-        $filestring = Storage::disk('public')->get('files/' . $userId . '-' . $fileId . '-' . $suffix);
-        $fileFormatted = str_replace("\n", "<br/>", $filestring);
-
-        return view('admin.conversions.file', compact('fileFormatted'));
+        return view('admin.conversions.show', compact('outputs'));
     }
 
     public function convert(int $fileId, string|null $itemSeparator = null): RedirectResponse

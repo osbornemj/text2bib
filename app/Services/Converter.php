@@ -273,7 +273,7 @@ class Converter
             if (!preg_match('/[0-9]+/', $doi)) {
                 $warnings[] = 'The doi appears to be invalid.';
             }
-            $this->setField($item, 'doi', $doi);
+            $this->setField($item, 'doi', $doi, '1');
         } else {
             $this->verbose("No doi found.");
         }
@@ -285,8 +285,8 @@ class Converter
         $eprint = $this->extractLabeledContent($entry, ' arxiv: ?', '\S+');
 
         if ($eprint) {
-            $this->setField($item, 'archiveprefix', 'arXiv');
-            $this->setField($item, 'eprint', $eprint);
+            $this->setField($item, 'archiveprefix', 'arXiv', '2');
+            $this->setField($item, 'eprint', $eprint, '3');
         } else {
             $this->verbose("No arXiv info found.");
         }
@@ -330,9 +330,9 @@ class Converter
         }
 
         if (isset($url) && $url) {
-            $this->setField($item, 'url', $url);
+            $this->setField($item, 'url', $url, '4');
             if ($accessDate) {
-                $this->setField($item, 'urldate', $accessDate);
+                $this->setField($item, 'urldate', $accessDate, '5');
             }
         } else {
             $this->verbose("No url found.");
@@ -352,7 +352,7 @@ class Converter
             } else {
                 $year = $matches[1][0];
                 $entry = trim(substr($entry, $matches[1][1] + strlen($year)), ' ');
-                $this->setField($item, 'year', $year);
+                $this->setField($item, 'year', $year, '6');
                 if (strlen($year) != 4) {
                     $warnings[] = "Year contains " . strlen($year) . " digits!";
                 }
@@ -423,13 +423,13 @@ class Converter
         ];
 
         if ($isEditor === false && !Str::contains($authorstring, $editorPhrases)) {
-            $this->setField($item, 'author', $authorstring);
+            $this->setField($item, 'author', rtrim($authorstring, ','), '7');
         } else {
-            $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' .,'));
+            $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' .,'), '8');
         }
 
         if ($year) {
-            $this->setField($item, 'year', $year);
+            $this->setField($item, 'year', $year, '9');
         }
 
         $remainder = trim($remainder, '.}, ');
@@ -455,17 +455,17 @@ class Converter
         if (!$title) {
             $title = $this->getTitle($remainder, $edition, $volume, $isArticle);
             if ($edition) {
-                $this->setField($item, 'edition', $edition);
+                $this->setField($item, 'edition', $edition, '10');
             }
             if ($volume) {
-                $this->setField($item, 'volume', $volume);
+                $this->setField($item, 'volume', $volume, '11');
             }
             $newRemainder = $remainder;
         }
 
         $remainder = $newRemainder;
 
-        $this->setField($item, 'title', rtrim($title, '.'));
+        $this->setField($item, 'title', rtrim($title, ' .,'), '12');
         
         $this->verbose("Remainder: " . strip_tags($remainder));
 
@@ -483,9 +483,9 @@ class Converter
             }
 
             if ($year) {
-                $this->setField($item, 'year', $year);
+                $this->setField($item, 'year', $year, '13');
             } else {
-                $this->setField($item, 'year', '');
+                $this->setField($item, 'year', '', '14');
                 $warnings[] = "No year found.";
             }
             if (isset($month)) {
@@ -508,7 +508,7 @@ class Converter
                     $fullMonth2 = null;
                 }
 
-                $this->setField($item, 'month', $fullMonth1 . ($fullMonth2 ? '-' . $fullMonth2 : ''));
+                $this->setField($item, 'month', $fullMonth1 . ($fullMonth2 ? '-' . $fullMonth2 : ''), '15');
             }
         }
 
@@ -818,12 +818,12 @@ class Converter
         if ($itemKind == 'book' || $itemKind == 'incollection') {
             $match = $this->extractLabeledContent($remainder, ' ISBN:? ', '[0-9X]+');
             if ($match) {
-                $this->setField($item, 'isbn', $match);
+                $this->setField($item, 'isbn', $match, '16');
             }
 
             $match = $this->extractLabeledContent($remainder, ' OCLC:? ', '[0-9]+');
             if ($match) {
-                $this->setField($item, 'oclc', $match);
+                $this->setField($item, 'oclc', $match, '17');
             }
         }
 
@@ -832,7 +832,7 @@ class Converter
         if ($itemKind != 'unpublished') {
             $match = $this->extractLabeledContent($remainder, '', '\(?[Ii]n [Rr]eview\.?\)?$');
             if ($match) {
-                $this->setField($item, 'note', $match);
+                $this->setField($item, 'note', $match, '18');
                 $this->verbose('"In review" string removed and put in note field');
                 $this->verbose('Remainder: ' . $remainder);
             }
@@ -872,7 +872,7 @@ class Converter
                 $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming);
                 $journal = rtrim($journal, ' ,');
 
-                $this->setField($item, 'journal', $journal);
+                $this->setField($item, 'journal', $journal, '19');
                 if (!$journal) {
                     $warnings[] = "'Journal' field not found.";
                     $itemKind = 'unpublished';  // but continue processing as if journal
@@ -882,7 +882,7 @@ class Converter
 
                 // If $remainder ends with 'forthcoming' phrase, put that in note.  Else look for pages & volume etc.
                 if (preg_match('/' . $this->endForthcomingRegExp . '/', $remainder)) {
-                    $this->setField($item, 'note', $remainder);
+                    $this->setField($item, 'note', $remainder, '20');
                     $remainder = '';
                 } else {
                     // Get pages
@@ -903,7 +903,7 @@ class Converter
                     preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
 
                     if (isset($matches[0][0][0]) && $matches[0][0][0]) {
-                        $this->setField($item, 'month', trim($matches[0][0][0], '()'));
+                        $this->setField($item, 'month', trim($matches[0][0][0], '()'), '21');
                         $remainder = substr($remainder, 0, $matches[0][0][1]) . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
                         $this->verbose('Remainder: ' . $remainder);
                     }
@@ -914,11 +914,11 @@ class Converter
                     $result = $this->findRemoveAndReturn($remainder, $this->articleRegExp);
                     if ($result) {
                         // If remainder contains article number, put it in the note field
-                        $this->setField($item, 'note', $result[0]);
+                        $this->setField($item, 'note', $result[0], '22');
                     } elseif (!$item->pages && isset($item->number) && $item->number && !$containsNumberDesignation) {
                         // else if no pages have been found and a number has been set, assume the previously assigned number
                         // is in fact a single page
-                        $this->setField($item, 'pages', $item->number);
+                        $this->setField($item, 'pages', $item->number, '23');
                         unset($item->number);
                         $this->verbose('[p5] no pages found, so assuming string previously assigned to number is a single page: ' . $item->pages);
                         $warnings[] = "Not sure the pages value is correct.";
@@ -955,15 +955,15 @@ class Converter
             case 'unpublished':
                 $remainder = trim($remainder, '.,} ');
                 if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
-                    $this->setField($item, 'note', substr($remainder, $length));
+                    $this->setField($item, 'note', substr($remainder, $length), '24');
                 } else {
-                    $this->setField($item, 'note', $remainder);
+                    $this->setField($item, 'note', $remainder, '25');
                 }
                 $remainder = '';
 
                 if (!$item->note && isset($item->url) && $item->url) {
                     $this->verbose('Moving content of url field to note');
-                    $this->setField($item, 'note', $item->url);
+                    $this->setField($item, 'note', $item->url, '26');
                     unset($item->url);
                 } else {
                     $warnings[] = "Mandatory 'note' field missing.";
@@ -980,22 +980,22 @@ class Converter
                 // to be institution---handles both 'CORE Discussion Paper 34' and 'Discussion paper 34, CORE'
                 $type = isset($workingPaperMatches[1][0]) ? $workingPaperMatches[1][0] : '';
                 if ($type) {
-                    $this->setField($item, 'type', $type);
+                    $this->setField($item, 'type', $type, '27');
                 }
 
                 $number = isset($workingPaperMatches[3][0]) ? $workingPaperMatches[3][0] : '';
                 if ($number) {
-                    $this->setField($item, 'number', $number);
+                    $this->setField($item, 'number', $number, '28');
                 }
 
                 if (isset($workingPaperMatches[0][1]) && $workingPaperMatches[0][1] > 0) {
                     // Chars before 'Working Paper'
-                    $this->setField($item, 'institution', trim(substr($remainder, 0, $workingPaperMatches[0][1] - 1), ' .,'));
+                    $this->setField($item, 'institution', trim(substr($remainder, 0, $workingPaperMatches[0][1] - 1), ' .,'), '29');
                     $remainder = trim(substr($remainder, $workingPaperMatches[3][1] + strlen($item->number)), ' .,');
                 } else {
                     // No chars before 'Working paper'---so take string after number to be institution
                     $n = isset($workingPaperMatches[3][1]) ? $workingPaperMatches[3][1] : 0;
-                    $this->setField($item, 'institution', trim(substr($remainder, $n + strlen($item->number)), ' .,'));
+                    $this->setField($item, 'institution', trim(substr($remainder, $n + strlen($item->number)), ' .,'), '30');
                     $remainder = '';
                 }
                 if (!$item->institution) {
@@ -1026,12 +1026,10 @@ class Converter
                 $result = $this->findRemoveAndReturn($remainder, $regExp);
                 if ($result) {
                     $pages = $result[4];
-                    $this->setField($item, 'pages', $pages ? str_replace(['--', ' '], ['-', ''], $pages) : '');
+                    $this->setField($item, 'pages', $pages ? str_replace(['--', ' '], ['-', ''], $pages) : '', '31');
                 }
 
-                if (isset($item->pages)) {
-                    $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
-                } else {
+                if (!isset($item->pages)) {
                     $warnings[] = "Pages not found.";
                 }
 
@@ -1050,7 +1048,7 @@ class Converter
                 $this->verbose('booktitle case 1');
 
                 if ($booktitle) {
-                    $this->setField($item, 'booktitle', $booktitle);
+                    $this->setField($item, 'booktitle', $booktitle, '32');
                     if (strlen($before) > 0) {
                         // Pattern is <string1> <booktitle> <string2> (with <string1> nonempty).
                         // Check whether <string1> starts with "forthcoming"
@@ -1059,7 +1057,7 @@ class Converter
                             $match = trim($matches[0], '() ');
                             $match = Str::replaceEnd(' in', '', $match);
                             $match = Str::replaceEnd(' at', '', $match);
-                            $this->setField($item, 'note', isset($item->note) ? $item->note . ' ' . trim($match) : trim($match));
+                            $this->setField($item, 'note', isset($item->note) ? $item->note . ' ' . trim($match) : trim($match), '33');
                             $possibleEditors = strlen($matches[0]) - strlen($string1) ? substr($string1, strlen($matches[0])) : null;
                         } else {
                             // Assume <string1> is editors
@@ -1070,7 +1068,7 @@ class Converter
                                 $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
                             }
                             $editorConversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $isEditor, false);
-                            $this->setField($item, 'editor', trim($editorConversion['authorstring']));
+                            $this->setField($item, 'editor', trim($editorConversion['authorstring']), '34');
                         } else {
                             $this->verbose('No editors found');
                         }
@@ -1088,8 +1086,8 @@ class Converter
                 // without any editors.  $remainder will be '';
                 $result = $this->extractLabeledContent($remainder, '^[a-zA-Z]*:', '.*', true);
                 if ($result) {
-                    $this->setField($item, 'address', substr($result['label'], 0, -1));
-                    $this->setField($item, 'publisher', $result['content']);
+                    $this->setField($item, 'address', substr($result['label'], 0, -1), '35');
+                    $this->setField($item, 'publisher', $result['content'], '36');
                 }
 
                 // The only reason why $item->editor could be set other than by the previous code block is that the 
@@ -1126,10 +1124,10 @@ class Converter
                                 $booktitle = $tempRemainder;
                                 $this->verbose('booktitle case 2');
                             }
-                            $this->setField($item, 'editor', '');
+                            $this->setField($item, 'editor', '', '37');
                             $warnings[] = 'No editor found';
-                            $this->setField($item, 'address', $cityString);
-                            $this->setField($item, 'publisher', $publisherString);
+                            $this->setField($item, 'address', $cityString, '38');
+                            $this->setField($item, 'publisher', $publisherString, '39');
                             $newRemainder = trim(Str::remove([$cityString, $publisherString, $booktitle], $tempRemainder), ', ');
                         } elseif (strpos($tempRemainder, ',') !== false) {
                             // Looking at strings following commas, to see if they are names
@@ -1158,10 +1156,10 @@ class Converter
                                         $booktitle = $tempRemainder;
                                         $this->verbose("Booktitle case 3");
                                     }
-                                    $this->setField($item, 'editor', '');
+                                    $this->setField($item, 'editor', '', '40');
                                     $warnings[] = 'No editor found';
-                                    $this->setField($item, 'address', $cityString);
-                                    $this->setField($item, 'publisher', $publisherString);
+                                    $this->setField($item, 'address', $cityString, '41');
+                                    $this->setField($item, 'publisher', $publisherString, '42');
                                     $newRemainder = '';
                                 }
 
@@ -1278,7 +1276,7 @@ class Converter
                             $warnings[] = $warning;
                         }
 
-                        $this->setField($item, 'editor', trim($editorString, ' ,.'));
+                        $this->setField($item, 'editor', trim($editorString, ' ,.'), '43');
                         $newRemainder = $postEditorString ? $postEditorString : $remainder;
                         // $newRemainder consists of <booktitle> <publicationInfo>
                         $newRemainder = trim($newRemainder, '., ');
@@ -1335,7 +1333,7 @@ class Converter
                             // CASE 2
                             $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
                             $authorConversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $isEditor, false);
-                            $this->setField($item, 'editor', trim($authorConversion['authorstring'], ' '));
+                            $this->setField($item, 'editor', trim($authorConversion['authorstring'], ' '), '44');
                             foreach ($authorConversion['warnings'] as $warning) {
                                 $warnings[] = $warning;
                             }
@@ -1416,7 +1414,7 @@ class Converter
                         foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
                         }
-                        $this->setField($item, 'editor', trim($editor, ', '));
+                        $this->setField($item, 'editor', trim($editor, ', '), '45');
                         $remainder = substr($remainder, $matches[0][1] + strlen($matches[0][0]));
                     } elseif ($itemKind == 'incollection' && $this->initialNameString($remainder)) {
                         // An editor of an inproceedings has to be indicated by an "eds" string (inproceedings
@@ -1429,7 +1427,7 @@ class Converter
                             $warnings[] = $warning;
                         }
 
-                        $this->setField($item, 'editor', trim($editor, ', '));
+                        $this->setField($item, 'editor', trim($editor, ', '), '46');
                         $newRemainder = $remainder;
                     } else {
                         // Else editors are part of $remainder up to " ed." or "(ed.)" etc.
@@ -1451,7 +1449,7 @@ class Converter
 
                         $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $isEditor, true);
                         $authorstring = $editorConversion['authorstring'];
-                        $this->setField($item, 'editor', trim($authorstring, '() '));
+                        $this->setField($item, 'editor', trim($authorstring, '() '), '47');
                         foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
                         }
@@ -1473,8 +1471,8 @@ class Converter
                         );
                     if ($result) {
                         // Take series to be string following 'of' or 'in' or ',' up to next period or comma
-                        $this->setField($item, 'volume', $result[3]);
-                        $this->setField($item, 'series', $result[6]);
+                        $this->setField($item, 'volume', $result[3], '48');
+                        $this->setField($item, 'series', $result[6], '49');
                         $booktitle = trim($result['before'], '., ');
                         $this->verbose('booktitle case 5');
                         $remainder = trim($result['after'], ',. ');
@@ -1492,14 +1490,14 @@ class Converter
                             // If publisher has been identified, remove it from $remainder and check
                             // whether it is preceded by a string that could be an address
                             if (isset($publisher) && $publisher) {
-                                $this->setField($item, 'publisher', $publisher);
+                                $this->setField($item, 'publisher', $publisher, '50');
                                 $tempRemainder = trim(Str::remove($publisher, $remainder), ' .');
                                 $afterPeriod = Str::afterLast($tempRemainder, '.');
                                 $afterComma = Str::afterLast($tempRemainder, ',');
                                 $afterPunc = (strlen($afterComma) < strlen($afterPeriod)) ? $afterComma : $afterPeriod;
                                 foreach ($this->cities as $city) {
                                     if (Str::endsWith(trim($afterPunc, '():'), $city)) {
-                                        $this->setField($item, 'address', $city);
+                                        $this->setField($item, 'address', $city, 51);
                                         $booktitle = substr($tempRemainder, 0, strlen($tempRemainder) - strlen($city) - 2);
                                         $this->verbose('booktitle case 7');
                                         break;
@@ -1508,13 +1506,13 @@ class Converter
                                 if (!isset($item->address)) {
                                     if (substr_count($afterPunc, ' ') == 1) {
                                         $booktitle = substr($tempRemainder, 0, strlen($tempRemainder) - strlen($afterPunc));
-                                        $this->setField($item, 'address', $afterPunc);
+                                        $this->setField($item, 'address', $afterPunc, 52);
                                         $this->verbose('booktitle case 8');
                                     } else {
                                         $booktitle = $tempRemainder;
                                         $this->verbose('booktitle case 9');
                                     }
-                                    $this->setField($item, 'booktitle', $booktitle);
+                                    $this->setField($item, 'booktitle', $booktitle, 53);
                                     $this->verbose(['fieldName' => 'Booktitle', 'content' => $item->booktitle]);
                                     $remainder = '';
                                 }
@@ -1577,15 +1575,15 @@ class Converter
                 // Whatever is left is publisher and address
                 if ((!isset($item->publisher) || ! $item->publisher) || ( !isset($item->address) || ! $item->address)) {
                     if (isset($item->publisher) && $item->publisher) {
-                        $this->setField($item, 'address', $remainder);
+                        $this->setField($item, 'address', $remainder, '54');
                         $newRemainder = '';
                     } elseif (isset($item->address) && $item->address) {
-                        $this->setField($item, 'publisher', $remainder);
+                        $this->setField($item, 'publisher', $remainder, '55');
                         $newRemainder = '';
                     } else {
                         $newRemainder = $this->extractPublisherAndAddress($remainder, $address, $publisher);
-                        $this->setField($item, 'publisher', $publisher);
-                        $this->setField($item, 'address', $address);
+                        $this->setField($item, 'publisher', $publisher, '56');
+                        $this->setField($item, 'address', $address, '57');
                     }
                 }
 
@@ -1604,10 +1602,8 @@ class Converter
                 if ($this->inDict($lastWordInBooktitle)) {
                     $booktitle = rtrim($booktitle, '.');
                 }
-                $this->setField($item, 'booktitle', trim($booktitle));
-                if ($item->booktitle) {
-                    $this->verbose(['fieldName' => 'Booktitle', 'content' => strip_tags($item->booktitle)]);
-                } else {
+                $this->setField($item, 'booktitle', trim($booktitle, ' .,'), '58');
+                if (!$item->booktitle) {
                     $warnings[] = "Book title not found.";
                 }
 
@@ -1629,7 +1625,7 @@ class Converter
                 $this->verbose('Looking for edition');
                 foreach ($remainingWords as $key => $word) {
                     if ($key && in_array(mb_strtolower(trim($word, ',. ()')), ['edition', 'ed'])) {
-                        $this->setField($item, 'edition', trim($remainingWords[$key - 1], ',. )('));
+                        $this->setField($item, 'edition', trim($remainingWords[$key - 1], ',. )('), '59');
                         array_splice($remainingWords, $key - 1, 2);
                         break;
                     }
@@ -1646,7 +1642,7 @@ class Converter
                     '(\(?' . $this->volumeRegExp1 . ')( ([1-9][0-9]{0,4})\)?)(( of| in|,|.)? )(.*)$'
                 );
                 if ($result) {
-                    $this->setField($item, 'volume', $result[3]);
+                    $this->setField($item, 'volume', $result[3], '60');
                     if (in_array($result[5], ['.', ','])) {
                         // Volume is volume of book, not part of series
                         // Publisher and possibly address
@@ -1658,19 +1654,19 @@ class Converter
                         $seriesAndPublisher = $result[6];
                         // Case in which  publisher has been identified
                         if ($publisher) {
-                            $this->setField($item, 'publisher', $publisher);
+                            $this->setField($item, 'publisher', $publisher, '61');
                             $after = Str::after($seriesAndPublisher, $publisher);
                             $before = Str::before($seriesAndPublisher, $publisher);
                             if ($after) {
                                 // If anything comes after the publisher, it must be the address, and the string
                                 // before the publisher must be the series
-                                $this->setField($item, 'address', trim($after, ',. '));
+                                $this->setField($item, 'address', trim($after, ',. '), '62');
                                 $series = trim($before, '., ');
                                 if ($this->containsFontStyle($series, true, 'italics', $startPos, $length)) {
-                                    $this->setField($item, 'series', rtrim(substr($series, $length), '}'));
+                                    $this->setField($item, 'series', rtrim(substr($series, $length), '}'), '63');
                                     $this->verbose('Removed italic formatting from series name');
                                 } else {
-                                    $this->setField($item, 'series', $series);
+                                    $this->setField($item, 'series', $series, '64');
                                 }
                             } else {
                                 // If nothing comes after the publisher,
@@ -1686,26 +1682,26 @@ class Converter
                                     $beforeLastPeriod = Str::beforeLast($before, '.');
                                     if ($containsComma && $containsPeriod) {
                                         if (strlen($beforeLastComma > $beforeLastPeriod)) {
-                                            $this->setField($item, 'address', trim(substr($before, strlen($beforeLastComma)), '.,: '));
-                                            $this->setField($item, 'series', trim($beforeLastComma, '.,: '));
+                                            $this->setField($item, 'address', trim(substr($before, strlen($beforeLastComma)), '.,: '), '65');
+                                            $this->setField($item, 'series', trim($beforeLastComma, '.,: '), '66');
                                         } else {
-                                            $this->setField($item, 'address', trim(substr($before, strlen($beforeLastPeriod)), '.,: '));
-                                            $this->setField($item, 'series', trim($beforeLastPeriod, '.,: '));
+                                            $this->setField($item, 'address', trim(substr($before, strlen($beforeLastPeriod)), '.,: '), '67');
+                                            $this->setField($item, 'series', trim($beforeLastPeriod, '.,: '), '68');
                                         }
                                     } elseif ($containsComma) {
-                                        $this->setField($item, 'address', trim(substr($before, strlen($beforeLastComma)), '.,: '));
-                                        $this->setField($item, 'series', trim($beforeLastComma, '.,: '));
+                                        $this->setField($item, 'address', trim(substr($before, strlen($beforeLastComma)), '.,: '), '69');
+                                        $this->setField($item, 'series', trim($beforeLastComma, '.,: '), '70');
                                     } elseif ($containsPeriod) {
-                                        $this->setField($item, 'address', trim(substr($before, strlen($beforeLastPeriod)), '.,: '));
-                                        $this->setField($item, 'series', trim($beforeLastPeriod, '.,: '));
+                                        $this->setField($item, 'address', trim(substr($before, strlen($beforeLastPeriod)), '.,: '), '71');
+                                        $this->setField($item, 'series', trim($beforeLastPeriod, '.,: '), '72');
                                     } else {
                                         $beforeLastSpace = Str::beforeLast($before, ' ');
-                                        $this->setField($item, 'address', trim(substr($before, strlen($beforeLastSpace)), '.,: '));
-                                        $this->setField($item, 'series', trim($beforeLastSpace, '.,: '));
+                                        $this->setField($item, 'address', trim(substr($before, strlen($beforeLastSpace)), '.,: '), '73');
+                                        $this->setField($item, 'series', trim($beforeLastSpace, '.,: '), '74');
                                     }
                                 } else {
                                     // Otherwise there is no address, and the series is the string before the publisher
-                                    $this->setField($item, 'series', trim($before, '.,: '));
+                                    $this->setField($item, 'series', trim($before, '.,: '), '75');
                                 }
                             }
                         } else {
@@ -1716,15 +1712,15 @@ class Converter
                                 '(.*)[.,]( ([^,.])*(,|:)) ([^,.]*)\.?$'
                             );
                             if ($result1) {
-                                $this->setField($item, 'series', $result1[1]);
+                                $this->setField($item, 'series', $result1[1], '76');
                                 if ($result1[4] == ',') {
                                     $this->verbose('Series case 1a: format is <publisher>, <address>');
-                                    $this->setField($item, 'publisher', trim($result1[2], ' ,'));
-                                    $this->setField($item, 'address', $result1[5]);
+                                    $this->setField($item, 'publisher', trim($result1[2], ' ,'), '77');
+                                    $this->setField($item, 'address', $result1[5], '78');
                                 } elseif ($result1[4] == ':') {
                                     $this->verbose('Series case 1b: format is <address>: <publisher>');
-                                    $this->setField($item, 'address', trim($result1[2], ' :'));
-                                    $this->setField($item, 'publisher', $result1[5]);
+                                    $this->setField($item, 'address', trim($result1[2], ' :'), '79');
+                                    $this->setField($item, 'publisher', $result1[5], '80');
                                 }
                             } else {
                                 $result2 = $this->findRemoveAndReturn(
@@ -1733,8 +1729,8 @@ class Converter
                                 );
                                 if ($result2) {
                                     $this->verbose('Series case 2: format is <publisher> (no address)');
-                                    $this->setField($item, 'series', $result2[1]);
-                                    $this->setField($item, 'publisher', $result2[2]);
+                                    $this->setField($item, 'series', $result2[1], '81');
+                                    $this->setField($item, 'publisher', $result2[2], '82');
                                 }
                             }
                         }
@@ -1747,10 +1743,10 @@ class Converter
                     $remainder = $newRemainder ? $newRemainder : implode(" ", $remainingWords);
 
                     if ($publisherString && $cityString) {
-                        $this->setField($item, 'publisher', $publisherString);
-                        $this->setField($item, 'address', $cityString);
-                        $remainder = $this->findAndRemove($remainder, '/' . $publisherString . '/');
-                        $remainder = $this->findAndRemove($remainder, '/' . $cityString . '/');
+                        $this->setField($item, 'publisher', $publisherString, '83');
+                        $this->setField($item, 'address', $cityString, '84');
+                        $remainder = $this->findAndRemove($remainder, $publisherString);
+                        $remainder = $this->findAndRemove($remainder, $cityString);
                     } else {
                         // If string is in italics, get rid of the italics
                         if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
@@ -1760,13 +1756,13 @@ class Converter
                         $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher);
 
                         if ($publisher) {
-                            $this->setField($item, 'publisher', $publisher);
+                            $this->setField($item, 'publisher', $publisher, '85');
                         } else {
                             $warnings[] = "No publisher identified.";
                         }
 
                         if ($address) {
-                            $this->setField($item, 'address', $address);
+                            $this->setField($item, 'address', $address, '86');
                         } else {
                             $warnings[] = "No place of publication identified.";
                         }
@@ -1798,10 +1794,10 @@ class Converter
 
                 $remainder = trim($remainder, ' .,');
                 if (strpos($remainder, ':') === false) {
-                    $this->setField($item, 'school', $remainder);
+                    $this->setField($item, 'school', $remainder, '87');
                 } else {
                     $remArray = explode(':', $remainder);
-                    $this->setField($item, 'school', trim($remArray[1], ' .,'));
+                    $this->setField($item, 'school', trim($remArray[1], ' .,'), '88');
                 }
                 $remainder = '';
 
@@ -1842,11 +1838,6 @@ class Converter
             unset($item->editor);
         }
 
-        if (isset($item->booktitle) && $item->booktitle) {
-            $item->booktitle = trim($item->booktitle, ' ,.');
-            $this->verbose(['fieldName' => 'Booktitle', 'content' => $item->booktitle]);
-        }
-
         foreach ($warnings as $warning) {
             $this->verbose(['warning' => strip_tags($warning)]);
         }
@@ -1855,19 +1846,11 @@ class Converter
             $this->verbose(['notice' => strip_tags($notice)]);
         }
 
-        if (isset($item->author)) {
-            $item->author = trim($item->author);
-            $item->author = rtrim($item->author, ',');
-        }
-
         if (isset($item->journal)) {
             $item->journal = trim($item->journal, '} ');
         }
 
         $item->title = $this->requireUc($item->title);
-        if (isset($item->title)) {
-            $item->title = trim($item->title, ' ,');
-        }
 
         $scholarTitle = str_replace(' ', '+', $item->title);
         $scholarTitle = str_replace(["'", '"', "{", "}", "\\"], "", $scholarTitle);
@@ -1886,10 +1869,10 @@ class Converter
         return $returner;
     }
 
-    private function setField(stdClass &$item, string $fieldName, string $string): void
+    private function setField(stdClass &$item, string $fieldName, string $string, string $id = ''): void
     {
         $item->$fieldName = strip_tags($string);
-        $this->verbose(['fieldName' => ucfirst($fieldName), 'content' => $item->$fieldName]);
+        $this->verbose(['fieldName' => ($id ? '('. $id . ') ' : '') . ucfirst($fieldName), 'content' => $item->$fieldName]);
     }
 
     private function addToAuthorString(int $i, string &$string, string $addition): void
@@ -3497,12 +3480,12 @@ class Converter
                 $label = Str::replaceEnd(' in', '', $label);
                 $label = Str::replaceEnd(' at', '', $label);
             }
-            $this->setField($item, 'note', $label);
+            $this->setField($item, 'note', $label, '89');
         } elseif ($pubInfoEndsWithForthcoming) {
             // forthcoming at end
             $result = $this->extractLabeledContent($remainder, '.*', $this->endForthcomingRegExp, true);
             $journal = $result['label'];
-            $this->setField($item, 'note', $result['content']);
+            $this->setField($item, 'note', $result['content'], '90');
         } else {
             $words = $remainingWords = explode(' ', $remainder);
             $initialWords = [];
@@ -3550,7 +3533,7 @@ class Converter
             $this->verbose("Match index: " . $matchIndex);
         }
         if ($numberOfMatches) {
-            $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches[3][$matchIndex][0]));
+            $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches[3][$matchIndex][0]), '91');
             $take = $matches[0][$matchIndex][1];
             $drop = $matches[3][$matchIndex][1] + strlen($matches[3][$matchIndex][0]);
         } else {
@@ -3567,18 +3550,18 @@ class Converter
     {
         if (ctype_digit($remainder)) {
             $this->verbose('Remainder is entirely numeric, so assume it is the volume');
-            $this->setField($item, 'volume', $remainder);
+            $this->setField($item, 'volume', $remainder, '92');
             $remainder = '';
         } elseif ($remainder && preg_match('/^[IVXLCDM]{0,8}$/', $remainder)) {
             $this->verbose('Remainder is Roman number, so assume it is the volume');
-            $this->setField($item, 'volume', $remainder);
+            $this->setField($item, 'volume', $remainder, '93');
             $remainder = '';
         } elseif ($this->containsFontStyle($remainder, false, 'bold', $startPos, $length)) {
             $this->verbose('[v2] bold (startPos: ' . $startPos . ')');
-            $this->setField($item, 'volume', $this->getStyledText($remainder, false, 'bold', $before, $after, $remainder));
+            $this->setField($item, 'volume', $this->getStyledText($remainder, false, 'bold', $before, $after, $remainder), '94');
             $this->verbose('remainder: ' . ($remainder ? $remainder : '[empty]'));
             if ($remainder && ctype_digit($remainder)) {
-                $this->setField($item, 'pages', $remainder);  // could be a single page
+                $this->setField($item, 'pages', $remainder, '95');  // could be a single page
                 $remainder = '';
                 $this->verbose('[p3] pages: ' . $item->pages);
             }
@@ -3603,7 +3586,7 @@ class Converter
 
             if ($matches) {
                 $this->verbose('[p2a] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0]);
-                $this->setField($item, 'volume', $matches[2][0]);
+                $this->setField($item, 'volume', $matches[2][0], '96');
                 unset($item->number);
                 // if a match is empty, [][1] component is -1
                 $take = $matches[1][1] >= 0 ? $matches[1][1] : $matches[2][1];
@@ -3615,14 +3598,14 @@ class Converter
                 $numberOfMatches = preg_match('/(' . $this->volumeRegExp1 . ')?([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:|;)(' . $this->numberRegExp1 . ')?( )?(([1-9][0-9]{0,6}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
                 if ($numberOfMatches) {
                     $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : '') . (isset($matches[8][0]) ? ', 8: ' . $matches[8][0] : ''));
-                    $this->setField($item, 'volume', $matches[2][0]);
+                    $this->setField($item, 'volume', $matches[2][0], '97');
                     if (strlen($matches[7][0]) < 5) {
-                        $this->setField($item, 'number', $matches[6][0]);
+                        $this->setField($item, 'number', $matches[6][0], '98');
                         if ($matches[4][0]) {
                             $containsNumberDesignation = true;
                         }
                     } else {
-                        $this->setField($item, 'note', 'Article ' . $matches[6][0]);
+                        $this->setField($item, 'note', 'Article ' . $matches[6][0], '99');
                     }
                     // if a match is empty, [][1] component is -1
                     $take = $matches[1][1] >= 0 ? $matches[1][1] : $matches[2][1];
@@ -3634,10 +3617,10 @@ class Converter
                     $volume = $this->extractLabeledContent($remainder, $this->volumeRegExp1, '[1-9][0-9]{0,3}');
                     if ($volume) {
                         $this->verbose('[p2c]');
-                        $this->setField($item, 'volume', $volume);
+                        $this->setField($item, 'volume', $volume, '100');
                         $take = $drop = 0;
                     } elseif (preg_match('/^article [0-9]*$/i', $remainder)) {
-                        $this->setField($item, 'note', $remainder);
+                        $this->setField($item, 'note', $remainder, '101');
                         $take = 0;
                         $drop = strlen($remainder);
                     } else {
@@ -3646,14 +3629,14 @@ class Converter
                         if ($numberOfMatches) {
                             $this->verbose('[p2d]');
                             if (Str::startsWith($matches[3][0], ['Article', 'article'])) {
-                                $this->setField($item, 'note', $matches[3][0]);
-                                $this->setField($item, 'volume', $matches[1][0]);
+                                $this->setField($item, 'note', $matches[3][0], '102');
+                                $this->setField($item, 'volume', $matches[1][0], '103');
                             } elseif (preg_match('/^([0-9]*) *([0-9]*)[ ]*$/', $remainder, $matches)) {
-                                $this->setField($item, 'pages', $matches[2]);
-                                $this->setField($item, 'volume', $matches[1]);
+                                $this->setField($item, 'pages', $matches[2], '104');
+                                $this->setField($item, 'volume', $matches[1], '105');
                             } else {
                                 // Assume all of $remainder is volume (might be something like '123 (Suppl. 19)')
-                                $this->setField($item, 'volume', $remainder);
+                                $this->setField($item, 'volume', $remainder, '106');
                             }
                             unset($item->number);
                             $take = 0;
@@ -3671,7 +3654,7 @@ class Converter
             $remainder = trim($remainder, ',. )(');
             $this->verbose('remainder: ' . ($remainder ? $remainder : '[empty]'));
             if ($remainder && ctype_digit($remainder)) {
-                $this->setField($item, 'pages', $remainder); // could be a single page
+                $this->setField($item, 'pages', $remainder, '107'); // could be a single page
                 $remainder = '';
                 $this->verbose('[p4] pages: ' . $item->pages);
             }

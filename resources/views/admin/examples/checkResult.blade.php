@@ -8,18 +8,22 @@
 
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
-            @if ($allCorrect) 
+            @if ($allCorrect && !$showDetailsIfCorrect) 
                 <span class="bg-green-600">All correct</span> ({{ $exampleCount }} {{ Str::plural('item', $exampleCount) }})
             @else
                 @foreach ($results as $id => $result)
                     <hr>
                     <div class="my-4">
                         <p>Example {{ $id }}
-                        <span class="bg-red-600">incorrect</span> 
+                            @if ($result['result'] == 'correct')
+                                <span class="bg-green-600">Correct</span>
+                            @else
+                                <span class="bg-red-600">incorrect</span> 
+                            @endif
                         &nbsp;&bull;&nbsp;
-                        <x-link href="{{ url('/admin/runExampleCheck/1/' . $id) }}">verbose conversion</x-link>
+                        <x-link href="{{ url('/admin/runExampleCheck/1/' . ($showDetailsIfCorrect ? '1' : '0') . '/' . $id) }}">verbose conversion</x-link>
                         &nbsp;&bull;&nbsp;
-                        <x-link href="{{ url('/admin/runExampleCheck/0/' . $id) }}">brief conversion</x-link>
+                        <x-link href="{{ url('/admin/runExampleCheck/0/' . ($showDetailsIfCorrect ? '1' : '0') . '/' . $id) }}">brief conversion</x-link>
                         <br/>
                         <i>Source</i>: {{ $result['source'] }}
                         @if (isset($result['typeError']))

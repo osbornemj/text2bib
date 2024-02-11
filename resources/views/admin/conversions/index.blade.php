@@ -10,8 +10,7 @@
             <ul>
             @foreach ($conversions as $conversion)
                 <li>
-                    <x-link href="{{ url('/admin/showFile/' . $conversion->bib_file_id) }}">BibTeX file</x-link>
-                    &nbsp;&bull;&nbsp;
+                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id) }}">Source file & BibTeX file</x-link>
                     <x-link href="{{ url('/admin/showFile/' . $conversion->user_file_id) }}">source file</x-link>
                     &nbsp;&bull;&nbsp;
                     <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id) }}">convert (line sep)</x-link>

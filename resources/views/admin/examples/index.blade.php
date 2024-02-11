@@ -31,6 +31,7 @@
         <div class="p-4 sm:p-4 pt-2 sm:pt-2 sm:rounded-lg">
                 @foreach ($examples as $example)
                     <div class="bg-blue-200 dark:bg-blue-900 mt-4 px-2">
+                        {{ $example->id }}.
                         <x-link href="{{ url('admin/examples/' . $example->id . '/edit') }}">{{ $example->source }}</x-link>
                     </div>
                     <div class="bg-sky-500 dark:bg-blue-800 px-2">
@@ -43,9 +44,10 @@
                     </div>
                     <div>
                         Check conversion: 
-                        <x-link href="{{ url('admin/runExampleCheck/0/' . $example->id) }}">brief</x-link>,
-                        <x-link href="{{ url('admin/runExampleCheck/1/' . $example->id) }}">verbose (convert utf8)</x-link>,
-                        <x-link href="{{ url('admin/runExampleCheck/1/' . $example->id . '/utf8leave') }}">verbose (leave utf8)</x-link>
+                        <x-link href="{{ url('admin/runExampleCheck/0/0/' . $example->id) }}">brief</x-link>,
+                        <x-link href="{{ url('admin/runExampleCheck/1/0/' . $example->id) }}">verbose (convert utf8)</x-link>,
+                        <x-link href="{{ url('admin/runExampleCheck/1/1/' . $example->id) }}">show details even if correct</x-link>,
+                        <x-link href="{{ url('admin/runExampleCheck/1/0/' . $example->id . '/utf8leave') }}">verbose (leave utf8)</x-link>
                     </div>
                 @endforeach
             {{ $examples->links() }}
