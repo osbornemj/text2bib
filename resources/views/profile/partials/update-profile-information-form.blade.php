@@ -59,12 +59,6 @@
             @endif
         </div>
 
-        <div>
-            <x-input-label for="wants_messages" :value="__('Do you want to receive messages about text2bib?')" />
-            <x-checkbox-input id="wants_messages" class="block mt-1" type="checkbox" name="wants_messages" value="1" :checked="(old('wants_messages', $user->wants_messages))"/>
-            <x-input-error :messages="$errors->get('wants_messages')" class="mt-2" />
-        </div>
-
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

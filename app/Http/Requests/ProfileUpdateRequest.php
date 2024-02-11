@@ -20,7 +20,6 @@ class ProfileUpdateRequest extends FormRequest
             'middle_name' => [],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
-            'wants_messages' => [],
         ];
     }
 }

@@ -33,7 +33,7 @@
             The script attempts to parse the references regardless of their format.
         </p>
         <p class="mb-4">
-            The system does not extract the references from a file that contains other material, so the file you upload should contain <i>only</i> the list of references, not other text.  However,  each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem{&lt;label&gt;}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any digit or any of the characters <code>.</code>, <code>[</code>, <code>]</code>, <code>(</code>, or <code>)</code>.
+            The system does not extract the references from a file that contains other material, so the file you upload should contain <i>only</i> the list of references, not other text.  However,  each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem{&lt;label&gt;}</code>, <code>\bibitem[&lt;text&gt;]{&lt;label&gt;}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any digit or any of the characters <code>.</code>, <code>[</code>, <code>]</code>, <code>(</code>, or <code>)</code>.
         </p>
         @if (!$user)
             <p class="mb-4">

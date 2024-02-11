@@ -23,7 +23,7 @@
                         {{ $user->email_verified_at }}
                     </div>
                     <div>
-                        {{ $user->wants_messages }}
+                        {{ $user->date_last_login }}
                     </div>
                 </div>
             @endforeach

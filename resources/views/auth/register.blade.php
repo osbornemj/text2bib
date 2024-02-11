@@ -30,13 +30,6 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <!-- Wants messages? -->
-        <div class="mt-4">
-            <x-input-label for="wants_messages" :value="__('Do you want to receive messages about text2bib?')" />
-            <x-checkbox-input id="wants_messages" class="block mt-1" name="wants_messages" :checked="old('wants_messages')" />
-            <x-input-error :messages="$errors->get('wants_messages')" class="mt-2" />
-        </div>
-
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
