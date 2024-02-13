@@ -42,6 +42,7 @@
         <div style="display: block;" id="text1{{ $outputId }}">
     @endif
 
+    {{--
         @if ($status == 'changes')
             @if ($priorReportExists)
                 <span class="text-green-600">Report updated</span>
@@ -52,31 +53,32 @@
             @endif
             <br/>
         @endif
-    
+    --}}
+
     </div>
 
-    @if ($correctness == 1)
-        <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-3 dark:bg-green-400">
-            {{ __('Correct') }}
-        </x-basic-button>
-    @else 
-        <x-basic-button wire:click="setCorrectness(1)" class="ml-0 mt-3 dark:bg-slate-300">
-            {{ __('Correct') }}
-        </x-basic-button>
-    @endif
-
-    @if ($correctness == -1)
-        <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-3 dark:bg-red-400">
-            {{ __('Incorrect') }}
-        </x-basic-button>
-    @else 
-        <x-basic-button wire:click="setCorrectness(-1)" class="ml-0 mt-3 dark:bg-slate-300">
-            {{ __('Incorrect') }}
-        </x-basic-button>
-    @endif
-
     @if ($status == 'changes') 
-        <button class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest focus:outline-none transition ease-in-out duration-150 bg-blue-500">Corrected</button>
+        <button class="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest focus:outline-none transition ease-in-out duration-150 bg-blue-500">Corrected</button>
+    @else
+        @if ($correctness == 1)
+            <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-2 bg-emerald-700 dark:bg-emerald-600">
+                {{ __('Correct') }}
+            </x-basic-button>
+        @else
+            <x-basic-button wire:click="setCorrectness(1)" class="ml-0 mt-2 bg-slate-600 dark:bg-slate-300">
+                {{ __('Correct') }}
+            </x-basic-button>
+        @endif
+
+        @if ($correctness == -1)
+            <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-2 dark:bg-red-400">
+                {{ __('Incorrect') }}
+            </x-basic-button>
+        @else 
+            <x-basic-button wire:click="setCorrectness(-1)" class="ml-0 mt-2 dark:bg-slate-300">
+                {{ __('Incorrect') }}
+            </x-basic-button>
+        @endif
     @endif
 
     @if ($displayState == 'block')
@@ -89,7 +91,7 @@
             @if ($correctionsEnabled)
                 <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Edit your error report</a>
             @else
-                Your conversion error report can no longer be edited because someone else has commented on it.
+                Your conversion error report can no longer be edited because someone has commented on it.
             @endif
         @else
             {{--

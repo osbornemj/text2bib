@@ -4,8 +4,8 @@
         {{ __('Convert from text to BibTeX') }}
     </h2>
 
-    <div class="sm:px-4 lg:px-4 space-y-6 mb-4">
-        <div class="sm:p-0 pt-0 sm:pt-0">
+    <div class="space-y-6 mb-4">
+        <div class="sm:pt-0">
             <h3 class="font-semibold text-lg leading-tight">
                 {{ __('Requirements')}}
             </h3>

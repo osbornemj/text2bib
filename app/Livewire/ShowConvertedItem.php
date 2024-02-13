@@ -53,7 +53,6 @@ class ShowConvertedItem extends Component
 
         //$errorReport = ErrorReport::where('output_id', $this->outputId)->first();
         $this->correctionsEnabled = true;
-        $this->form->reportTitle = '';
         $this->errorReportExists = false;
         $this->priorReportExists = false;
 
@@ -97,14 +96,14 @@ class ShowConvertedItem extends Component
     {
         $this->correctness = $value;
         $this->displayState = $this->correctness == -1 ? 'block' : 'none';
+
+        if (in_array($value, [0, 1])) {
+            Output::find($this->outputId)->update(['correctness' => $value]);
+        }
     }
 
     public function submit(): void
     {
-        if (isset($this->form->postReport)) {
-            $this->validate();
-        }
-
         // Determine whether user has made any changes
         $changes = false;
         $output = Output::find($this->outputId);
@@ -125,8 +124,7 @@ class ShowConvertedItem extends Component
         $this->priorReportExists = $errorReport ? true : false;
         if (!$changes 
                 && $errorReport 
-                && (($errorReport->title != $this->form->reportTitle) 
-                    || ($errorReportComment && $errorReportComment->comment_text != $this->form->comment) 
+                && (($errorReportComment && $errorReportComment->comment_text != $this->form->comment) 
                     || (!$errorReportComment && $this->form->comment))) {
             $changes = true;
         }
@@ -136,7 +134,7 @@ class ShowConvertedItem extends Component
             $this->displayState = 'block';
         } else {
             // If RawOutput exists for this Output, leave it alone.  Otherwise create
-            // a RawOutput from Output.
+            // a RawOutput from Output, so that the RawOutput contains the original conversion.
             RawOutput::firstOrCreate(
                 ['output_id' => $output->id],
                 ['output_id' => $output->id, 'item_type_id' => $output->item_type_id, 'item' => $output->item]
@@ -154,7 +152,7 @@ class ShowConvertedItem extends Component
             // Restrict to fields relevant to the item_type
             $item = [];
             foreach ($inputs as $name => $content) {
-                $itemField = ItemField::where('name', $name)->first();
+                //$itemField = ItemField::where('name', $name)->first();
                 if (in_array($name, $itemType->fields)) {
                     $this->form->{$name} = $content;
                     $item[$name] = $content;
@@ -173,37 +171,37 @@ class ShowConvertedItem extends Component
             $this->fields = $itemType->fields;
 
             // File report
-            if ($this->form->postReport) {
-                $newErrorReport = ErrorReport::updateOrCreate(
-                    ['output_id' => $output->id],
-                    ['title' => $this->form->reportTitle],
-                );
-                $this->errorReportExists = true;
+            $newErrorReport = ErrorReport::updateOrCreate(
+                ['output_id' => $output->id],
+            );
+            $this->errorReportExists = true;
 
-                if ($this->priorReportExists) {
-                    if ($this->form->comment) {
-                        $errorReportComment->update([
-                            'comment_text' => $this->form->comment
-                        ]);
-                    } elseif ($errorReportComment) {
-                        $errorReportComment->delete();
-                    }
-                } elseif ($this->form->comment) {
-                    ErrorReportComment::create([
-                        'error_report_id' => $newErrorReport->id,
-                        'user_id' => Auth::user()->id,
-                        'comment_text' => $this->form->comment,
+            if ($this->priorReportExists) {
+                if ($this->form->comment) {
+                    $errorReportComment->update([
+                        'comment_text' => $this->form->comment
                     ]);
+                } elseif ($errorReportComment) {
+                    $errorReportComment->delete();
                 }
-
-                $this->errorReport = $newErrorReport;
+            } elseif ($this->form->comment) {
+                ErrorReportComment::create([
+                    'error_report_id' => $newErrorReport->id,
+                    'user_id' => Auth::user()->id,
+                    'comment_text' => $this->form->comment,
+                ]);
             }
+
+            $this->errorReport = $newErrorReport;
 
             // Notify admin?
 
             $this->status = 'changes';
             $this->displayState = 'none';
+            // correctness set to 0 because then 'correct' and 'incorrect' buttons are then neutral,
+            // and 'corrected' button appears because 'status' is 'changes'.
             $this->correctness = 0;
+            $output->update(['correctness' => -1]);
         }
     }
 }

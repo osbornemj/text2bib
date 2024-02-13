@@ -35,11 +35,7 @@ class ShowConvertedItemForm extends Form
     public $chapter;       
     public $organization;  
 
-    #[Rule('required', message: 'Please enter a short description of the error')]    
-    #[Rule('max:60', message: 'The description you have entered is too long')]    
-    public $reportTitle;
-
-    public $postReport;
+//    public $postReport;
 
     public $comment;
 }

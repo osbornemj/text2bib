@@ -12,9 +12,12 @@
     @endif
 
     @foreach ($errorReports as $errorReport)
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-8 sm:ml-4">
-            <div class="col-span-5">
-                <x-link href="{{ url('errorReport/' . $errorReport->id) }}">{{ $errorReport->created_at }}: {{ $errorReport->title }}</x-link> 
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 sm:ml-4">
+            <div class="col-span-7">
+                <x-link href="{{ url('errorReport/' . $errorReport->id) }}">{{ substr($errorReport->output->source, 0, strpos($errorReport->output->source, ' ', 60)) . ' ...' }}</x-link>
+            </div>
+            <div class="col-span-2">
+                {{ $errorReport->created_at->format('Y-m-d h:m') }}
             </div>
             <div class="mt-0 pt-0 col-span-2">
                 {{ $errorReport->output->conversion->user->fullName() }}

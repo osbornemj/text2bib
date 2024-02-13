@@ -24,7 +24,7 @@
                         [new tab/window]
                         <br/>
 
-                        <i>Source</i> {{ $convertedItem['source'] }}
+                        <i>Source</i>: {{ $convertedItem['source'] }}
                         <br/>
 
                         @if ($reportType == 'detailed') 
