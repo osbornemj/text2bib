@@ -41,25 +41,61 @@
     @else
         <div style="display: block;" id="text1{{ $outputId }}">
     @endif
-    @if ($status == 'changes')
-        @if ($priorReportExists)
-            <span class="text-green-600">Report updated</span>
-        @elseif ($errorReportExists)
-            <span class="text-green-600">Changes saved and report filed</span>
-        @else
-            <span class="text-green-600">Changes saved</span>
+
+        @if ($status == 'changes')
+            @if ($priorReportExists)
+                <span class="text-green-600">Report updated</span>
+            @elseif ($errorReportExists)
+                <span class="text-green-600">Changes saved and report filed</span>  
+            @else
+                <span class="text-green-600">Changes saved</span>
+            @endif
+            <br/>
         @endif
-        <br/>
+    
+    </div>
+
+    @if ($correctness == 1)
+        <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-3 dark:bg-green-400">
+            {{ __('Correct') }}
+        </x-basic-button>
+    @else 
+        <x-basic-button wire:click="setCorrectness(1)" class="ml-0 mt-3 dark:bg-slate-300">
+            {{ __('Correct') }}
+        </x-basic-button>
     @endif
-    @if ($errorReportExists)
-        @if ($correctionsEnabled)
-            <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Edit your error report</a>
-        @else
-            Your conversion error report can no longer be edited because someone else has commented on it.
-        @endif
+
+    @if ($correctness == -1)
+        <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-3 dark:bg-red-400">
+            {{ __('Incorrect') }}
+        </x-basic-button>
+    @else 
+        <x-basic-button wire:click="setCorrectness(-1)" class="ml-0 mt-3 dark:bg-slate-300">
+            {{ __('Incorrect') }}
+        </x-basic-button>
+    @endif
+
+    @if ($status == 'changes') 
+        <button class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest focus:outline-none transition ease-in-out duration-150 bg-blue-500">Corrected</button>
+    @endif
+
+    @if ($displayState == 'block')
+        <div style="display: none;" id="text1{{ $outputId }}">
     @else
-        <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Correct entry and optionally report conversion error</a>
+        <div style="display: block;" id="text1{{ $outputId }}">
     @endif
+
+        @if ($errorReportExists)
+            @if ($correctionsEnabled)
+                <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Edit your error report</a>
+            @else
+                Your conversion error report can no longer be edited because someone else has commented on it.
+            @endif
+        @else
+            {{--
+            <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Correct entry and optionally report conversion error</a>
+            --}}
+        @endif
     </div>
 
     <div style="display:{{ $displayState }};" class="dark:bg-slate-600 bg-slate-300 p-4 mt-4" id="reportForm{{ $outputId }}">
@@ -85,19 +121,8 @@
 
             @if ($correctionsEnabled)
                 <div>
-                    <x-checkbox-input id="postReport" class="peer" type="checkbox" value="1" name="postReport" wire:model="form.postReport" />
-                    <span class="text-sm font-medium ml-1 text-gray-700 dark:text-gray-300">Report conversion error?</span>
-
-                    <div class="hidden peer-checked:block">
-                        <x-input-label for="reportTitle" value="Title of report (short description of error, max 60 characters)" />
-                        <x-text-input id="reportTitle" class="block mt-1 w-full" type="text" maxlength="60" name="reportTitle" value="form.reportTitle" wire:model="form.reportTitle"/>
-                        <div role="alert" class="mt-4 mb-4">
-                            @error('form.reportTitle') <span class="text-red-800 rounded px-0 py-0">{{ $message }}</span> @enderror 
-                        </div>
-
-                        <x-input-label for="comment" value="Comment on error (optional)" />
-                        <x-textarea-input rows="2" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="form.comment"/>
-                    </div>
+                    <x-input-label for="comment" value="Comment on error (optional; will be visible publicly)" />
+                    <x-textarea-input rows="2" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="form.comment"/>
                 </div>
             @endif
 
@@ -107,12 +132,8 @@
                 </div>
             @endif
 
-            @php
-                $buttonText = $errorReportExists ? 'Submit correction' : 'Submit correction';
-            @endphp
-
             <x-primary-button class="ml-0 mt-3">
-                {{ __($buttonText) }}
+                {{ __('Submit correction') }}
             </x-primary-button>
 
             <x-secondary-button class="ml-0 mt-3">

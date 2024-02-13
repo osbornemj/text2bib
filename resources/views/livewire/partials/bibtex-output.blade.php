@@ -1,6 +1,6 @@
 <div>
     <h2 class="font-semibold text-xl leading-tight my-4">
-        {{ __('Bibtex file') }}
+        {{ __('File conversion report') }}
     </h2>
 
     <div class="sm:px-4 lg:px-0 space-y-6 pb-6">
@@ -8,9 +8,6 @@
             <p>
                 <x-link href="{{ url('downloadBibtex/' . $conversionId) }}">Download BibTeX file</x-link>
             </p>
-            <div>
-                <livewire:rating :conversionId="$conversionId" />
-            </div>
             <ul>
                 @foreach ($convertedItems as $outputId => $convertedItem)
                 <div class="mt-4">
@@ -27,10 +24,8 @@
                         [new tab/window]
                         <br/>
 
-                        @if ($includeSource) 
-                            % {{ $convertedItem['source'] }}
-                            <br/>
-                        @endif
+                        <i>Source</i> {{ $convertedItem['source'] }}
+                        <br/>
 
                         @if ($reportType == 'detailed') 
                         <ul>

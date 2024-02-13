@@ -33,6 +33,7 @@ class ShowConvertedItem extends Component
 
     public $displayState;
     public $status;
+    public $correctness = 0;
     public $errorReportExists;
     public $priorReportExists;
     public $correctionsEnabled;
@@ -83,12 +84,19 @@ class ShowConvertedItem extends Component
     public function hideForm()
     {
         $this->displayState = 'none';
+        $this->correctness = 0;
     }
 
     public function updatedItemTypeId()
     {
         $this->fields = ItemType::find($this->itemTypeId)->fields;
         $this->displayState = 'block';
+    }
+
+    public function setCorrectness($value)
+    {
+        $this->correctness = $value;
+        $this->displayState = $this->correctness == -1 ? 'block' : 'none';
     }
 
     public function submit(): void
@@ -129,7 +137,7 @@ class ShowConvertedItem extends Component
         } else {
             // If RawOutput exists for this Output, leave it alone.  Otherwise create
             // a RawOutput from Output.
-            $rawOutput = RawOutput::firstOrCreate(
+            RawOutput::firstOrCreate(
                 ['output_id' => $output->id],
                 ['output_id' => $output->id, 'item_type_id' => $output->item_type_id, 'item' => $output->item]
             );
@@ -195,11 +203,7 @@ class ShowConvertedItem extends Component
 
             $this->status = 'changes';
             $this->displayState = 'none';
+            $this->correctness = 0;
         }
-    }
-
-    public function render()
-    {
-        return view('livewire.show-converted-item');
     }
 }

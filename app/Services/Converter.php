@@ -991,11 +991,11 @@ class Converter
                 if (isset($workingPaperMatches[0][1]) && $workingPaperMatches[0][1] > 0) {
                     // Chars before 'Working Paper'
                     $this->setField($item, 'institution', trim(substr($remainder, 0, $workingPaperMatches[0][1] - 1), ' .,'), '29');
-                    $remainder = trim(substr($remainder, $workingPaperMatches[3][1] + strlen($item->number)), ' .,');
+                    $remainder = trim(substr($remainder, $workingPaperMatches[3][1] + strlen($number)), ' .,');
                 } else {
                     // No chars before 'Working paper'---so take string after number to be institution
                     $n = isset($workingPaperMatches[3][1]) ? $workingPaperMatches[3][1] : 0;
-                    $this->setField($item, 'institution', trim(substr($remainder, $n + strlen($item->number)), ' .,'), '30');
+                    $this->setField($item, 'institution', trim(substr($remainder, $n + strlen($number)), ' .,'), '30');
                     $remainder = '';
                 }
                 if (!$item->institution) {

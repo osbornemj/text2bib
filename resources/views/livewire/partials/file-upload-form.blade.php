@@ -33,7 +33,6 @@
     @csrf
 
     <div>
-        <x-input-label for="file" :value="__('File')" />
         <x-text-input id="file" class="block mt-1 max-w-xl w-full" type="file" name="file" wire:model="uploadForm.file" accept="txt"
             required autofocus />
         <x-input-error :messages="$errors->get('uploadForm.file')" class="mt-2" />
