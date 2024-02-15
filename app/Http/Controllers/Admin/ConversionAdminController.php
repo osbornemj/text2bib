@@ -20,7 +20,8 @@ class ConversionAdminController extends Controller
     public function index()
     {
         $conversions = Conversion::orderByDesc('created_at')
-            ->with('userFile.user')
+            ->with('user')
+            ->withCount('outputs')
             ->paginate(config('constants.items_page'));
 
         return view('admin.conversions.index', compact('conversions'));
@@ -33,7 +34,9 @@ class ConversionAdminController extends Controller
                     ->orderBy('seq')
                     ->get();
 
-        return view('admin.conversions.show', compact('outputs'));
+        $conversion = Conversion::find($conversionId);
+
+        return view('admin.conversions.show', compact('outputs', 'conversion'));
     }
 
     public function convert(int $fileId, string|null $itemSeparator = null): RedirectResponse

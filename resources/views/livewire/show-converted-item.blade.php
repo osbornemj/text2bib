@@ -89,7 +89,7 @@
 
         @if ($errorReportExists)
             @if ($correctionsEnabled)
-                <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Edit your error report</a>
+                <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Edit your correction</a>
             @else
                 Your conversion error report can no longer be edited because someone has commented on it.
             @endif

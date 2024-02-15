@@ -149,11 +149,11 @@ class ShowConvertedItem extends Component
 
             $inputs = $this->form->except('comment');
 
-            // Restrict to fields relevant to the item_type
+            // Restrict to fields relevant to the item_type that are not empty
             $item = [];
             foreach ($inputs as $name => $content) {
                 //$itemField = ItemField::where('name', $name)->first();
-                if (in_array($name, $itemType->fields)) {
+                if (in_array($name, $itemType->fields) && $content) {
                     $this->form->{$name} = $content;
                     $item[$name] = $content;
                 }
