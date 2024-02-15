@@ -32,5 +32,5 @@
         @endforeach
     @endif
 @else
-{{ $details }}
+    {{ $details }}
 @endif

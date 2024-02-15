@@ -41,28 +41,30 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // TEST
-    //Route::get('/process', [ConversionController::class, 'process'])->name('process');
-    //
-    Route::get('/dashboard', [IndexController::class, 'index'])->name('dashboard');
-    Route::get('/convertFile', [IndexController::class, 'convertFile'])->name('convertFile');
-    Route::post('/convertFile', [IndexController::class, 'convertFile'])->name('convertFile');
-    Route::get('/errorReports', [ErrorReportController::class, 'index'])->name('errorReports');
-    Route::get('/errorReport/{id}', [ErrorReportController::class, 'show'])->name('errorReport');
-    Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
-    Route::get('/about', [IndexController::class, 'about'])->name('about');
+    Route::controller(IndexController::class)->group(function () {
+        Route::get('/dashboard', 'index')->name('dashboard');
+        Route::get('/convertFile', 'convertFile')->name('convertFile');
+        Route::post('/convertFile', 'convertFile')->name('convertFile');
+        Route::get('/about', 'about')->name('about');
+    });
+
+    Route::controller(ErrorReportController::class)->group(function () {
+        Route::get('/errorReports', 'index')->name('errorReports');
+        Route::get('/errorReport/{id}', 'show')->name('errorReport');
+        Route::get('/convertErrorSource/{id}', 'convertSource')->name('convertErrorSource');
+    });
 
     Route::controller(ConversionController::class)->group(function () {
         Route::get('/convert/{conversionId}/{userFileId?}/{itemSeparator?}', 'convert')->name('file.convert');
         Route::get('/redo/{id}', 'redo')->name('redo');
-    //    Route::get('/convertIncremental/{conversionId}/{index?}', 'convertIncremental')->name('file.convertIncremental');
-    //    Route::post('/addToBibtex/{conversionId}', 'addToBibtex')->name('file.addToBibtex');
         Route::post('/addOutput/{conversionId}', 'addOutput')->name('conversion.addOutput');
         Route::get('/showBibtex/{conversionId}', 'showBibtex')->name('conversion.showBibtex');
         Route::get('/encodingError/{conversionId}', 'encodingError')->name('conversion.encodingError');
         Route::get('/itemSeparatorError/{conversionId}', 'itemSeparatorError')->name('conversion.itemSeparatorError');
         Route::get('/downloadBibtex/{conversionId}', 'downloadBibtex')->name('conversion.downloadBibtex');
     });
+
+    Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
 });
 
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {

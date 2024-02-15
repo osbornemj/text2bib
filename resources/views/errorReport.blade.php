@@ -22,7 +22,13 @@
             </p>
             <dl>
                 <x-dt>Source</x-dt>
-                <x-dd>{{ $errorReport->output->source }}</x-dd>
+                <x-dd>
+                    {{ $errorReport->output->source }}
+                    @if (Auth::user()->is_admin)
+                        <br/>
+                        <x-link href="{{ url('convertErrorSource/' . $errorReport->id) }}" target="_blank">Convert (verbose)</x-link> (in new tab/window)
+                    @endif
+                </x-dd>
             </dl>
 
             @if ($errorReport->output->item_type_id == $errorReport->output->rawOutput->item_type_id)
@@ -40,8 +46,7 @@
                             @endphp
                             <ul class="ml-6">
                                 @if ($outputContent != $rawOutputContent)
-                                    <li><span class="text-red-600">{{ $fieldName }} = {{ $rawOutputContent }}</span></li>
-                                    <li><span class="text-green-700">{{ $fieldName }} = {{ $outputContent }}</span></li>
+                                    <li>{{ $fieldName }} = <span class="text-red-600">{{ $rawOutputContent }}</span> &nbsp;&rarr;&nbsp; <span class="text-green-700">{{ $outputContent }}</span></li>
                                 @elseif ($rawOutputContent)
                                     <li>{{ $fieldName }} = {{ $rawOutputContent }}</li>
                                 @endif

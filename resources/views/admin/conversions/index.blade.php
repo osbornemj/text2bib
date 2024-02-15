@@ -14,7 +14,7 @@
                     &nbsp;&bull;&nbsp;
                     {{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}:
                     @foreach ($conversion->correctnessCounts() as $key => $value)
-                        <span class="@if ($key == -1) bg-red-500 @elseif ($key == 1) bg-emerald-500 @else bg-slate-500 @endif">{{ $value }}</span>
+                        <span class="@if ($key == -1) bg-red-500 @elseif ($key == 1) bg-emerald-500 @else bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
                     @endforeach
                     &nbsp;&bull;&nbsp;
                     <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id) }}">convert (line sep)</x-link>
