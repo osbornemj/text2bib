@@ -892,8 +892,6 @@ class Converter
                     if ($item->pages) {
                         $this->verbose(['fieldName' => 'Pages', 'content' => strip_tags($item->pages)]);
                         $pagesReported = true;
-                    } else {
-                        $warnings[] = "No page range found.";
                     }
                     $this->verbose("[p1] Remainder: " . $remainder);
 
@@ -1818,8 +1816,13 @@ class Converter
             $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
         }
 
-        if (isset($item->pages) && !$item->pages) {
-            unset($item->pages);
+        if (!isset($item->pages) || (isset($item->pages) && !$item->pages)) {
+            if (isset($item->pages)) {
+                unset($item->pages);
+            }
+            if (in_array($itemKind, ['article', 'incollection', 'inproceedings'])) {
+                $warnings[] = "No page range found.";
+            }
         }
 
         if (isset($item->publisher) && $item->publisher == '') {
@@ -2934,7 +2937,6 @@ class Converter
         */
 
         $italicText = $this->getStyledText($string, $start, 'italics', $beforeItalics, $afterItalics, $remains);
-
         if ($italicsOnly) {
             if ($italicText && (!$start || strlen($beforeItalics) == 0)) {
                 $before = $beforeItalics;
@@ -3100,17 +3102,21 @@ class Converter
     }
 
     /**
-     * trimRightPeriod: remove trailing period if preceding character is not uppercase letter
+     * trimRightPeriod: remove trailing period if preceding character is not uppercase letter and word is in dictionary
      * @param $string string
      * return trimmed string
      */
     private function trimRightPeriod(string $string): string
     {
+        $lastWord = substr($string, strrpos($string, ' ')+1, -1);
+
         if ($string == '' || $string == '.') {
             $trimmedString = '';
         } elseif (strlen($string) == 1) {
             $trimmedString = $string;
-        } elseif (substr($string, -1) == '.' && strtoupper(substr($string, -2, 1)) != substr($string, -2, 1)) {
+        } elseif (substr($string, -1) == '.' 
+                && strtoupper(substr($string, -2, 1)) != substr($string, -2, 1)
+                && $this->inDict($lastWord)) {
             $trimmedString = substr($string, 0, -1);
         } else {
             $trimmedString = $string;

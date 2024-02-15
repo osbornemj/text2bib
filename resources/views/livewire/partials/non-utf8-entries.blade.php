@@ -10,7 +10,9 @@
             </p>
             <ul class="mt-4 mb-4">
             @foreach ($nonUtf8Entries as $entry)
-                <li class="ml-6 mt-4">{{ $entry }}</li>
+                <li class="ml-6 mt-4">
+                    {{ $entry }}
+                </li>
             @endforeach
             </ul>
         </div>

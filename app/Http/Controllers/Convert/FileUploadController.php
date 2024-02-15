@@ -16,6 +16,7 @@ use App\Models\UserSetting;
 // Not used?  (Replaced by Livewire component ConvertFile.)
 class FileUploadController extends Controller
 {
+    /*
     public function upload(ConversionRequest $request): RedirectResponse
     {
         $validatedRequest = $request->validated();
@@ -56,4 +57,5 @@ class FileUploadController extends Controller
 
         return redirect('convert/' . $conversion->id);
     }
+    */
 }
