@@ -40,8 +40,10 @@
                             @endphp
                             <ul class="ml-6">
                                 @if ($outputContent != $rawOutputContent)
-                                <li><span class="text-red-600">{{ $fieldName }} = {{ $rawOutputContent }}</span></li>
-                                <li><span class="text-green-700">{{ $fieldName }} = {{ $outputContent }}</span></li>
+                                    <li><span class="text-red-600">{{ $fieldName }} = {{ $rawOutputContent }}</span></li>
+                                    <li><span class="text-green-700">{{ $fieldName }} = {{ $outputContent }}</span></li>
+                                @elseif ($rawOutputContent)
+                                    <li>{{ $fieldName }} = {{ $rawOutputContent }}</li>
                                 @endif
                             </ul>
                         @endforeach

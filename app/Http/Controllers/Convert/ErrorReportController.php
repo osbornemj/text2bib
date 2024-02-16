@@ -12,9 +12,6 @@ class ErrorReportController extends Controller
     public function index()
     {
         $errorReports = ErrorReport::with('output')
-            // ->with('output.itemType')
-            // ->with('output.rawOutput.fields.itemField')
-            // ->with('output.rawOutput.itemType')
             ->orderBy('created_at', 'desc')
             ->paginate();
 
