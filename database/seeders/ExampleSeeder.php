@@ -1952,7 +1952,76 @@ class ExampleSeeder extends Seeder
                             'author' => 'Martin, Jr., R. H.',
                             'title' => 'Nonlinear Operators and Differential Equations in {B}anach Space',
                             ]
-                    ],                                                                                                    
+                    ],
+                    [
+                        'source' => 'Giavoni, A., & Tamayo, Á. (2003). Spatials analysis: Concept, Method and Applicability/Análise Espacial: Conceito, Método e Aplicabilidade. Psicologia: Reflexão e Critica, 16(2), 303-307.',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '2003',
+                            'pages' => '303-307',
+                            'title' => 'Spatials analysis: Concept, Method and Applicability/An{\\\'a}lise Espacial: Conceito, M{\\\'e}todo e Aplicabilidade',
+                            'author' => 'Giavoni, A. and Tamayo, {\\\'A}.',
+                            'number' => '2',
+                            'volume' => '16',
+                            'journal' => 'Psicologia: Reflex{\\=a}o e Critica',
+                            ]
+                    ],
+                    [
+                        'source' => 'Couldry, Nick. "On the Actual Street." In The Media and the Tourist Imagination: Converging Cultures, edited by David Crouch, Rhona Jackson, and Felix Thompson. London: Routledge, 2005. 60-75. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '2005',
+                            'pages' => '60-75',
+                            'title' => 'On the Actual Street',
+                            'author' => 'Couldry, Nick',
+                            'editor' => 'David Crouch and Rhona Jackson and Felix Thompson',
+                            'address' => 'London',
+                            'booktitle' => 'The Media and the Tourist Imagination: Converging Cultures',
+                            'publisher' => 'Routledge',
+                            ]
+                    ],
+                    [
+                        'source' => 'Fukunishi Suzuki, Midori. "Women and Television: Portrayal of Women in Mass Media." In Japanese Women: New Feminist Perspectives on the Past, Present, and Future, edited by Kumiko Fujimura-Fanselow and Atsuko Kameda. New York: Feminist Press at the City University of New York, 1995. 75-92. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '1995',
+                            'pages' => '75-92',
+                            'title' => 'Women and Television: Portrayal of Women in Mass Media',
+                            'author' => 'Fukunishi Suzuki and Midori',
+                            'editor' => 'Kumiko Fujimura-Fanselow and Atsuko Kameda',
+                            'address' => 'New York',
+                            'booktitle' => 'Japanese Women: New Feminist Perspectives on the Past, Present, and Future',
+                            'publisher' => 'Feminist Press at the City University of New York',
+                            ]
+                    ],
+                    [
+                        'source' => 'Hills, Matt. "Media Academics as Media Audiences." In Fandom: Identities and Communities in a Mediated World, edited by Jonathan Gray, Cornel Sandvoss, and C. Lee Harrington. New York: New York University Press, 2007. 33-47. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '2007',
+                            'pages' => '33-47',
+                            'title' => 'Media Academics as Media Audiences',
+                            'author' => 'Hills, Matt',
+                            'address' => 'New York',
+                            'booktitle' => 'Fandom: Identities and Communities in a Mediated World',
+                            'editor' => 'Jonathan Gray and Cornel Sandvoss and C. Lee Harrington',
+                            'publisher' => 'New York University Press',
+                            ]
+                    ],
+                    [
+                        'source' => 'Hills, Matt. "Virtually out There: Strategies, Tactics, and Affective Spaces in On-line Fandom." Edited by Sally Munt. In Technospaces: inside the New Media. London: Continuum, 2001. 147-60.  ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '2001',
+                            'pages' => '147-60',
+                            'title' => 'Virtually out There: Strategies, Tactics, and Affective Spaces in On-line Fandom',
+                            'author' => 'Hills, Matt',
+                            'editor' => 'Sally Munt',
+                            'address' => 'London',
+                            'booktitle' => 'Technospaces: inside the New Media',
+                            'publisher' => 'Continuum',
+                            ]
+                    ],
                 ];
 
             DB::statement('DELETE FROM examples');

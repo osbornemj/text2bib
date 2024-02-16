@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CitiesController;
 use App\Http\Controllers\Admin\ConversionAdminController;
+use App\Http\Controllers\Admin\DictionaryNamesController;
 use App\Http\Controllers\Admin\ExamplesController;
 use App\Http\Controllers\Admin\ExampleCheckController;
 use App\Http\Controllers\Admin\ExampleFieldsController;
@@ -77,6 +78,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         '/admin/cities' => CitiesController::class,
         '/admin/names' => NamesController::class,
         '/admin/excludedWords' => ExcludedWordsController::class,
+        '/admin/dictionaryNames' => DictionaryNamesController::class,
     ]);
 
     Route::get('/admin/index', [AdminController::class, 'index'])->name('admin.index');

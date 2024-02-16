@@ -66,7 +66,11 @@
                 <x-link :href="route('excludedWords.index')" :active="request()->routeIs('excludedWords.index')">
                     Excluded words
                 </x-link>
-                (words that are in the dictionary but are not standard words and are used as abbreviations in journal names)
+            </p>
+            <p>
+                <x-link :href="route('dictionaryNames.index')" :active="request()->routeIs('dictionaryNames.index')">
+                    Dictionary names
+                </x-link>
             </p>
         </div>
     </div>

@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 
 use App\Models\City;
 use App\Models\Conversion;
+use App\Models\DictionaryName;
 use App\Models\ExcludedWord;
 use App\Models\Name;
 use App\Models\Publisher;
@@ -25,6 +26,7 @@ class Converter
     var $bookTitleAbbrevs;
     var $cities;
     var $detailLines;
+    var $dictionaryNames;
     var $editionRegExp;
     var $editorStartRegExp;
     var $editorRegExp;
@@ -82,6 +84,9 @@ class Converter
     {
         // Words that are in dictionary but are abbreviations in journal names
         $this->excludedWords = ExcludedWord::all()->pluck('word')->toArray();
+
+        // Words that are in dictionary but are names
+        $this->dictionaryNames = DictionaryName::all()->pluck('word')->toArray();
 
         // Introduced to facilitate a variety of languages, but the assumption that the language of the 
         // citation --- though not necessarily of the reference itself --- is English pervades the code.
@@ -1043,7 +1048,6 @@ class Converter
                 // If a string in $remainder is quoted or italicized, take that to be book title
                 $booktitle = $this->getQuotedOrItalic($remainder, false, false, $before, $after);
                 $newRemainder = $remainder = $before . ltrim($after, ".,' ");
-                $this->verbose('booktitle case 1');
 
                 if ($booktitle) {
                     $this->setField($item, 'booktitle', $booktitle, '32');
@@ -1111,7 +1115,7 @@ class Converter
                         $tempRemainder = $this->findAndRemove($tempRemainder, $publisherString);
                     }
                     $tempRemainder = trim($tempRemainder, ',.:() ');
-                    $this->verbose('tempRemainder: ' . $tempRemainder);
+                    $this->verbose('[in13] tempRemainder: ' . $tempRemainder);
 
                     // If item doesn't contain string identifying editors, look more carefully to see whether
                     // it contains a string that could be editors' names.
@@ -1188,157 +1192,168 @@ class Converter
                         $after = Str::after($remainder, $eds);
                         $publisherPosition = strpos($after, $publisher);
                         $remainderContainsEds = true;
+                    } elseif (preg_match('/^(.*?)(edited by)(.*?)$/i', $remainder, $matches)) {
+                        $this->verbose('Remainder contains \'edited by\'.  Taking it to be <booktitle> edited by <editor> <publicationInfo>');
+                        $booktitle = trim($matches[1], ', ');
+                        // Authors and publication info
+                        $rest = trim($matches[3]);
+                        $result = $this->convertToAuthors(explode(' ', $rest), $remainder, $trash, $isEditor);
+                        $this->setField($item, 'editor', trim($result['authorstring']));
+                        $updateRemainder = false;
                     }
 
-                    // Require string for editors to have at least 6 characters and string for booktitle to have at least 10 characters
-                    if ($remainderContainsEds && $before > 5 && $publisherPosition !== false && $publisherPosition > 10) {
-                            // $remainder is <editors> eds <booktitle> <publicationInfo>
-                            $this->verbose("Remainder seems to be <editors> eds <booktitle> <publicationInfo>");
+                    if (!isset($item->editor)) {
+
+                        // Require string for editors to have at least 6 characters and string for booktitle to have at least 10 characters
+                        if ($remainderContainsEds && strlen($before) > 5 && $publisherPosition !== false && $publisherPosition > 10) {
+                                // $remainder is <editors> eds <booktitle> <publicationInfo>
+                                $this->verbose("Remainder seems to be <editors> eds <booktitle> <publicationInfo>");
+                                $editorStart = true;
+                                $editorString = $before;
+                                $determineEnd = false;
+                                $postEditorString = $after;
+                        } elseif (preg_match($this->edsRegExp1, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                            // $remainder contains "(Eds.)" (parens required) or similar
+                            if ($this->isNameString($remainder)) {
+                                // CASE 1
+                                // $remainder starts with names, and so
+                                // $remainder is <editors> (Eds.) <booktitle> <publicationInfo>
+                                $this->verbose("Remainder contains \"(Eds.)\" or similar and starts with string that looks like a name");
+                                $editorStart = true;
+                                $editorString = substr($remainder, 0, $matches[0][1]);
+                                $determineEnd = false;
+                                $postEditorString = substr($remainder, $matches[0][1] + strlen($matches[0][0]));
+                                $this->verbose("editorString: " . $editorString);
+                                $this->verbose("postEditorString: " . $postEditorString);
+                                $this->verbose("[in4] Remainder: " . $remainder);
+                            } else {
+                                // CASE 2
+                                // $remainder does not start with names, and so
+                                // $remainder is <booktitle>[,.] <editors> (Eds.) <publicationInfo>
+                                $this->verbose("Remainder contains \"(Eds.)\" or similar but starts with string that does not look like a name");
+                                $editorStart = false;
+                                $endAuthorPos = $matches[0][1];
+                                $edStrLen = strlen($matches[0][0]);
+                            }
+                        } elseif (preg_match($this->editorStartRegExp, $remainder)) {
+                            // CASE 3
+                            // $remainder does not contain "(Eds.)" but starts with "Eds" or similar, and so
+                            // $remainder is Eds. <editors> <booktitle> <publicationInfo>
+                            $this->verbose("Remainder does not contain string like \"(Eds.)\" but starts with \"Eds\" or similar");
                             $editorStart = true;
-                            $editorString = $before;
-                            $determineEnd = false;
-                            $postEditorString = $after;
-                    } elseif (preg_match($this->edsRegExp1, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                        // $remainder contains "(Eds.)" (parens required) or similar
-                        if ($this->isNameString($remainder)) {
-                            // CASE 1
-                            // $remainder starts with names, and so
-                            // $remainder is <editors> (Eds.) <booktitle> <publicationInfo>
-                            $this->verbose("Remainder contains \"(Eds.)\" or similar and starts with string that looks like a name");
-                            $editorStart = true;
-                            $editorString = substr($remainder, 0, $matches[0][1]);
-                            $determineEnd = false;
-                            $postEditorString = substr($remainder, $matches[0][1] + strlen($matches[0][0]));
-                            $this->verbose("editorString: " . $editorString);
-                            $this->verbose("postEditorString: " . $postEditorString);
-                            $this->verbose("[in4] Remainder: " . $remainder);
-                        } else {
-                            // CASE 2
-                            // $remainder does not start with names, and so
-                            // $remainder is <booktitle>[,.] <editors> (Eds.) <publicationInfo>
-                            $this->verbose("Remainder contains \"(Eds.)\" or similar but starts with string that does not look like a name");
-                            $editorStart = false;
-                            $endAuthorPos = $matches[0][1];
-                            $edStrLen = strlen($matches[0][0]);
-                        }
-                    } elseif (preg_match($this->editorStartRegExp, $remainder)) {
-                        // CASE 3
-                        // $remainder does not contain "(Eds.)" but starts with "Eds" or similar, and so
-                        // $remainder is Eds. <editors> <booktitle> <publicationInfo>
-                        $this->verbose("Remainder does not contain string like \"(Eds.)\" but starts with \"Eds\" or similar");
-                        $editorStart = true;
-                        $remainder = $editorString = ltrim(strstr($remainder, ' '), ' ');
-                        $determineEnd = true;
-                        $this->verbose("editorString: " . $editorString);
-                        $this->verbose("[in5] Remainder: " . $remainder);
-                        if (substr($remainder, 0, strlen($phrases['and'])+1) == $phrases['and'] . ' ') {
-                            // In this case, the string starts something like 'ed. and '.  Assume the next
-                            // word is something like 'translated', and drop it
-                            $words = explode(" ", $remainder);
-                            $leftover = array_shift($words);
-                            $leftover .= " " . array_shift($words);
-                            $warnings[] = "Don't know what to do with: " . $leftover;
-                            $remainder = $editorString = implode(" ", $words);
-                        }
-                    } else {
-                        // $remainder does not contain "(Eds.)" or start with "Eds"
-                        if ($this->isNameString($remainder)) {
-                            // CASE 4
-                            // $remainder is <editors> <booktitle> <publicationInfo>
-                            $this->verbose("Remainder does not contain \"(Eds.)\" or similar string in parentheses and does not start with \"Eds\" or similar, but starts with a string that looks like a name");
-                            $editorStart = true;
-                            $editorString = $remainder;
+                            $remainder = $editorString = ltrim(strstr($remainder, ' '), ' ');
                             $determineEnd = true;
                             $this->verbose("editorString: " . $editorString);
-                            $this->verbose("[in6] Remainder: " . $remainder);
+                            $this->verbose("[in5] Remainder: " . $remainder);
+                            if (substr($remainder, 0, strlen($phrases['and'])+1) == $phrases['and'] . ' ') {
+                                // In this case, the string starts something like 'ed. and '.  Assume the next
+                                // word is something like 'translated', and drop it
+                                $words = explode(" ", $remainder);
+                                $leftover = array_shift($words);
+                                $leftover .= " " . array_shift($words);
+                                $warnings[] = "Don't know what to do with: " . $leftover;
+                                $remainder = $editorString = implode(" ", $words);
+                            }
                         } else {
-                            // CASE 5
-                            // $remainder is <booktitle> <editors> <publicationInfo>
-                            $this->verbose("Remainder does not contain \"(Eds.)\" or similar and does not start with \"Eds\" or similar, and does not start with a string that looks like a name");
-                            $editorStart = false;
-                            $edStrLen = 0;
-                            $endAuthorPos = 0;
-                        }
-                    }
-
-                    if ($editorStart) {
-                        // CASES 1, 3, and 4
-                        $this->verbose("[ed1] Remainder starts with editor string");
-                        $words = explode(' ', $editorString);
-                        // $isEditor is used only for a book (with an editor, not an author)
-                        $isEditor = false;
-
-                        $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $isEditor, $determineEnd);
-                        $editorString = trim($editorConversion['authorstring'], '() ');
-                        foreach ($editorConversion['warnings'] as $warning) {
-                            $warnings[] = $warning;
-                        }
-
-                        $this->setField($item, 'editor', trim($editorString, ' ,.'), '43');
-                        $newRemainder = $postEditorString ? $postEditorString : $remainder;
-                        // $newRemainder consists of <booktitle> <publicationInfo>
-                        $newRemainder = trim($newRemainder, '., ');
-                        $this->verbose("[in7] Remainder: " . $newRemainder);
-                    } else {
-                        // CASES 2 and 5
-                        $this->verbose("Remainder: " . $remainder);
-                        $this->verbose("[ed2] Remainder starts with book title");
-
-                        // Take book title to be string up to first comma or period that does not follow an uppercase letter
-                        $leftParenCount = $rightParenCount = 0;
-                        for ($j = 0; $j < strlen($remainder) && ! $booktitle; $j++) {
-                            $stringTrue = true;
-                            if ($remainder[$j] == '(') {
-                                $leftParenCount++;
-                            } elseif ($remainder[$j] == ')') {
-                                $rightParenCount++;
-                            }
-                            foreach ($this->bookTitleAbbrevs as $bookTitleAbbrev) {
-                                if (substr($remainder, $j - strlen($bookTitleAbbrev), strlen($bookTitleAbbrev)) == $bookTitleAbbrev) {
-                                    $stringTrue = false;
-                                }
-                            }
-                            if  (
-                                    // Don't stop in middle of parenthetical phrase
-                                    $leftParenCount == $rightParenCount
-                                    &&
-                                    (
-                                        $j == strlen($remainder) - 1
-                                        ||
-                                        (
-                                            $remainder[$j] == '.'
-                                            &&
-                                            !($remainder[$j-2] == ' ' && strtoupper($remainder[$j-1]) == $remainder[$j-1])
-                                            &&
-                                            $stringTrue
-                                        )
-                                        ||
-                                            $remainder[$j] == ','
-                                        ||
-                                        (
-                                            in_array($remainder[$j], ['(', '['])
-                                            && $this->isNameString(substr($remainder, $j+1))
-                                        )
-                                    )
-                                ) {
-                                $booktitle = trim(substr($remainder, 0, $j+1), ', ');
-                                $this->verbose('booktitle case 4');
-                                $newRemainder = rtrim(substr($remainder, $j + 1), ',. ');
+                            // $remainder does not contain "(Eds.)" or start with "Eds"
+                            if ($this->isNameString($remainder)) {
+                                // CASE 4
+                                // $remainder is <editors> <booktitle> <publicationInfo>
+                                $this->verbose("Remainder does not contain \"(Eds.)\" or similar string in parentheses and does not start with \"Eds\" or similar, but starts with a string that looks like a name");
+                                $editorStart = true;
+                                $editorString = $remainder;
+                                $determineEnd = true;
+                                $this->verbose("editorString: " . $editorString);
+                                $this->verbose("[in6] Remainder: " . $remainder);
+                            } else {
+                                // CASE 5
+                                // $remainder is <booktitle> <editors> <publicationInfo>
+                                $this->verbose("Remainder does not contain \"(Eds.)\" or similar and does not start with \"Eds\" or similar, and does not start with a string that looks like a name");
+                                $editorStart = false;
+                                $edStrLen = 0;
+                                $endAuthorPos = 0;
                             }
                         }
-                        $this->verbose("booktitle: " . $booktitle);
-                        if (isset($endAuthorPos) && $endAuthorPos) {
-                            // CASE 2
-                            $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
-                            $authorConversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $isEditor, false);
-                            $this->setField($item, 'editor', trim($authorConversion['authorstring'], ' '), '44');
-                            foreach ($authorConversion['warnings'] as $warning) {
+
+                        if ($editorStart) {
+                            // CASES 1, 3, and 4
+                            $this->verbose("[ed1] Remainder starts with editor string");
+                            $words = explode(' ', $editorString);
+                            // $isEditor is used only for a book (with an editor, not an author)
+                            $isEditor = false;
+
+                            $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $isEditor, $determineEnd);
+                            $editorString = trim($editorConversion['authorstring'], '() ');
+                            foreach ($editorConversion['warnings'] as $warning) {
                                 $warnings[] = $warning;
                             }
-                            $newRemainder = trim(substr($remainder, $endAuthorPos + $edStrLen), ',:. ');
-                            $this->verbose("[in8] editors: " . $item->editor);
+
+                            $this->setField($item, 'editor', trim($editorString, ' ,.'), '43');
+                            $newRemainder = $postEditorString ? $postEditorString : $remainder;
+                            // $newRemainder consists of <booktitle> <publicationInfo>
+                            $newRemainder = trim($newRemainder, '., ');
+                            $this->verbose("[in7] Remainder: " . $newRemainder);
                         } else {
-                            // CASE 5
+                            // CASES 2 and 5
+                            $this->verbose("Remainder: " . $remainder);
+                            $this->verbose("[ed2] Remainder starts with book title");
+
+                            // Take book title to be string up to first comma or period that does not follow an uppercase letter
+                            $leftParenCount = $rightParenCount = 0;
+                            for ($j = 0; $j < strlen($remainder) && ! $booktitle; $j++) {
+                                $stringTrue = true;
+                                if ($remainder[$j] == '(') {
+                                    $leftParenCount++;
+                                } elseif ($remainder[$j] == ')') {
+                                    $rightParenCount++;
+                                }
+                                foreach ($this->bookTitleAbbrevs as $bookTitleAbbrev) {
+                                    if (substr($remainder, $j - strlen($bookTitleAbbrev), strlen($bookTitleAbbrev)) == $bookTitleAbbrev) {
+                                        $stringTrue = false;
+                                    }
+                                }
+                                if  (
+                                        // Don't stop in middle of parenthetical phrase
+                                        $leftParenCount == $rightParenCount
+                                        &&
+                                        (
+                                            $j == strlen($remainder) - 1
+                                            ||
+                                            (
+                                                $remainder[$j] == '.'
+                                                &&
+                                                !($remainder[$j-2] == ' ' && strtoupper($remainder[$j-1]) == $remainder[$j-1])
+                                                &&
+                                                $stringTrue
+                                            )
+                                            ||
+                                                $remainder[$j] == ','
+                                            ||
+                                            (
+                                                in_array($remainder[$j], ['(', '['])
+                                                && $this->isNameString(substr($remainder, $j+1))
+                                            )
+                                        )
+                                    ) {
+                                    $booktitle = trim(substr($remainder, 0, $j+1), ', ');
+                                    $this->verbose('booktitle case 4');
+                                    $newRemainder = rtrim(substr($remainder, $j + 1), ',. ');
+                                }
+                            }
+                            $this->verbose("booktitle: " . $booktitle);
+                            if (isset($endAuthorPos) && $endAuthorPos) {
+                                // CASE 2
+                                $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
+                                $authorConversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $isEditor, false);
+                                $this->setField($item, 'editor', trim($authorConversion['authorstring'], ' '), '44');
+                                foreach ($authorConversion['warnings'] as $warning) {
+                                    $warnings[] = $warning;
+                                }
+                                $newRemainder = trim(substr($remainder, $endAuthorPos + $edStrLen), ',:. ');
+                                $this->verbose("[in8] editors: " . $item->editor);
+                            } else {
+                                // CASE 5
+                            }
                         }
                     }
                 }
@@ -1361,7 +1376,7 @@ class Converter
                     if (preg_match($this->editorStartRegExp, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
                         $this->verbose("[ed3] Remainder starts with editor string");
                         $remainder = substr($remainder, $matches[0][1] + strlen($matches[0][0]));
-                        $this->verbose("Remainder is: " . $remainder);
+                        $this->verbose("Remainder: " . $remainder);
                         // If $remainder starts with "ed." or "eds." or "edited by", guess that potential editors end at period or '('
                         // (to cover case of publication info in parens) preceding
                         // ':' (which could separate publisher and city), if such exists.
@@ -2220,7 +2235,7 @@ class Converter
                 substr($word, -1) == '.' 
                 && ! $isInitial
                 && ($prevWordInitial || 0 == iterator_count($aspell->check($word)))
-                && !in_array(substr($word,0, -1), $this->excludedWords)
+                && !in_array(substr($word, 0, -1), $this->excludedWords)
             ) {
                 $sentences[] = $sentence;
                 $sentence = '';
@@ -2550,9 +2565,11 @@ class Converter
                 // If $determineEnd and word ends in period and word has > 3 chars (hence not "St.") and previous letter
                 // is lowercase (hence not string of initials without spaces):
                 if ($namePart == 0) {
-                    // If $namePart == 0, something is wrong (need to choose an earlier end for name string) UNLESS string is
-                    // followed by year, in which case we may have an entry like "Economist. 2005. ..."
-                    if ($year = $this->getYear(implode(" ", $remainingWords), true, $remainder, false, $trash)) {
+                    // If $namePart == 0, something is wrong (need to choose an earlier end for name string) UNLESS author has
+                    // a single name.  If string is followed by year or quotedOrItalics, that seems right,
+                    // in which case we may have an entry like "Economist. 2005. ..."
+                    $remainder = implode(" ", $remainingWords);
+                    if ($year = $this->getYear($remainder, true, $remainder, false, $trash)) {
                         // Don't use spaceOutInitials in this case, because string is not initials.  Could be
                         // something like autdiogames.net, in which case don't want to put space before period.
                         $nameComponent = $word;
@@ -2562,10 +2579,19 @@ class Converter
                         $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, namePart is 0, and remaining string starts with year';
                         $oneWordAuthor = true;
                         $itemYear = $year; // because $year is recalculated below
+                    } elseif ($this->getQuotedOrItalic($remainder, true, false, $before, $after)) {
+                        $nameComponent = $word;
+                        $fullName .= ' and ' . trim($nameComponent, '.');
+                        $this->addToAuthorString(4, $authorstring, $fullName);
+                        $case = 16;
+                        $reason = 'Word ends in period, namePart is 0, and remaining string starts with quoted or italic';
+                        $done = true;
+                        $oneWordAuthor = true;
                     } else {
                         // Case like: "Arrow, K. J., Hurwicz. L., and ..." [note period at end of Hurwicz]
                         // "Hurwicz" is current word, which is added back to the remainder.
                         // (Ideally the script should realize the typo and still get the rest of the authors.)
+                        // If remainder starts with quotes or italic, assume author has just one name
                         $warnings[] = "Unexpected period after \"" . substr($word, 0, -1) . "\" in source.  Typo? Re-processed with comma instead of period.";
                         $case = 3;
                         $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, namePart is 0, and remaining string does not start with year';
@@ -3313,10 +3339,12 @@ class Converter
     /*
      * Determine whether $word is in the dictionary
      */
-    private function inDict(string $word): bool
+    private function inDict(string $word, bool $excludeNames = true): bool
     {
         $aspell = Aspell::create();
-        return 0 == iterator_count($aspell->check($word));
+        $inDict = 0 == iterator_count($aspell->check($word));
+        $notName = !in_array($word, $this->dictionaryNames);
+        return $inDict && $notName;
     }
 
     /**
@@ -3328,7 +3356,8 @@ class Converter
         $words = [$word1, $word2];
         $this->verbose(['text' => 'Arguments of isNotName: ', 'words' => [$words[0], $words[1]]]);
         $result = false;
-        $accentRegExp = '/^(\\\"|\\\\\'|\\\`|\\\\\^|\\\H|\\\v|\\\~|\\\k|\\\c|\\\\\.)\{?[A-Z]\}?/';
+        // Following reg exp allows {\'A} and \'{A} and \'A (but also allows {\'{A}, which it shouldn't)
+        $accentRegExp = '/^\{?(\\\"|\\\\\'|\\\`|\\\\\^|\\\H|\\\v|\\\~|\\\k|\\\c|\\\\\.)\{?[A-Z]\}?/';
         
         for ($i = 0; $i < 2; $i++) {
             if (preg_match($accentRegExp, $words[$i])) {

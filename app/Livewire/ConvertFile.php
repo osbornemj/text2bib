@@ -165,8 +165,8 @@ class ConvertFile extends Component
             $i = 0;
             foreach ($entries as $entry) {
                 $i++;
-                if ($entry) {
-                    
+                // Some files have first entry \u{FEFF} (as reported by script), with strlen 3.
+                if ($entry && strlen($entry) > 3) {
                     // $convertedEntries is array with components 'source', 'item', 'itemType', 'label', 'warnings',
                     // 'notices', 'details', 'scholarTitle'.
                     // 'label' (which depends on whole set of converted items) is updated later

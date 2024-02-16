@@ -30,7 +30,7 @@
             You receive a BibTeX file of the references.
         </p>
         <p class="mb-4">
-            The script attempts to parse the references regardless of their format.
+            The script attempts to detect items of the following types: <code>article</code>, <code>book</code>, <code>incollection</code>, <code>inproceedings</code>, <code>mastersthesis</code>, <code>online</code>, <code>phdthesis</code>, <code>techreport</code>, <code>unpublished</code>.  It attempts to parse the references into one of these types, regardless of their format. 
         </p>
         <p class="mb-4">
             The system does not extract the references from a file that contains other material, so the file you upload should contain <i>only</i> the list of references, not other text.  However,  each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem{&lt;label&gt;}</code>, <code>\bibitem[&lt;text&gt;]{&lt;label&gt;}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any digit or any of the characters <code>.</code>, <code>[</code>, <code>]</code>, <code>(</code>, or <code>)</code>.
