@@ -20,7 +20,7 @@
                     <span class="text-blue-300">{{ $value }}</span>
                     @break
                 @case ('label')
-                    <span class="text-teal-500">{{ $value }}</span>
+                    <span class="text-teal-500">Label: {{ $value }}</span>
                     @break
                 @case ('warning')
                     <span class="text-red-500">{{ $value }}</span>

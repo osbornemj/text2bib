@@ -50,7 +50,6 @@ class ErrorReportController extends Controller
 
         $conversion = new Conversion;
         $conversion->item_separator = 'line';
-        $conversion->first_component = 'authors';
         $conversion->char_encoding = 'utf8';
         $conversion->percent_comment = true;
         $conversion->include_source = true;

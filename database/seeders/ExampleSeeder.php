@@ -1987,7 +1987,7 @@ class ExampleSeeder extends Seeder
                             'year' => '1995',
                             'pages' => '75-92',
                             'title' => 'Women and Television: Portrayal of Women in Mass Media',
-                            'author' => 'Fukunishi Suzuki and Midori',
+                            'author' => 'Fukunishi Suzuki, Midori',
                             'editor' => 'Kumiko Fujimura-Fanselow and Atsuko Kameda',
                             'address' => 'New York',
                             'booktitle' => 'Japanese Women: New Feminist Perspectives on the Past, Present, and Future',
@@ -2022,6 +2022,120 @@ class ExampleSeeder extends Seeder
                             'publisher' => 'Continuum',
                             ]
                     ],
+                    [
+                        'source' => 'Sleep, N. H., 2012 Site Resonance from Strong Ground Motions at Lucerne, California, during the 1992 Landers Mainshock. Bulletin of the Seismological Society of America, Vol. 102, No. 4,  in press,  doi: 10.1785/0120110267.',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '2012',
+                            'title' => 'Site Resonance from Strong Ground Motions at Lucerne, California, during the 1992 Landers Mainshock',
+                            'author' => 'Sleep, N. H.',
+                            'number' => '4',
+                            'volume' => '102',
+                            'journal' => 'Bulletin of the Seismological Society of America',
+                            'note' => 'in press',
+                            'doi' => '10.1785/0120110267',
+                            ]
+                    ],
+                    [
+                        'source' => 'Sleep, N. H., 2012 Maintenance of permeable habitable  subsurface environments by earthquakes and tidal stresses, International Journal of Astrobiology, in press, doi:10.1017/S1473550412000122. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'doi' => '10.1017/S1473550412000122',
+                            'year' => '2012',
+                            'title' => 'Maintenance of permeable habitable subsurface environments by earthquakes and tidal stresses',
+                            'author' => 'Sleep, N. H.',
+                            'journal' => 'International Journal of Astrobiology',
+                            'note' => 'in press',
+                            ]
+                    ],
+                    [
+                        'source' => 'Sleep, N. H., 2012 Site Resonance from Strong Ground Motions at Lucerne, California, during the 1992 Landers Mainshock, Proceedings of the National Academy of Sciences of the United States of America, Vol. 109, Issue 1, pp. 59-62, Q12001, DOI: 10.1073/pnas.1118675109.  ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'doi' => '10.1073/pnas.1118675109',
+                            'year' => '2012',
+                            'pages' => '59-62',
+                            'title' => 'Site Resonance from Strong Ground Motions at Lucerne, California, during the 1992 Landers Mainshock',
+                            'author' => 'Sleep, N. H.',
+                            'number' => '1',
+                            'volume' => '109',
+                            'journal' => 'Proceedings of the National Academy of Sciences of the United States of America',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{ColtonKress_InverseAcoustic} D. Colton, R. Kress {\em Inverse acoustic and electromagnetic scattering theory, second edition} Applied Mathematical Sciences vol 93. Springer. (1997)  ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1997',
+                            'title' => 'Inverse acoustic and electromagnetic scattering theory',
+                            'edition' => 'second',
+                            'series' => 'Applied Mathematical Sciences vol 93',
+                            'author' => 'D. Colton and R. Kress',
+                            'publisher' => 'Springer',
+                            ]
+                    ],
+                    [
+                        'source' => '1961 Arrow, K. J., L. Hurwicz, and H. Uzawa, "Constraint qualifications in maximization problems," Naval Research Logistics Quarterly 8, 175-191. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'journal' => 'Naval Research Logistics Quarterly',
+                            'volume' => '8',
+                            'pages' => '175-191',
+                            'year' => '1961',
+                            'title' => 'Constraint qualifications in maximization problems',
+                            'author' => 'Arrow, K. J. and L. Hurwicz and H. Uzawa',
+                            ]
+                    ],
+                    [
+                        'source' => '2013 *+ | Denolle, M., E. M. Dunham, G. A. Prieto, and G. C. Beroza, Ground motion prediction of realistic earthquake sources using the ambient seismic field, J. Geophys. Res., (in press). ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'note' => 'in press',
+                            'year' => '2013',
+                            'title' => 'Ground motion prediction of realistic earthquake sources using the ambient seismic field',
+                            'author' => 'Denolle, M. and E. M. Dunham and G. A. Prieto and G. C. Beroza',
+                            'journal' => 'J. Geophys. Res.',
+                            ]
+                    ],
+                    [
+                        'source' => '2013 *+ | Denolle, M., E. M. Dunham, G. A. Prieto, and G. C. Beroza, Ground motion prediction of realistic earthquake sources using the ambient seismic field, <em>J. Geophys. Res., </em>(in press). ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'note' => 'in press',
+                            'year' => '2013',
+                            'title' => 'Ground motion prediction of realistic earthquake sources using the ambient seismic field',
+                            'author' => 'Denolle, M. and E. M. Dunham and G. A. Prieto and G. C. Beroza',
+                            'journal' => 'J. Geophys. Res.',
+                            ]
+                    ],
+                    [
+                        'source' => '2008 *+ | Ma, S., and G. C. Beroza, Rupture dynamics on a bi-material interface for dipping faults, Bull. Seismol. Soc. Am., 98, p. 1642-1658; DOI: 10.1785/0120070201.  ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'doi' => '10.1785/0120070201',
+                            'year' => '2008',
+                            'pages' => '1642-1658',
+                            'title' => 'Rupture dynamics on a bi-material interface for dipping faults',
+                            'author' => 'Ma, S. and G. C. Beroza',
+                            'volume' => '98',
+                            'journal' => 'Bull. Seismol. Soc. Am.',
+                            ]
+                    ],
+                    [
+                        'source' => '2007 * | Mooney, W. D., G. C. Beroza, and R. Kind, Fault Zones from Top to Bottom: A Geophysical Perspective, in Tectonic Faults: Agents of Change on a Dynamic Earth, Mark R. Handy, Greg Hirth, and Niels Hovius ed., Dahlem Foundation Conference, Berlin, Germany, ISBN-10:0-262-08362-0, 9-46. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '2007',
+                            'pages' => '9-46',
+                            'isbn' => '0-262-08362-0',
+                            'title' => 'Fault Zones from Top to Bottom: A Geophysical Perspective',
+                            'author' => 'Mooney, W. D. and G. C. Beroza and R. Kind',
+                            'editor' => 'Mark R. Handy and Greg Hirth and Niels Hovius',
+                            'address' => 'Berlin, Germany',
+                            'booktitle' => 'Tectonic Faults: Agents of Change on a Dynamic Earth',
+                            'publisher' => 'Dahlem Foundation Conference',
+                            ]
+                    ],                                                                                                    
                 ];
 
             DB::statement('DELETE FROM examples');

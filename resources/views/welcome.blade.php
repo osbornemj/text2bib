@@ -17,23 +17,46 @@
                 Publications, New York.<span class="bg-slate-300 dark:bg-gray-500 font-bold">&larr;</span></code>
         </p>
         </div>
+        <p class="mb-4 ml-8">
+            (where <code><span class="bg-slate-300 dark:bg-gray-500 font-bold">&larr;</span></code> is a line-ending character)
+        </p>
         <p class="mb-4">
-            (where <code><span class="bg-slate-300 dark:bg-gray-500 font-bold">&larr;</span></code> is a line-ending character) <i>or</i> has one reference on each line, like this
+            <i>or</i> has one reference on each line, like this
         </p>
         <div class="m-5 ml-8">
             <p>
             <code>Arrow, K. J., L. Hurwicz, and H. Uzawa (1961), "Constraint qualifications in maximization problems," Naval Research Logistics Quarterly 8, 175-191.<span class="bg-slate-300 dark:bg-gray-500 font-bold">&larr;</span></code><br/>
             <code>Van de Hulst, H.C., 1981. Light scattering by small particles, Dover Publications, New York.<span class="bg-slate-300 dark:bg-gray-500 font-bold">&larr;</span></code>
-        </p>
+            </p>
         </div>
+        <p class="mb-4">
+            <i>or</i> has each reference preceded by <code>&lt;li&gt;</code>, like this
+        </p>
+        <div class="m-5 ml-8">
+            <p>
+            <code>&lt;li&gt;Arrow, K. J., L. Hurwicz, and H. Uzawa (1961), "Constraint qualifications in maximization problems," Naval Research Logistics Quarterly 8, 175-191.<span class="bg-slate-300 dark:bg-gray-500 font-bold"></span></code><br/>
+            <code>&lt;li&gt;Van de Hulst, H.C., 1981. Light scattering by small particles, Dover Publications, New York.<span class="bg-slate-300 dark:bg-gray-500 font-bold"></span></code>
+            </p>
+        </div>
+        <p class="mb-4">
+            Each reference may start with the authors, as in the examples above, or with the year, like this
+        </p>
+        <div class="m-5 ml-8">
+            <p>
+            <code>1961 Arrow, K. J., L. Hurwicz, and H. Uzawa, "Constraint qualifications in maximization problems," Naval Research Logistics Quarterly 8, 175-191.<span class="bg-slate-300 dark:bg-gray-500 font-bold"></span></code>
+            </p>
+        </div>
+        <p class="mb-4">
+            Each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem{&lt;label&gt;}</code>, <code>\bibitem[&lt;text&gt;]{&lt;label&gt;}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any of the characters in the string <code>.,[]()|*+</code>,  or, if it doesn't start with the year, any digit.  If it starts with the year, the year may be followed by any character in the string <code>|*+</code>.
+        </p>
         <p class="mb-4">
             You receive a BibTeX file of the references.
         </p>
         <p class="mb-4">
-            The script attempts to detect items of the following types: <code>article</code>, <code>book</code>, <code>incollection</code>, <code>inproceedings</code>, <code>mastersthesis</code>, <code>online</code>, <code>phdthesis</code>, <code>techreport</code>, <code>unpublished</code>.  It attempts to parse the references into one of these types, regardless of their format. 
+            The script attempts to detect items of the following types: <code>article</code>, <code>book</code>, <code>incollection</code>, <code>inproceedings</code>, <code>mastersthesis</code>, <code>online</code>, <code>phdthesis</code>, <code>techreport</code>, <code>unpublished</code>.  It attempts to parse the references into one of these types regardless of their format. 
         </p>
         <p class="mb-4">
-            The system does not extract the references from a file that contains other material, so the file you upload should contain <i>only</i> the list of references, not other text.  However,  each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem{&lt;label&gt;}</code>, <code>\bibitem[&lt;text&gt;]{&lt;label&gt;}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any digit or any of the characters <code>.</code>, <code>[</code>, <code>]</code>, <code>(</code>, or <code>)</code>.
+            The system does not extract the references from a file that contains other material, so the file you upload should contain <i>only</i> the list of references, not other text.  However,  
         </p>
         @if (!$user)
             <p class="mb-4">

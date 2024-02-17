@@ -19,11 +19,6 @@ class ConvertFileForm extends Form
 
     #[Rule('required', message: 'Please choose an option')]    
     #[Rule('string', message: 'The value of this field must be a string')]    
-    #[Rule('in:authors,year', message: 'The value of this field must be "authors" or "year"')]    
-    public $first_component;
-
-    #[Rule('required', message: 'Please choose an option')]    
-    #[Rule('string', message: 'The value of this field must be a string')]    
     #[Rule('in:short,long,gs', message: 'The value of this field must be "short", "long", or "gs"')]    
     public $label_style;
 

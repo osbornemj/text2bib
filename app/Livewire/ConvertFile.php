@@ -58,7 +58,6 @@ class ConvertFile extends Component
 
         $defaults = [
             'item_separator' => 'line',
-            'first_component' => 'authors',
             'label_style' => 'short',
             'override_labels' => '1',
             'line_endings' => 'w',
@@ -139,7 +138,9 @@ class ConvertFile extends Component
         // Regularlize line-endings
         $filestring = str_replace(["\r\n", "\r"], "\n", $filestring);
 
-        $entries = explode($conversion->item_separator == 'line' ? "\n\n" : "\n", $filestring);
+        $entrySeparator = Str::startsWith($filestring, '<li>') ? '<li>' : ($conversion->item_separator == 'line' ? "\n\n" : "\n");
+
+        $entries = explode($entrySeparator, $filestring);
 
         $this->itemSeparatorError = false;
         $this->nonUtf8Entries = [];
@@ -166,6 +167,7 @@ class ConvertFile extends Component
             foreach ($entries as $entry) {
                 $i++;
                 // Some files have first entry \u{FEFF} (as reported by script), with strlen 3.
+                // May now not be necessary to check for this case, because FEFF is converted to space by cleanText
                 if ($entry && strlen($entry) > 3) {
                     // $convertedEntries is array with components 'source', 'item', 'itemType', 'label', 'warnings',
                     // 'notices', 'details', 'scholarTitle'.

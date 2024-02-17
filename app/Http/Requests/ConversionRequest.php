@@ -18,7 +18,6 @@ class ConversionRequest extends FormRequest
         return [
             'file' => ['required', 'max:100', 'mimes:txt'],
             'item_separator' => ['required', 'string', 'in:line,cr'],
-            'first_component' => ['required', 'string', 'in:authors,year'],
             'label_style' => ['required', 'string', 'in:short,long,gs'],
             'override_labels' => ['required'],
             'line_endings' => ['required', 'string', 'in:w,l'],
@@ -35,7 +34,6 @@ class ConversionRequest extends FormRequest
         return [
             'file.mimes' => 'The file you selected is not plain text',
             'item_separator.required' => 'Please select an option',
-            'first_component.required' => 'Please select an option',
             'label_style.required' => 'Please select an option',
             'override_labels' => 'Please select an option',
             'line_endings.required' => 'Please select an option',

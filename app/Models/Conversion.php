@@ -16,7 +16,6 @@ class Conversion extends Model
 
     protected $attributes = [
         'item_separator' => 'line',
-        'first_component' => 'authors',
         'label_style' => 'short',
         'override_labels' => false,
         'line_endings' => 'w',

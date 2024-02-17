@@ -58,18 +58,6 @@
     </div>
 
     <div>
-        <x-input-label for="first_component" :value="__('First component of each item in your file')" class="mt-4" />
-    
-        <x-radio-input wire:model="uploadForm.first_component" value="authors" class="peer/authors" /> 
-        <x-value-label for="authors" class="peer-checked/authors:text-blue-600 ml-1" :value="__('Authors')" />
-
-        <x-radio-input wire:model="uploadForm.first_component" value="year" class="peer/year ml-4" />
-        <x-value-label for="year" class="peer-checked/year:text-blue-600 ml-1" :value="__('Year')" />
-
-        <x-input-error :messages="$errors->get('uploadForm.first_component')" class="mt-2" />
-    </div>
-
-    <div>
         <x-input-label for="label_style" :value="__('Label style')" class="mt-4" />
     
         <x-radio-input name="label_style" wire:model="uploadForm.label_style" value="short" class="peer/short" /> 
