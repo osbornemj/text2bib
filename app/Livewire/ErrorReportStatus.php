@@ -6,8 +6,6 @@ use Livewire\Component;
 
 use App\Enums\ReportStatus;
 
-use App\Models\ErrorReport;
-
 class ErrorReportStatus extends Component
 {
     public $statusOptions;
@@ -23,10 +21,5 @@ class ErrorReportStatus extends Component
     public function updatedStatus()
     {
         $this->errorReport->update(['status' => $this->status]);
-    }
-
-    public function render()
-    {
-        return view('livewire.error-report-status');
     }
 }

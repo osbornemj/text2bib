@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 
 use App\Models\Conversion;
 use App\Models\ItemType;
+use App\Models\Journal;
 use App\Models\Output;
 use App\Models\UserFile;
 use App\Models\UserSetting;
@@ -195,6 +196,15 @@ class ConvertFile extends Component
                     'seq' => $i,
                 ]);
                 $convertedItems[$output->id] = $convItem;
+
+                if ($convItem['itemType'] == 'article') {
+                    $journalName = $convItem['item']->journal;
+                    if (!Journal::where('name', $journalName)->exists()) {
+                        $journal = new Journal;
+                        $journal->name = $journalName;
+                        $journal->save();
+                    }
+                }
             }
 
             $this->conversionExists = true;
@@ -204,6 +214,7 @@ class ConvertFile extends Component
             $this->reportType = $conversion->report_type;
             $this->itemTypes = $itemTypes;
             $this->itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
+
         }
     }
 }

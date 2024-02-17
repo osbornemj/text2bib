@@ -61,7 +61,7 @@
         <button class="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest focus:outline-none transition ease-in-out duration-150 bg-blue-500">Corrected</button>
     @else
         @if ($correctness == 1)
-            <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-2 bg-emerald-700 dark:bg-emerald-600">
+            <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-2 bg-emerald-600 dark:bg-emerald-600">
                 {{ __('Correct') }}
             </x-basic-button>
         @else
@@ -71,11 +71,11 @@
         @endif
 
         @if ($correctness == -1)
-            <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-2 dark:bg-red-400">
+            <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-2 bg-red-500 dark:bg-red-400">
                 {{ __('Incorrect') }}
             </x-basic-button>
         @else 
-            <x-basic-button wire:click="setCorrectness(-1)" class="ml-0 mt-2 dark:bg-slate-300">
+            <x-basic-button wire:click="setCorrectness(-1)" class="ml-0 mt-2 bg-slate-600 dark:bg-slate-300">
                 {{ __('Incorrect') }}
             </x-basic-button>
         @endif

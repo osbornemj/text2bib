@@ -42,6 +42,11 @@
                 </x-link>
             </p>
             <p>
+                <x-link :href="route('journals.index')" :active="request()->routeIs('journals.index')">
+                    Journals
+                </x-link>
+            </p>
+            <p>
                 <x-link :href="route('vonNames.index')" :active="request()->routeIs('vonNames.index')">
                     von Names
                 </x-link>

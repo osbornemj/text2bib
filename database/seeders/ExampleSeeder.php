@@ -2135,7 +2135,32 @@ class ExampleSeeder extends Seeder
                             'booktitle' => 'Tectonic Faults: Agents of Change on a Dynamic Earth',
                             'publisher' => 'Dahlem Foundation Conference',
                             ]
-                    ],                                                                                                    
+                    ],
+                    [
+                        'source' => '2007 *+ | Ide, S., G. C. Beroza, D. R. Shelly, and T. Uchide, A scaling law for slow earthquakes, Nature, 447, 76-79, doi:10.1038/nature05780. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'doi' => '10.1038/nature05780',
+                            'year' => '2007',
+                            'pages' => '76-79',
+                            'title' => 'A scaling law for slow earthquakes',
+                            'author' => 'Ide, S. and G. C. Beroza and D. R. Shelly and T. Uchide',
+                            'volume' => '447',
+                            'journal' => 'Nature',
+                            ]
+                    ], [
+                        'source' => '2007 Beroza, G. C., A man of magnitude: review of Richter\'s Scale: Measure of an Earthquake, Measure of a Man, by S. Hough, <em>Nature</em>, 445, 599; doi:10.1038/445599a. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'doi' => '10.1038/445599a',
+                            'year' => '2007',
+                            'pages' => '599',
+                            'title' => 'A man of magnitude: review of Richter\'s Scale: Measure of an Earthquake, Measure of a Man, by S. Hough',
+                            'author' => 'Beroza, G. C.',
+                            'volume' => '445',
+                            'journal' => 'Nature',
+                            ]
+                    ],                                                                                                                       
                 ];
 
             DB::statement('DELETE FROM examples');

@@ -34,7 +34,7 @@
                         {{ $example->id }}.
                         <x-link href="{{ url('admin/examples/' . $example->id . '/edit') }}">{{ $example->source }}</x-link>
                     </div>
-                    <div class="bg-sky-500 dark:bg-blue-800 px-2">
+                    <div class="bg-sky-200 dark:bg-blue-800 px-2">
                         type: {{ $example->type }}
                         @foreach ($example->fields as $field)
                         <p>

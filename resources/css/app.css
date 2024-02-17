@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-code {
+code.dark {
    color:rgb(172, 172, 172); 
 }
 
@@ -22,10 +22,10 @@ code {
 .la-ball-spin-clockwise-fade {
     display: block;
     font-size: 0;
-    color: #fff;
+    color: #111111;
 }
 
-.la-ball-spin-clockwise-fade.la-dark {
+.la-ball-spin-clockwise-fade.dark {
     color: #333;
 }
 
@@ -219,3 +219,4 @@ code {
                 transform: scale(1);
     }
 }
+

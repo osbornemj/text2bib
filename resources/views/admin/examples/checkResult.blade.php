@@ -11,13 +11,12 @@
             <span class="bg-green-600">All correct</span> ({{ $exampleCount }} {{ Str::plural('item', $exampleCount) }})
         @else
             @foreach ($results as $id => $result)
-                <hr>
-                <div class="my-4">
+                <div class="pt-2 border-2 border-b-transparent border-l-transparent border-r-transparent border-t-indigo-800 dark:border-t-slate-200">
                     <p>Example {{ $id }}
                         @if ($result['result'] == 'correct')
-                            <span class="bg-green-600">Correct</span>
+                            <span class="dark:bg-green-600">Correct</span>
                         @else
-                            <span class="bg-red-600">incorrect</span> 
+                            <span class="bg-red-500 text-white dark:bg-red-600">incorrect</span> 
                         @endif
                     &nbsp;&bull;&nbsp;
                     <x-link href="{{ url('/admin/runExampleCheck/1/' . ($showDetailsIfCorrect ? '1' : '0') . '/' . $id) }}">verbose conversion</x-link>

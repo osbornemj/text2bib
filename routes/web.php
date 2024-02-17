@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CitiesController;
 use App\Http\Controllers\Admin\ConversionAdminController;
 use App\Http\Controllers\Admin\DictionaryNamesController;
@@ -7,9 +8,9 @@ use App\Http\Controllers\Admin\ExamplesController;
 use App\Http\Controllers\Admin\ExampleCheckController;
 use App\Http\Controllers\Admin\ExampleFieldsController;
 use App\Http\Controllers\Admin\ExcludedWordsController;
-use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ItemFieldsController;
 use App\Http\Controllers\Admin\ItemTypesController;
+use App\Http\Controllers\Admin\JournalsController;
 use App\Http\Controllers\Admin\NamesController;
 use App\Http\Controllers\Admin\PublishersController;
 use App\Http\Controllers\Admin\UsersController;
@@ -79,6 +80,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         '/admin/names' => NamesController::class,
         '/admin/excludedWords' => ExcludedWordsController::class,
         '/admin/dictionaryNames' => DictionaryNamesController::class,
+        '/admin/journals' => JournalsController::class,
     ]);
 
     Route::get('/admin/index', [AdminController::class, 'index'])->name('admin.index');

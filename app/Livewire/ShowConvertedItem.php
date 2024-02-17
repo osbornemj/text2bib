@@ -83,7 +83,9 @@ class ShowConvertedItem extends Component
     public function hideForm()
     {
         $this->displayState = 'none';
-        $this->correctness = 0;
+        if ($this->status != 'changes') {
+            $this->correctness = 0;
+        }
     }
 
     public function updatedItemTypeId()

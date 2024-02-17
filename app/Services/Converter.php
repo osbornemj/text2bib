@@ -10,6 +10,7 @@ use App\Models\City;
 use App\Models\Conversion;
 use App\Models\DictionaryName;
 use App\Models\ExcludedWord;
+use App\Models\Journal;
 use App\Models\Name;
 use App\Models\Publisher;
 use App\Models\VonName;
@@ -55,6 +56,7 @@ class Converter
     var $italicTitle;
     var $itemType;
     var $journalWord;
+    var $journalNames;
     var $masterRegExp;
     var $monthsRegExp;
     var $names;
@@ -89,6 +91,9 @@ class Converter
 
         // Words that are in dictionary but are names
         $this->dictionaryNames = DictionaryName::all()->pluck('word')->toArray();
+
+        // Journals with distinctive names (not single words like Science and Nature)
+        $this->journalNames = Journal::all()->pluck('name')->toArray();
 
         // Introduced to facilitate a variety of languages, but the assumption that the language of the 
         // citation --- though not necessarily of the reference itself --- is English pervades the code.
@@ -227,6 +232,10 @@ class Converter
             return false;
         }
 
+        // If entry has some HTML markup that will be useful, translate it to TeX
+        $entry = str_replace(['<em>', '</em>'], ['\textit{', '}'], $entry);
+
+        // Remove remaining HTML markup
         $entry = strip_tags($entry);
         $originalEntry = $entry;
 
@@ -450,7 +459,8 @@ class Converter
         unset($this->italicTitle);
 
         $remainder = ltrim($remainder, ': ');
-        $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after);
+        // (string) on next line to stop VSCode complaining
+        $title = (string) $this->getQuotedOrItalic($remainder, true, false, $before, $after);
         $newRemainder = $before . ltrim($after, "., ");
 
         // If title has been found and ends in edition specification, take that out and put it in edition field
@@ -539,7 +549,7 @@ class Converter
         
         $inStart = $containsIn = $italicStart = $containsBoldface = $containsEditors = $containsThesis = false;
         $containsNumber = $containsInteriorVolume = $containsCity = $containsPublisher = false;
-        $containsIsbn = $containsEdition = $containsWorkingPaper = false;
+        $containsIsbn = $containsEdition = $containsWorkingPaper = $containsJournalName = false;
         $containsNumberedWorkingPaper = $containsNumber = $pubInfoStartsWithForthcoming = $pubInfoEndsWithForthcoming = false;
         $containsVolume = $endsWithInReview = false;
         $containsDigitOutsideVolume = true;
@@ -560,6 +570,16 @@ class Converter
         if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
             $italicStart = true;
             $this->verbose("Starts with italics.");
+        }
+
+        $journal = null;
+        foreach ($this->journalNames as $name) {
+            if (Str::contains($remainder, $name)) {
+                $journal = $name;
+                $containsJournalName = true;
+                $this->verbose("Contains the name of a journal.");
+                break;
+            }
         }
 
         if (preg_match('/\d/', $remainder)) {
@@ -726,6 +746,8 @@ class Converter
             $itemKind = 'online';
         } elseif (
             $isArticle
+            ||
+            $containsJournalName
             || 
             ($italicStart
                 &&
@@ -830,7 +852,7 @@ class Converter
             $this->verbose(['fieldName' => 'Item type', 'content' => $itemKind]);
         }
 
-        unset($journal, $volume, $pages);
+        unset($volume, $pages);
 
         // Remove ISBN and OCLC if any and put them in isbn and oclc fields.
         if ($itemKind == 'book' || $itemKind == 'incollection') {
@@ -872,27 +894,34 @@ class Converter
                 // Get journal
                 $remainder = ltrim($remainder, '., ');
 
-                // If does not start with italics, check whether first word is all numeric and
-                // italics starts after first word, in which case
-                // classify first word as unidentified.  (Covers case of mistaken duplication of year.)
-                if (!$italicStart) {
-                    $firstWord = strtok($remainder, ' ');
-                    if (preg_match('/^[0-9]*$/', $firstWord)) {
-                        $remainderAfterFirstWord = trim(substr($remainder, strlen($firstWord)));
-                        if ($this->containsFontStyle($remainderAfterFirstWord, true, 'italics', $startPos, $length)) {
-                            $warnings[] = "[u3] The string \"" . $firstWord . "\" remains unidentified.";
-                            $remainder = $remainderAfterFirstWord;
-                            $italicStart = true;
+                if ($journal) {
+                    // Remove $journal and any surrounding italics
+                    $remainder = preg_replace('/(\\\textit\{ ?' . $journal . '[,. }]*)/', '', $remainder);
+                    dd($remainder, $journal);
+                } else {
+                    // If does not start with italics, check whether first word is all numeric and
+                    // italics starts after first word, in which case
+                    // classify first word as unidentified.  (Covers case of mistaken duplication of year.)
+                    if (!$italicStart) {
+                        $firstWord = strtok($remainder, ' ');
+                        if (preg_match('/^[0-9]*$/', $firstWord)) {
+                            $remainderAfterFirstWord = trim(substr($remainder, strlen($firstWord)));
+                            if ($this->containsFontStyle($remainderAfterFirstWord, true, 'italics', $startPos, $length)) {
+                                $warnings[] = "[u3] The string \"" . $firstWord . "\" remains unidentified.";
+                                $remainder = $remainderAfterFirstWord;
+                                $italicStart = true;
+                            }
                         }
                     }
+
+                    $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming);
+                    $journal = rtrim($journal, ' ,(');
                 }
 
-                $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming);
-                $journal = rtrim($journal, ' ,(');
-
-                $this->setField($item, 'journal', $journal, 'setField 19');
-                if (!$journal) {
-                    $warnings[] = "'Journal' field not found.";
+                if ($journal) {
+                    $this->setField($item, 'journal', $journal, 'setField 19');
+                } else {
+                    $warnings[] = "Item seems to be article, but journal not found.  Setting type to unpublished.";
                     $itemKind = 'unpublished';  // but continue processing as if journal
                 }
                 $remainder = trim($remainder, ' ,.');
@@ -901,7 +930,7 @@ class Converter
                 // If $remainder ends with 'forthcoming' phrase and contains no digits (which might be volume & number,
                 // for example, even if paper is forthcoming), put that in note.  Else look for pages & volume etc.
                 if (preg_match('/' . $this->endForthcomingRegExp . '/', $remainder) && !preg_match('/[0-9]/', $remainder)) {
-                    $this->setField($item, 'note', $remainder, 'setField 20');
+                    $this->setField($item, 'note', trim($remainder, '()'), 'setField 20');
                     $remainder = '';
                 } else {
                     // Get pages
@@ -1060,7 +1089,8 @@ class Converter
                 $newRemainder = $remainder;
                 
                 // If a string in $remainder is quoted or italicized, take that to be book title
-                $booktitle = $this->getQuotedOrItalic($remainder, false, false, $before, $after);
+                // (string) on next line to stop VSCode complaining
+                $booktitle = (string) $this->getQuotedOrItalic($remainder, false, false, $before, $after);
                 $newRemainder = $remainder = $before . ltrim($after, ".,' ");
 
                 if ($booktitle) {
@@ -1101,6 +1131,8 @@ class Converter
                 // If $remainder starts with [a-zA-Z]*: and has no more occurrences of this pattern,
                 // it is consistent with its being publisher: address, without any editors.
                 if (preg_match_all('/[a-zA-Z]*:/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                    // Next line to stop VSCode complaining
+                    $matches = (array) $matches;
                     //  If only one occurrence of string followed by colon, and it's at the start
                     if (count($matches[0]) == 1 && $matches[0][0][1] == 0) {
                         $this->setField($item, 'address', substr($matches[0][0][0], 0, -1), 'setField 35');
@@ -2009,6 +2041,7 @@ class Converter
                 // OR a pages string
                 // OR "in" OR "Journal"
                 // OR a volume designation
+                // OR words like 'forthcoming' or 'to appear in'
                 // OR a year 
                 // OR the name of a publisher.
                 // If so, the title is $remainder up to the punctuation.
@@ -2019,6 +2052,7 @@ class Converter
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->pagesRegExp3, $remainder)
                         || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?Volume /', $remainder)
+                        || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9]\./', $remainder)
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
                         ) {
@@ -2092,8 +2126,7 @@ class Converter
                         }
                     // else if there has been no period so far and italics is coming up, 
                     // wait for the italics (journal name?)
-                    } elseif (!$periodFound 
-                            && $this->containsFontStyle($remainder, false, 'italics', $startPos, $length)) {
+                    } elseif ($this->containsFontStyle($remainder, false, 'italics', $startPos, $length)) {
                         $this->verbose("Not ending title, case 4 (italics is coming up)");
                     // else if word ends with comma and volume info is coming up, wait for it
                     } elseif (Str::endsWith($word, [',']) && preg_match('/' . $this->volumeRegExp1 . '/', $remainder)) {
@@ -2550,9 +2583,14 @@ class Converter
                 $multipleAuthors = true;
             }
 
+            $edResult = $this->isEd($word);
+
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
-            } elseif ($this->isEd($word, $multipleAuthors)) {
+            } elseif ($edResult) {
+                if ($edResult == 1 && $multipleAuthors) {
+                   $warnings[] = "More than one editor has been identified, but string denoting editors (\"" . $word . "\") is singular";
+                }
                 $this->verbose("String for editors, so ending name string (word: " . $word .")");
                 // Word is 'ed' or 'ed.' if $hasAnd is false, or 'eds' or 'eds.' if $hasAnd is true
                 $isEditor = true;
@@ -2784,18 +2822,20 @@ class Converter
                     $done = true;
                     $this->addToAuthorString(11, $authorstring, $this->formatAuthor($fullName));
                     $case = 9;
-                } elseif ($nameComplete && Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1], $hasAnd)) {
+                } elseif ($nameComplete && Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1])) {
                     // $word ends in comma or semicolon and next word is not string for editors
                     if ($hasAnd) {
                         // $word ends in comma or semicolon and 'and' has already occurred
                         // To cover the case of a last name containing a space, look ahead to see if next words
                         // are initials or year.  If so, add back comma taken off above and continue.  Else done.
+                        //dd($words[$i+1]);
                         if ($i + 3 < count($words)
-                                && (
-                                $this->isInitials($words[$i + 1])
+                            &&
+                            (
+                                ($this->isInitials($words[$i + 1]) && $namePart == 0)
                                 || $this->getYear($words[$i + 2], true, $trash, false, $trash2)
                                 || ( $this->isInitials($words[$i + 2]) && $this->getYear($words[$i + 3], true, $trash, false, $trash2))
-                                )
+                            )
                         ) {
                             $fullName .= ',';
                             $case = 10;
@@ -2845,20 +2885,19 @@ class Converter
         return ['authorstring' => $authorstring, 'warnings' => $warnings, 'oneWordAuthor' => $oneWordAuthor];
     }
 
-    /*
-     * isEd: determine if (string is 'Eds.' or '(Eds.)' or '(Eds)' or 'eds.' or '(eds.)' or '(eds)' and multiple == true)
-     * or (singular version and multiple == false)
-     * @param $string string
-     * @param $multiple boolean
-     */
-    private function isEd(string $string, bool $multiple = false): bool
+    /**
+      * isEd: determine if (string is 'Eds.' or '(Eds.)' or '(Eds)' or 'eds.' or '(eds.)' or '(eds)' or
+      * singular version of one of these
+      * @param $string string
+      * @return 0 if not match, 1 if singular form is matched, 2 if plural form is matched
+      */
+    private function isEd(string $string): bool
     {
-        if (($multiple && preg_match('/^\(?[Ee]ds\.?\)?,?$/', $string)) 
-           ||
-           (!$multiple && preg_match('/^\(?[Ee]d\.\)?,?$/', $string))) {
-            return true;
+        preg_match('/^\(?[Ee]d(s?)\.?\)?,?$/', $string, $matches);
+        if (count($matches) == 0) {
+            return 0;
         } else {
-            return false;
+            return $matches[1] == 's' ? 2 : 1;
         }
     }
 
@@ -2876,11 +2915,10 @@ class Converter
      * @param $italicsOnly boolean (if true, get only italic string, not quoted string)
      * @param $before part of $string preceding left delimiter and matched text
      * @param $after part of $string following matched text and right delimiter
-     * return quoted or italic substring
+     * @return quoted or italic substring
      */
     private function getQuotedOrItalic(string $string, bool $start, bool $italicsOnly, string|null &$before, string|null &$after): string|bool
     {
-
         $matchedText = $quotedText = $beforeQuote = $afterQuote = '';
 
         /* 
@@ -3531,7 +3569,8 @@ class Converter
     private function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming): string
     {
         if ($italicStart) {
-            $italicText = $this->getQuotedOrItalic($remainder, true, false, $before, $after);
+            // (string) on next line to stop VSCode complaining
+            $italicText = (string) $this->getQuotedOrItalic($remainder, true, false, $before, $after);
             if (preg_match('/ [0-9]/', $italicText)) {
                 // Seems that more than just the journal name is included in the italics/quotes, so forget the quotes/italics
                 // and continue
