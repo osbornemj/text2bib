@@ -307,7 +307,7 @@ class ExampleSeeder extends Seeder
                 ]
             ],
             [
-                'source' => 'Exner, J. E., Jr., Smith, A. B., Sr., Xavier Y. Biden, Jr., and X. Y. Jones, Jr. (1993). The Rorschach: A comprehensive system, Vol. 1. (3rd ed.), New York: John Wiley & Sons.',
+                'source' => 'Exner, J. E., Jr., Smith, A. B., Sr., Xavier Y. Biden, Jr., and X. Y. Jones, Jr. (1993). The Rorschach: A comprehensive system, Vol. 1. (3rd ed.), New York: John Wiley and Sons.',
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Exner, Jr., J. E. and Smith, Sr., A. B. and Biden, Jr., Xavier Y. and Jones, Jr., X. Y.',
@@ -316,7 +316,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '1',
                     'year' => '1993',
                     'address' => 'New York',
-                    'publisher' => 'Wiley',
+                    'publisher' => 'John Wiley and Sons',
                 ]
             ],
             [
@@ -1825,7 +1825,7 @@ class ExampleSeeder extends Seeder
                             'pages' => '1705-1707',
                             'title' => 'Flight control application of eigenstructure assignment with optimization of robustness to structure state space uncertainty',
                             'author' => 'K. M. Sobel and W. Yu.',
-                            'booktitle' => 'Proc. 28th IEEE Conf. Decision and Control, Tampa,FL',
+                            'booktitle' => 'Proc. 28th IEEE Conf. Decision and Control, Tampa, FL',
                             ]
                     ],
                     [
@@ -2160,7 +2160,54 @@ class ExampleSeeder extends Seeder
                             'volume' => '445',
                             'journal' => 'Nature',
                             ]
-                    ],                                                                                                                       
+                    ],
+                    [
+                        'source' => '2009 *+ | Prieto, G. A., J. F. Lawrence, and G. C. Beroza, Anelastic Earth structure from the coherency of the Ambient seismic field, \textit{J. Geophys. Res}., 114, B07202, doi:10.1029/2008JB006067 ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'doi' => '10.1029/2008JB006067',
+                            'year' => '2009',
+                            'title' => 'Anelastic Earth structure from the coherency of the Ambient seismic field',
+                            'author' => 'Prieto, G. A. and J. F. Lawrence and G. C. Beroza',
+                            'volume' => '114, B07202',
+                            'journal' => 'J. Geophys. Res.',
+                            ]
+                    ],
+                    [
+                        'source' => 'Fischer, O., 2008. On analogy as the motivation for grammaticalization. Studies in Language,32(2), pp. 336-382. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '2008',
+                            'pages' => '336-382',
+                            'title' => 'On analogy as the motivation for grammaticalization',
+                            'author' => 'Fischer, O.',
+                            'number' => '2',
+                            'volume' => '32',
+                            'journal' => 'Studies in Language',
+                            ]
+                    ],
+                    [
+                        'source' => 'Hoffmann, S., 2005. Grammaticalization and English complex prepositions: A corpus-based study. London and New York: Routledge. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '2005',
+                            'title' => 'Grammaticalization and English complex prepositions: A corpus-based study',
+                            'author' => 'Hoffmann, S.',
+                            'address' => 'London and New York',
+                            'publisher' => 'Routledge',
+                            ]
+                    ],
+                    [
+                        'source' => 'Trask, R.L.,1996. Historical Linguistics. London: Arnold Van Bergem. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'address' => 'London',
+                            'publisher' => 'Arnold Van Bergem',
+                            'year' => '1996',
+                            'title' => 'Historical Linguistics',
+                            'author' => 'Trask, R. L.',
+                            ]
+                    ],                                                                                                                                                                                                       
                 ];
 
             DB::statement('DELETE FROM examples');

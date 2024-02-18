@@ -6,6 +6,10 @@
     </x-slot>
 
     <div class="px-4 sm:px-4 sm:rounded-lg">
+        A name is distinctive (purple button) if it cannot plausibly occur in the title of an item.
+    </div>
+
+    <div class="px-4 sm:px-4 sm:rounded-lg">
         <x-link href="/admin/journals/create">Add journal</x-link>
         @if ($uncheckedJournals->count())
             <h3 class="mt-4 font-semibold text-lg leading-tight">Unchecked</h3>

@@ -93,7 +93,13 @@ class Converter
         $this->dictionaryNames = DictionaryName::all()->pluck('word')->toArray();
 
         // Journals with distinctive names (not single words like Science and Nature)
-        $this->journalNames = Journal::all()->pluck('name')->toArray();
+        // The names are ordered by string length, longest first, so that if one journal name
+        // is a subset of another, the longer name is detected 
+        $this->journalNames = Journal::where('distinctive', 1)
+            ->where('checked', 1)
+            ->orderByRaw('CHAR_LENGTH(name) DESC')
+            ->pluck('name')
+            ->toArray();
 
         // Introduced to facilitate a variety of languages, but the assumption that the language of the 
         // citation --- though not necessarily of the reference itself --- is English pervades the code.
@@ -243,7 +249,7 @@ class Converter
 
         $firstComponent = 'authors';
         // If entry starts with year, extract it.
-        if (preg_match('/^(?P<year>[1-9][0-9]{3}) (?P<remainder>.*)$/', $entry, $matches)) {
+        if (preg_match('/^(?P<year>[1-9][0-9]{3})\*? (?P<remainder>.*)$/', $entry, $matches)) {
             $firstComponent = 'year';
             $year = $matches['year'];
             $remainder = ltrim($matches['remainder'], ' |*+');
@@ -386,16 +392,17 @@ class Converter
         // can have a space in it --- e.g. Oblo{\v z}insk{\' y}.  So perform a more sophisticated explosion.
         $chars = str_split($remainder);
 
-        // If period is not followed by space, another period, a comma, a semicolon, a dash, a quotation mark
-        // or a lowercase letter (might be within a URL --- the "name" when citing a web page), treat it as ending
+        // If period or comma is not followed by space, another period, a comma, a semicolon, a dash, a quotation mark
+        // or (EITHER is followed by a digit and the next character is not a colon OR is followed by a lowercase letter
+        // (might be within a URL --- the "name" when citing a web page), treat it as ending
         // word.
         $word = '';
         $words = [];
         foreach ($chars as $i => $char) {
-            if ($char == '.' 
+            if (in_array($char, ['.', ',']) 
                     && isset($chars[$i+1]) 
                     && !in_array($chars[$i+1], [' ', '.', ',', ';', '-', '"', "'"]) 
-                    && mb_strtolower($chars[$i+1]) != $chars[$i+1]) {
+                    && ((in_array($chars[$i+1], range('0', '9')) && (!isset($chars[$i+2]) || $chars[$i+2] != ':')) || mb_strtolower($chars[$i+1]) != $chars[$i+1])) {
                 $word .= $char;
                 $words[] = $word;
                 $word = '';
@@ -574,7 +581,8 @@ class Converter
 
         $journal = null;
         foreach ($this->journalNames as $name) {
-            if (Str::contains($remainder, $name)) {
+            // Ignore periods
+            if (Str::contains(str_replace('.', '', $remainder), str_replace('.', '', $name))) {
                 $journal = $name;
                 $containsJournalName = true;
                 $this->verbose("Contains the name of a journal.");
@@ -837,13 +845,13 @@ class Converter
             $this->verbose("Item type case 17");
             $itemKind = 'article';
             if (!$this->itemType) {
-                $warnings[] = "Really not sure of type; has to be something; set to " . $itemKind . ".";
+                $warnings[] = "Not sure of type; set to " . $itemKind . ".";
             }
         } else {
             $this->verbose("Item type case 18");
             $itemKind = 'book';
             if (!$this->itemType) {
-                $warnings[] = "Really not sure of type; has to be something; set to " . $itemKind . ".";
+                $warnings[] = "Not sure of type; set to " . $itemKind . ".";
             }
         }
 
@@ -893,11 +901,18 @@ class Converter
             case 'article':
                 // Get journal
                 $remainder = ltrim($remainder, '., ');
+                // If there are any commas not followed by spaces, add spaces after them
+                $remainder = preg_replace('/,([^ ])/', ', $1', $remainder);
 
                 if ($journal) {
                     // Remove $journal and any surrounding italics
-                    $remainder = preg_replace('/(\\\textit\{ ?' . $journal . '[,. }]*)/', '', $remainder);
-                    dd($remainder, $journal);
+                    $startItalicRegExp = '';
+                    foreach ($this->italicCodes as $code) {
+                        $startItalicRegExp .= '|' . str_replace(['\\', '{'], ['\\\\', '\\{'], $code);
+                    }
+                    $startItalicRegExp = '(((' . substr($startItalicRegExp, 1) . ') *)?)';
+                    // Allow periods or not in journal names
+                    $remainder = preg_replace('/(' . $startItalicRegExp . str_replace('.', '\.?', $journal) . '([^}]*\})?)/', '', $remainder);
                 } else {
                     // If does not start with italics, check whether first word is all numeric and
                     // italics starts after first word, in which case
@@ -1653,7 +1668,7 @@ class Converter
                         $this->setField($item, 'publisher', $remainder, 'setField 55');
                         $newRemainder = '';
                     } else {
-                        $newRemainder = $this->extractPublisherAndAddress($remainder, $address, $publisher);
+                        $newRemainder = $this->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString);
                         $this->setField($item, 'publisher', $publisher, 'setField 56');
                         $this->setField($item, 'address', $address, 'setField 57');
                     }
@@ -1820,30 +1835,37 @@ class Converter
                 if (!$done) {
                     $remainder = isset($newRemainder) ? $newRemainder : implode(" ", $remainingWords);
 
-                    if ($publisherString && $cityString) {
+                    // If string is in italics, get rid of the italics
+                    if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
+                        $remainder = rtrim(substr($remainder, $length), '}');
+                    }
+
+                    // First use routine to find publisher and address, to catch cases where address
+                    // contains more than one city, for example.
+                    $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString);
+
+                    if ($publisher) {
+                        $this->setField($item, 'publisher', $publisher, 'setField 85');
+                    }
+
+                    if ($address) {
+                        $this->setField($item, 'address', $address, 'setField 86');
+                    }
+
+                    // Then fall back on publishe and city previously identified.
+                    if (!$publisher && $publisherString && !$address && $cityString) {
                         $this->setField($item, 'publisher', $publisherString, 'setField 83');
                         $this->setField($item, 'address', $cityString, 'setField 84');
                         $remainder = $this->findAndRemove($remainder, $publisherString);
                         $remainder = $this->findAndRemove($remainder, $cityString);
-                    } else {
-                        // If string is in italics, get rid of the italics
-                        if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
-                            $remainder = rtrim(substr($remainder, $length), '}');
-                        }
+                    } 
 
-                        $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher);
-
-                        if ($publisher) {
-                            $this->setField($item, 'publisher', $publisher, 'setField 85');
-                        } else {
-                            $warnings[] = "No publisher identified.";
-                        }
-
-                        if ($address) {
-                            $this->setField($item, 'address', $address, 'setField 86');
-                        } else {
-                            $warnings[] = "No place of publication identified.";
-                        }
+                    if (!isset($item->publisher)) {
+                        $warnings[] = "No publisher identified.";
+                    }
+                    
+                    if (!isset($item->address)) {
+                        $warnings[] = "No place of publication identified.";
                     }
                 }
 
@@ -1893,7 +1915,10 @@ class Converter
         $remainder = trim($remainder, '.,:;}{ ');
 
         if ($remainder && !in_array($remainder, ['pages', 'Pages', 'pp', 'pp.'])) {
-            if (preg_match('/^' . $this->endForthcomingRegExp . '/', $remainder)) {
+            if (preg_match('/^' . $this->endForthcomingRegExp . '/i', $remainder)
+                ||
+                preg_match('/^' . $this->startForthcomingRegExp . '/i', $remainder)
+                ) {
                 $this->setField($item, 'note', $remainder);
             } else {
                 $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
@@ -3240,14 +3265,24 @@ class Converter
     }
 
     /**
-     * Assuming $string contains exactly the publisher and address, break it into those two components;
-     * return remaining string (if any)
+     * Assuming $string contains the publisher and address, isolate those two components;
      * @param $string string
      * @param $address string
      * @param $publisher string
+     * @return $remainder string
      */
-    private function extractPublisherAndAddress(string $string, string|null &$address, string|null &$publisher): string
+    private function extractPublisherAndAddress(string $string, string|null &$address, string|null &$publisher, string|null $cityString, string|null $publisherString): string
     {
+        // If, after removing $publisherString and $cityString, only punctuation remains, set those strings to be
+        // publisher and address
+        $newString = Str::remove([$publisherString, $cityString], $string);
+
+        if (empty(trim($newString, ' ,.;:'))) {
+            $publisher = $publisherString;
+            $address = $cityString;
+            return '';
+        } 
+
         $containsPublisher = $containsCity = false;
         $string = trim($string, ' ().,');
         // If $string contains a single ':', take city to be preceding string and publisher to be
@@ -3994,7 +4029,10 @@ class Converter
 
         $string = str_replace("&nbsp;", " ", $string);
         $string = str_replace("\\ ", " ", $string);
+        $string = str_replace("\\textbf{ }", " ", $string);
         $string = str_replace("\\textbf{\\ }", " ", $string);
+        $string = str_replace("\\textit{ }", " ", $string);
+        $string = str_replace("\\textit{\\ }", " ", $string);
         // Replace ~ with space if not preceded by \
         $string = preg_replace('/([^\\\])~/', '$1 ', $string);
         $string = str_replace("\\/", "", $string);

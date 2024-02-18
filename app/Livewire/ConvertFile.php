@@ -196,15 +196,6 @@ class ConvertFile extends Component
                     'seq' => $i,
                 ]);
                 $convertedItems[$output->id] = $convItem;
-
-                if ($convItem['itemType'] == 'article') {
-                    $journalName = $convItem['item']->journal;
-                    if (!Journal::where('name', $journalName)->exists()) {
-                        $journal = new Journal;
-                        $journal->name = $journalName;
-                        $journal->save();
-                    }
-                }
             }
 
             $this->conversionExists = true;

@@ -13,6 +13,7 @@ use App\Models\ErrorReport;
 use App\Models\ErrorReportComment;
 use App\Models\ItemField;
 use App\Models\ItemType;
+use App\Models\Journal;
 use App\Models\Output;
 //use App\Models\OutputField;
 use App\Models\RawOutput;
@@ -99,9 +100,22 @@ class ShowConvertedItem extends Component
         $this->correctness = $value;
         $this->displayState = $this->correctness == -1 ? 'block' : 'none';
 
+        $output = Output::with('itemType')->where('id', $this->outputId)->first();
+
         if (in_array($value, [0, 1])) {
-            Output::find($this->outputId)->update(['correctness' => $value]);
+            $output->correctness = $value;
+            $output->save();
         }
+
+        if ($value == 1 && $output->itemType->name == 'article') {
+            $journalName = ($output->item)['journal'];
+            if (!Journal::where('name', $journalName)->exists()) {
+                $journal = new Journal;
+                $journal->name = $journalName;
+                $journal->save();
+            }
+        }
+
     }
 
     public function submit(): void
