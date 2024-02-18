@@ -5,24 +5,38 @@
         </h2>
     </x-slot>
 
-    <div class="sm:px-0 lg:px-0 space-y-6">
-        <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
-            <x-link href="/admin/publishers/create">Add publisher</x-link>
-            <ul class="mt-4">
-                @foreach ($publishers as $publisher)
-                    <li>
-                        <form method="POST" action="{{ route('publishers.destroy', $publisher->id) }}">
-                            @method('DELETE')
-                            @csrf
-                                <x-link href="{{ url('admin/publishers/' . $publisher->id . '/edit') }}">{{ $publisher->name }}</x-link>
-                                <x-small-submit-button class="ml-2">
-                                    {{ 'X' }}
-                                </x-small-submit-button>
-                        </form>
+    <div class="px-4 sm:px-4 sm:rounded-lg">
+        A name is distinctive (purple button) if it cannot plausibly occur in the title of an item.
+    </div>
+
+    <div class="px-4 sm:px-4 sm:rounded-lg">
+        <x-link href="/admin/publishers/create">Add publisher</x-link>
+        @if ($uncheckedPublishers->count())
+            <h3 class="mt-4 font-semibold text-lg leading-tight">Unchecked</h3>
+            <ul>
+                @foreach ($uncheckedPublishers as $publisher)
+                <li>
+                    <div>
+                    <livewire:publisher-check :publisher="$publisher" />
+                    </div>
+                </li>
+                @endforeach
+            </ul>
+        @endif
+
+        @if ($checkedPublishers->count())
+            <h3 class="mt-4 font-semibold text-lg leading-tight">Checked</h3>
+            <ul>
+                @foreach ($checkedPublishers as $publisher)
+                <li>
+                    <div>
+                        <livewire:publisher-check :publisher="$publisher" />
+                        </div>
                     </li>
                 @endforeach
             </ul>
-        </div>
+        @endif
+
     </div>
 
 </x-app-layout>

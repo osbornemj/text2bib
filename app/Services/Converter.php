@@ -101,6 +101,22 @@ class Converter
             ->pluck('name')
             ->toArray();
 
+        // The script will identify strings as cities and publishers even if they are not in these arrays---but the
+        // presence of a string in one of the arrays helps when the elements of the reference are not styled in any way.
+        $this->cities = City::where('distinctive', 1)
+            ->where('checked', 1)
+            ->orderByRaw('CHAR_LENGTH(name) DESC')
+            ->pluck('name')
+            ->toArray();
+        
+        $this->publishers = Publisher::where('distinctive', 1)
+            ->where('checked', 1)
+            ->orderByRaw('CHAR_LENGTH(name) DESC')
+            ->pluck('name')
+            ->toArray();
+        
+        $this->names = Name::all()->pluck('name')->toArray();
+        
         // Introduced to facilitate a variety of languages, but the assumption that the language of the 
         // citation --- though not necessarily of the reference itself --- is English pervades the code.
         $this->phrases = [
@@ -182,15 +198,6 @@ class Converter
 
         $this->vonNames = VonName::all()->pluck('name')->toArray();
 
-        // The script will identify strings as cities and publishers even if they are not in these arrays---but the
-        // presence of a string in one of the arrays helps when the elements of the reference are not styled in any way.
-        $this->cities = City::all()->pluck('name')->toArray();
-        
-        // Springer-Verlag should come before Springer, so that if string contains Springer-Verlag, that is found
-        $this->publishers = Publisher::all()->pluck('name')->toArray();
-        
-        $this->names = Name::all()->pluck('name')->toArray();
-        
         // Codes are ended by } EXCEPT \em, \it, and \sl, which have to be ended by something like \normalfont.  Code
         // that gets italic text handles only the cases in which } ends italics.
         $this->italicCodes = ["\\textit{", "\\textsl{", "\\emph{", "{\\em ", "\\em ", "{\\it ", "\\it ", "{\\sl ", "\\sl "];
@@ -1026,8 +1033,6 @@ class Converter
                     $this->verbose('Moving content of url field to note');
                     $this->setField($item, 'note', $item->url, 'setField 26');
                     unset($item->url);
-                } else {
-                    $warnings[] = "Mandatory 'note' field missing.";
                 }
 
                 break;
@@ -1856,7 +1861,7 @@ class Converter
                     if (!$publisher && $publisherString && !$address && $cityString) {
                         $this->setField($item, 'publisher', $publisherString, 'setField 83');
                         $this->setField($item, 'address', $cityString, 'setField 84');
-                        $remainder = $this->findAndRemove($remainder, $publisherString);
+                        $remainder = $this->findAndRemove((string) $remainder, $publisherString);
                         $remainder = $this->findAndRemove($remainder, $cityString);
                     } 
 
@@ -1932,6 +1937,10 @@ class Converter
             if (in_array($itemKind, ['article', 'incollection', 'inproceedings'])) {
                 $warnings[] = "No page range found.";
             }
+        }
+
+        if ($itemKind == 'unpublished' && !isset($item->note)) {
+            $warnings[] = "Mandatory 'note' field missing.";
         }
 
         if (isset($item->publisher) && $item->publisher == '') {

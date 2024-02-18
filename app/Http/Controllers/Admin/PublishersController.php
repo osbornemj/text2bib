@@ -17,11 +17,15 @@ class PublishersController extends Controller
      */
     public function index(): View
     {
-        $publishers = Publisher::orderBy('name')
+        $checkedPublishers = Publisher::where('checked', 1)
+            ->orderBy('name')
             ->get();
 
-        return view('admin.publishers.index')
-            ->with('publishers', $publishers);
+        $uncheckedPublishers = Publisher::where('checked', 0)
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.publishers.index', compact('checkedPublishers', 'uncheckedPublishers'));
     }
 
     /**
@@ -41,6 +45,7 @@ class PublishersController extends Controller
     public function store(StorePublisherRequest $request)
     {
         $input = $request->all();
+        $input['checked'] = 1;
 
         Publisher::create($input);
 

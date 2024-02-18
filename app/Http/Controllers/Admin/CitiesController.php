@@ -17,11 +17,15 @@ class CitiesController extends Controller
      */
     public function index(): View
     {
-        $cities = City::orderBy('name')
+        $checkedCities = City::where('checked', 1)
+            ->orderBy('name')
             ->get();
 
-        return view('admin.cities.index')
-            ->with('cities', $cities);
+        $uncheckedCities = City::where('checked', 0)
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.cities.index', compact('checkedCities', 'uncheckedCities'));
     }
 
     /**
@@ -41,6 +45,7 @@ class CitiesController extends Controller
     public function store(StoreCityRequest $request)
     {
         $input = $request->all();
+        $input['checked'] = 1;
 
         City::create($input);
 

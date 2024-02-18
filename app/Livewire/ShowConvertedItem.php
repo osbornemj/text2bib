@@ -9,12 +9,14 @@ use App\Livewire\Forms\ShowConvertedItemForm;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
+use App\Models\City;
 use App\Models\ErrorReport;
 use App\Models\ErrorReportComment;
 use App\Models\ItemField;
 use App\Models\ItemType;
 use App\Models\Journal;
 use App\Models\Output;
+use App\Models\Publisher;
 //use App\Models\OutputField;
 use App\Models\RawOutput;
 //use App\Models\RawOutputField;
@@ -107,15 +109,40 @@ class ShowConvertedItem extends Component
             $output->save();
         }
 
-        if ($value == 1 && $output->itemType->name == 'article') {
+        if ($value == 1) {
+            $this->insertPublisherJournalCity($output);
+        }
+    }
+
+    private function insertPublisherJournalCity($output)
+    {
+        if ($output->itemType->name == 'article' && isset(($output->item)['journal'])) {
             $journalName = ($output->item)['journal'];
             if (!Journal::where('name', $journalName)->exists()) {
                 $journal = new Journal;
                 $journal->name = $journalName;
                 $journal->save();
             }
+        } else {
+            if (in_array($output->itemType->name, ['book', 'incollection'])) {
+                $publisherName = ($output->item)['publisher'];
+                if (isset(($output->item)['publisher'])) {
+                    if (!Publisher::where('name', $publisherName)->exists()) {
+                        $publisher = new Publisher();
+                        $publisher->name = $publisherName;
+                        $publisher->save();
+                    }
+                }
+                if (isset(($output->item)['address'])) {
+                    $cityName = ($output->item)['address'];
+                    if (!City::where('name', $cityName)->exists()) {
+                        $city = new City();
+                        $city->name = $cityName;
+                        $city->save();
+                    }
+                }
+            }
         }
-
     }
 
     public function submit(): void
@@ -210,14 +237,14 @@ class ShowConvertedItem extends Component
 
             $this->errorReport = $newErrorReport;
 
-            // Notify admin?
-
             $this->status = 'changes';
             $this->displayState = 'none';
-            // correctness set to 0 because then 'correct' and 'incorrect' buttons are then neutral,
+            // correctness set to 0 because then 'correct' and 'incorrect' buttons are neutral,
             // and 'corrected' button appears because 'status' is 'changes'.
             $this->correctness = 0;
             $output->update(['correctness' => -1]);
+
+            $this->insertPublisherJournalCity($output);
         }
     }
 }

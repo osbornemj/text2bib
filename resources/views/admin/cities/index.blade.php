@@ -1,28 +1,42 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl leading-tight">
-            Publication cities
+            Cities
         </h2>
     </x-slot>
 
-    <div class="sm:px-0 lg:px-0 space-y-6">
-        <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
-            <x-link href="/admin/cities/create">Add publication city</x-link>
+    <div class="px-4 sm:px-4 sm:rounded-lg">
+        A name is distinctive (purple button) if it cannot plausibly occur in the title of an item.
+    </div>
+
+    <div class="px-4 sm:px-4 sm:rounded-lg">
+        <x-link href="/admin/cities/create">Add city</x-link>
+        @if ($uncheckedCities->count())
+            <h3 class="mt-4 font-semibold text-lg leading-tight">Unchecked</h3>
             <ul>
-                @foreach ($cities as $city)
-                    <li>
-                        <form method="POST" action="{{ route('cities.destroy', $city->id) }}">
-                            @method('DELETE')
-                            @csrf
-                                <x-link href="{{ url('admin/cities/' . $city->id . '/edit') }}">{{ $city->name }}</x-link>
-                                <x-small-submit-button class="ml-2">
-                                    {{ 'X' }}
-                                </x-small-submit-button>
-                        </form>
+                @foreach ($uncheckedCities as $city)
+                <li>
+                    <div>
+                    <livewire:city-check :city="$city" />
+                    </div>
+                </li>
+                @endforeach
+            </ul>
+        @endif
+
+        @if ($checkedCities->count())
+            <h3 class="mt-4 font-semibold text-lg leading-tight">Checked</h3>
+            <ul>
+                @foreach ($checkedCities as $city)
+                <li>
+                    <div>
+                        <livewire:city-check :city="$city" />
+                        </div>
                     </li>
                 @endforeach
             </ul>
-        </div>
+        @endif
+
     </div>
 
 </x-app-layout>

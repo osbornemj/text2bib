@@ -2207,7 +2207,215 @@ class ExampleSeeder extends Seeder
                             'title' => 'Historical Linguistics',
                             'author' => 'Trask, R. L.',
                             ]
-                    ],                                                                                                                                                                                                       
+                    ],
+                    [
+                        'source' => 'Gomez, Luis O., and Hiram W. Woodward, Jr. (1981) Barabudur: History and Significance of a Buddhist Monument. Berkeley Buddhist Studies Series. Berkeley: Asian Humanities Press.  ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1981',
+                            'title' => 'Barabudur: History and Significance of a Buddhist Monument',
+                            'author' => 'Gomez, Luis O. and Woodward, Jr., Hiram W.',
+                            'series' => 'Berkeley Buddhist Studies Series',
+                            'address' => 'Berkeley',
+                            'publisher' => 'Asian Humanities Press',
+                            ]
+                    ],
+                    [
+                        'source' => 'Higham, Charles (1989) The Archaeology of Mainland Southeast Asia from 10,000 B.C. to the Fall of Angkor. Cambridge: Cambridge University Press.  ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1989',
+                            'title' => 'The Archaeology of Mainland Southeast Asia from 10, 000 B.C. to the Fall of Angkor',
+                            'author' => 'Higham, Charles',
+                            'address' => 'Cambridge',
+                            'publisher' => 'Cambridge University Press',
+                            ]
+                    ],
+                    [
+                        'source' => 'Sanderson, Alexis (2003-2004) "The Śaiva Religion among the Khmers." Bulletin de l\'École française d\'Extrême-Orient 90-91: 349-462. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '2003-2004',
+                            'pages' => '349-462',
+                            'title' => 'The Śaiva Religion among the Khmers',
+                            'author' => 'Sanderson, Alexis',
+                            'volume' => '90-91',
+                            'journal' => 'Bulletin de l\'{\'E}cole fran\c{c}aise d\'Extr{\^e}me-Orient',
+                            ]
+                    ],
+                    [
+                        'source' => 'Wolters, O. W. (1999) History, culture, and region in Southeast Asian perspectives, rev. ed. Ithaca, N.Y.: Southeast Asia Program Publications, Cornell University. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1999',
+                            'title' => 'History, culture, and region in Southeast Asian perspectives',
+                            'author' => 'Wolters, O. W.',
+                            'address' => 'Ithaca, N.Y.',
+                            'booktitle' => 'rev',
+                            'publisher' => 'Southeast Asia Program Publications, Cornell University',
+                            ]
+                    ],
+                    [
+                        'source' => 'Boon, James A. (1990) Affinities and Extremes: Crisscrossing the Bittersweet Ethnology of East Indies History, Hindu-Balinese Culture, and Indo-European Allure. Chicago: University of Chicago Press.  ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1990',
+                            'title' => 'Affinities and Extremes: Crisscrossing the Bittersweet Ethnology of East Indies History, Hindu-Balinese Culture, and Indo-European Allure',
+                            'author' => 'Boon, James A.',
+                            'address' => 'Chicago',
+                            'publisher' => 'University of Chicago Press',
+                            ]
+                    ],
+                    
+                    [
+                        'source' => 'Lubin, Timothy. 2005. “The Transmission, Patronage, and Prestige of Brahmanical Piety from the Mauryas to the Guptas.” In Federico Squarcini, ed., Boundaries, Dynamics and Construction of Traditions in South Asia, Firenze: Firenze University Press, 77-103.  ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '2005',
+                            'pages' => '77-103',
+                            'title' => 'The Transmission, Patronage, and Prestige of Brahmanical Piety from the Mauryas to the Guptas',
+                            'author' => 'Lubin, Timothy',
+                            'booktitle' => 'Boundaries, Dynamics and Construction of Traditions in South Asia',
+                            'address' => 'Firenze',
+                            'editor' => 'Federico Squarcini',
+                            'publisher' => 'Firenze University Press',
+                            ]
+                    ],
+                    [
+                        'source' => 'Mendelsohn, Oliver. 1993. "The transformation of authority in rural India.” Modern Asian Studies 27: 805-42.',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '1993',
+                            'title' => 'The transformation of authority in rural India',
+                            'journal' => 'Modern Asian Studiess',
+                            'volume' => '27',
+                            'pages' => '805-42',
+                            'author' => 'Mendelsohn, Oliver',
+                            ]
+                    ],
+                    [
+                        'source' => 'Pollock, Sheldon. 2006. The Language of the Gods in the World of Men: Sanskrit, Culture, and Power in Premodern India. Berkeley: U. of California Press. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '2006',
+                            'title' => 'The Language of the Gods in the World of Men: Sanskrit, Culture, and Power in Premodern India',
+                            'author' => 'Pollock, Sheldon',
+                            'address' => 'Berkeley',
+                            'publisher' => 'U. of California Press',
+                            ]
+                    ],
+                    [
+                        'source' => 'Srivastava, S. K. 1963. “The Process of Desanskritization in Village India.” In Bala Ratnam, ed., Anthropology on the March. Madras, 266-270. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '1963',
+                            'pages' => '266-270',
+                            'title' => 'The Process of Desanskritization in Village India',
+                            'author' => 'Srivastava, S. K.',
+                            'editor' => 'Bala Ratnam',
+                            'booktitle' => 'Anthropology on the March',
+                            'address' => 'Madras',
+                            ]
+                    ],
+                    [
+                        'source' => 'Witzel, Michael. 1997. “Early Sanskritization: Origins and Development of the Kuru State.” In Recht, Staat und Verwaltung im klassischen Indien / The State, the Law, and Administration in Classical India, ed. by Bernhard Kölver, with E. Müller-Luckner. Munich: R. Oldenbourg Verlag, 29-52. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '1997',
+                            'pages' => '29-52',
+                            'title' => 'Early Sanskritization: Origins and Development of the Kuru State',
+                            'author' => 'Witzel, Michael',
+                            'editor' => 'Bernhard Kölver, with E. Müller-Luckner',
+                            'address' => 'Munich',
+                            'booktitle' => 'Recht, Staat und Verwaltung im klassischen Indien / The State and the Law, and Administration in Classical India',
+                            'publisher' => 'R. Oldenbourg Verlag',
+                            ]
+                    ],
+                    [
+                        'source' => 'J. Conway and N. Sloane, Sphere Packings, Lattices and Groups, Springer, Berlin, 1993. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1993',
+                            'title' => 'Sphere Packings, Lattices and Groups',
+                            'author' => 'J. Conway and N. Sloane',
+                            'address' => 'Berlin',
+                            'publisher' => 'Springer',
+                            ]
+                    ],
+                    [
+                        'source' => 'G. Crippen, Distance geometry for realistic molecular conformations, in Distance Geometry: Theory, Methods, and Applications, A. Mucherino, C. Lavor, L. Liberti, and N. Maculan, eds., Springer, New York, 2013, pp. 315--328. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '2013',
+                            'pages' => '315-328',
+                            'title' => 'Distance geometry for realistic molecular conformations',
+                            'author' => 'G. Crippen',
+                            'editor' => 'A. Mucherino and C. Lavor and L. Liberti and N. Maculan',
+                            'address' => 'New York',
+                            'booktitle' => 'Distance Geometry: Theory, Methods, and Applications',
+                            'publisher' => 'Springer',
+                            ]
+                    ],
+                    [
+                        'source' => 'R. Diestel, Graph Theory, Springer, New York, 2005. ',
+                        'type' => 'ubook',
+                        'bibtex' => [
+                            'year' => '2005',
+                            'title' => 'Graph Theory',
+                            'author' => 'R. Diestel',
+                            'publisher' => 'Springer',
+                            'address' => 'New York',
+                            ]
+                    ],
+                    [
+                        'source' => 'P. Krishnaiah and L. Kanal, eds., Theory of Multidimensional Scaling, Vol. 2, North-Holland, 1982. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '1982',
+                            'title' => 'Theory of Multidimensional Scaling',
+                            'editor' => 'P. Krishnaiah and L. Kanal',
+                            'volume' => '2',
+                            'publisher' => 'North-Holland',
+                            ]
+                    ],
+                    [
+                        'source' => 'M. Laurent, Matrix completion problems, in Encyclopedia of Optimization, 2nd ed., C. Floudas and P. Pardalos, eds., Springer, New York, 2009, pp. 1967--1975. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '2009',
+                            'pages' => '1967-1975',
+                            'title' => 'Matrix completion problems',
+                            'author' => 'M. Laurent',
+                            'editor' => 'C. Floudas and P. Pardalos',
+                            'address' => 'New York',
+                            'booktitle' => 'Encyclopedia of Optimization 2nd ed.',
+                            'publisher' => 'Springer',
+                            ]
+                    ],
+                    [
+                        'source' => 'A. Mucherino, C. Lavor, L. Liberti, and N. Maculan, eds., Distance Geometry: Theory, Methods, and Applications, Springer, New York, 2013. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '2013',
+                            'title' => 'Distance Geometry: Theory, Methods, and Applications, ',
+                            'editor' => 'A. Mucherino and C. Lavor and L. Liberti and N. Maculan',
+                            'address' => 'New York',
+                            'publisher' => 'Springer',
+                            ]
+                    ],
+                    [
+                        'source' => 'J. Sylvester, Chemistry and algebra, Nature, 17 (1877), pp. 284--284.  ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '1877',
+                            'pages' => '284-284',
+                            'title' => 'Chemistry and algebra',
+                            'author' => 'J. Sylvester',
+                            'volume' => '17',
+                            'journal' => 'Nature',
+                            ]
+                    ],                                        
+                    
                 ];
 
             DB::statement('DELETE FROM examples');
