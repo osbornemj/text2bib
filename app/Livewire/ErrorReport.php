@@ -133,21 +133,13 @@ class ErrorReport extends Component
                 $itemField = $field->itemField;
                 $this->form->{$itemField->name} = $field->content;
             }
-//dd($this->form->title);    
+
             $this->itemTypeId = $output->item_type_id;
             $itemType = ItemType::find($this->itemTypeId);
             $this->fields = $itemType->itemFields->sortBy('id');
 
-            // File report
-            // CODE ...
-
             $this->status = 'changes';
             $this->displayState = 'block';
         }
-    }
-
-    public function render()
-    {
-        return view('livewire.error-report');
     }
 }

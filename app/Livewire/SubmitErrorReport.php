@@ -8,6 +8,7 @@ use App\Models\ItemType;
 
 class SubmitErrorReport extends Component
 {
+/*
     //public $outputId;
     public $output;
     public $itemTypeOptions;
@@ -45,12 +46,6 @@ class SubmitErrorReport extends Component
 
     public function mount()
     {
-        /*
-        $output = Output::where('id', $this->outputId)
-            ->with('fields.itemField')
-            ->first();
-        */
-
         $this->fields = $this->output->fields;
         $this->itemTypeId = $this->output->item_type_id;
 
@@ -80,9 +75,5 @@ class SubmitErrorReport extends Component
     {
         dd($this->only(['author']));
     }
-
-    public function render()
-    {
-        return view('livewire.submit-error-report');
-    }
+*/
 }

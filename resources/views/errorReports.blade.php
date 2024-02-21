@@ -6,15 +6,15 @@
     </x-slot>
 
     @if (!count($errorReports))
-        <div class="ml-4">
+        <div class="sm:mx-4">
             None so far.
         </div>
     @endif
 
     @foreach ($errorReports as $errorReport)
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 sm:ml-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 sm:mx-4">
             <div class="col-span-7">
-                <x-link href="{{ url('errorReport/' . $errorReport->id) }}">{{ substr($errorReport->output->source, 0, strpos($errorReport->output->source, ' ', 60)) . ' ...' }}</x-link>
+                <x-link href="{{ url('errorReport/' . $errorReport->id) }}">{{ substr($errorReport->output->source, 0, strpos($errorReport->output->source, ' ', 50)) . ' ...' }}</x-link>
             </div>
             <div class="col-span-2">
                 {{ $errorReport->created_at->format('Y-m-d h:m') }}

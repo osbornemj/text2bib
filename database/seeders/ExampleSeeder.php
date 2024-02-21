@@ -230,8 +230,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'Mathematical Modeling of Lithium Batteries',
                     'booktitle' => 'Advances in Lithium-Ion Batteries',
                     'year' => '2002',
-                    'publisher' => 'New York',
-                    'address' => 'Kluwer Academic/Plenum Publishers',
+                    'address' => 'New York',
+                    'publisher' => 'Kluwer Academic/Plenum Publishers',
                     'editor' => 'W. van Schalkwijk and B. Scrosati',
                     'pages' => '345-392',
                 ]
@@ -2240,7 +2240,7 @@ class ExampleSeeder extends Seeder
                             'title' => 'The Śaiva Religion among the Khmers',
                             'author' => 'Sanderson, Alexis',
                             'volume' => '90-91',
-                            'journal' => 'Bulletin de l\'{\'E}cole fran\c{c}aise d\'Extr{\^e}me-Orient',
+                            'journal' => 'Bulletin de l\'{\\\'E}cole fran\c{c}aise d\'Extr{\^e}me-Orient',
                             ]
                     ],
                     [
@@ -2287,7 +2287,7 @@ class ExampleSeeder extends Seeder
                         'bibtex' => [
                             'year' => '1993',
                             'title' => 'The transformation of authority in rural India',
-                            'journal' => 'Modern Asian Studiess',
+                            'journal' => 'Modern Asian Studies',
                             'volume' => '27',
                             'pages' => '805-42',
                             'author' => 'Mendelsohn, Oliver',

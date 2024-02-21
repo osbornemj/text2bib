@@ -474,7 +474,7 @@ class Converter
 
         $remainder = ltrim($remainder, ': ');
         // (string) on next line to stop VSCode complaining
-        $title = (string) $this->getQuotedOrItalic($remainder, true, false, $before, $after);
+        $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after);
         $newRemainder = $before . ltrim($after, "., ");
 
         // If title has been found and ends in edition specification, take that out and put it in edition field
@@ -1276,9 +1276,8 @@ class Converter
                         $this->setField($item, 'editor', trim($result['authorstring']));
                         $updateRemainder = false;
                     }
-
+//dd($matches, $before, $after);
                     if (!isset($item->editor)) {
-
                         // Require string for editors to have at least 6 characters and string for booktitle to have at least 10 characters
                         if ($remainderContainsEds && strlen($before) > 5 && $publisherPosition !== false && $publisherPosition > 10) {
                                 // $remainder is <editors> eds <booktitle> <publicationInfo>
@@ -2536,7 +2535,7 @@ class Converter
      * @param $remainder string remaining string after authors removed
      * @param $determineEnd boolean if true, figure out where authors end; otherwise take whole string
      *        to be authors
-     * return author string
+     * @return array, with author string, warnings, and oneWordAuthor flag
      */
     private function convertToAuthors(array $words, string|null &$remainder, string|null &$year, bool &$isEditor, bool $determineEnd = true): array
     {
@@ -2936,21 +2935,21 @@ class Converter
     }
 
     /**
-     * Find first quoted or italicized substring in $string, restricting to start if $start is true
-     * and getting only italics if $italicsOnly is true.  Return false if no quoted or italicized string found.
-     * Quoted means:
-     * starts with `` and ends with '' or "
-     * OR starts with '' and ends with '' or "
-     * OR starts with unescaped " and ends with unescaped "
-     * OR starts with <space>'<not '> and ends with <not \>'<not letter>
-     * OR starts with unescaped `<not `> and ends with <not \>'<not letter>
-     * @param $string string
-     * @param $start boolean (if true, check only for substring at start of string)
-     * @param $italicsOnly boolean (if true, get only italic string, not quoted string)
-     * @param $before part of $string preceding left delimiter and matched text
-     * @param $after part of $string following matched text and right delimiter
-     * @return quoted or italic substring
-     */
+      * Find first quoted or italicized substring in $string, restricting to start if $start is true
+      * and getting only italics if $italicsOnly is true.  Return false if no quoted or italicized string found.
+      * Quoted means:
+      * starts with `` and ends with '' or "
+      * OR starts with '' and ends with '' or "
+      * OR starts with unescaped " and ends with unescaped "
+      * OR starts with <space>'<not '> and ends with <not \>'<not letter>
+      * OR starts with unescaped `<not `> and ends with <not \>'<not letter>
+      * @param $string string
+      * @param $start boolean (if true, check only for substring at start of string)
+      * @param $italicsOnly boolean (if true, get only italic string, not quoted string)
+      * @param $before part of $string preceding left delimiter and matched text
+      * @param $after part of $string following matched text and right delimiter
+      * @return $matchedText: quoted or italic substring
+      */
     private function getQuotedOrItalic(string $string, bool $start, bool $italicsOnly, string|null &$before, string|null &$after): string|bool
     {
         $matchedText = $quotedText = $beforeQuote = $afterQuote = '';
@@ -2974,7 +2973,7 @@ class Converter
                 } elseif ($end) {
                     $afterQuote .= $char;
                 // inside match
-                } elseif ($begin == '``' || $begin == "''") {
+                } elseif ($begin == '``' || $begin == "''" || $begin == '"') {
                     if ($char == "'" && $chars[$i-1] != '\\' && $chars[$i+1] && $chars[$i+1] == "'") {
                         $end = true;
                         $skip = true;

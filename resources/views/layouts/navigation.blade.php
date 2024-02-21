@@ -23,6 +23,11 @@
                         </x-nav-link>
                     </div>
                     <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                        <x-nav-link :href="route('comments')" :active="request()->routeIs('comments')">
+                            {{ __('Comments') }}
+                        </x-nav-link>
+                    </div>
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                         <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
                             {{ __('About') }}
                         </x-nav-link>
@@ -115,6 +120,10 @@
 
                     <x-responsive-nav-link :href="route('errorReports')">
                         {{ __('Error reports') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('comments')">
+                        {{ __('Comments') }}
                     </x-responsive-nav-link>
 
                     <x-responsive-nav-link :href="route('about')">

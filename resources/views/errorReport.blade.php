@@ -37,14 +37,14 @@
                     $output = $errorReport->output;
                 @endphp
                 <dl>
-                    <x-dt>Fields with errors</x-dt>
+                    <x-dt>BibTeX fields</x-dt>
                     <x-dd>
                         @foreach ($output->itemType->fields as $fieldName)
                             @php
                                 $outputContent = ($output->item)[$fieldName] ?? null;
                                 $rawOutputContent = ($rawOutput->item)[$fieldName] ?? null;
                             @endphp
-                            <ul class="ml-6">
+                            <ul class="ml-0">
                                 @if ($outputContent != $rawOutputContent)
                                     <li>{{ $fieldName }} = <span class="text-red-600">{{ $rawOutputContent }}</span> &nbsp;&rarr;&nbsp; <span class="text-green-700">{{ $outputContent }}</span></li>
                                 @elseif ($rawOutputContent)
@@ -60,7 +60,7 @@
                     <x-dd>
                         @if ($errorReport->output->rawOutput)
                             <span class="text-red-600">{{ '@' }}{{ $errorReport->output->rawOutput->itemType->name }}</span>{
-                                <ul class="ml-6">
+                                <ul class="ml-0">
                                 @foreach ($errorReport->output->rawOutput->fields as $field)
                                     <li>{{ $field->itemField->name }} = {{ '{' }}{{ $field->content }}{{ '}' }}</li>
                                 @endforeach
@@ -72,7 +72,7 @@
                     <x-dt>Corrected BibTeX entry</x-dt>
                     <x-dd>
                         <span class="text-green-700">{{ '@' }}{{ $errorReport->output->itemType->name }}</span>{
-                            <ul class="ml-6">
+                            <ul class="ml-0">
                             @foreach ($errorReport->output->fields as $field)
                                 <li>{{ $field->itemField->name }} = {{ '{' }}{{ $field->content }}{{ '}' }}</li>
                             @endforeach

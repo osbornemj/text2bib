@@ -4,38 +4,39 @@ namespace App\Livewire;
 
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\ErrorReportComment;
+use App\Models\Comment;
 
 use Livewire\Component;
 use Livewire\Attributes\Rule;
 
-class ErrorFeedback extends Component
+class Comments extends Component
 {
     #[Rule('required', message: 'Please enter a comment')]    
     public $comment;
 
     public $comments;
-    public $errorReportId;
+    public $threadId;
 
     public function mount()
     {
-        $this->comments = ErrorReportComment::where('error_report_id', $this->errorReportId)
+        $this->comments = Comment::where('thread_id', $this->threadId)
             ->orderBy('created_at')
             ->get();
     }
 
-    public function submit($errorReportId)
+    public function submit()
     {
         $this->validate();
-        
+
         $user = Auth::user();
-        $comment = ErrorReportComment::create([
-            'error_report_id' => $errorReportId,
+        $comment = Comment::create([
+            'thread_id' => $this->threadId,
             'user_id' => $user->id,
-            'comment_text' => $this->comment,
+            'content' => $this->comment,
         ]);
 
         $this->comment = '';
         $this->comments = $this->comments->push($comment);
     }
+
 }

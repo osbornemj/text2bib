@@ -6,6 +6,7 @@ use Livewire\Component;
 
 class ProcessItems extends Component
 {
+    /*
     public function process()
     {
         for($i = 0; $i < 4; $i++) {
@@ -17,4 +18,5 @@ class ProcessItems extends Component
     {
         return view('livewire.process-items');
     }
+    */
 }

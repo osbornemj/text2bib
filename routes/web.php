@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\IndexController;
+use App\Http\Controllers\ProfileController;
+
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CitiesController;
 use App\Http\Controllers\Admin\ConversionAdminController;
@@ -15,11 +19,11 @@ use App\Http\Controllers\Admin\NamesController;
 use App\Http\Controllers\Admin\PublishersController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\VonNamesController;
-use App\Http\Controllers\IndexController;
-use App\Http\Controllers\ProfileController;
+
 use App\Http\Controllers\Convert\ErrorReportController;
 use App\Http\Controllers\Convert\FileUploadController;
 use App\Http\Controllers\Convert\ConversionController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -54,6 +58,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/errorReports', 'index')->name('errorReports');
         Route::get('/errorReport/{id}', 'show')->name('errorReport');
         Route::get('/convertErrorSource/{id}', 'convertSource')->name('convertErrorSource');
+    });
+
+    Route::resources([
+        '/threads' => CommentController::class,
+    ]);
+
+    Route::controller(CommentController::class)->group(function () {
+        Route::get('/comments', 'index')->name('comments');
+        Route::get('/comment/{id}', 'show')->name('comment');
     });
 
     Route::controller(ConversionController::class)->group(function () {
