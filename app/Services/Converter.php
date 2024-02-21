@@ -30,6 +30,7 @@ class Converter
     var $dictionaryNames;
     var $editionRegExp;
     var $editorStartRegExp;
+    var $editorEndRegExp;
     var $editorRegExp;
     var $edsRegExp1;
     var $edsRegExp2;
@@ -129,7 +130,7 @@ class Converter
             'edited by' => 'edited by'
         ];
 
-        $this->ordinals = ['1st', '2nd', '3rd', '4th', '5th'];
+        $this->ordinals = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'];
 
         $this->articleRegExp = 'article [0-9]*';
 
@@ -138,7 +139,8 @@ class Converter
         $this->edsRegExp3 = '/[Ee]ds?\.|^[Ee]ds?\.| [Ee]ditors?/';
         $this->edsRegExp4 = '/( [Ee]ds?[\. ]|\([Ee]ds?\.?\)| [Ee]ditors?| \([Ee]ditors?\))/';
         $this->editorStartRegExp = '/^\(?[Ee]dited by|^\(?[Ee]ds?\.?|^\([Ee]ditors?/';
-        $this->editorRegExp = '/\([Ee]ds?\.?\)|\([Ee]ditors?\)/';
+        $this->editorEndRegExp = '\(?eds?\.?\)?$|\(?editors?\)?$';
+        $this->editorRegExp = '( eds?[\. ]|\(eds?\.?\)| editors?| \(editors?\))';
 
         $this->editionRegExp = '(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh) (rev\. |revised )?(ed\.|edition)';
 
@@ -400,7 +402,7 @@ class Converter
         $chars = str_split($remainder);
 
         // If period or comma is not followed by space, another period, a comma, a semicolon, a dash, a quotation mark
-        // or (EITHER is followed by a digit and the next character is not a colon OR is followed by a lowercase letter
+        // or (EITHER is followed by a digit and the next character is not a colon OR is followed by a lowercase letter)
         // (might be within a URL --- the "name" when citing a web page), treat it as ending
         // word.
         $word = '';
@@ -408,8 +410,12 @@ class Converter
         foreach ($chars as $i => $char) {
             if (in_array($char, ['.', ',']) 
                     && isset($chars[$i+1]) 
-                    && !in_array($chars[$i+1], [' ', '.', ',', ';', '-', '"', "'"]) 
-                    && ((in_array($chars[$i+1], range('0', '9')) && (!isset($chars[$i+2]) || $chars[$i+2] != ':')) || mb_strtolower($chars[$i+1]) != $chars[$i+1])) {
+                    && ! in_array($chars[$i+1], [' ', '.', ',', ';', '-', '"', "'"]) 
+                    && ! (isset($chars[$i-1]) && ctype_digit($chars[$i-1]) && ctype_digit($chars[$i+1]))
+                    && ((in_array($chars[$i+1], range('0', '9')) && (!isset($chars[$i+2]) || $chars[$i+2] != ':'))
+                            || mb_strtolower($chars[$i+1]) != $chars[$i+1])
+                )
+            {
                 $word .= $char;
                 $words[] = $word;
                 $word = '';
@@ -630,6 +636,7 @@ class Converter
                 || (
                     preg_match($this->edsRegExp3, $remainder, $matches, PREG_OFFSET_CAPTURE)
                     && ! in_array(substr($remainder, $matches[0][1] - 4, 3), $this->ordinals)
+                    && ! in_array(substr($remainder, $matches[0][1] - 5, 4), ['rev.', 'Rev.'])
                 )
         ) {
             $containsEditors = true;
@@ -908,8 +915,8 @@ class Converter
             case 'article':
                 // Get journal
                 $remainder = ltrim($remainder, '., ');
-                // If there are any commas not followed by spaces, add spaces after them
-                $remainder = preg_replace('/,([^ ])/', ', $1', $remainder);
+                // If there are any commas not preceded by digits and not followed by digits or spaces, add spaces after them
+                $remainder = preg_replace('/[^0-9],([^ 0-9])/', ', $1', $remainder);
 
                 if ($journal) {
                     // Remove $journal and any surrounding italics
@@ -1251,23 +1258,38 @@ class Converter
 
                 if ($remainder && !$booktitle) {
                     $updateRemainder = true;
-                    // If no string is quoted or italic, try to determine whether $remainder starts with
-                    // title or editors.
-                    // If $remainder contains string "(Eds.)" or similar (parens required) then check
-                    // whether it starts with names
-                    // If it doesn't, take start of $remainder up to first comma or period to be title,
-                    // followed by editors, up to (Eds.).
+                    $remainderContainsEds = false;
                     $postEditorString = '';
 
-                    $regExp = '/( [Ee]ds?[\. ]|\([Ee]ds?\.?\)| [Ee]ditors?| \([Ee]ditors?\))/';
-                    $remainderContainsEds = false;
-                    if (preg_match($regExp, $remainder, $matches)) {
+                    // If no string is quoted or italic, try to determine whether $remainder starts with
+                    // title or editors.
+                    // If $tempRemainder ends with "ed" or similar and neither of previous two words contains digits
+                    // (in which case "ed" probably means "edition" --- check last two words to cover "10th revised ed"),
+                    // format must be <booktitle> <editor>
+                    $tempRemainderWords = explode(' ', $tempRemainder);
+                    $wordCount = count($tempRemainderWords);
+                    $lastTwoWordsHaveDigits = preg_match('/[0-9]/', $tempRemainderWords[$wordCount - 2] . $tempRemainderWords[$wordCount - 3]); 
+                    if (!$lastTwoWordsHaveDigits && preg_match('/(.*)' . $this->editorEndRegExp . '/i', $tempRemainder, $matches)) {
+                        $this->verbose('Remainder minus pub info ends with \'eds\' or similar, so format it <booktitle> <editor>');
+                        //dd('/(.*)' . $this->editorRegExp1 . '$/i', $tempRemainder, $matches);
+                        //$tempRemainder = $matches[1];
+                        $trash3 = false;
+                        $booktitle = $this->getTitle($tempRemainder, $trash1, $trash2, $trash3);
+                        $result = $this->convertToAuthors(explode(' ', $tempRemainder), $remainder, $trash, $isEditor);
+                        $this->setField($item, 'editor', trim($result['authorstring']));
+                        $remainderContainsEds = true;
+                        $updateRemainder = false;
+                    } elseif (preg_match('/' . $this->editorRegExp . '/i', $remainder, $matches)) {
+                        // If $remainder contains string "(Eds.)" or similar (parens required) then check
+                        // whether it starts with names
                         $eds = $matches[0];
                         $before = Str::before($remainder, $eds);
                         $after = Str::after($remainder, $eds);
                         $publisherPosition = strpos($after, $publisher);
                         $remainderContainsEds = true;
                     } elseif (preg_match('/^(.*?)(edited by)(.*?)$/i', $remainder, $matches)) {
+                        // If it doesn't, take start of $remainder up to first comma or period to be title,
+                        // followed by editors, up to (Eds.).
                         $this->verbose('Remainder contains \'edited by\'.  Taking it to be <booktitle> edited by <editor> <publicationInfo>');
                         $booktitle = trim($matches[1], ', ');
                         // Authors and publication info
@@ -1835,13 +1857,21 @@ class Converter
                     }
                 }
 
-                // Volume has been identified, but publisher and possibly address reamin
+                // Volume has been identified, but publisher and possibly address remain
                 if (!$done) {
                     $remainder = isset($newRemainder) ? $newRemainder : implode(" ", $remainingWords);
+                    $remainder = trim($remainder, ' .');
 
                     // If string is in italics, get rid of the italics
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
                         $remainder = rtrim(substr($remainder, $length), '}');
+                    }
+
+                    // If remainder contains a period, string before period is series name
+                    if (strpos($remainder, '.') !== false) {
+                        $series = trim(Str::before($remainder, '.'));
+                        $this->setField($item, 'series', $series, 'setField 110');
+                        $remainder = trim(Str::after($remainder, '.'));
                     }
 
                     // First use routine to find publisher and address, to catch cases where address
@@ -2023,7 +2053,7 @@ class Converter
         $remainingWords = $words;
         $skipNextWord = false;
 
-        // If $remainder ends with  string in parenthesis, look at the string
+        // If $remainder ends with string in parenthesis, look at the string
         if (preg_match('/\((.*?)\)$/', rtrim($remainder, '. '), $matches)) {
             $match = $matches[1];
             if (Str::contains($match, $this->publishers)) {
@@ -2122,13 +2152,16 @@ class Converter
                 
                 // If end of title has not been detected and word ends in period-equivalent or comma,
                 if (Str::endsWith($word, ['.', '!', '?', ','])) {
-                    // if next letter is lowercase (in which case '.' ended abbreviation?) and does not end in period
-                    // or following string starts with a part designation, continue, skipping next word,
+                    // if first letter of next word is lowercase (in which case '.' ended abbreviation?) and does not end in period
+                    // OR $word and $nextWord are A. and D. or B. and C.
+                    // OR following string starts with a part designation, continue, skipping next word,
                     if (
                         $nextWord 
                             && (
                                (mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.')
-                                     || Str::startsWith($remainder, ['I. ', 'II. ', 'III. '])
+                                    || ($word == 'A.' && $nextWord == 'D.')
+                                    || ($word == 'B.' && $nextWord == 'C.')
+                                    || Str::startsWith($remainder, ['I. ', 'II. ', 'III. '])
                                 )
                         ) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
@@ -2745,15 +2778,18 @@ class Converter
                     // For component with 1 or 2 letters, assume it's initials and leave it uc (to be processed by formatAuthor)
                     $nameComponent = (strlen($name) > 2 && strtoupper($name) == $name && strpos($name, '.') === false) ? ucfirst(mb_strtolower($name)) : $name;
                     $fullName .= ' ' . $nameComponent;
+                    //dd($this->isYearRange(trim($words[$i+2], ',()[]')));
                     if (in_array($word, $this->vonNames)) {
                         $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name");
                     } elseif (!Str::endsWith($words[$i], ',') 
                                 && isset($words[$i+1]) 
                                 && Str::endsWith($words[$i+1], ',') 
-                                && !$this->isInitials(substr($words[$i+1], 0, -1)) 
+                                && ! $this->isInitials(substr($words[$i+1], 0, -1)) 
                                 && isset($words[$i+2]) 
                                 && Str::endsWith($words[$i+2], ',') 
-                                && !$this->isYear(trim($words[$i+2], ',()[]'))) {
+                                && ! $this->isYear(trim($words[$i+2], ',()[]'))
+                                //&& ! $this->isYearRange(trim($words[$i+2], ',()[]'))
+                            ) {
                         // $words[$i] does not end in a comma AND $words[$i+1] is set and ends in a comma and is not initials AND $words[$i+2]
                         // is set and ends in a comma AND $words[$i+2] is not a year.
                         // E.g. Ait Messaoudene, N., ...
@@ -3140,11 +3176,12 @@ class Converter
     /**
      * getYear: get *last* substring in $string that is a year, unless $start is true, in which case restrict to 
      * start of string and take only first match
-     * @param $string string
-     * @param $start boolean (if true, check only for substring at start of string)
-     * @param $remains what is left of the string after the substring is removed
-     * @param $allowMonth boolean (allow string like "(April 1998)" or "(April-May 1998)" or "April 1998:"
-     * return year (and pointer to month)
+     * @param string $string 
+     * @param boolean $start (if true, check only for substring at start of string)
+     * @param string|null $remains what is left of the string after the substring is removed
+     * @param boolean $allowMonth (allow string like "(April 1998)" or "(April-May 1998)" or "April 1998:"
+     * @param string|null $month
+     * @return string year (and pointer to month)
      */
     private function getYear(string $string, bool $start, string|null &$remains, bool $allowMonth, string|null &$month): string
     {
@@ -3153,11 +3190,13 @@ class Converter
 
         // Year can be (1980), [1980], '1980 ', '1980,', '1980.', '1980)', '1980:' or end with '1980' if not at start and
         // (1980), [1980], ' 1980 ', '1980,', '1980.', or '1980)' if at start; instead of 1980, can be of form
-        // 1980/1 or 1980/81 or 1980-1 or 1980-81
+        // 1980/1 or 1980/81 or 1980-1 or 1980-81 or 1980-1981
         // NOTE: '1980:' could be a volume number---might need to check for that
         $months = $this->monthsRegExp;
         $monthRegExp = '((' . $months . ')([-\/](' . $months . '))?)?';
-        $yearRegExp = '((18|19|20)([0-9]{2})(-[0-9]{1,2}|\/[0-9]{1,2})?)[a-z]?';
+        // In following line, [1-2]?[0-9]? added to allow second year to have four digits.  Should be (18|19|20), but that
+        // would mean adding a group, which would require the recalculation of all the indices ...
+        $yearRegExp = '((18|19|20)([0-9]{2})(-[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,2})?)[a-z]?';
         $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
 
         // Require space or ',' in front of year if search is not restricted to start or in parens or brackets,
@@ -3363,6 +3402,12 @@ class Converter
     {
         $number = (int) $string;
         return $number > 1700 && $number < 2100;
+    }
+
+    // Report whether $string is a year between 1700 and 2100
+    private function isYearRange(string $string): bool
+    {
+        return preg_match('/(19|20)[0-9]{2} ?- ?(19|20)[0-9]{2}/', $string);
     }
 
     // Report whether $string is the start of the name of the proceedings of a conference

@@ -2225,7 +2225,7 @@ class ExampleSeeder extends Seeder
                         'type' => 'book',
                         'bibtex' => [
                             'year' => '1989',
-                            'title' => 'The Archaeology of Mainland Southeast Asia from 10, 000 B.C. to the Fall of Angkor',
+                            'title' => 'The Archaeology of Mainland Southeast Asia from 10,000 B. C. to the Fall of Angkor',
                             'author' => 'Higham, Charles',
                             'address' => 'Cambridge',
                             'publisher' => 'Cambridge University Press',
@@ -2251,7 +2251,7 @@ class ExampleSeeder extends Seeder
                             'title' => 'History, culture, and region in Southeast Asian perspectives',
                             'author' => 'Wolters, O. W.',
                             'address' => 'Ithaca, N.Y.',
-                            'booktitle' => 'rev',
+                            'edition' => 'rev',
                             'publisher' => 'Southeast Asia Program Publications, Cornell University',
                             ]
                     ],
