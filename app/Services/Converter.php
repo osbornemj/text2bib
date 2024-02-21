@@ -479,7 +479,7 @@ class Converter
 
         // If title has been found and ends in edition specification, take that out and put it in edition field
         $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . ')[.,]?$/i';
-        if ($title && preg_match($editionRegExp, $title, $matches)) {
+        if ($title && preg_match($editionRegExp, (string) $title, $matches)) {
             $this->setField($item, 'edition', trim(substr($matches[0], 0, strpos($matches[0], ' '))), 'setField 108');
             $title = trim(Str::replaceLast($matches[0], '', $title));
         }
@@ -2977,7 +2977,7 @@ class Converter
                     if ($char == "'" && $chars[$i-1] != '\\' && $chars[$i+1] && $chars[$i+1] == "'") {
                         $end = true;
                         $skip = true;
-                    } elseif ($char == '"') {
+                    } elseif ($char == '"' && $chars[$i-1] != '\\') {
                         $end = true;
                     } else {
                         $quotedText .= $char;
@@ -2985,12 +2985,6 @@ class Converter
                 } elseif ($begin == '`' || $begin == "'") {
                     if ($char == "'" && $chars[$i-1] != '\\' 
                                 && (!isset($chars[$i+1]) || !in_array(strtolower($chars[$i+1]), range('a', 'z')))) {
-                        $end = true;
-                    } else {
-                        $quotedText .= $char;
-                    }
-                } elseif ($begin == '"') {
-                    if ($char == '"' && $chars[$i-1] != '\\') {
                         $end = true;
                     } else {
                         $quotedText .= $char;
