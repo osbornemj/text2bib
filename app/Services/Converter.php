@@ -824,7 +824,7 @@ class Converter
             $this->verbose("Item type case 10");
             $itemKind = 'unpublished';
         } elseif ($containsPublisher || $inStart) {
-            if ((!$containsIn && ! $containsPageRange) || strlen($remainder) - $cityLength - strlen($publisher) < 30) {
+            if ((! $containsIn && ! $containsPageRange) || strlen($remainder) - $cityLength - strlen($publisher) < 30) {
                 $this->verbose("Item type case 11");
                 $itemKind = 'book';
             } else {

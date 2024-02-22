@@ -19,8 +19,8 @@ return new class extends Migration
 
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('thread_id');
-            $table->bigInteger('user_id');
+            $table->foreignId('thread_id')->references('id')->on('threads')->cascadeOnDelete()->cascadeOnUpdate();            
+            $table->foreignId('user_id')->nullable()->references('id')->on('users')->nullOnDelete()->cascadeOnUpdate();            
             $table->string('content');
             $table->timestamps();
         });
@@ -31,7 +31,13 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('comments', function (Blueprint $table) {
+            $table->dropForeign(['thread_id']);
+            $table->dropForeign(['user_id']);
+        });
+
         Schema::dropIfExists('threads');
+
         Schema::dropIfExists('comments');
     }
 };
