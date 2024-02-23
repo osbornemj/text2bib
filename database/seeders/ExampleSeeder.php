@@ -2388,7 +2388,7 @@ class ExampleSeeder extends Seeder
                             'author' => 'M. Laurent',
                             'editor' => 'C. Floudas and P. Pardalos',
                             'address' => 'New York',
-                            'booktitle' => 'Encyclopedia of Optimization 2nd ed.',
+                            'booktitle' => 'Encyclopedia of Optimization, 2nd ed.',
                             'publisher' => 'Springer',
                             ]
                     ],
@@ -2397,7 +2397,7 @@ class ExampleSeeder extends Seeder
                         'type' => 'book',
                         'bibtex' => [
                             'year' => '2013',
-                            'title' => 'Distance Geometry: Theory, Methods, and Applications, ',
+                            'title' => 'Distance Geometry: Theory, Methods, and Applications',
                             'editor' => 'A. Mucherino and C. Lavor and L. Liberti and N. Maculan',
                             'address' => 'New York',
                             'publisher' => 'Springer',
@@ -2414,7 +2414,30 @@ class ExampleSeeder extends Seeder
                             'volume' => '17',
                             'journal' => 'Nature',
                             ]
-                    ],                                        
+                    ],
+                    [
+                        'source' => '\bibitem{Zi07} H.~Zimmer. \newblock {PDE}-based image compression using corner information. \newblock Master\'s thesis, Dept. of Computer Science, Saarland University, Saarbr\"ucken, Germany, 2007. ',
+                        'type' => 'mastersthesis',
+                        'bibtex' => [
+                            'year' => '2007',
+                            'title' => '{PDE}-based image compression using corner information',
+                            'author' => 'H. Zimmer',
+                            'school' => 'Dept. of Computer Science, Saarland University, Saarbr\"ucken, Germany',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{import} García, P. [2005]\'Caretta caretta (Tortuga boba) en las playas de Matalascañas y Castilla\'. {\it Boletín de la Asociación Herpetológica Española} ,  16 (1-2):28 ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '2005',
+                            'pages' => '28',
+                            'title' => 'Caretta caretta (Tortuga boba) en las playas de Matalasca{\~n}as y Castilla',
+                            'author' => 'Garc{\\\'\i}a, P.',
+                            'volume' => '16',
+                            'number' => '1-2',
+                            'journal' => 'Bolet{\\\'\i}n de la Asociaci{\\\'o}n Herpetol{\\\'o}gica Espa{\~n}ola',
+                            ]
+                    ],                                                            
                     
                 ];
 

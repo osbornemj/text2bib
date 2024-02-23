@@ -10,6 +10,11 @@
         @if ($allCorrect && !$showDetailsIfCorrect) 
             <span class="bg-green-600">All correct</span> ({{ $exampleCount }} {{ Str::plural('item', $exampleCount) }})
         @else
+            <div class="pb-2">
+                <p>
+                    {{ count($results) }} incorrect {{ Str::plural('conversion', $results) }}
+                </p>
+            </div>
             @foreach ($results as $id => $result)
                 <div class="pt-2 border-2 border-b-transparent border-l-transparent border-r-transparent border-t-indigo-800 dark:border-t-slate-200">
                     <p>Example {{ $id }}
