@@ -2250,7 +2250,7 @@ class ExampleSeeder extends Seeder
                             'year' => '1999',
                             'title' => 'History, culture, and region in Southeast Asian perspectives',
                             'author' => 'Wolters, O. W.',
-                            'address' => 'Ithaca, N.Y.',
+                            'address' => 'Ithaca, N. Y.',
                             'edition' => 'rev',
                             'publisher' => 'Southeast Asia Program Publications, Cornell University',
                             ]
@@ -2325,9 +2325,9 @@ class ExampleSeeder extends Seeder
                             'pages' => '29-52',
                             'title' => 'Early Sanskritization: Origins and Development of the Kuru State',
                             'author' => 'Witzel, Michael',
-                            'editor' => 'Bernhard Kölver, with E. Müller-Luckner',
+                            'editor' => 'Bernhard K{\"o}lver and E. M{\"u}ller-Luckner',
                             'address' => 'Munich',
-                            'booktitle' => 'Recht, Staat und Verwaltung im klassischen Indien / The State and the Law, and Administration in Classical India',
+                            'booktitle' => 'Recht, Staat und Verwaltung im klassischen Indien / The State, the Law, and Administration in Classical India',
                             'publisher' => 'R. Oldenbourg Verlag',
                             ]
                     ],
@@ -2358,7 +2358,7 @@ class ExampleSeeder extends Seeder
                     ],
                     [
                         'source' => 'R. Diestel, Graph Theory, Springer, New York, 2005. ',
-                        'type' => 'ubook',
+                        'type' => 'book',
                         'bibtex' => [
                             'year' => '2005',
                             'title' => 'Graph Theory',
