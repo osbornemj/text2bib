@@ -2484,4 +2484,3 @@ class ExampleSeeder extends Seeder
         }
     }
 }
-
