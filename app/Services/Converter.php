@@ -61,13 +61,12 @@ class Converter
     var $masterRegExp;
     var $monthsRegExp;
     var $names;
-    var $numberRegExp1;
+    var $numberRegExp;
     var $oclcRegExp1;
     var $oclcRegExp2;
     var $ordinals;
-    var $pagesRegExp1;
-    var $pagesRegExp2;
-    var $pagesRegExp3;
+    var $pagesRegExp;
+    var $startPagesRegExp;
     var $phdRegExp;
     var $phrases;
     var $proceedingsRegExp;
@@ -78,7 +77,7 @@ class Converter
     var $volRegExp0;
     var $volRegExp1;
     var $volRegExp2;
-    var $volumeRegExp1;
+    var $volumeRegExp;
     var $vonNames;
     var $workingPaperRegExp;
     var $workingPaperNumberRegExp;
@@ -147,7 +146,12 @@ class Converter
         $this->volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
         $this->volRegExp2 = '/^[Vv]ol(\.|ume)? ?/';
-        $this->volumeRegExp1 = '[Vv]olume ?|[Vv]ol\.? ?';
+        $this->volumeRegExp = '[Vv]olume ?|[Vv]ol\.? ?|{\\\bf |\\\textbf{|\\\textit{';
+
+        $this->numberRegExp = '[Nn]os?\.?:? ?|[Nn]umbers? ?|[Ii]ssues? ?';
+
+        $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})';
+        $this->startPagesRegExp = '/^pages |^pp\.?|^p\.|^p /i';
 
         $this->inRegExp1 = '/^[iI]n:? /';
         $this->inRegExp2 = '/( [iI]n: |[,.] [Ii]n | in\) )/';
@@ -163,7 +167,7 @@ class Converter
         $this->forthcomingRegExp7 = '/^[Tt]o appear in/';
 
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
-        $this->proceedingsRegExp = 'proceedings of |conference on |symposium on |.* meeting |proc\..*(conf\.|conference)?';
+        $this->proceedingsRegExp = 'proceedings of |conference on |symposium on |.* meeting |proc\..*(conf\.|conference)?|actas del ';
         $this->proceedingsExceptions = ['Proceedings of the National Academy', 'Proceedings of the Royal Society'];
 
         $this->thesisRegExp = '( [Tt]hesis| [Dd]issertation)';
@@ -174,12 +178,6 @@ class Converter
         $this->inReviewRegExp1 = '/[Ii]n [Rr]eview\.?\)?$/';
         $this->inReviewRegExp2 = '/^[Ii]n [Rr]eview/';
         $this->inReviewRegExp3 = '/(\(?[Ii]n [Rr]eview\.?\)?)$/';
-
-        $this->pagesRegExp1 = '[Pp]p\.?|[Pp]\.';
-        $this->pagesRegExp2 = '(\()?([Pp]p\.?|[pP]ages?)?( )?(?P<pages>[1-9][0-9]{0,4} ?-{1,2} ?[0-9]{1,5})(\))?';
-        $this->pagesRegExp3 = '/^pages |^pp\.?|^p\.|^p /i';
-
-        $this->numberRegExp1 = '[Nn]os?\.?:?|[Nn]umbers?|[Ii]ssues?';
 
         $this->isbnRegExp1 = 'ISBN(-10)?:? ?';
         $this->isbnRegExp2 = '[0-9X-]+';
@@ -384,7 +382,7 @@ class Converter
             }
         }
 
-        if (isset($url) && $url) {
+        if (! empty($url)) {
             $this->setField($item, 'url', $url, 'setField 4');
             if ($accessDate) {
                 $this->setField($item, 'urldate', $accessDate, 'setField 5');
@@ -982,6 +980,8 @@ class Converter
                 $remainder = trim($remainder, ' ,.');
                 $this->verbose("Remainder: " . $remainder);
 
+                $volumeNumberPages = $remainder;
+
                 // If $remainder ends with 'forthcoming' phrase and contains no digits (which might be volume & number,
                 // for example, even if paper is forthcoming), put that in note.  Else look for pages & volume etc.
                 if (preg_match('/' . $this->endForthcomingRegExp . '/', $remainder) && !preg_match('/[0-9]/', $remainder)) {
@@ -989,60 +989,61 @@ class Converter
                     $remainder = '';
                 } else {
                     // Get pages
-                    $this->getPagesForArticle($remainder, $item);
+                    $this->getVolumeNumberPagesForArticle($remainder, $item);
 
                     $pagesReported = false;
-                    if ($item->pages) {
-                        $this->verbose(['fieldName' => 'Pages', 'content' => $item->pages]);
+                    if (! empty($item->pages)) {
                         $pagesReported = true;
                     }
                     $this->verbose("[p1] Remainder: " . $remainder);
 
-                    // Get month, if any
-                    $months = $this->monthsRegExp;
-                    $regExp = '(\(?(' . $months . '\)?)([-\/](' . $months . ')\)?)?)';
-                    preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
+                    if ($remainder) {
+                        // Get month, if any
+                        $months = $this->monthsRegExp;
+                        $regExp = '(\(?(' . $months . '\)?)([-\/](' . $months . ')\)?)?)';
+                        preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
 
-                    if (isset($matches[0][0][0]) && $matches[0][0][0]) {
-                        $this->setField($item, 'month', trim($matches[0][0][0], '()'), 'setField 21');
-                        $remainder = substr($remainder, 0, $matches[0][0][1]) . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
-                        $this->verbose('Remainder: ' . $remainder);
-                    }
+                        if (! empty($matches[0][0][0])) {
+                            $this->setField($item, 'month', trim($matches[0][0][0], '()'), 'setField 21');
+                            $remainder = substr($remainder, 0, $matches[0][0][1]) . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
+                            $this->verbose('Remainder: ' . $remainder);
+                        }
 
-                    // Get volume and number
-                    $this->getVolumeAndNumberForArticle($remainder, $item, $containsNumberDesignation);
-                
-                    $result = $this->findRemoveAndReturn($remainder, $this->articleRegExp);
-                    if ($result) {
-                        // If remainder contains article number, put it in the note field
-                        $this->setField($item, 'note', $result[0], 'setField 22');
-                    } elseif (!$item->pages && isset($item->number) && $item->number && !$containsNumberDesignation) {
-                        // else if no pages have been found and a number has been set, assume the previously assigned number
-                        // is in fact a single page
-                        $this->setField($item, 'pages', $item->number, 'setField 23');
-                        unset($item->number);
-                        $this->verbose('[p5] no pages found, so assuming string previously assigned to number is a single page: ' . $item->pages);
-                        $warnings[] = "Not sure the pages value is correct.";
-                    }
+                        // Get volume and number
+                        $this->getVolumeAndNumberForArticle($remainder, $item, $containsNumberDesignation);
+                    
+                        $result = $this->findRemoveAndReturn($remainder, $this->articleRegExp);
+                        if ($result) {
+                            // If remainder contains article number, put it in the note field
+                            $this->setField($item, 'note', $result[0], 'setField 22');
+                        } elseif (!$item->pages && ! empty($item->number) && !$containsNumberDesignation) {
+                            // else if no pages have been found and a number has been set, assume the previously assigned number
+                            // is in fact a single page
+                            $this->setField($item, 'pages', $item->number, 'setField 23');
+                            unset($item->number);
+                            $this->verbose('[p5] no pages found, so assuming string previously assigned to number is a single page: ' . $item->pages);
+                            $warnings[] = "Not sure the pages value is correct.";
+                        }
 
-                    if (!$pagesReported && isset($item->pages) && $item->pages) {
-                        $this->verbose(['fieldName' => 'Pages', 'content' => $item->pages]);
-                    }
+                        if (!$pagesReported && ! empty($item->pages)) {
+                            $this->verbose(['fieldName' => 'Pages', 'content' => $item->pages]);
+                        }
 
-                    if (isset($item->volume) && $item->volume) {
-                        $this->verbose(['fieldName' => 'Volume', 'content' => $item->volume]);
-                    } else {
-                        $warnings[] = "'Volume' field not found.";
-                    }
-                    if (isset($item->number) && $item->number) {
-                        $this->verbose(['fieldName' => 'Number', 'content' => $item->number]);
-                    }
-
-                    if (isset($item->note)) {
-                        if ($item->note) {
-                            $this->verbose(['fieldName' => 'Note', 'content' => $item->note]);
+                        if (! empty($item->volume)) {
+                            $this->verbose(['fieldName' => 'Volume', 'content' => $item->volume]);
                         } else {
-                            unset($item->note);
+                            $warnings[] = "'Volume' field not found.";
+                        }
+                        if (! empty($item->number)) {
+                            $this->verbose(['fieldName' => 'Number', 'content' => $item->number]);
+                        }
+
+                        if (isset($item->note)) {
+                            if ($item->note) {
+                                $this->verbose(['fieldName' => 'Note', 'content' => $item->note]);
+                            } else {
+                                unset($item->note);
+                            }
                         }
                     }
                 }
@@ -1062,7 +1063,7 @@ class Converter
                 }
                 $remainder = '';
 
-                if (!$item->note && isset($item->url) && $item->url) {
+                if (!$item->note && ! empty($item->url)) {
                     $this->verbose('Moving content of url field to note');
                     $this->setField($item, 'note', $item->url, 'setField 26');
                     unset($item->url);
@@ -1077,12 +1078,12 @@ class Converter
             case 'techreport':
                 // If string before type, take that to be institution, else take string after number
                 // to be institution---handles both 'CORE Discussion Paper 34' and 'Discussion paper 34, CORE'
-                $type = isset($workingPaperMatches[1][0]) ? $workingPaperMatches[1][0] : '';
+                $type = $workingPaperMatches[1][0] ?? '';
                 if ($type) {
                     $this->setField($item, 'type', $type, 'setField 27');
                 }
 
-                $number = isset($workingPaperMatches[3][0]) ? $workingPaperMatches[3][0] : '';
+                $number = $workingPaperMatches[3][0] ?? '';
                 if ($number) {
                     $this->setField($item, 'number', $number, 'setField 28');
                 }
@@ -1093,7 +1094,7 @@ class Converter
                     $remainder = trim(substr($remainder, $workingPaperMatches[3][1] + strlen($number)), ' .,');
                 } else {
                     // No chars before 'Working paper'---so take string after number to be institution
-                    $n = isset($workingPaperMatches[3][1]) ? $workingPaperMatches[3][1] : 0;
+                    $n = $workingPaperMatches[3][1] ?? 0;
                     $this->setField($item, 'institution', trim(substr($remainder, $n + strlen($number)), ' .,'), 'setField 30');
                     $remainder = '';
                 }
@@ -1121,7 +1122,7 @@ class Converter
 
                 // Get pages and remove them from $remainder
                 // Return group 4 of match and remove whole match from $remainder
-                $result = $this->findRemoveAndReturn($remainder, $this->pagesRegExp2);
+                $result = $this->findRemoveAndReturn($remainder, '(\()?' . $this->pagesRegExp . '(\))?');
                 if ($result) {
                     $pages = $result[4];
                     $this->setField($item, 'pages', $pages ? str_replace(['--', ' '], ['-', ''], $pages) : '', 'setField 31');
@@ -1502,7 +1503,7 @@ class Converter
                                     }
                                 }
                                 $this->verbose("booktitle: " . $booktitle);
-                                if (isset($endAuthorPos) && $endAuthorPos) {
+                                if (! empty($endAuthorPos)) {
                                     // CASE 2
                                     $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
                                     $authorConversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $isEditor, false, 'editors');
@@ -1642,7 +1643,7 @@ class Converter
                     // Check whether publication info matches pattern for book to be a volume in a series
                     $result = $this->findRemoveAndReturn(
                         $remainder,
-                        '(' . $this->volumeRegExp1 . ')( ([1-9][0-9]{0,4}))(( of| in|,) )([^\.,]*\.|,)'
+                        '(' . $this->volumeRegExp . ')( ([1-9][0-9]{0,4}))(( of| in|,) )([^\.,]*\.|,)'
                         );
                     if ($result) {
                         // Take series to be string following 'of' or 'in' or ',' up to next period or comma
@@ -1668,7 +1669,7 @@ class Converter
                         } else {
                             // If publisher has been identified, remove it from $remainder and check
                             // whether it is preceded by a string that could be an address
-                            if (isset($publisher) && $publisher) {
+                            if (! empty($publisher)) {
                                 $this->setField($item, 'publisher', $publisher, 'setField 50');
                                 $tempRemainder = trim(Str::remove($publisher, $remainder), ' .');
                                 $afterPeriod = Str::afterLast($tempRemainder, '.');
@@ -1738,7 +1739,7 @@ class Converter
                     }
                 }
 
-                if (isset($item->editor) && $item->editor) {
+                if (! empty($item->editor)) {
                     $this->verbose(['fieldName' => 'Editors', 'content' => $item->editor]);
                 } else {
                     $warnings[] = "Editor not found.";
@@ -1757,11 +1758,11 @@ class Converter
                 }
 
                 // Whatever is left is publisher and address
-                if ((!isset($item->publisher) || ! $item->publisher) || ( !isset($item->address) || ! $item->address)) {
-                    if (isset($item->publisher) && $item->publisher) {
+                if (empty($item->publisher) || empty($item->address)) {
+                    if (! empty($item->publisher)) {
                         $this->setField($item, 'address', $remainder, 'setField 54');
                         $newRemainder = '';
-                    } elseif (isset($item->address) && $item->address) {
+                    } elseif (! empty($item->address)) {
                         $this->setField($item, 'publisher', $remainder, 'setField 55');
                         $newRemainder = '';
                     } else {
@@ -1776,7 +1777,7 @@ class Converter
                 } else {
                     $warnings[] = "Publisher not found.";
                 }
-                if (isset($item->address) && $item->address) {
+                if (! empty($item->address)) {
                     $this->verbose(['fieldName' => 'Address', 'content' => $item->address]);
                 } else {
                     $warnings[] = "Address not found.";
@@ -1826,7 +1827,7 @@ class Converter
                 $remainder = implode(" ", $remainingWords);
                 $result = $this->findRemoveAndReturn(
                     $remainder,
-                    '((\(?' . $this->volumeRegExp1 . ')( ([1-9][0-9]{0,4})\)?))(( of| in|,|.)? )(.*)$'
+                    '((\(?' . $this->volumeRegExp . ')( ([1-9][0-9]{0,4})\)?))(( of| in|,|.)? )(.*)$'
                 );
                 if ($result) {
                     if (in_array($result[6], ['.', ',']) && substr_count(trim($result['before']), ' ') <= 1) {
@@ -1933,7 +1934,7 @@ class Converter
 
                 // Volume has been identified, but publisher and possibly address remain
                 if (!$done) {
-                    $remainder = isset($newRemainder) ? $newRemainder : implode(" ", $remainingWords);
+                    $remainder = $newRemainder ?? implode(" ", $remainingWords);
                     $remainder = trim($remainder, ' .');
 
                     // If string is in italics, get rid of the italics
@@ -1957,7 +1958,7 @@ class Converter
                     // If item is a book, $cityString and $publisherString are set, and existing title is followed by comma
                     // in $entyr, string preceding $cityString
                     // and $publisherString must be part of title (which must have been ended prematurely). 
-                    if ($itemKind == 'book' && isset($cityString) && $cityString && isset($publisherString) && $publisherString) {
+                    if ($itemKind == 'book' && ! empty($cityString) && !empty($publisherString)) {
                         $afterTitle = Str::after($entry, $item->title);
                         if ($afterTitle[0] == ',') {
                             $beforeCity = Str::before($remainder, $cityString);
@@ -2055,7 +2056,7 @@ class Converter
             }
         }
 
-        if (!isset($item->pages) || (isset($item->pages) && !$item->pages)) {
+        if (empty($item->pages)) {
             if (isset($item->pages)) {
                 unset($item->pages);
             }
@@ -2161,7 +2162,7 @@ class Converter
             }
         }
 
-        $containsPages = preg_match('/' . $this->pagesRegExp2 . '/', $remainder);
+        $containsPages = preg_match('/(\()?' . $this->pagesRegExp . '(\))?/', $remainder);
 
         // Go through the words in $remainder one at a time.
         foreach ($words as $key => $word) {
@@ -2211,7 +2212,7 @@ class Converter
                 if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && $nextWord[0] == '(')) {
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
-                        || preg_match($this->pagesRegExp3, $remainder)
+                        || preg_match($this->startPagesRegExp, $remainder)
                         || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?Volume /', $remainder)
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9]\./', $remainder)
@@ -2241,7 +2242,7 @@ class Converter
                 // Upcoming edition specification
                 $editionRegExp = '/(^\(' . $this->editionRegExp . '\)|^' . $this->editionRegExp . ')[.,]?$/i';
                 if ($nextWord && $nextButOneWord && preg_match($editionRegExp, $nextWord . ' ' . $nextButOneWord, $matches)) {
-                    $edition = isset($matches[5]) ? $matches[5] : $matches[2];
+                    $edition = $matches[5] ?? $matches[2];
                     $fullEdition = $matches[1];
                     $this->verbose("Ending title, case 3b");
                     $title = $includeEdition ? rtrim(implode(' ', $initialWords) . ' ' . $fullEdition, ' ,') : rtrim(implode(' ', $initialWords), ' ,');
@@ -2300,7 +2301,7 @@ class Converter
                     } elseif ($this->containsFontStyle($remainder, false, 'italics', $startPos, $length)) {
                         $this->verbose("Not ending title, case 4 (italics is coming up)");
                     // else if word ends with comma and volume info is coming up, wait for it
-                    } elseif (Str::endsWith($word, [',']) && preg_match('/' . $this->volumeRegExp1 . '/', $remainder)) {
+                    } elseif (Str::endsWith($word, [',']) && preg_match('/' . $this->volumeRegExp . '/', $remainder)) {
                          $this->verbose("Not ending title, case 5 (word: \"" . $word . "\"; volume info is coming up)");
                     } else {
                         // else if word ends with period and there are 5 or more words till next punctuation, which is a period,
@@ -2339,7 +2340,7 @@ class Converter
             $newRemainder = ltrim(Str::after($originalRemainder, ','), ' ');
         }
 
-        $remainder = isset($newRemainder) ? $newRemainder : $remainder;
+        $remainder = $newRemainder ?? $remainder;
 
         return $title;
     }
@@ -2735,6 +2736,7 @@ class Converter
 
             if (isset($reason)) {
                 $this->verbose('Reason: ' . $reason);
+                unset($reason);
             }
 
             if (in_array($case, [11, 12, 14]) && $done) {  // 14: et al.
@@ -2842,7 +2844,7 @@ class Converter
                         // "Hurwicz" is current word, which is added back to the remainder.
                         // (Ideally the script should realize the typo and still get the rest of the authors.)
                         // If remainder starts with quotes or italic, assume author has just one name
-                        $warnings[] = "Unexpected period after \"" . substr($word, 0, -1) . "\" in source.  Typo? Re-processed with comma instead of period.";
+                        $warnings[] = "Unexpected period after \"" . substr($word, 0, -1) . "\" in source.  Typo?  Processed with comma instead of period.";
                         $case = 3;
                         $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, namePart is 0, and remaining string does not start with year';
                         $word = substr($word, 0, -1) . ',';
@@ -2865,8 +2867,20 @@ class Converter
                 $done = true;
             } elseif ($namePart == 0) {
                 namePart0:
+                if (isset($words[$i+1]) && $this->isAnd($words[$i+1])) {
+                    // Next word is 'and' or equivalent.  Happens if $namePart is 0 because of von name.  Seems impossible to tell
+                    // whether in "Werner de la ..." the "Werner" is the first name or part of the last name, to be followed by
+                    // a first name later (without looking ahead).  On encounting a von name, namepart is not incremented, which is
+                    // wrong if Werner is a first name.
+                    $hasAnd = $prevWordAnd = true;
+                    $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName . ' ' . $word));
+                    $fullName = '';
+                    $namePart = 0;
+                    $authorIndex++;
+                    $case = 15;
+                    $reason = 'Word is "and" or equivalent';
                 // Check if $word and first word of $remainingWords are plausibly a name.  If not, end search if $determineEnd.
-                if ($determineEnd && isset($remainingWords[0]) && $this->isNotName($word, $remainingWords[0])) {
+                } elseif ($determineEnd && isset($remainingWords[0]) && $this->isNotName($word, $remainingWords[0])) {
                     $fullName .= ' ' . $word;
                     $remainder = implode(" ", $remainingWords);
                     $this->addToAuthorString(6, $authorstring, ' ' . ltrim($this->formatAuthor($fullName)));
@@ -2902,8 +2916,8 @@ class Converter
                         // is set and ends in a comma AND $words[$i+2] is not a year.
                         // E.g. Ait Messaoudene, N., ...
                         $this->verbose("convertToAuthors: '" . $words[$i] . "' identified as first segment of last name, with '" . $words[$i+1] . "' as next segment");
-                    } else {
-                        $namePart = 1;
+                    } elseif (isset($words[$i+1]) && ! in_array($words[$i+1], $this->vonNames)) {
+                        $namePart++;
                     }
                     // Following occurs in case of name that is a single string, like "IMF"
                     if ($year = $this->getYear(implode(" ", $remainingWords), true, $remains, false, $trash)) {
@@ -3806,7 +3820,7 @@ class Converter
                 if ($key === count($words) - 1 // last word in remainder
                     || Str::contains($words[$key+1], range('1', '9')) // next word contains a digit
                     || preg_match($this->volRegExp2, $remainder) // followed by volume info
-                    || preg_match($this->pagesRegExp3, $remainder) // followed by pages info
+                    || preg_match($this->startPagesRegExp, $remainder) // followed by pages info
                     || preg_match('/^' . $this->articleRegExp . '/i', $remainder) // followed by article info
                     || $this->containsFontStyle($remainder, true, 'bold', $posBold, $lenBold) // followed by bold
                     || $this->containsFontStyle($remainder, true, 'italics', $posItalic, $lenItalic) // followed by italics
@@ -3831,29 +3845,67 @@ class Converter
     // to start with uppercase letter only if first number in range does so---and if pp. is present, almost
     // anything following should be allowed as page numbers?
     // '---' shouldn't be used in page range, but might be used by mistake
-    private function getPagesForArticle(string &$remainder, object &$item): void
+    private function getVolumeNumberPagesForArticle(string &$remainder, object &$item): void
     {
-        $numberOfMatches = preg_match_all('/(' . $this->pagesRegExp1 . ')?( )?([A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})/', $remainder, $matches, PREG_OFFSET_CAPTURE);
-        if ($numberOfMatches) {
-            $matchIndex = $numberOfMatches - 1;
-            $this->verbose('[p0] matches: 1: ' . $matches[1][$matchIndex][0] . '; 2: ' . $matches[2][$matchIndex][0] . '; 3: ' . $matches[3][$matchIndex][0]);
-        }
-        $this->verbose("Number of matches for a potential page range: " . $numberOfMatches);
-        if (isset($matchIndex)) {
-            $this->verbose("Match index: " . $matchIndex);
-        }
-        if ($numberOfMatches) {
-            $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches[3][$matchIndex][0]), 'getPagesForArticle 1');
-            $take = $matches[0][$matchIndex][1];
-            $drop = $matches[3][$matchIndex][1] + strlen($matches[3][$matchIndex][0]);
-        } else {
-            $item->pages = '';
-            $take = 0;
-            $drop = 0;
-        }
+        $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
+//dump($remainder);        
+        // First check for some common patterns
+        $number = '[1-9][0-9]{0,3}';
+        $letterNumber = '([A-Z]{1,3})?-?' . $number;
+        $numberRange = $number . '(--?-?' . $number . ')?';
+        $pages = '[Pp]p?( |\. )|[Pp]ages ';
+        $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')';
+        $numberRx = '('. $this->numberRegExp . ')?(?P<num>' . $numberRange . ')';
+        $volumeWordRx = '('. $this->volumeRegExp . ')(?P<vol>' . $numberRange . ')';
+        // Letter in front of volume is allowed only if preceded by "vol(ume)" and is single number
+        $volumeWordLetterRx = '('. $this->volumeRegExp . ')(?P<vol>' . $letterNumber . ')';
+        $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRange . ')';
+        $pagesRx = '('. $pages . ')?(?P<pp>' . $numberRange . ')';
+        $punc1 = '(}? |, ?|: ?| ?\()';
+        $punc2 = '(\)?[ :]|, ?| ?: ?)';
 
-        $remainder = rtrim(substr($remainder, 0, $take) . substr($remainder, $drop), ',.: ');
-        $remainder = trim($remainder, ',. ');
+        if (preg_match('/^' . $volumeRx . $punc1 . $numberRx . $punc2 . $pagesRx . '$/', $remainder, $matches)) {
+            $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
+            $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
+            $this->setField($item, 'pages', str_replace(['---', '--'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
+            $remainder = '';
+//            dd($matches);
+        } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/', $remainder, $matches)) {
+            $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
+            $this->setField($item, 'pages', str_replace(['---', '--'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5');
+            $remainder = '';
+//          dd($matches);
+        } elseif (preg_match('/^' . $volumeWordRx . $punc1 . $numberWordRx . '$/', $remainder, $matches)) {
+            $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
+            $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 5');
+            $remainder = '';
+//        dd($matches);
+        } elseif (preg_match('/^' . $volumeWordLetterRx . $punc1 . $pagesRx . '$/', $remainder, $matches)) {
+               $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
+               $this->setField($item, 'pages', str_replace(['---', '--'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5');
+               $remainder = '';
+//         dd($matches);
+        } else {
+            // If none of the common patterns fits, fall back on approach that first looks for a page range then
+            // uses the method getVolumeAndNumberForArticle to figure out the volume and number, if any
+            $numberOfMatches = preg_match_all('/' . $this->pagesRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+            if ($numberOfMatches) {
+                $matchIndex = $numberOfMatches - 1;
+                $this->verbose('[p0] matches: 1: ' . $matches[1][$matchIndex][0] . '; 2: ' . $matches[2][$matchIndex][0] . '; 3: ' . $matches[3][$matchIndex][0]);
+                $this->verbose("Number of matches for a potential page range: " . $numberOfMatches);
+                $this->verbose("Match index: " . $matchIndex);
+                $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches[3][$matchIndex][0]), 'getVolumeNumberPagesForArticle 6');
+                $take = $matches[0][$matchIndex][1];
+                $drop = $matches[3][$matchIndex][1] + strlen($matches[3][$matchIndex][0]);
+            } else {
+                $item->pages = '';
+                $take = 0;
+                $drop = 0;
+            }
+
+            $remainder = rtrim(substr($remainder, 0, $take) . substr($remainder, $drop), ',.: ');
+            $remainder = trim($remainder, ',. ');
+        }
     }
 
     private function getVolumeAndNumberForArticle(string &$remainder, object &$item, bool &$containsNumberDesignation): void
@@ -3881,10 +3933,10 @@ class Converter
             $this->verbose('[v3]');
             $this->verbose('Remainder: ' . $remainder);
             // 'Volume? 123$'
-            $numberOfMatches1 = preg_match('/^(' . $this->volumeRegExp1 . ')?([1-9][0-9]{0,3})$/', $remainder, $matches1, PREG_OFFSET_CAPTURE);
-            // $this->volumeRegExp1 has space at end of it, but no further space is allowed.
+            $numberOfMatches1 = preg_match('/^(' . $this->volumeRegExp . ')?([1-9][0-9]{0,3})$/', $remainder, $matches1, PREG_OFFSET_CAPTURE);
+            // $this->volumeRegExp has space at end of it, but no further space is allowed.
             // So 'Vol. A2' is matched but not 'Vol. 2, no. 3'
-            $numberOfMatches2 = preg_match('/^(' . $this->volumeRegExp1 . ')([^ 0-9]*[1-9][0-9]{0,3})$/', $remainder, $matches2, PREG_OFFSET_CAPTURE);
+            $numberOfMatches2 = preg_match('/^(' . $this->volumeRegExp . ')([^ 0-9]*[1-9][0-9]{0,3})$/', $remainder, $matches2, PREG_OFFSET_CAPTURE);
 
             if ($numberOfMatches1) {
                 $matches = $matches1;
@@ -3905,7 +3957,7 @@ class Converter
                 $this->verbose('No number assigned');
             } else {
                 // A letter or sequence of letters is permitted after an issue number
-                $numberOfMatches = preg_match('/(' . $this->volumeRegExp1 . ')?([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:|;)(' . $this->numberRegExp1 . ')?( )?(([1-9][0-9]{0,6}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                $numberOfMatches = preg_match('/(' . $this->volumeRegExp . ')?([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:|;)(' . $this->numberRegExp . ')?( )?(([1-9][0-9]{0,6}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
                 if ($numberOfMatches) {
                     $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : '') . (isset($matches[8][0]) ? ', 8: ' . $matches[8][0] : ''));
                     $this->setField($item, 'volume', $matches[2][0], 'getVolumeAndNumberForArticle 6');
@@ -3924,7 +3976,7 @@ class Converter
                 } else {
                     // Look for "vol" etc. followed possibly by volume number and then something other than an issue number
                     // (e.g. some extraneous text after the entry)
-                    $volume = $this->extractLabeledContent($remainder, $this->volumeRegExp1, '[1-9][0-9]{0,3}');
+                    $volume = $this->extractLabeledContent($remainder, $this->volumeRegExp, '[1-9][0-9]{0,3}');
                     if ($volume) {
                         $this->verbose('[p2c]');
                         $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 9');

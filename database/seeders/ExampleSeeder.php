@@ -2437,7 +2437,31 @@ class ExampleSeeder extends Seeder
                             'number' => '1-2',
                             'journal' => 'Bolet{\\\'\i}n de la Asociaci{\\\'o}n Herpetol{\\\'o}gica Espa{\~n}ola',
                             ]
-                    ],                                                            
+                    ],
+                    [
+                        'source' => '\bibitem{import} Barnestein, J. A. M. & González De La Vega, J.P.. [2007]\'Depredación de culebra de herradura, Hemorrhois hippocrepis , sobre sapillo pintojo ibérico, Discoglossus galganoi y sapillo pintojo meridional Discoglossus jeanneae \'. {\it Boletín de la Asociación Herpetológica Española} ,  18: 82-83 ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '2007',
+                            'pages' => '82-83',
+                            'title' => 'Depredaci{\\\'o}n de culebra de herradura, Hemorrhois hippocrepis , sobre sapillo pintojo ib{\\\'e}rico, Discoglossus galganoi y sapillo pintojo meridional Discoglossus jeanneae',
+                            'author' => 'Barnestein, J. A. M. and Gonz{\\\'a}lez De La Vega, J. P.',
+                            'volume' => '18',
+                            'journal' => 'Bolet{\\\'\i}n de la Asociaci{\\\'o}n Herpetol{\\\'o}gica Espa{\~n}ola',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{import} González De La Vega, J.P.. & Toscano Díaz-Galiano, P.. [2015]\'Un caso de depredación sobre gallipato (Pleurodeles waltl) por parte de urraca (Pica pica) en Sierra Morena, Córdoba (Andalucía, Sur de España)\'. {\it Butlletí de la Societat Catalana d\'Herpetologia} , 22: 34-36 ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '2015',
+                            'pages' => '34-36',
+                            'title' => 'Un caso de depredaci{\\\'o}n sobre gallipato (Pleurodeles waltl) por parte de urraca (Pica pica) en Sierra Morena, C{\\\'o}rdoba (Andaluc{\\\'\i}a, Sur de Espa{\~n}a)',
+                            'author' => 'Gonz{\\\'a}lez De La Vega, J. P. and Toscano D{\\\'\i}az-Galiano, P.',
+                            'volume' => '22',
+                            'journal' => 'Butllet{\\\'\i} de la Societat Catalana d\'Herpetologia',
+                            ]
+                    ],                                                                                
                     
                 ];
 
