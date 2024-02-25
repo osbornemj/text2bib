@@ -7,19 +7,15 @@ use Livewire\Component;
 use App\Livewire\Forms\ShowConvertedItemForm;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 use App\Models\City;
 use App\Models\ErrorReport;
 use App\Models\ErrorReportComment;
-use App\Models\ItemField;
 use App\Models\ItemType;
 use App\Models\Journal;
 use App\Models\Output;
 use App\Models\Publisher;
-//use App\Models\OutputField;
 use App\Models\RawOutput;
-//use App\Models\RawOutputField;
 
 class ShowConvertedItem extends Component
 {
@@ -48,13 +44,11 @@ class ShowConvertedItem extends Component
         }
 
         $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
-//        $itemType = $this->itemTypes->find($this->convertedItem['item_type_id']);
         $this->itemTypeId = $itemType->id;
         $this->fields = $itemType->fields;
 
         $this->displayState = 'none';
 
-        //$errorReport = ErrorReport::where('output_id', $this->outputId)->first();
         $this->correctionsEnabled = true;
         $this->errorReportExists = false;
         $this->priorReportExists = false;
@@ -195,7 +189,6 @@ class ShowConvertedItem extends Component
             // Restrict to fields relevant to the item_type that are not empty
             $item = [];
             foreach ($inputs as $name => $content) {
-                //$itemField = ItemField::where('name', $name)->first();
                 if (in_array($name, $itemType->fields) && $content) {
                     $this->form->{$name} = $content;
                     $item[$name] = $content;
@@ -231,7 +224,7 @@ class ShowConvertedItem extends Component
                 ErrorReportComment::create([
                     'error_report_id' => $newErrorReport->id,
                     'user_id' => Auth::user()->id,
-                    'comment_text' => $this->form->comment,
+                    'comment_text' => strip_tags($this->form->comment),
                 ]);
             }
 

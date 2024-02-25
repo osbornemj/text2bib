@@ -71,11 +71,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::controller(ConversionController::class)->group(function () {
         Route::get('/convert/{conversionId}/{userFileId?}/{itemSeparator?}', 'convert')->name('file.convert');
-        Route::get('/redo/{id}', 'redo')->name('redo');
-        Route::post('/addOutput/{conversionId}', 'addOutput')->name('conversion.addOutput');
-        Route::get('/showBibtex/{conversionId}', 'showBibtex')->name('conversion.showBibtex');
-        Route::get('/encodingError/{conversionId}', 'encodingError')->name('conversion.encodingError');
-        Route::get('/itemSeparatorError/{conversionId}', 'itemSeparatorError')->name('conversion.itemSeparatorError');
+//        Route::get('/redo/{id}', 'redo')->name('redo');
+//        Route::post('/addOutput/{conversionId}', 'addOutput')->name('conversion.addOutput');
+//        Route::get('/showBibtex/{conversionId}', 'showBibtex')->name('conversion.showBibtex');
+//        Route::get('/encodingError/{conversionId}', 'encodingError')->name('conversion.encodingError');
+//        Route::get('/itemSeparatorError/{conversionId}', 'itemSeparatorError')->name('conversion.itemSeparatorError');
         Route::get('/downloadBibtex/{conversionId}', 'downloadBibtex')->name('conversion.downloadBibtex');
     });
 

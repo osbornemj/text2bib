@@ -9,7 +9,9 @@
         <p>
             Strings that are used as abbreviations but are also in the dictionary as words on their own.
         </p>
-        <x-link href="/admin/excludedWords/create">Add excluded word</x-link>
+        <div class="mb-4">
+            <x-link href="/admin/excludedWords/create">Add excluded word</x-link>
+        </div>
         <ul>
             @foreach ($excludedWords as $excludedWord)
                 <li>

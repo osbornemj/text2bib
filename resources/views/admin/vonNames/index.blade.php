@@ -7,7 +7,9 @@
 
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 shadow sm:rounded-lg">
-            <a href="/admin/vonNames/create">Add von name</a>
+            <div class="mb-4">
+                <x-link href="/admin/vonNames/create">Add von name</x-link>
+            </div>
             <ul>
                 @foreach ($vonNames as $vonName)
                     <li>

@@ -22,8 +22,10 @@
                     <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id . '/cr') }}">convert (cr sep)</x-link>
                     <br/>
                     <div class="ml-4">
-                        {{ $conversion->user->fullName() }}
-                        &nbsp;&bull;&nbsp;
+                        @if ($conversion->user)
+                            {{ $conversion->user->fullName() }}
+                            &nbsp;&bull;&nbsp;
+                        @endif
                         {{ $conversion->created_at }}
                     </div>
                 </li>

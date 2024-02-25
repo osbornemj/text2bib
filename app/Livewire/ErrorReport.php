@@ -118,7 +118,7 @@ class ErrorReport extends Component
                     OutputField::create([
                         'output_id' => $output->id,
                         'item_field_id' => $itemField->id,
-                        'content' => $input,
+                        'content' => strip_tags($input),
                         'seq' => $i,
                     ]);
                 }

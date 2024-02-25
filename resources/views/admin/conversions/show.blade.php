@@ -1,10 +1,18 @@
 <x-app-layout>
 
-    <div class="sm:px-0 lg:px-0 pt-4 space-y-6">
-        <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
+    <div class="sm:px-0 pt-4 space-y-6">
+        <div class="px-4 pt-0 sm:rounded-lg">
+                <x-link href="{{ url('admin/conversions') }}">All conversions</x-link>
+        </div>
+    </div>
+
+    <div class="sm:px-0 pt-4 space-y-6">
+        <div class="px-4 sm:rounded-lg">
             <div class="ml-0">
-                {{ $conversion->user->fullName() }}
-                &nbsp;&bull;&nbsp;
+                @if ($conversion->user)
+                    {{ $conversion->user->fullName() }}
+                    &nbsp;&bull;&nbsp;
+                @endif
                 {{ $conversion->created_at }}
                 &nbsp;&bull;&nbsp;
                 sep = {{ $conversion->item_separator}}

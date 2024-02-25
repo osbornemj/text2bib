@@ -25,16 +25,25 @@
     </ul>
     @endif
 
-    {{ '@' }}{{ $convertedItem['itemType'] }}{{ '{' }}{{ $convertedItem['label'] }},
-        <ul class="ml-6">
-            @foreach ($fields as $field)
-                @isset($convertedItem['item']->$field)
-                    <li>{{ $field }} = {{ '{' }}{{ $convertedItem['item']->$field }}{{ '}' }},</li>
-                @endisset
-            @endforeach
-        </ul>
+    <div class="mt-2">
+        {{ '@' }}{{ $convertedItem['itemType'] }}{{ '{' }}{{ $convertedItem['label'] }},
+            <ul class="ml-6">
+                @foreach ($fields as $field)
+                    @isset($convertedItem['item']->$field)
+                        <li>{{ $field }} = {{ '{' }}{{ $convertedItem['item']->$field }}{{ '}' }},</li>
+                    @endisset
+                @endforeach
+            </ul>
         {{ '}' }}
-    <br/>
+    </div>
+
+    <div class="mt-2">
+        Check in
+        <x-link href="https://scholar.google.com/scholar?q={{ $convertedItem['scholarTitle'] }}&num=100&btnG=Search+Scholar&as_sdt=1.&as_sdtp=on&as_sdtf=&as_sdts=5&hl=en" target="_blank">Google Scholar</x-link>
+        &nbsp;&bull;&nbsp;
+        <x-link href="https://www.jstor.org/action/doAdvancedSearch?q0={{ $convertedItem['scholarTitle'] }}&f0=ti&c1=AND&q1=&f1=ti&wc=on&Search=Search&sd=&ed=&la=&jo=')" target="_blank">JSTOR</x-link>
+        [new tab/window]
+    </div>
 
     @if ($displayState == 'block')
         <div style="display: none;" id="text1{{ $outputId }}">

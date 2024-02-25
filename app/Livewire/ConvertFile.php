@@ -97,7 +97,7 @@ class ConvertFile extends Component
 
             $file = $this->uploadForm->file;
 
-            // write file to user_files table
+            // Write file to user_files table
             $sourceFile = new UserFile;
             $sourceFile->user_id = Auth::id();
             $sourceFile->file_type = $file->getClientMimeType();
@@ -106,12 +106,14 @@ class ConvertFile extends Component
             $sourceFile->type = 'SRC';
             $sourceFile->save();
 
+            // Store file
             $file->storeAs(
                 'files',
                 Auth::id() . '-' . $sourceFile->id . '-source.txt',
                 'public',
             );
 
+            // Get settings and save them if requested
             $settingValues = $this->uploadForm->except('file');
 
             if ($this->uploadForm->save_settings) {
@@ -125,6 +127,7 @@ class ConvertFile extends Component
             $settingValues['user_file_id'] = $sourceFile->id;
             unset($settingValues['save_settings']);
 
+            // Create Conversion
             $conversion = new Conversion;
             $conversion->fill($settingValues);
             $conversion->user_id = Auth::id();
@@ -133,7 +136,7 @@ class ConvertFile extends Component
 
         $this->conversionId = $conversion->id;
 
-        // Get file that user uploaded
+        // Get content of the file that the user uploaded
         $filestring = Storage::disk('public')->get('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
 
         // Regularlize line-endings
@@ -141,6 +144,7 @@ class ConvertFile extends Component
 
         $entrySeparator = Str::startsWith($filestring, '<li>') ? '<li>' : ($conversion->item_separator == 'line' ? "\n\n" : "\n");
 
+        // Create array of entries
         $entries = explode($entrySeparator, $filestring);
 
         $this->itemSeparatorError = false;
@@ -167,11 +171,10 @@ class ConvertFile extends Component
             $i = 0;
             foreach ($entries as $entry) {
                 $i++;
-                // Some files have first entry \u{FEFF} (as reported by script), with strlen 3.
-                // May now not be necessary to check for this case, because FEFF is converted to space by cleanText
-                if ($entry && strlen($entry) > 3) {
-                    // $convertedEntries is array with components 'source', 'item', 'itemType', 'label', 'warnings',
-                    // 'notices', 'details', 'scholarTitle'.
+                // Some files start with \u{FEFF}, but this character is now converted to space by cleanText
+                if ($entry) {
+                    // $convertedEntries is array with components 
+                    // 'source', 'item', 'itemType', 'label', 'warnings', 'notices', 'details', 'scholarTitle'.
                     // 'label' (which depends on whole set of converted items) is updated later
                     $convertedEntry = $this->converter->convertEntry($entry, $conversion);
                     if ($convertedEntry) {
@@ -180,11 +183,14 @@ class ConvertFile extends Component
                 }
             }
 
+            // Add labels to entries
             $convertedEntries = $this->addLabels($convertedEntries, $conversion);
 
             $itemTypes = ItemType::all();
 
-            // Write converted items to database **and key array to output ids**
+            // Write each converted item to an Output **and key array to output ids**
+            // Note that source is written to conversions table, so original file
+            // is not needed except to check how entries were created from it.
             $convertedItems = [];
             foreach ($convertedEntries as $i => $convItem) {
                 $output = Output::create([
@@ -205,7 +211,6 @@ class ConvertFile extends Component
             $this->reportType = $conversion->report_type;
             $this->itemTypes = $itemTypes;
             $this->itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
-
         }
     }
 }

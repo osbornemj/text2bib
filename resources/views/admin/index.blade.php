@@ -40,42 +40,49 @@
                 <x-link :href="route('itemTypes.index')" :active="request()->routeIs('itemTypes.index')">
                     Types and fields
                 </x-link>
+                (the BibTeX item types detected by the algorithm and the fields associated with them)
             </p>
             <p>
                 <x-link :href="route('journals.index')" :active="request()->routeIs('journals.index')">
                     Journals
                 </x-link>
+                (journal names, based on conversions marked as correct by users and approved by administrator)
             </p>
             <p>
                 <x-link :href="route('vonNames.index')" :active="request()->routeIs('vonNames.index')">
                     von Names
                 </x-link>
+                (name parts like 'von' and 'della' that need special treatment)
             </p>
             <p>
                 <x-link :href="route('publishers.index')" :active="request()->routeIs('publishers.index')">
                     Publishers
                 </x-link>
+                (publishing companies, base on conversions marked as correct by users and approved by administrator)
             </p>
             <p>
                 <x-link :href="route('cities.index')" :active="request()->routeIs('cities.index')">
                     Publication cities
                 </x-link>
+                (cities in which publishers are located, for the <code>address</code> field of a book)
             </p>
             <p>
                 <x-link :href="route('names.index')" :active="request()->routeIs('names.index')">
                     Names
                 </x-link>
-                (proper names that need to have their initial letter enclosed in braces in titles)
+                (proper names that need to have their initial letter enclosed in braces in BibTeX entries)
             </p>
             <p>
                 <x-link :href="route('excludedWords.index')" :active="request()->routeIs('excludedWords.index')">
                     Excluded words
                 </x-link>
+                (strings that are used as abbreviations but are also in the dictionary as words on their own)
             </p>
             <p>
                 <x-link :href="route('dictionaryNames.index')" :active="request()->routeIs('dictionaryNames.index')">
                     Dictionary names
                 </x-link>
+                (strings that are names but are in the dictionary as words starting with a lowercase letter)
             </p>
         </div>
     </div>

@@ -24,18 +24,19 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Delete files more than 7 days old
         $schedule->call(function () {
             $files = Storage::disk('public')->files('files');
             foreach ($files as $file) {
-                if (Storage::disk('public')->lastModified($file) < now()->subDays(14)->getTimestamp()) {
+                if (Storage::disk('public')->lastModified($file) < now()->subDays(7)->getTimestamp()) {
                     Storage::disk('public')->delete($file);
                 }
             }
         })
         ->dailyAt('2:30')
-        ->emailOutputOnFailure('martin.j.osborne@gmail.com');
+        ->emailOutputOnFailure(config('app.job_failure_email'));
 
+        // Write stats
         $schedule->call(function () {
             $input['stat_date'] = Carbon::yesterday()->format('Y-m-d');
             $input['user_count'] = DB::table('conversions')->whereDate('created_at', $input['stat_date'])->distinct('user_id')->count();
@@ -44,7 +45,7 @@ class Kernel extends ConsoleKernel
             Statistic::create($input);
         })
         ->daily()
-        ->emailOutputOnFailure('martin.j.osborne@gmail.com');
+        ->emailOutputOnFailure(config('app.job_failure_email'));
     }
 
     /**

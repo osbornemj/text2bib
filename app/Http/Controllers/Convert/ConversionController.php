@@ -25,7 +25,6 @@ use App\Services\Converter;
 
 class ConversionController extends Controller
 {
-
     use AddLabels;
 
     private Converter $converter;
@@ -46,6 +45,7 @@ class ConversionController extends Controller
     // Duplicate of code in Livewire component ConvertFile (with minor changes: return ... -> redirect ...).
     // Used by Admin.
     // Can duplication be avoided?
+    /*
     public function convert(int $conversionId): View|bool
     {
         $conversion = Conversion::find($conversionId);
@@ -121,6 +121,7 @@ class ConversionController extends Controller
             )
         );
     }
+    */
 
     public function downloadBibtex(int $conversionId): StreamedResponse
     {
@@ -130,8 +131,8 @@ class ConversionController extends Controller
         $includeSource = $conversion->include_source;
         $lineEndings = $conversion->line_endings;
 
-        if ($conversion->user_id != $user->id)  {
-            die('Invalid');
+        if ($conversion->user_id != $user->id && ! $user->is_admin)  {
+            abort(403);
         }                   
 
         $outputs = Output::where('conversion_id', $conversionId)
@@ -170,30 +171,5 @@ class ConversionController extends Controller
             ]
         );
     }
-
-    /*
-    public function showBibtex(int $conversionId): View
-    {
-        $conversion = session()->get('conversion');
-        $convertedItems = session()->get('convertedItems');
-        $itemTypes = session()->get('itemTypes');
-
-        $itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
-        $includeSource = $conversion->include_source;
-        $reportType = $conversion->report_type;
-
-        return view('index.bibtex', 
-            compact(
-                'convertedItems',
-                'itemTypes',
-                'itemTypeOptions',
-                'conversionId',
-                'includeSource',
-                'reportType'
-            )
-        );
-    }
-    */
-
 }
 

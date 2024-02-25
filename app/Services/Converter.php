@@ -1751,7 +1751,11 @@ class Converter
                 // If $remainder contains 'forthcoming' string, remove it and put it in $item->note.
                 $result = $this->findRemoveAndReturn($remainder, '^(Forthcoming|In press|Accepted)');
                 if ($result) {
-                    $item->note .= ' ' . $result[0];
+                    if (isset($item->note)) {
+                        $item->note .= ' ' . $result[0];
+                    } else {
+                        $item->note = $result[0];
+                    }
                     $this->verbose('"Forthcoming" string removed and put in note field');
                     $this->verbose('Remainder: ' . $remainder);
                     $this->verbose(['fieldName' => 'Note', 'content' => $item->note]);

@@ -2461,7 +2461,17 @@ class ExampleSeeder extends Seeder
                             'volume' => '22',
                             'journal' => 'Butllet{\\\'\i} de la Societat Catalana d\'Herpetologia',
                             ]
-                    ],                                                                                
+                    ],
+                    [
+                        'source' => '\bibitem{import} González De La Vega, J.P., Reposo-González, J. M. & Fernández-Carrasco, J.A. [1994]\'Primera cita de Hyla arborea (L.) en la provincia de Córdoba\'. {\it Actas del III Congreso Luso-Español, VII Congreso Español de Herpetología, Badajoz} ,  ',
+                        'type' => 'inproceedings',
+                        'bibtex' => [
+                            'year' => '1994',
+                            'title' => 'Primera cita de Hyla arborea (L.) en la provincia de C{\\\'o}rdoba',
+                            'author' => 'Gonz{\\\'a}lez De La Vega, J. P. and Reposo-Gonz{\\\'a}lez, J. M. and Fern{\\\'a}ndez-Carrasco, J. A.',
+                            'booktitle' => 'Actas del III Congreso Luso-Espa{\~n}ol, VII Congreso Espa{\~n}ol de Herpetolog{\\\'\i}a, Badajoz',
+                            ]
+                    ],                                                                                                    
                     
                 ];
 

@@ -7,9 +7,11 @@
 
     <div class="px-4 sm:px-4 sm:rounded-lg">
         <p>
-            Strings that are names but are also in the dictionary as words on their own.
+            Strings that are names but are in the dictionary starting with lowercase letters.
         </p>
-        <x-link href="/admin/dictionaryNames/create">Add name that is in dictionary</x-link>
+        <div class="mb-4">
+            <x-link href="/admin/dictionaryNames/create">Add name that is in dictionary</x-link>
+        </div>
         <ul>
             @foreach ($dictionaryNames as $dictionaryName)
                 <li>

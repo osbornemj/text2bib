@@ -8,6 +8,11 @@
             <p>
                 <x-link href="{{ url('downloadBibtex/' . $conversionId) }}">Download BibTeX file</x-link>
             </p>
+            <div class="mt-4">
+                <p>
+                    {{ count($convertedItems) }} {{ Str::plural('item', $convertedItems) }} converted
+                </p>
+            </div>
             <ul>
                 @foreach ($convertedItems as $outputId => $convertedItem)
                 <div class="mt-4">
@@ -17,14 +22,7 @@
                             <br/>
                         @endif
 
-                        Check in
-                        <x-link href="https://scholar.google.com/scholar?q={{ $convertedItem['scholarTitle'] }}&num=100&btnG=Search+Scholar&as_sdt=1.&as_sdtp=on&as_sdtf=&as_sdts=5&hl=en" target="_blank">Google Scholar</x-link>
-                        &nbsp;&bull;&nbsp;
-                        <x-link href="https://www.jstor.org/action/doAdvancedSearch?q0={{ $convertedItem['scholarTitle'] }}&f0=ti&c1=AND&q1=&f1=ti&wc=on&Search=Search&sd=&ed=&la=&jo=')" target="_blank">JSTOR</x-link>
-                        [new tab/window]
-                        <br/>
-
-                        <i>Source</i>: {{ $convertedItem['source'] }}
+                        {{ $convertedItem['source'] }}
                         <br/>
 
                         @if ($reportType == 'detailed') 
