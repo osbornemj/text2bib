@@ -62,7 +62,7 @@
                     <li>
                         {{ $itemField->name }}
                         <ul class="ml-4">
-                            @foreach ($itemField->itemTypes as $itemType)
+                            @foreach ($itemField->itemTypes() as $itemType)
                                 <li>
                                     {{ $itemType->name }}
                                 </li>

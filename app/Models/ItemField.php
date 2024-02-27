@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ItemField extends Model
 {
@@ -14,8 +13,8 @@ class ItemField extends Model
 
     protected $fillable = ['name'];
 
-    public function itemTypes(): BelongsToMany
+    public function itemTypes()
     {
-        return $this->belongsToMany(ItemType::class)->orderBy('name');
+        return ItemType::whereJsonContains('fields', $this->name)->get();
     }
 }

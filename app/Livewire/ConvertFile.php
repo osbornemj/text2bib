@@ -10,7 +10,6 @@ use Illuminate\Support\Str;
 
 use App\Models\Conversion;
 use App\Models\ItemType;
-use App\Models\Journal;
 use App\Models\Output;
 use App\Models\UserFile;
 use App\Models\UserSetting;

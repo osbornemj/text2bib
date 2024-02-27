@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-//use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 use App\Models\Conversion;
@@ -18,11 +17,6 @@ class ExampleCheckController extends Controller
     public function __construct()
     {
         $this->converter = new Converter;
-    }
-
-    public function run()
-    {
-        $examples = Example::all();
     }
 
     public function runExampleCheck(bool $verbose = false, bool $showDetailsIfCorrect = false, int $id = null, string $charEncoding = 'utf8'): View

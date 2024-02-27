@@ -45,22 +45,20 @@ class ConversionAdminController extends Controller
                     ->orderBy('seq')
                     ->get();
 
+        // Put fields in uniform order
         $convertedItems = [];
         foreach ($outputs as $i => $output) {
             $fields = $output->itemType->fields;
             foreach ($fields as $field) {
-                //dump($field, $output->item[$field] ?? '');
-                if (isset($output->item[$field]) && in_array($field, $output->item)) {
-                    $convertedItems[$i][$field] = $output->item->field;
+                if (isset($output->item[$field])) {
+                    $convertedItems[$i][$field] = $output->item[$field];
                 }
             }
         }
 
-dd($convertedItems);
-
         $conversion = Conversion::find($conversionId);
 
-        return view('admin.conversions.show', compact('outputs', 'conversion'));
+        return view('admin.conversions.show', compact('outputs', 'convertedItems', 'conversion'));
     }
 
     // Converts entries in exising file according to parameters of Conversion with id = $conversionId.
@@ -152,7 +150,6 @@ dd($convertedItems);
                 'reportType'
             )
         );
-//        return redirect()->route('file.convert', ['conversionId' => $conversion->id]);        
     }
 
     public function formatExample(int $outputId): View

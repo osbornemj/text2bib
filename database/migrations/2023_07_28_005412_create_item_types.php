@@ -38,7 +38,8 @@ return new class extends Migration
         Schema::dropIfExists('item_fields');
 
         Schema::table('item_field_item_type', function (Blueprint $table) {
-            $table->dropForeign(['item_field_id', 'item_type_id']);
+            $table->dropForeign(['item_field_id']);
+            $table->dropForeign(['item_type_id']);
         });
 
         Schema::dropIfExists('item_field_item_type');

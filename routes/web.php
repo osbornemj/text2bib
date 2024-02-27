@@ -4,7 +4,6 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
 
-use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CitiesController;
 use App\Http\Controllers\Admin\ConversionAdminController;
 use App\Http\Controllers\Admin\DictionaryNamesController;
@@ -22,7 +21,7 @@ use App\Http\Controllers\Admin\VonNamesController;
 
 use App\Http\Controllers\Convert\ErrorReportController;
 use App\Http\Controllers\Convert\FileUploadController;
-use App\Http\Controllers\Convert\ConversionController;
+use App\Http\Controllers\Convert\DownloadBibtexController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -69,15 +68,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/comment/{id}', 'show')->name('comment');
     });
 
-    Route::controller(ConversionController::class)->group(function () {
-        Route::get('/convert/{conversionId}/{userFileId?}/{itemSeparator?}', 'convert')->name('file.convert');
-//        Route::get('/redo/{id}', 'redo')->name('redo');
-//        Route::post('/addOutput/{conversionId}', 'addOutput')->name('conversion.addOutput');
-//        Route::get('/showBibtex/{conversionId}', 'showBibtex')->name('conversion.showBibtex');
-//        Route::get('/encodingError/{conversionId}', 'encodingError')->name('conversion.encodingError');
-//        Route::get('/itemSeparatorError/{conversionId}', 'itemSeparatorError')->name('conversion.itemSeparatorError');
-        Route::get('/downloadBibtex/{conversionId}', 'downloadBibtex')->name('conversion.downloadBibtex');
-    });
+    Route::get('/downloadBibtex/{conversionId}', DownloadBibtexController::class)->name('conversion.downloadBibtex');
 
     Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
 });
@@ -96,7 +87,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         '/admin/journals' => JournalsController::class,
     ]);
 
-    Route::get('/admin/index', [AdminController::class, 'index'])->name('admin.index');
+    Route::view('/admin/index', 'admin.index')->name('admin.index');
 
     Route::controller(ConversionAdminController::class)->group(function () {
         Route::get('/admin/showConversion/{conversionId}', 'showConversion')->name('admin.showConversion');

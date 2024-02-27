@@ -48,14 +48,6 @@ class NamesController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Name $name)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(int $id): View

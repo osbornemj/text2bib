@@ -7,7 +7,6 @@ use Auth;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\StoreThreadRequest;
-use App\Http\Requests\UpdateThreadRequest;
 
 use App\Models\Comment;
 use App\Models\Thread;
@@ -56,31 +55,4 @@ class CommentController extends Controller
 
         return redirect()->route('threads.index');
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    /*
-    public function edit(int $id): View
-    {
-        $thread = Thread::find($id);
-
-        return view('admin.threads.edit', compact('thread'));
-    }
-    */
-
-    /**
-     * Update the specified resource in storage.
-     */
-    /*
-    public function update(UpdateThreadRequest $request, int $id)
-    {
-        $thread = Thread::find($id);
-        $thread->name = $request->name;
-        $thread->save();
-
-        return redirect()->route('threads.index');
-    }
-    */
-
 }

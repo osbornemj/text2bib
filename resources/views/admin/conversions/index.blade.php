@@ -10,7 +10,7 @@
             <ul>
             @foreach ($conversions as $conversion)
                 <li>
-                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id) }}">Source file & BibTeX file</x-link>
+                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id) }}">Conversion</x-link>
                     &nbsp;&bull;&nbsp;
                     {{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}:
                     @foreach ($conversion->correctnessCounts() as $key => $value)

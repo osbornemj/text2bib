@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 use App\Models\ItemField;
-use App\Models\ItemFieldItemType;
 use App\Models\ItemType;
 
 class ItemTypesController extends Controller
@@ -65,14 +64,6 @@ class ItemTypesController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id): View
@@ -124,11 +115,6 @@ class ItemTypesController extends Controller
             array_push($fields, $itemField->name);
             $itemType->fields = $fields;
             $itemType->save();
-
-            ItemFieldItemType::create([
-                'item_field_id' => $itemField->id,
-                'item_type_id' => $itemType->id
-            ]);
         }
 
         return redirect()->route('itemTypes.index');
@@ -142,9 +128,6 @@ class ItemTypesController extends Controller
         $itemType = ItemType::find($itemTypeId);
         $itemType->fields = array_diff($itemType->fields, [$itemField]);
         $itemType->save();        
-
-        $itemField = ItemField::where('name', $itemField)->first();
-        ItemFieldItemType::where('item_field_id', $itemField->id)->where('item_type_id', $itemTypeId)->delete();
 
         return redirect()->route('itemTypes.index');
     }

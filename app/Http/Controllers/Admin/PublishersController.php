@@ -53,14 +53,6 @@ class PublishersController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Publisher $publisher)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(int $id): View

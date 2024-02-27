@@ -59,11 +59,6 @@ class ExamplesController extends Controller
         return redirect()->route('examples.index');
     }
 
-    public function show(ExamplesController $examplesController)
-    {
-        //
-    }
-
     public function edit(int $id): View
     {
         $example = Example::find($id);
@@ -80,13 +75,5 @@ class ExamplesController extends Controller
         $example->save();
 
         return redirect()->route('examples.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ExamplesController $examplesController)
-    {
-        //
     }
 }

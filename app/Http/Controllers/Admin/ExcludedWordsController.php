@@ -48,14 +48,6 @@ class ExcludedWordsController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(ExcludedWord $excludedWord)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(int $id): View

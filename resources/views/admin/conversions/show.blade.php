@@ -32,7 +32,7 @@
                 {{ $conversion->report_type }} report
             </div>
 
-            @foreach ($outputs as $output)
+            @foreach ($outputs as $i => $output)
                 <div class="mt-4">
                     {{ $output->source }}
                 </div>
@@ -46,12 +46,12 @@
                     @endif
 
                     {{ '@' }}{{ $output->itemType->name }}{{ '{' }}{{ $output->label }},
-                    @foreach ($output->item as $name => $content)
+                    @foreach ($convertedItems[$i] as $name => $content)
                         <div class="ml-6">
                             {{ $name }} = {{ '{' }}{{ $content }}{{ '}' }},
                         </div>
                     @endforeach
-                    }
+                    {{ '}' }}
                 </div>
             @endforeach
         </div>
