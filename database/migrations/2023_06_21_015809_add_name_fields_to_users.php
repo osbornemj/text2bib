@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->boolean('is_admin')->default(false);
-            $table->boolean('wants_messages')->default(false);
+            $table->dateTime('date_last_login')->nullable();
         });
     }
 

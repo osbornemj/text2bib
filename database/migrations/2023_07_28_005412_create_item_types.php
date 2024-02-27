@@ -14,18 +14,12 @@ return new class extends Migration
         Schema::create('item_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->timestamps();
+            $table->json('fields');
         });
 
         Schema::create('item_fields', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->timestamps();
-        });
-
-        Schema::create('item_field_item_type', function (Blueprint $table) {
-            $table->foreignId('item_field_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('item_type_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 
@@ -36,12 +30,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('item_types');
         Schema::dropIfExists('item_fields');
-
-        Schema::table('item_field_item_type', function (Blueprint $table) {
-            $table->dropForeign(['item_field_id']);
-            $table->dropForeign(['item_type_id']);
-        });
-
-        Schema::dropIfExists('item_field_item_type');
     }
 };

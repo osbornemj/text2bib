@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->tinyInteger('distinctive')->default(1);
+            $table->tinyInteger('checked')->default(0);
             $table->timestamps();
         });
     }

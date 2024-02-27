@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create('error_reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('output_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('title');
             $table->unsignedInteger('status')->default(ReportStatus::Open->value);
             $table->timestamps();
         });

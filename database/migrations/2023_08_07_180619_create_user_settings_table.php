@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->boolean('incremental')->default(true);
             $table->string('item_separator')->default('line');
             $table->string('first_component')->default('authors');
             $table->string('label_style')->default('short');
@@ -24,6 +23,7 @@ return new class extends Migration
             $table->boolean('percent_comment')->default(true);
             $table->boolean('include_source')->default(true);
             $table->string('report_type')->default('standard');
+            $table->tinyInteger('save_settings')->default(1);
             $table->timestamps();
         });
     }
