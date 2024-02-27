@@ -2471,7 +2471,20 @@ class ExampleSeeder extends Seeder
                             'author' => 'Gonz{\\\'a}lez De La Vega, J. P. and Reposo-Gonz{\\\'a}lez, J. M. and Fern{\\\'a}ndez-Carrasco, J. A.',
                             'booktitle' => 'Actas del III Congreso Luso-Espa{\~n}ol, VII Congreso Espa{\~n}ol de Herpetolog{\\\'\i}a, Badajoz',
                             ]
-                    ],                                                                                                    
+                    ],
+                    [
+                        'source' => 'Jullien, Bruno, 2012, "B2B Two-sided Platforms." In Oxford Handbook of Digital Economics (M. Peitz and J. Waldfogel eds.). Oxford University Press, New York. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '2012',
+                            'title' => 'B2B Two-sided Platforms',
+                            'author' => 'Jullien, Bruno',
+                            'editor' => 'M. Peitz and J. Waldfogel',
+                            'address' => 'New York',
+                            'booktitle' => 'Oxford Handbook of Digital Economics',
+                            'publisher' => 'Oxford University Press',
+                            ]
+                    ],                                                                                                                        
                     
                 ];
 
