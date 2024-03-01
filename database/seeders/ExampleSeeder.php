@@ -2484,7 +2484,28 @@ class ExampleSeeder extends Seeder
                             'booktitle' => 'Oxford Handbook of Digital Economics',
                             'publisher' => 'Oxford University Press',
                             ]
-                    ],                                                                                                                        
+                    ],
+                    [
+                        'source' => '\bibitem{PMP-PUB-2957}Baker, E. A. G., J. L. Wegrzyn, U. U. Sezen, T. Falk, P. E. Maloney, D. R. Vogler, C. Jensen, J. Mitton, J. Wright, B. Knaus, H. Rai, R. Cronn, D. Gonzalez-Ibeas, H. A. Vasquez-Gross, R. A. Famula, J.-J. Liu, L. M. Kueppers, and D. B. Neale. Comparative transcriptomics among four white pine species. ',
+                        'type' => 'unpublished',
+                        'bibtex' => [
+                            'note' => '',
+                            'year' => '',
+                            'title' => 'Comparative transcriptomics among four white pine species',
+                            'author' => 'Baker, E. A. G. and J. L. Wegrzyn and U. U. Sezen and T. Falk and P. E. Maloney and D. R. Vogler and C. Jensen and J. Mitton and J. Wright and B. Knaus and H. Rai and R. Cronn and D. Gonzalez-Ibeas and H. A. Vasquez-Gross and R. A. Famula and J.-J. Liu and L. M. Kueppers and D. B. Neale',
+                            ]
+                    ],
+                    [
+                        'source' => 'Pardo, Thiago, António Branco, Aldebaro Klautau, Renata Vieira and Vera Strube de Lima (eds.), 2010, Computational Processing of the Portuguese Language, Springer, Berlin. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'year' => '2010',
+                            'title' => 'Computational Processing of the Portuguese Language',
+                            'editor' => 'Pardo, Thiago and Ant{\\\'o}nio Branco and Aldebaro Klautau and Renata Vieira and Vera Strube de Lima',
+                            'address' => 'Berlin',
+                            'publisher' => 'Springer',
+                            ]
+                    ],                                                                                                                                            
                     
                 ];
 

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('item_separator')->default('line');
-            $table->string('first_component')->default('authors');
             $table->string('label_style')->default('short');
             $table->boolean('override_labels')->default(false);
             $table->char('line_endings', 1)->default('w');

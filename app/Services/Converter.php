@@ -1223,6 +1223,8 @@ class Converter
                     if ($publisherString) {
                         $tempRemainder = $this->findAndRemove($tempRemainder, $publisherString);
                     }
+                    $tempRemainder = trim($tempRemainder, ',.: ');
+                    $tempRemainderEndsWithParen = substr($tempRemainder, -1) == ')';
                     $tempRemainder = trim($tempRemainder, ',.:() ');
                     $this->verbose('[in13] tempRemainder: ' . $tempRemainder);
 
@@ -1305,15 +1307,26 @@ class Converter
                     }
                     if (!$lastTwoWordsHaveDigits && preg_match('/(.*)' . $this->editorEndRegExp . '/i', $tempRemainder, $matches)) {
                         $this->verbose('Remainder minus pub info ends with \'eds\' or similar, so format it <booktitle> <editor>');
-                        $trash2 = false;
-                        // Include edition in title (because no BibTeX field for edition for incollection)
-                        $booktitle = $this->getTitle($tempRemainder, $edition, $trash1, $trash2, true);
-                        if (substr($booktitle, -3) != 'ed.') {
-                            $booktitle = rtrim($booktitle, '.');
+                        // Remove "eds" at end
+                        $tempRemainderMinusEds = Str::beforeLast($tempRemainder, ' ');
+                        // If remaining string contains '(', take preceding string to be booktitle and following string to be editors.
+                        // Remaining string might not contain '(': might be error, or "eds" could have been "(eds").
+                        if ($tempRemainderEndsWithParen && Str::contains($tempRemainderMinusEds, '(')) {
+                            $this->verbose('tempRemainder contains \'(\' and ends with \')\'');
+                            $booktitle = Str::beforeLast($tempRemainderMinusEds, '(');
+                            $editorString = Str::afterLast($tempRemainderMinusEds, '(');
+                            $result = $this->convertToAuthors(explode(' ', $editorString), $remainder, $trash, $isEditor, true, 'editors');
+                        } else {
+                            $trash2 = false;
+                            // Include edition in title (because no BibTeX field for edition for incollection)
+                            $booktitle = $this->getTitle($tempRemainder, $edition, $trash1, $trash2, true);
+                            if (substr($booktitle, -3) != 'ed.') {
+                                $booktitle = rtrim($booktitle, '.');
+                            }
+                            $this->setField($item, 'booktitle', $booktitle);
+                            $isEditor = true;
+                            $result = $this->convertToAuthors(explode(' ', $tempRemainder), $remainder, $trash, $isEditor, true, 'editors');
                         }
-                        $this->setField($item, 'booktitle', $booktitle);
-                        $isEditor = true;
-                        $result = $this->convertToAuthors(explode(' ', $tempRemainder), $remainder, $trash, $isEditor, true, 'editors');
                         $this->setField($item, 'editor', trim($result['authorstring']));
                         $remainderContainsEds = true;
                         $updateRemainder = false;
@@ -2196,7 +2209,6 @@ class Converter
                 $nextButOneWord = $words[$key + 2] ?? null;
                 $word = trim($word);
                 $nextWord = trim($nextWord);
-                $periodFound = Str::endsWith($word, '.');
 
                 $stringToNextPeriod = strtok($remainder, '.?!');
 
@@ -2255,15 +2267,16 @@ class Converter
                     break;
                 }
 
-                // If end of title has not been detected and word ends in period-equivalent or comma,
-                if (Str::endsWith($word, ['.', '!', '?', ','])) {
-                    // if first letter of next word is lowercase (in which case '.' ended abbreviation?) and does not end in period
+                // If end of title has not been detected and word ends in period-equivalent or comma, or next word starts with '('
+                if (Str::endsWith($word, ['.', '!', '?', ',']) || ($nextWord && $nextWord[0] == '(')) {
+                    // if first character  of next word is lowercase letter and does not end in period
                     // OR $word and $nextWord are A. and D. or B. and C.
                     // OR following string starts with a part designation, continue, skipping next word,
+                    //dd($nextWord, $nextWord[0]);
                     if (
                         $nextWord 
                             && (
-                               (mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.')
+                               (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.')
                                     || ($word == 'A.' && $nextWord == 'D.')
                                     || ($word == 'B.' && $nextWord == 'C.')
                                     || Str::startsWith($remainder, ['I. ', 'II. ', 'III. '])
@@ -2337,14 +2350,21 @@ class Converter
         }
 
         // If no title has been identified and $originalRemainder contains a comma, take title to be string up to first comma.
-        // What to do if $remainder contains no comma?
-        if (!$title && Str::contains($originalRemainder, ',')) {
-            $this->verbose("Title not clearly identified; setting it equal to string up to first comma");
-            $title = Str::before($originalRemainder, ',');
-            $newRemainder = ltrim(Str::after($originalRemainder, ','), ' ');
+        // Otherwise take title to be whole string.
+        if (! $title) {
+            if (Str::contains($originalRemainder, ',')) {
+                $this->verbose("Title not clearly identified; setting it equal to string up to first comma");
+                $title = Str::before($originalRemainder, ',');
+                $newRemainder = ltrim(Str::after($originalRemainder, ','), ' ');
+            } else {
+                $title = implode(' ', $initialWords);
+            }
         }
 
         $remainder = $newRemainder ?? $remainder;
+        if (isset($remainder[0]) && $remainder[0] == '(') {
+            $remainder = substr($remainder, 1);
+        }
 
         return $title;
     }
@@ -3090,7 +3110,7 @@ class Converter
       * @param $string string
       * @return 0 if not match, 1 if singular form is matched, 2 if plural form is matched
       */
-    private function isEd(string $string): bool
+    private function isEd(string $string): int
     {
         preg_match('/^\(?[Ee]d(s?)\.?\)?,?$/', $string, $matches);
         if (count($matches) == 0) {
@@ -3852,7 +3872,6 @@ class Converter
     private function getVolumeNumberPagesForArticle(string &$remainder, object &$item): void
     {
         $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
-//dump($remainder);        
         // First check for some common patterns
         $number = '[1-9][0-9]{0,3}';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;

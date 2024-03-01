@@ -140,6 +140,8 @@ class ConvertFile extends Component
 
         // Regularlize line-endings
         $filestring = str_replace(["\r\n", "\r"], "\n", $filestring);
+        // If line consists only of tab and/or space followed by a linefeed, remove the tab and space.
+        $filestring = preg_replace('/\n\t? ?\n/', "\n\n", $filestring);
 
         $entrySeparator = Str::startsWith($filestring, '<li>') ? '<li>' : ($conversion->item_separator == 'line' ? "\n\n" : "\n");
 
