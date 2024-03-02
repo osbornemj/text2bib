@@ -2505,7 +2505,17 @@ class ExampleSeeder extends Seeder
                             'address' => 'Berlin',
                             'publisher' => 'Springer',
                             ]
-                    ],                                                                                                                                            
+                    ], [
+                        'source' => '\bibitem{}Arieli-Attali, M., Wylie, E. C., & Bauer, M. I. (2012, April). The use of three learning progressions in supporting formative assessment in middle school mathematics. Paper presented at the annual meeting of the American Educational Research Association (AERA), Vancouver, CA. ',
+                        'type' => 'inproceedings',
+                        'bibtex' => [
+                            'year' => '2012',
+                            'month' => 'April',
+                            'title' => 'The use of three learning progressions in supporting formative assessment in middle school mathematics',
+                            'author' => 'Arieli-Attali, M. and Wylie, E. C. and Bauer, M. I.',
+                            'booktitle' => 'Paper presented at the annual meeting of the American Educational Research Association (AERA), Vancouver, CA',
+                            ]
+                    ],                                                                                                                                           
                     
                 ];
 
