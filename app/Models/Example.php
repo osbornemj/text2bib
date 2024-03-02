@@ -11,7 +11,6 @@ class Example extends Model
 {
     use HasFactory;
 
-    //protected $fillable = ['source', 'type'];
     protected $guarded = [];
 
     public function fields(): HasMany
@@ -22,7 +21,6 @@ class Example extends Model
     public function bibtexFields(): stdClass
     {
         $output = new \stdClass();
-        //$output->kind = $this->type;
         foreach($this->fields as $field) {
             $output->{$field->name} = $field->content; 
         }
