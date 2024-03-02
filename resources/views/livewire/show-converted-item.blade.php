@@ -55,7 +55,7 @@
         @if ($status == 'changes')
             @if ($priorReportExists)
                 <span class="text-green-600">Report updated</span>
-            @elseif ($errorReportExists)
+            @elseif ($correctionExists)
                 <span class="text-green-600">Changes saved and report filed</span>  
             @else
                 <span class="text-green-600">Changes saved</span>
@@ -96,7 +96,7 @@
         <div style="display: block;" id="text1{{ $outputId }}">
     @endif
 
-        @if ($errorReportExists)
+        @if ($correctionExists)
             @if ($correctionsEnabled)
                 <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Edit your correction</a>
             @else
@@ -123,17 +123,22 @@
             @foreach ($fields as $name)
                 @php
                     $modelName = 'form.' . $name;
+                    $value = $convertedItem['item']->$name ?? null;
                 @endphp
                 <div>
                     <x-input-label :for="$name" :value="$name" />
-                    <x-text-input :id="$name" class="block mt-1 w-full" type="text" :name="$name" :wire:model="$modelName"/>
+                    <x-text-input :id="$name" class="block mt-1 w-full" type="text" :name="$name" :value="$value" :wire:model="$modelName"/>
                 </div>
             @endforeach
 
             @if ($correctionsEnabled)
                 <div>
-                    <x-input-label for="comment" value="Comment on error (optional; will be visible publicly)" />
-                    <x-textarea-input rows="2" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="form.comment"/>
+                    <x-checkbox-input id="postReport" class="peer" type="checkbox" value="1" name="postReport" wire:model="form.postReport" />
+                    <span class="text-sm font-medium ml-1 text-gray-700 dark:text-gray-300">Report conversion error?</span>
+                    <div class="hidden peer-checked:block">
+                        <x-input-label for="comment" value="Comment on error (optional)" />
+                        <x-textarea-input rows="2" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="form.comment"/>
+                    </div>
                 </div>
             @endif
 

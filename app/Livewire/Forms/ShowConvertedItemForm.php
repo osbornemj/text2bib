@@ -35,7 +35,7 @@ class ShowConvertedItemForm extends Form
     public $chapter;       
     public $organization;  
 
-//    public $postReport;
+    public $postReport = false;
 
     public $comment;
 }

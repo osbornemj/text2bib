@@ -189,8 +189,8 @@ class Converter
         $this->bookTitleAbbrevs = ['Proc', 'Amer', 'Conf', 'Cont', 'Sci', 'Int', "Auto", 'Symp'];
 
         $this->workingPaperRegExp = '(preprint|working paper|discussion paper|technical report|'
-                . 'research paper|mimeo|unpublished paper|unpublished manuscript|'
-                . 'under review|submitted)';
+                . 'research paper|mimeo|unpublished paper|unpublished manuscript|manuscript|'
+                . 'under review|submitted|in preparation)';
         $this->workingPaperNumberRegExp = ' (\\\\#|number|no\.?)? ?(\d{1,5}),?';
 
         $this->monthsRegExp = 'January|Jan\.?|February|Feb\.?|March|Mar\.?|April|Apr\.?|May|June|Jun\.?|July|Jul\.?|'
@@ -242,7 +242,7 @@ class Converter
         }
 
         if (!$entry) {
-            return false;
+            return null;
         }
 
         // If entry has some HTML markup that will be useful, translate it to TeX
@@ -542,7 +542,7 @@ class Converter
             if (!$year) {
                 // Space prepended to $remainder in case it starts with year, because getYear requires space 
                 // (but perhaps could be rewritten to avoid it).
-                $year = $this->getYear(' '. $remainder, false, $newRemainder, true, $month);
+                $year = $this->getYear(' '. $remainder, $newRemainder, $month, false, true);
             }
 
             if ($year) {
@@ -2800,7 +2800,7 @@ class Converter
                     $warnings[] = "String for editors detected after only one part of name.";
                 }
                 // Check for year following editors
-                if ($year = $this->getYear($remainder, true, $remains, false, $trash)) {
+                if ($year = $this->getYear($remainder, $remains, $trash)) {
                     $remainder = $remains;
                     $this->verbose("Year detected, so ending name string (word: " . $word .")");
                 } else {
@@ -2845,7 +2845,7 @@ class Converter
                     // a single name.  If string is followed by year or quotedOrItalics, that seems right,
                     // in which case we may have an entry like "Economist. 2005. ..."
                     $remainder = implode(" ", $remainingWords);
-                    if ($year = $this->getYear($remainder, true, $remainder, false, $trash)) {
+                    if ($year = $this->getYear($remainder, $remainder, $trash)) {
                         // Don't use spaceOutInitials in this case, because string is not initials.  Could be
                         // something like autdiogames.net, in which case don't want to put space before period.
                         $nameComponent = $word;
@@ -2884,7 +2884,7 @@ class Converter
                     $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, and namePart is > 0';
                 }
                 $this->verbose("Remainder: " . $remainder);
-                if ($year = $this->getYear($remainder, true, $remains, false, $trash)) {
+                if ($year = $this->getYear($remainder, $remains, $trash)) {
                     $remainder = $remains;
                 }
                 $this->verbose("Remains: " . $remains);
@@ -2908,7 +2908,7 @@ class Converter
                     $fullName .= ' ' . $word;
                     $remainder = implode(" ", $remainingWords);
                     $this->addToAuthorString(6, $authorstring, ' ' . ltrim($this->formatAuthor($fullName)));
-                    if ($year = $this->getYear($remainder, true, $remains, false, $trash)) {
+                    if ($year = $this->getYear($remainder, $remains, $trash)) {
                         $remainder = $remains;
                         $this->verbose("Year detected");
                     }
@@ -2944,7 +2944,7 @@ class Converter
                         $namePart++;
                     }
                     // Following occurs in case of name that is a single string, like "IMF"
-                    if ($year = $this->getYear(implode(" ", $remainingWords), true, $remains, false, $trash)) {
+                    if ($year = $this->getYear(implode(" ", $remainingWords), $remains, $trash)) {
                         $remainder = $remains;
                         $done = true;
                     }
@@ -3016,7 +3016,7 @@ class Converter
                     $done = true;
                     $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
                     $case = 7;
-                } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), true, $remainder, false, $trash)) {
+                } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), $remainder, $month, true, true)) {
                     $done = true;
                     $fullName = ($fullName[0] != ' ' ? ' ' : '') . $fullName;
                     $this->addToAuthorString(10, $authorstring, $this->formatAuthor($fullName));
@@ -3047,8 +3047,8 @@ class Converter
                             &&
                             (
                                 ($this->isInitials($words[$i + 1]) && $namePart == 0)
-                                || $this->getYear($words[$i + 2], true, $trash, false, $trash2)
-                                || ( $this->isInitials($words[$i + 2]) && $this->getYear($words[$i + 3], true, $trash, false, $trash2))
+                                || $this->getYear($words[$i + 2], $trash, $trash2)
+                                || ( $this->isInitials($words[$i + 2]) && $this->getYear($words[$i + 3], $trash, $trash2))
                             )
                         ) {
                             $fullName .= ',';
@@ -3067,7 +3067,7 @@ class Converter
                         // that case, you need to look further ahead.)
                         if (!$prevWordHasComma && $i + 2 < count($words)
                                 && (
-                                    $this->getYear($words[$i + 2], true, $trash, false, $trash2)
+                                    $this->getYear($words[$i + 2], $trash, $trash2)
                                     ||
                                     $this->getQuotedOrItalic($words[$i + 2], true, false, $before, $after)
                                 )) {
@@ -3327,13 +3327,13 @@ class Converter
      * getYear: get *last* substring in $string that is a year, unless $start is true, in which case restrict to 
      * start of string and take only first match
      * @param string $string 
-     * @param boolean $start (if true, check only for substring at start of string)
      * @param string|null $remains what is left of the string after the substring is removed
-     * @param boolean $allowMonth (allow string like "(April 1998)" or "(April-May 1998)" or "April 1998:"
      * @param string|null $month
-     * @return string year (and pointer to month)
+     * @param boolean $start = true (if true, check only for substring at start of string)
+     * @param boolean $allowMonth = false (allow string like "(April 1998)" or "(April-May 1998)" or "April 1998:"
+     * @return string year
      */
-    private function getYear(string $string, bool $start, string|null &$remains, bool $allowMonth, string|null &$month): string
+    private function getYear(string $string, string|null &$remains, string|null &$month, bool $start = true, bool $allowMonth = false): string
     {
         $year = '';
         $remains = $string;
@@ -3372,8 +3372,7 @@ class Converter
 
         // Using labels for matches seems non-straightforward because the patterns are using more than once in each
         // regular expression.
-        // See \xy\m\TeX\text2bib\regExpAnalysis.txt (as well as handwritten notes in Projects folder) for logic behind these numbers.
-        // They are the indexes of the matches for the subpatterns on the regular expression
+        // These are the indexes of the matches for the subpatterns of the regular expression:
         if ($allowMonth) {
             $yearIndexes = $start ? [6, 15, 24] : [6, 15, 24, 33];
         } else {
@@ -4052,6 +4051,7 @@ class Converter
         // Replace each tab with a space
         $string = str_replace("\t", " ", $string);
         $string = str_replace("\\textquotedblleft ", "``", $string);
+        $string = str_replace("\\textquotedblleft{}", "``", $string);
         $string = str_replace("\\textquotedblright ", "''", $string);
         $string = str_replace("\\textquotedblright", "''", $string);
 

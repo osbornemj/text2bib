@@ -2505,18 +2505,107 @@ class ExampleSeeder extends Seeder
                             'address' => 'Berlin',
                             'publisher' => 'Springer',
                             ]
-                    ], [
-                        'source' => '\bibitem{}Arieli-Attali, M., Wylie, E. C., & Bauer, M. I. (2012, April). The use of three learning progressions in supporting formative assessment in middle school mathematics. Paper presented at the annual meeting of the American Educational Research Association (AERA), Vancouver, CA. ',
-                        'type' => 'inproceedings',
+                    ],
+                    [
+                        'source' => ' \bibitem[{Adams et~al.(2014)Adams, Cherchye, {De Rock}, and   Verriest}]{Adams2014} Adams Abi, Cherchye Laurens, Bram De Rock, Verriest Ewout, 2014. Consume now or   later? time inconsistency, collective choice and revealed preference.   American Economic Review 104, 4147--4183. ',
+                        'type' => 'article',
                         'bibtex' => [
-                            'year' => '2012',
-                            'month' => 'April',
-                            'title' => 'The use of three learning progressions in supporting formative assessment in middle school mathematics',
-                            'author' => 'Arieli-Attali, M. and Wylie, E. C. and Bauer, M. I.',
-                            'booktitle' => 'Paper presented at the annual meeting of the American Educational Research Association (AERA), Vancouver, CA',
+                            'year' => '2014',
+                            'pages' => '4147-4183',
+                            'title' => 'Consume now or later? time inconsistency, collective choice and revealed preference',
+                            'author' => 'Adams Abi and Cherchye Laurens and Bram De Rock and Verriest Ewout',
+                            'volume' => '104',
+                            'journal' => 'American Economic Review',
                             ]
-                    ],                                                                                                                                           
-                    
+                    ],
+                    [
+                        'source' => 'Woodruff, A. R. \emph{et al.} State-dependent function of neocortical chandelier cells. \emph{J. Neurosci.} \textbf{31,} 17872--17886 (2011). ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '2011',
+                            'pages' => '17872-17886',
+                            'title' => 'State-dependent function of neocortical chandelier cells',
+                            'author' => 'Woodruff, A. R. and others',
+                            'volume' => '31',
+                            'journal' => 'J. Neurosci.',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{2002_hromkovic} J. Hromkovi{\v c}, S. Seibert, J. Karhum{\" a}ki, H. Klauck, and G. Schnitger, ``Communication Complexity Method for Measuring Nondeterminism in Finite Automata.\'\' \textit{Inform. Comput.} 172(2), pp. 202--217, (2002). ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '2002',
+                            'pages' => '202-217',
+                            'title' => 'Communication Complexity Method for Measuring Nondeterminism in Finite Automata',
+                            'author' => 'J. Hromkovi{\v c} and S. Seibert and J. Karhum{\" a}ki and H. Klauck and G. Schnitger',
+                            'number' => '2',
+                            'volume' => '172',
+                            'journal' => 'Inform. Comput.',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{K2-108} Bleiler, S. A. \& Scharlemann, M. G. (1986). Tangles, property $P$ and a problem of J. Martin. Math. Ann. Vol. 273, 215-225.  ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '1986',
+                            'pages' => '215-225',
+                            'title' => 'Tangles, property $P$ and a problem of J. Martin',
+                            'author' => 'Bleiler, S. A. and Scharlemann, M. G.',
+                            'volume' => '273',
+                            'journal' => 'Math. Ann.',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{K2-172} Canary, R. D. (1994). Covering theorems for hyperbolic 3-manifolds. In K. Johannson (Ed.), Low-Dimensional Topology, Knoxville, Vol. 1992, pp. 21-30. International Press.  ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'year' => '1994',
+                            'pages' => '21-30',
+                            'title' => 'Covering theorems for hyperbolic 3-manifolds',
+                            'author' => 'Canary, R. D.',
+                            'editor' => 'K. Johannson',
+                            'volume' => '1992',
+                            'booktitle' => 'Low-Dimensional Topology, Knoxville',
+                            'publisher' => 'International Press',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{K2-11} Ahlfors, L. (1966). Fundamental polyhedrons and limit sets of Kleinian groups. Proc. Nat. Acad. Sci. U.S.A. Vol. 55, 251-254.  ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '1966',
+                            'pages' => '251-254',
+                            'title' => 'Fundamental polyhedrons and limit sets of {K}leinian groups',
+                            'author' => 'Ahlfors, L.',
+                            'volume' => '55',
+                            'journal' => 'Proc. Nat. Acad. Sci. U.S.A.',
+                            ]
+                    ],
+                    [
+                        'source' => 'A. V. Knyazev, {\em Toward the optimal preconditioned eigensolver: Locally optimal block preconditioned conjugated gradient method}, SIAM J. Sci. Comput.,{\bf 23} (2001), pp. 517-541. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '2001',
+                            'pages' => '517-541',
+                            'volume' => '23',
+                            'title' => 'Toward the optimal preconditioned eigensolver: Locally optimal block preconditioned conjugated gradient method',
+                            'author' => 'A. V. Knyazev',
+                            'journal' => 'SIAM J. Sci. Comput.',
+                            ]
+                    ],
+                    [
+                        'source' => 'G. L. G. Sleijpen and H.A. van der Vorst, {\em A Jacobi-Davidson iteration method for linear eigenvalue problems}, SIAM J. Matrix Anal. Appl.,{\bf 17}(1996), pp. 401-425. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'year' => '1996',
+                            'pages' => '401-425',
+                            'volume' => '17',
+                            'title' => 'A Jacobi-Davidson iteration method for linear eigenvalue problems',
+                            'author' => 'G. L. G. Sleijpen and H. A. van der Vorst',
+                            'journal' => 'SIAM J. Matrix Anal. Appl.',
+                            ]
+                    ],                                        
+                                        
                 ];
 
             DB::statement('DELETE FROM examples');

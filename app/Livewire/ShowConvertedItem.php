@@ -33,7 +33,7 @@ class ShowConvertedItem extends Component
     public $displayState;
     public $status;
     public $correctness = 0;
-    public $errorReportExists;
+    public $correctionExists;
     public $priorReportExists;
     public $correctionsEnabled;
 
@@ -50,13 +50,13 @@ class ShowConvertedItem extends Component
         $this->displayState = 'none';
 
         $this->correctionsEnabled = true;
-        $this->errorReportExists = false;
+        $this->correctionExists = false;
         $this->priorReportExists = false;
 
         /*
         if ($errorReport) {
             $this->form->reportTitle = $errorReport->title;
-            $this->errorReportExists = true;    
+            $this->correctionExists = true;    
             $this->priorReportExists = true;
             $errorReportCommentByOtherExists = ErrorReportComment::where('error_report_id', $errorReport->id)
                 ->where('user_id', '!=', Auth::user()->id)
@@ -66,7 +66,7 @@ class ShowConvertedItem extends Component
             }
         } else {
             $this->form->reportTitle = '';
-            $this->errorReportExists = false;
+            $this->correctionExists = false;
             $this->priorReportExists = false;
         }
         */
@@ -148,8 +148,12 @@ class ShowConvertedItem extends Component
         if ($output->item_type_id != $this->itemTypeId) {
             $changes = true;
         } else {
-            foreach ($output->item as $name => $content) {
-                if ($content != $this->form->$name) {
+            //foreach ($output->item as $name => $content) {
+            foreach ($this->fields as $field) {
+                if ((isset($output->item[$field]) && $output->item[$field] != $this->form->$field)
+                        ||
+                        (! isset($output->item[$field]) && !empty($this->form->$field))
+                    ) {
                     $changes = true;
                     break;
                 }
@@ -186,49 +190,52 @@ class ShowConvertedItem extends Component
 
             $inputs = $this->form->except('comment');
 
-            // Restrict to fields relevant to the item_type that are not empty
+            // Restrict to fields relevant to the item_type
             $item = [];
             foreach ($inputs as $name => $content) {
-                if (in_array($name, $itemType->fields) && $content) {
+                if (in_array($name, $itemType->fields)) {
                     $this->form->{$name} = $content;
-                    $item[$name] = $content;
+                    if (!empty($content)) {
+                        $item[$name] = $content;
+                        $this->convertedItem['item']->$name = $content;                    
+                    } else {
+                        unset($this->convertedItem['item']->$name);
+                    }                    
                 }
             }
 
             // Update entry in database
             $output->update(['item' => $item]);
 
-            // Update $this->convertedItem['item'] fields
-            foreach ($item as $name => $content) {
-                $this->convertedItem['item']->$name = $content;
-            }
-
             $this->itemTypeId = $output->item_type_id;
             $this->fields = $itemType->fields;
 
+            $this->correctionExists = true;
+
             // File report
-            $newErrorReport = ErrorReport::updateOrCreate(
-                ['output_id' => $output->id],
-            );
-            $this->errorReportExists = true;
+            if ($this->form->postReport) {
+                $newErrorReport = ErrorReport::updateOrCreate(
+                    ['output_id' => $output->id],
+                );
 
-            if ($this->priorReportExists) {
-                if ($this->form->comment) {
-                    $errorReportComment->update([
-                        'comment_text' => $this->form->comment
+                if ($this->priorReportExists) {
+                    if ($this->form->comment) {
+                        $errorReportComment->update([
+                            'comment_text' => $this->form->comment
+                        ]);
+                    } elseif ($errorReportComment) {
+                        $errorReportComment->delete();
+                    }
+                } elseif ($this->form->comment) {
+                    ErrorReportComment::create([
+                        'error_report_id' => $newErrorReport->id,
+                        'user_id' => Auth::user()->id,
+                        'comment_text' => strip_tags($this->form->comment),
                     ]);
-                } elseif ($errorReportComment) {
-                    $errorReportComment->delete();
                 }
-            } elseif ($this->form->comment) {
-                ErrorReportComment::create([
-                    'error_report_id' => $newErrorReport->id,
-                    'user_id' => Auth::user()->id,
-                    'comment_text' => strip_tags($this->form->comment),
-                ]);
-            }
 
-            $this->errorReport = $newErrorReport;
+                $this->errorReport = $newErrorReport;
+            }
 
             $this->status = 'changes';
             $this->displayState = 'none';

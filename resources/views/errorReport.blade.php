@@ -31,53 +31,55 @@
                 </x-dd>
             </dl>
 
+            @php
+                $rawOutput = $errorReport->output->rawOutput;
+                $output = $errorReport->output;
+            @endphp
             @if ($errorReport->output->item_type_id == $errorReport->output->rawOutput->item_type_id)
-                @php
-                    $rawOutput = $errorReport->output->rawOutput;
-                    $output = $errorReport->output;
-                @endphp
                 <dl>
                     <x-dt>BibTeX fields</x-dt>
                     <x-dd>
-                        @foreach ($output->itemType->fields as $fieldName)
+                        <span>{{ '@' }}{{ $output->itemType->name }}</span>{{ '{' }}
+                            @foreach ($output->itemType->fields as $fieldName)
                             @php
                                 $outputContent = ($output->item)[$fieldName] ?? null;
                                 $rawOutputContent = ($rawOutput->item)[$fieldName] ?? null;
                             @endphp
-                            <ul class="ml-0">
+                            <ul class="ml-4">
                                 @if ($outputContent != $rawOutputContent)
-                                    <li>{{ $fieldName }} = <span class="text-red-600">{{ $rawOutputContent }}</span> &nbsp;&rarr;&nbsp; <span class="text-green-700">{{ $outputContent }}</span></li>
+                                    <li>{{ $fieldName }} = <span class="text-red-600">{{ $rawOutputContent ?: '[null]' }}</span> &nbsp;&rarr;&nbsp; <span class="text-green-700">{{ $outputContent }}</span></li>
                                 @elseif ($rawOutputContent)
                                     <li>{{ $fieldName }} = {{ $rawOutputContent }}</li>
                                 @endif
                             </ul>
                         @endforeach
+                        {{ '}' }}
                     </x-dd>
                 </dl>
             @else
                 <dl>
                     <x-dt>BibTeX entry created by script</x-dt>
                     <x-dd>
-                        @if ($errorReport->output->rawOutput)
-                            <span class="text-red-600">{{ '@' }}{{ $errorReport->output->rawOutput->itemType->name }}</span>{
-                                <ul class="ml-0">
-                                @foreach ($errorReport->output->rawOutput->fields as $field)
-                                    <li>{{ $field->itemField->name }} = {{ '{' }}{{ $field->content }}{{ '}' }}</li>
+                        @if ($rawOutput)
+                            <span class="text-red-600">{{ '@' }}{{ $rawOutput->itemType->name }}</span>{
+                                <ul class="ml-4">
+                                @foreach ($rawOutput->item as $name => $field)
+                                    <li>{{ $name }} = {{ '{' }}{{ $field }}{{ '}' }}</li>
                                 @endforeach
                                 </ul>
-                                }
+                                {{ '}' }}
                         @endif
                     </x-dd>
 
                     <x-dt>Corrected BibTeX entry</x-dt>
                     <x-dd>
-                        <span class="text-green-700">{{ '@' }}{{ $errorReport->output->itemType->name }}</span>{
-                            <ul class="ml-0">
-                            @foreach ($errorReport->output->fields as $field)
-                                <li>{{ $field->itemField->name }} = {{ '{' }}{{ $field->content }}{{ '}' }}</li>
+                        <span class="text-green-700">{{ '@' }}{{ $output->itemType->name }}</span>{
+                            <ul class="ml-4">
+                            @foreach ($output->item as $name => $field)
+                                <li>{{ $name }} = {{ '{' }}{{ $field }}{{ '}' }}</li>
                             @endforeach
                             </ul>
-                            }
+                            {{ '}' }}
                     </x-dd>
 
                     @if ($errorReport->comment)
