@@ -2162,7 +2162,7 @@ class ExampleSeeder extends Seeder
                             ]
                     ],
                     [
-                        'source' => '2009 *+ | Prieto, G. A., J. F. Lawrence, and G. C. Beroza, Anelastic Earth structure from the coherency of the Ambient seismic field, \textit{J. Geophys. Res}., 114, B07202, doi:10.1029/2008JB006067 ',
+                        'source' => '2009 *+ | Prieto, G. A., J. F. Lawrence, and G. C. Beroza, Anelastic Earth structure from the coherency of the Ambient seismic field, \textit{J. Geophys. Res.}, 114, B07202, doi:10.1029/2008JB006067 ',
                         'type' => 'article',
                         'bibtex' => [
                             'doi' => '10.1029/2008JB006067',
