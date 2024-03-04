@@ -612,11 +612,11 @@ class Converter
         $remainder = ltrim($remainder, '., ');
         $this->verbose("[type] Remainder: " . $remainder);
         
-        $inStart = $containsIn = $italicStart = $containsBoldface = $containsEditors = $containsThesis = false;
+        $inStart = $containsIn = $italicStart = $containsEditors = $containsThesis = false;
         $containsNumber = $containsInteriorVolume = $containsCity = $containsPublisher = false;
         $containsEdition = $containsWorkingPaper = false;
         $containsNumberedWorkingPaper = $containsNumber = $pubInfoStartsWithForthcoming = $pubInfoEndsWithForthcoming = false;
-        $containsVolume = $endsWithInReview = false;
+        $endsWithInReview = false;
         $containsDigitOutsideVolume = true;
         $containsNumberDesignation = false;
         $cityLength = 0;
@@ -652,7 +652,6 @@ class Converter
         if (preg_match($this->volRegExp1, $remainder, $matches)) {
             $match = $matches[0];
             if ($match) {
-                $containsVolume = true;
                 $this->verbose("Contains a volume designation.");
                 $remainderMinusVolume = $this->findAndRemove($remainder, $this->volRegExp0);
                 $containsDigitOutsideVolume = Str::contains($remainderMinusVolume, range('0','9'));
@@ -727,11 +726,6 @@ class Converter
         if ($this->isProceedings($testString)) {
             $containsProceedings = true;
             $this->verbose("Contains a string suggesting conference proceedings.");
-        }
-
-        if ($this->containsFontStyle($remainder, false, 'bold', $startPos, $length)) {
-            $containsBoldface = true;
-            $this->verbose("Contains string in boldface.");
         }
 
         if (preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)) {
