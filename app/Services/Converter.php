@@ -221,10 +221,6 @@ class Converter
     //   'details': array of text lines
     public function convertEntry(string $rawEntry, Conversion $conversion): array|null
     {
-        // $aspell = Aspell::create();
-        // 'john' and 'martin' and 'smith' are in dictionary all lowercase
-        // $x = iterator_count($aspell->check('Melissa John Robert Celia john harold martin Carolyn', ['en_US']));
-
         $warnings = $notices = [];
         $this->detailLines = [];
         $this->itemType = null;
