@@ -3112,7 +3112,6 @@ class Converter
                     // $word ends in comma or semicolon and next word is not string for editors
                     if ($hasAnd) {
                         $this->verbose('[convertToAuthors 16]');
-                        //dd($words[$i+1], $words[$i+2], $this->isInitials($words[$i + 2]), $this->getYear($words[$i + 3], $trash, $trash2));
                         // $word ends in comma or semicolon and 'and' has already occurred
                         // To cover the case of a last name containing a space, look ahead to see if next words
                         // are initials or year.  If so, add back comma taken off above and continue.  Else done.
@@ -3969,22 +3968,18 @@ class Converter
             $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
             $this->setField($item, 'pages', str_replace(['---', '--'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
             $remainder = '';
-//            dd($matches);
         } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
             $this->setField($item, 'pages', str_replace(['---', '--'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5');
             $remainder = '';
-//          dd($matches);
         } elseif (preg_match('/^' . $volumeWordRx . $punc1 . $numberWordRx . '$/', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
             $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 5');
             $remainder = '';
-//        dd($matches);
         } elseif (preg_match('/^' . $volumeWordLetterRx . $punc1 . $pagesRx . '$/', $remainder, $matches)) {
                $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
                $this->setField($item, 'pages', str_replace(['---', '--'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5');
                $remainder = '';
-//         dd($matches);
         } else {
             // If none of the common patterns fits, fall back on approach that first looks for a page range then
             // uses the method getVolumeAndNumberForArticle to figure out the volume and number, if any
