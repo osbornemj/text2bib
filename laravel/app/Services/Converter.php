@@ -826,10 +826,6 @@ class Converter
                 $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [1]";
             }
         } elseif (($containsPageRange || $containsInteriorVolume) && ! $containsProceedings && ! $containsPublisher && ! $containsCity) {
-            /* $commaCount criterion doesn't seem to be useful
-              if($commaCount < 6) $itemKind = 'article';
-              else $itemKind = 'incollection';
-            */
             $this->verbose("Item type case 6");
             $itemKind = 'article';
             if (!$this->itemType && !$itemKind) {
