@@ -44,7 +44,7 @@ return [
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
-            'verify_peer' => false,  // added to fix 'unable to verify certificate' error on production system
+            'verify_peer' => false,  // added to fix 'unable to verify certificate' error on production
         ],
 
         'ses' => [
