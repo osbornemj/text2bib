@@ -44,7 +44,7 @@ class Kernel extends ConsoleKernel
             $input['item_count'] = Output::whereDate('created_at', $input['stat_date'])->count();
             Statistic::create($input);
         })
-        ->daily()
+        ->dailyAt('12:00') // not at midnight, to avoid timezone difference between cron job time and created_at times.
         ->emailOutputOnFailure(config('app.job_failure_email'));
     }
 
