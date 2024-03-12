@@ -2,6 +2,10 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
+        <div style="display: none;">
+            <input id="empty" type="text" size="32" maxlength="32" class="form-control" name="empty" >
+        </div>
+        
         <!-- First name -->
         <div>
             <x-input-label for="first_name" :value="__('First name')" class="mt-6" />

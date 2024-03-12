@@ -4,8 +4,9 @@ namespace App\Livewire;
 
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\ErrorReport;
 use App\Models\ErrorReportComment;
-
+use App\Notifications\ErrorReportCommentPosted;
 use Livewire\Component;
 use Livewire\Attributes\Rule;
 
@@ -37,5 +38,12 @@ class ErrorFeedback extends Component
 
         $this->comment = '';
         $this->comments = $this->comments->push($comment);
+
+        // Notify user who posted report (if different from user)
+        $errorReport = ErrorReport::find($errorReportId);
+        $reportUser = $errorReport->output->conversion->user;
+        if ($reportUser->id != $user->id) {
+            $reportUser->notify(new ErrorReportCommentPosted($errorReport));
+        }
     }
 }

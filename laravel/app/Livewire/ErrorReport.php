@@ -98,8 +98,6 @@ class ErrorReport extends Component
             }
 
             // Change $output according to user's entries
-            // $output->item_type_id = $this->itemTypeId;
-            // $output->save();
             $output->update(['item_type_id' => $this->itemTypeId]);
 
             foreach ($output->fields as $field) {
