@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div>
         <div class="px-4 my-4 mb-4 text-gray-600 dark:text-gray-400">
-            {{ __('You have been sent an email message.  (Please check your spam folder if it\'s not in your inbox.)  Click on the link in the message to confirm your email address.') }}
+            {{ __('You have been sent an email message.  (Please check your spam folder if it\'s not in your inbox.  Adding the address noreply@economics.utoronto.ca to your list of contacts will increase the chance messages from this site land in your inbox.)  Click on the link in the message to confirm your email address.') }}
         </div>
 
         @if (session('status') == 'verification-link-sent')
