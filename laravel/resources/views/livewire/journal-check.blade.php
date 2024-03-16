@@ -1,7 +1,7 @@
 <div>
     <x-link href="{{ url('admin/journals/' . $journal->id . '/edit') }}">{{ $journal->name }}</x-link>
 
-    <x-small-button class="ml-1 bg-red-400 dark:bg-red-800" wire:click="delete" wire:confirm="Are you sure you want to delete this journal?">
+    <x-small-button class="ml-1 bg-red-400 dark:bg-red-800" wire:click="delete">
         X
     </x-small-button>
 
