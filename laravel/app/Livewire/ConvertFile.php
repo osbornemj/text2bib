@@ -161,9 +161,9 @@ class ConvertFile extends Component
         }
 
         // If encoding is correct, check for possible item_separator error
-        if (count($this->nonUtf8Entries) == 0 && count($entries) == 1 && strlen($entries[0]) > 500) {
-                $this->entry = $entries[0];
-                $this->itemSeparatorError = true;
+        if (count($this->nonUtf8Entries) == 0 && count($entries) <= 2 && strlen($entries[0]) > 500) {
+            $this->entry = $entries[0];
+            $this->itemSeparatorError = true;
         }
        
         // If item_separator and encoding seem correct, perform the conversion
