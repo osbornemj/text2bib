@@ -9,6 +9,11 @@
                 To get started, <x-link href="{{ url('register') }}">register</x-link> if you do not have an account, or <x-link href="{{ url('login') }}">log</x-link> in if you do.
             </p>
         @endif
+
+        <p class="mb-4">
+            Explanatory video    (5:45): <x-link href="https://youtu.be/uDYHszzWhfk" target="_blank">https://youtu.be/uDYHszzWhfk</x-link>
+        </p>
+
         <p class="mb-4">
             You upload a <b>plain text</b> file using the <b>utf-8</b> encoding that <i>either</i> has the references separated by blank lines, like this
         </p>

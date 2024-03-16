@@ -13,12 +13,10 @@ class ErrorReportCommentPosted extends Notification
 {
     use Queueable;
 
-    public $errorReport;
-
     /**
      * Create a new notification instance.
      */
-    public function __construct(ErrorReport $errorReport)
+    public function __construct(public ErrorReport $errorReport)
     {
         $this->errorReport = $errorReport;
     }
