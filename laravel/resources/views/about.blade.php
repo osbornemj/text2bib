@@ -16,6 +16,10 @@
         <x-paragraph class="mt-4">
             While the current version of the system has many improvements relative to the previous one, a few little-used features of the previous system are not currently supported.  For example, the script no longer attempts to support languages other than English (the support in the previous version was very incomplete) and only the utf-8 character encoding is supported.
         </x-paragraph>
+        <x-paragraph class="mt-4">
+            The source code is available on Github: <x-link href="https://github.com/osbornemj/text2bib">https://github.com/osbornemj/text2bib</x-link>.
+        </x-paragraph>
+
     </div>
 
 </x-app-layout>
