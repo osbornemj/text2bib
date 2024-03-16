@@ -3,7 +3,7 @@
 
 If you want to convert a file of references to BibTeX format, go to
 
-https://text2bib.economics.utoronto.ca
+https://text2bib.org
 
 where an implementation of this system is publicly available.
 
@@ -13,22 +13,28 @@ If you want to install the system on your own server, fork or clone the reposito
 
 ## Installation
 
-- Create the database tables:
+Create the database tables:
 ```
 php artisan migrate
 ```
 
-- Seed the database:
+Seed the database:
 ```
 php artisan db:seed DatabaseSeeder
 ```
 
-- Seed the examples:
+Seed the examples:
 ```
 php artisan db:seed ExampleSeeder
 ```
 
-- Register as a user and then update the `is_admin` field in the `users` table for your user to 1, making you an administrator of the system.
+Register as a user and then update the `is_admin` field in the `users` table for your user to 1, making you an administrator of the system.
+
+Set up a cron job to run the Laravel task scheduler.
+
+Install `npm` and run `npm run dev`.
+
+Install `aspell`.
 
 ## Code
 
@@ -50,4 +56,4 @@ If you would like to modify the Converter to deal with a reference that is not c
 
 ## License
 
-This project, including Laravel framework, is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project, including the Laravel framework, is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
