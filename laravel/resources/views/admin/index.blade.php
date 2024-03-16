@@ -46,6 +46,9 @@
                 <x-link :href="route('journals.index')" :active="request()->routeIs('journals.index')">
                     Journals
                 </x-link>
+                @if ($uncheckedJournalCount)
+                    <span class="bg-red-500 text-xs px-1">{{ $uncheckedJournalCount }}</span>
+                @endif
                 (journal names, based on conversions marked as correct by users and approved by administrator)
             </p>
             <p>
@@ -58,12 +61,18 @@
                 <x-link :href="route('publishers.index')" :active="request()->routeIs('publishers.index')">
                     Publishers
                 </x-link>
+                @if ($uncheckedPublisherCount)
+                    <span class="bg-red-500 text-xs px-1">{{ $uncheckedPublisherCount }}</span>
+                @endif
                 (publishing companies, base on conversions marked as correct by users and approved by administrator)
             </p>
             <p>
                 <x-link :href="route('cities.index')" :active="request()->routeIs('cities.index')">
                     Publication cities
                 </x-link>
+                @if ($uncheckedCityCount)
+                    <span class="bg-red-500 text-xs px-1">{{ $uncheckedCityCount }}</span>
+                @endif
                 (cities in which publishers are located, for the <code>address</code> field of a book)
             </p>
             <p>

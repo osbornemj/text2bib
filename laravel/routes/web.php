@@ -4,6 +4,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CitiesController;
 use App\Http\Controllers\Admin\ConversionAdminController;
 use App\Http\Controllers\Admin\DictionaryNamesController;
@@ -87,7 +88,9 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         '/admin/journals' => JournalsController::class,
     ]);
 
-    Route::view('/admin/index', 'admin.index')->name('admin.index');
+    Route::controller(AdminController::class)->group(function () {
+        Route::get('/admin/index', 'index')->name('admin.index');
+    });
 
     Route::controller(ConversionAdminController::class)->group(function () {
         Route::get('/admin/showConversion/{conversionId}', 'showConversion')->name('admin.showConversion');
