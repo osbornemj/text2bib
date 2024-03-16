@@ -2,7 +2,7 @@
 
     <div class="px-4 sm:px-4 lg:px-4">
         <p class="my-4">
-            This site allows you to convert a text file of references to a BibTeX file.
+            This site allows you to convert a text file of references to a <x-link href="https://economics.utoronto.ca/osborne/latex/BIBTEX.HTM" target="_blank">BibTeX file</x-link>.
         </p>
         @if (!$user)
             <p class="mb-4">
