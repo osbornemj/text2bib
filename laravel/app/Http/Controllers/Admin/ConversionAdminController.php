@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Conversion;
 use App\Models\ItemType;
 use App\Models\Output;
+use App\Models\UserFile;
 
 use App\Traits\AddLabels;
 
@@ -47,18 +48,28 @@ class ConversionAdminController extends Controller
 
         // Put fields in uniform order
         $convertedItems = [];
+        $originalItems = [];
         foreach ($outputs as $i => $output) {
             $fields = $output->itemType->fields;
             foreach ($fields as $field) {
                 if (isset($output->item[$field])) {
                     $convertedItems[$i][$field] = $output->item[$field];
                 }
+                if ($output->rawOutput && isset($output->rawOutput->item[$field])) {
+                    $originalItems[$i][$field] = $output->rawOutput->item[$field];
+                }
             }
         }
 
         $conversion = Conversion::find($conversionId);
 
-        return view('admin.conversions.show', compact('outputs', 'convertedItems', 'conversion'));
+        return view('admin.conversions.show', compact('outputs', 'convertedItems', 'originalItems', 'conversion'));
+    }
+
+    public function downloadSource(int $userFileId)
+    {
+        $userFile = UserFile::find($userFileId);
+        return Storage::download('public/files/' . $userFile->user_id . '-' . $userFileId . '-source.txt');
     }
 
     // Converts entries in exising file according to parameters of Conversion with id = $conversionId.

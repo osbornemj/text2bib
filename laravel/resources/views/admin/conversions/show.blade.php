@@ -15,12 +15,12 @@
                 @endif
                 {{ $conversion->created_at }}
                 &nbsp;&bull;&nbsp;
+                <x-link href="{{ url('admin/downloadSource/' . $conversion->user_file_id) }}">source file</x-link>
+                <br/>
                 sep = {{ $conversion->item_separator}}
                 &nbsp;&bull;&nbsp;
-                first = {{ $conversion->first_component }}
-                &nbsp;&bull;&nbsp;
                 labels = {{ $conversion->label_style }}
-                <br/>
+                &nbsp;&bull;&nbsp;
                 line endings = {{ $conversion->line_endings }}
                 &nbsp;&bull;&nbsp;
                 {{ $conversion->char_encoding }}
@@ -68,7 +68,7 @@
                         @endif
 
                         {{ '@' }}{{ $output->rawOutput->itemType->name }}{{ '{' }}{{ $output->rawOutput->label }},
-                        @foreach ($output->rawOutput->item as $name => $content)
+                        @foreach ($originalItems[$i] as $name => $content)
                             <div class="ml-6">
                                 {{ $name }} = {{ '{' }}{{ $content }}{{ '}' }},
                             </div>
