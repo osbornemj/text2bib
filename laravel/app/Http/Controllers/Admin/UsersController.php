@@ -14,7 +14,7 @@ class UsersController extends Controller
         $users = User::withCount('conversions')
             ->orderBy('last_name')
             ->orderBy('first_name')
-            ->paginate(config('constants.items_page'));
+            ->paginate(50);
 
         return view('admin.users.index')->with('users', $users);
     }
