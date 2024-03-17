@@ -1,7 +1,7 @@
 <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Profile Information') }}
+            {{ __('Profile information') }}
         </h2>
 
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
@@ -13,7 +13,7 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-4 space-y-4">
         @csrf
         @method('patch')
 
@@ -24,7 +24,7 @@
         </div>
 
         <div>
-            <x-input-label for="middle_name" :value="__('Middle name')" />
+            <x-input-label for="middle_name" :value="__('Middle name/initial')" />
             <x-text-input id="middle_name" name="middle_name" type="text" class="mt-1 block w-full" :value="old('middle_name', $user->middle_name)" autocomplete="middle name" />
             <x-input-error class="mt-2" :messages="$errors->get('middle_name')" />
         </div>

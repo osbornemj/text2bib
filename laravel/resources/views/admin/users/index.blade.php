@@ -5,6 +5,10 @@
         </h2>
     </x-slot>
 
+    <div class="px-4 mb-2">
+        {{ $users->total() }} found
+    </div>
+
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="px-4 sm:px-4 sm:rounded-lg">
             <!-- Grid wrapper -->

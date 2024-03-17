@@ -34,7 +34,7 @@ class ConversionAdminController extends Controller
         $conversions = Conversion::orderByDesc('created_at')
             ->with('user')
             ->withCount('outputs')
-            ->paginate(config('constants.items_page'));
+            ->paginate(50);
 
         return view('admin.conversions.index', compact('conversions'));
     }
@@ -46,24 +46,17 @@ class ConversionAdminController extends Controller
                     ->orderBy('seq')
                     ->get();
 
-        // Put fields in uniform order
-        $convertedItems = [];
-        $originalItems = [];
-        foreach ($outputs as $i => $output) {
-            $fields = $output->itemType->fields;
-            foreach ($fields as $field) {
-                if (isset($output->item[$field])) {
-                    $convertedItems[$i][$field] = $output->item[$field];
-                }
-                if ($output->rawOutput && isset($output->rawOutput->item[$field])) {
-                    $originalItems[$i][$field] = $output->rawOutput->item[$field];
-                }
-            }
-        }
-
         $conversion = Conversion::find($conversionId);
 
-        return view('admin.conversions.show', compact('outputs', 'convertedItems', 'originalItems', 'conversion'));
+        return view('admin.conversions.show', compact('outputs', 'conversion'));
+    }
+
+    public function destroy(int $conversionId)
+    {
+        $conversion = Conversion::find($conversionId);
+        $conversion->delete();
+
+        return back();
     }
 
     public function downloadSource(int $userFileId)

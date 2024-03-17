@@ -20,6 +20,13 @@
                     <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id) }}">convert (line sep)</x-link>
                     &nbsp;&bull;&nbsp;
                     <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id . '/cr') }}">convert (cr sep)</x-link>
+                    <form method="post" action="{{ url('/admin/conversion/' . $conversion->id) }}" class="inline-flex">
+                        @csrf
+                        @method('delete')
+                        <x-danger-button class="ml-2 pb-1 pt-1 pl-1 pr-1 text-xs" onclick="return confirm('Are you sure you want to delete this conversion?');">
+                            {{ __('Delete') }}
+                        </x-danger-button>
+                    </form>
                     <br/>
                     <div class="ml-4">
                         @if ($conversion->user)
