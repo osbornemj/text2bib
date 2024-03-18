@@ -2646,7 +2646,7 @@ class ExampleSeeder extends Seeder
                             ]
                     ],
                     [
-                        'source' => 'Otto Nathan, Heinx Norden, [ed.]. Einstein on Peace.Schocken Books, New York, 1960. ',
+                        'source' => 'Otto Nathan, Heinz Norden, [ed.]. Einstein on Peace.Schocken Books, New York, 1960. ',
                         'type' => 'book',
                         'bibtex' => [
                             'editor' => 'Otto Nathan and Heinz Norden',
