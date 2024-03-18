@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e79234ecad68c418cbb55a536ca5d402",
+    "content-hash": "a0beb64c0919ef6801b33508639c889e",
     "packages": [
         {
             "name": "brick/math",
@@ -1044,6 +1044,68 @@
                 }
             ],
             "time": "2023-12-03T19:50:20+00:00"
+        },
+        {
+            "name": "icehouse-ventures/laravel-chartjs",
+            "version": "v1.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/icehouse-ventures/laravel-chartjs.git",
+                "reference": "a0bb14aaaa0e4245dbbc97142541ed2dad13a6b4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/icehouse-ventures/laravel-chartjs/zipball/a0bb14aaaa0e4245dbbc97142541ed2dad13a6b4",
+                "reference": "a0bb14aaaa0e4245dbbc97142541ed2dad13a6b4",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^5.1|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+                "php": ">=5.6.4"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.13",
+                "orchestra/testbench": "^8.19",
+                "pestphp/pest": "^2.30",
+                "pestphp/pest-plugin-laravel": "^2.2",
+                "phpstan/phpstan": "^1.10"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "IcehouseVentures\\LaravelChartjs\\Providers\\ChartjsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "IcehouseVentures\\LaravelChartjs\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Icehouse Ventures",
+                    "email": "tech@icehouseventures.co.nz"
+                }
+            ],
+            "description": "Simple package to facilitate and automate the use of charts in Laravel using the Chart.js library",
+            "keywords": [
+                "chartjs",
+                "charts",
+                "graphs",
+                "icehouseventures",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/icehouse-ventures/laravel-chartjs/issues",
+                "source": "https://github.com/icehouse-ventures/laravel-chartjs/tree/v1.0.7"
+            },
+            "time": "2024-03-11T09:21:38+00:00"
         },
         {
             "name": "laravel/breeze",

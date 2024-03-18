@@ -2655,8 +2655,55 @@ class ExampleSeeder extends Seeder
                             'address' => 'New York',
                             'publisher' => 'Schocken Books',
                             ]
-                    ],                                                            
-                                        
+                    ],
+                    [
+                        'source' => '\bibitem{} Ahmed, Fahad. 2022. ``Syrian refugee children in Turkey and coronavirus disease 2019: A close-up view.’’ \textit{Journal of Global Health} 12. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8889378/}. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'url' => 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8889378/}',
+                            'author' => 'Ahmed, Fahad',
+                            'year' => '2022',
+                            'title' => 'Syrian refugee children in Turkey and coronavirus disease 2019: A close-up view',
+                            'journal' => 'Journal of Global Health',
+                            'volume' => '12',
+                            ]
+                    ],
+                    [
+                        'source' => 'Kajuth, F., & Schmidt, T. (2011). Seasonality in house prices. SSRN Working Paper 2785400 ',
+                        'type' => 'techreport',
+                        'bibtex' => [
+                            'author' => 'Kajuth, F. and Schmidt, T.',
+                            'title' => 'Seasonality in house prices',
+                            'year' => '2011',
+                            'number' => '2785400',
+                            'institution' => 'SSRN',
+                            'type' => 'Working Paper',
+                            ]
+                    ],
+                    [
+                        'source' => 'Keiser J, Maltese MF, Erlanger TE, Bos R, Tanner M, et al. (2005) Effect of irrigated rice agriculture on Japanese encephalitis, including challenges and opportunities for integrated vector management. Acta Trop 95: 40–57 ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Keiser, J. and Maltese, M. F. and Erlanger, T. E. and Bos, R. and Tanner, M. and others',
+                            'title' => 'Effect of irrigated rice agriculture on Japanese encephalitis, including challenges and opportunities for integrated vector management',
+                            'year' => '2005',
+                            'journal' => 'Acta Trop',
+                            'volume' => '95',
+                            'pages' => '40-57',
+                            ]
+                    ],
+                    [
+                        'source' => 'Singh AK, Kharya P, Agarwal V, Singh S, Singh NP, Jain PK, et al. Japanese encephalitis in Uttar Pradesh, India: A situational analysis. J Family Med Prim Care 2020;9:3716-21.). ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Singh, A. K. and Kharya, P. and Agarwal, V. and Singh, S. and Singh, N. P. and Jain, P. K. and others',
+                            'title' => 'Japanese encephalitis in Uttar Pradesh, India: A situational analysis',
+                            'year' => '2020',
+                            'journal' => 'J Family Med Prim Care',
+                            'pages' => '3716-21',
+                            'volume' => '9',
+                            ]
+                    ],                                                                                                    
                 ];
 
             DB::statement('DELETE FROM examples');

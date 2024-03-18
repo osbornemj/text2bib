@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StatisticsController;
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CitiesController;
@@ -58,6 +59,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/errorReports', 'index')->name('errorReports');
         Route::get('/errorReport/{id}', 'show')->name('errorReport');
         Route::get('/convertErrorSource/{id}', 'convertSource')->name('convertErrorSource');
+    });
+
+    Route::controller(StatisticsController::class)->group(function () {
+        Route::get('/statistics', 'index')->name('statistics');
     });
 
     Route::resources([
