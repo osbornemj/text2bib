@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
+use Illuminate\Support\Facades\Storage;
+
 class Conversion extends Model
 {
     use HasFactory;
@@ -43,5 +45,14 @@ class Conversion extends Model
     public function correctnessCounts(): Collection
     {
         return $this->hasMany(Output::class)->pluck('correctness')->countBy()->sortKeys();
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function (Conversion $conversion) {
+            Storage::disk('public')->delete('files/' . $conversion->user_id . '-' . $conversion->user_file_id . '-source.txt');
+        });
     }
 }

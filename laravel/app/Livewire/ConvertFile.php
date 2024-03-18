@@ -84,54 +84,61 @@ class ConvertFile extends Component
     }
     */
 
-    public function submit(int $reConversionId = null): void
+    public function submit(bool $redo = false): void
     {
-        // $conversionId is set if user is re-doing a conversion
-        // that had 'line' as item_separator but should have 'cr'.
-        if ($reConversionId) {
-            $conversion = Conversion::find($reConversionId);
-            $conversion->update(['item_separator' => 'cr']);
-        } else {
-            $this->uploadForm->validate();
+        // When a user clicks the link to resubmit a file on the page item-separator-error.blade.php,
+        // *first* the form on the page file-upload-form.blade.php is submitted, *then* the form on the 
+        // page item-separator-error.blade.php, with $redo = true, is submitted.  (Why does that happen?)
+        // Thus in the case that the item-separator-error page is reached, the existing Conversion
+        // (and with it the associated file) is deleted.  When the button on the item-separator-error
+        // form is pressed, the file is again uploaded and deleted, then the form on the item-separator-error
+        // page executes submit(true), which uploads the file once again, creates a new Conversion and
+        // sets line_endings to 'cr', and does the conversion.
+        // There must be a better way to handle this case --- perhaps by showing and hiding the divs on
+        // convert-file.blade.php rather than using @includes?
+        
+        $this->uploadForm->validate();
 
-            $file = $this->uploadForm->file;
+        $file = $this->uploadForm->file;
 
-            // Write file to user_files table
-            $sourceFile = new UserFile;
-            $sourceFile->user_id = Auth::id();
-            $sourceFile->file_type = $file->getClientMimeType();
-            $sourceFile->file_size = $file->getSize();
-            $sourceFile->original_filename = $file->getClientOriginalName();
-            $sourceFile->type = 'SRC';
-            $sourceFile->save();
+        // Write file to user_files table
+        $sourceFile = new UserFile;
+        $sourceFile->user_id = Auth::id();
+        $sourceFile->file_type = $file->getClientMimeType();
+        $sourceFile->file_size = $file->getSize();
+        $sourceFile->original_filename = $file->getClientOriginalName();
+        $sourceFile->type = 'SRC';
+        $sourceFile->save();
 
-            // Store file
-            $file->storeAs(
-                'files',
-                Auth::id() . '-' . $sourceFile->id . '-source.txt',
-                'public',
+        // Store file
+        $file->storeAs(
+            'files',
+            Auth::id() . '-' . $sourceFile->id . '-source.txt',
+            'public',
+        );
+
+        // Get settings and save them if requested
+        $settingValues = $this->uploadForm->except('file');
+
+        if ($this->uploadForm->save_settings) {
+            $userSetting = UserSetting::firstOrNew( 
+                ['user_id' => Auth::id()]
             );
-
-            // Get settings and save them if requested
-            $settingValues = $this->uploadForm->except('file');
-
-            if ($this->uploadForm->save_settings) {
-                $userSetting = UserSetting::firstOrNew( 
-                    ['user_id' => Auth::id()]
-                );
-                $userSetting->fill($settingValues);
-                $userSetting->save();
-            }
-
-            $settingValues['user_file_id'] = $sourceFile->id;
-            unset($settingValues['save_settings']);
-
-            // Create Conversion
-            $conversion = new Conversion;
-            $conversion->fill($settingValues);
-            $conversion->user_id = Auth::id();
-            $conversion->save();
+            $userSetting->fill($settingValues);
+            $userSetting->save();
         }
+
+        $settingValues['user_file_id'] = $sourceFile->id;
+        unset($settingValues['save_settings']);
+
+        // Create Conversion
+        $conversion = new Conversion;
+        $conversion->fill($settingValues);
+        $conversion->user_id = Auth::id();
+        if ($redo) {
+            $conversion->item_separator = 'cr';
+        }
+        $conversion->save();
 
         $this->conversionId = $conversion->id;
 
@@ -164,6 +171,7 @@ class ConvertFile extends Component
         if (count($this->nonUtf8Entries) == 0 && count($entries) <= 2 && strlen($entries[0]) > 500) {
             $this->entry = $entries[0];
             $this->itemSeparatorError = true;
+            $conversion->delete();
         }
        
         // If item_separator and encoding seem correct, perform the conversion

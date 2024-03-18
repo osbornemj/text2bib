@@ -14,7 +14,7 @@
                 </li>
             </ul>
             <p class="mt-4">
-                <form method="POST" accept="txt" wire:submit="submit({{ $conversionId }})" class="mt-0 space-y-0">
+                <form method="POST" accept="txt" wire:submit="submit(true)" class="mt-0 space-y-0">
                     @csrf
                     <div class="pt-4">
                         <x-primary-button wire:click="submit" class="ml-0">

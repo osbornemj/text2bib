@@ -2604,7 +2604,58 @@ class ExampleSeeder extends Seeder
                             'author' => 'G. L. G. Sleijpen and H. A. van der Vorst',
                             'journal' => 'SIAM J. Matrix Anal. Appl.',
                             ]
-                    ],                                        
+                    ],
+                    [
+                        'source' => 'Aerospace.org. 2023. Brief history of GPS. El Segundo, Ca: Aerospace Corporation. Accessed 11 March 2024 at https://aerospace.org/article/brief-history-gps ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'url' => 'https://aerospace.org/article/brief-history-gps',
+                            'urldate' => '11 March 2024',
+                            'author' => 'Aerospace.org',
+                            'year' => '2023',
+                            'title' => 'Brief history of GPS. El Segundo, Ca: Aerospace Corporation',
+                            ]
+                    ],
+                    [
+                        'source' => 'Allen, D.E., Singh, B.P. and Dalal, R.C. 2011. Soil health indicators under climate change: a review of current knowledge. p. 25-45. In: Soil Health and Climate Change (B. Singh, A. Cowie, K. Chan, eds). Berlin: Springer. https://doi.org/10.1007/978-3-642-20256-8_2  ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'doi' => '10.1007/978-3-642-20256-8_2',
+                            'author' => 'Allen, D. E. and Singh, B. P. and Dalal, R. C.',
+                            'year' => '2011',
+                            'title' => 'Soil health indicators under climate change: a review of current knowledge',
+                            'pages' => '25-45',
+                            'publisher' => 'Springer',
+                            'address' => 'Heidelberg',
+                            'booktitle' => 'Soil Health and Climate Change',
+                            'editor' => 'B. Singh and A. Cowie and K. Chan',
+                            ]
+                    ],
+                    [
+                        'source' => 'Barrile, V., Simonetti, S., Citroni, R., Fotia, A., and Bilotta, G. 2022. Experimenting agriculture 4.0 with sensors: A data fusion approach between remote sensing, UAVs and self-driving tractors. Sensors 22(20): 7910. https://doi.org/10.3390/s22207910  ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'doi' => '10.3390/s22207910',
+                            'author' => 'Barrile, V. and Simonetti, S. and Citroni, R. and Fotia, A. and Bilotta, G.',
+                            'year' => '2022',
+                            'title' => 'Experimenting agriculture 4.0 with sensors: A data fusion approach between remote sensing, UAVs and self-driving tractors',
+                            'journal' => 'Sensors',
+                            'number' => '20',
+                            'volume' => '22',
+                            'pages' => '7910',
+                            ]
+                    ],
+                    [
+                        'source' => 'Otto Nathan, Norden Heiz, [ed.]. Einstein on Peace.Schocken Books, New York, 1960. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'editor' => 'Otto Nathan, Norden Heiz',
+                            'title' => 'Einstein on Peace',
+                            'year' => '1960',
+                            'address' => 'New York',
+                            'publisher' => 'Schocken Books',
+                            ]
+                    ],                                                            
                                         
                 ];
 
