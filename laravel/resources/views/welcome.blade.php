@@ -2,7 +2,7 @@
 
     <div class="px-4 sm:px-4 lg:px-4">
         <p class="my-4">
-            This site allows you to convert a text file of references to a <x-link href="https://economics.utoronto.ca/osborne/latex/BIBTEX.HTM" target="_blank">BibTeX file</x-link>.
+            This site allows you to convert a text file of references to a <x-link href="https://economics.utoronto.ca/osborne/latex/BIBTEX.HTM" target="_blank">BibTeX file</x-link>.  It is maintained by <x-link href="https://economics.utoronto.ca/osborne" target="_blank">Martin J. Osborne</x-link>.
         </p>
         @if (!$user)
             <p class="mb-4">
@@ -11,7 +11,7 @@
         @endif
 
         <p class="mb-4">
-            Explanatory video    (5:45): <x-link href="https://youtu.be/uDYHszzWhfk" target="_blank">https://youtu.be/uDYHszzWhfk</x-link>
+            An explanatory video (5:45) is available at <x-link href="https://youtu.be/uDYHszzWhfk" target="_blank">https://youtu.be/uDYHszzWhfk</x-link>
         </p>
 
         <p class="mb-4">
