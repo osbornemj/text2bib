@@ -37,7 +37,14 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/', [IndexController::class, 'index'])->name('public.index');
+Route::controller(IndexController::class)->group(function () {
+    Route::get('/', 'index')->name('public.index');
+    Route::get('/about', 'about')->name('about');
+});
+
+Route::controller(StatisticsController::class)->group(function () {
+    Route::get('/statistics', 'index')->name('statistics');
+});
 
 Route::middleware('auth')->group(function () {
     Route::controller(ProfileController::class)->group(function () {
@@ -52,17 +59,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
         Route::get('/convertFile', 'convertFile')->name('convertFile');
         Route::post('/convertFile', 'convertFile')->name('convertFile');
-        Route::get('/about', 'about')->name('about');
     });
 
     Route::controller(ErrorReportController::class)->group(function () {
         Route::get('/errorReports', 'index')->name('errorReports');
         Route::get('/errorReport/{id}', 'show')->name('errorReport');
         Route::get('/convertErrorSource/{id}', 'convertSource')->name('convertErrorSource');
-    });
-
-    Route::controller(StatisticsController::class)->group(function () {
-        Route::get('/statistics', 'index')->name('statistics');
     });
 
     Route::resources([

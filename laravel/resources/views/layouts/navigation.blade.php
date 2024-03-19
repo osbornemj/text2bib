@@ -12,28 +12,37 @@
 
                 <!-- Navigation Links -->
                 @auth
-                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
                         <x-nav-link :href="route('convertFile')" :active="request()->routeIs('convertFile')">
                             {{ __('Convert') }}
                         </x-nav-link>
                     </div>
-                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
                         <x-nav-link :href="route('errorReports')" :active="request()->routeIs('errorReports')">
                             {{ __('Error reports') }}
                         </x-nav-link>
                     </div>
-                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
                         <x-nav-link :href="route('comments')" :active="request()->routeIs('comments')">
                             {{ __('Comments') }}
                         </x-nav-link>
                     </div>
-                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                        <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
-                            {{ __('About') }}
-                        </x-nav-link>
-                    </div>
+                @endauth
+
+                <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
+                    <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
+                        {{ __('About') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
+                    <x-nav-link :href="route('statistics')" :active="request()->routeIs('about')">
+                        {{ __('Statistics') }}
+                    </x-nav-link>
+                </div>
+                
+                @auth
                     @if (Auth::user()->is_admin)
-                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
                         <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
                             {{ __('Admin') }}
                         </x-nav-link>
@@ -106,14 +115,16 @@
         -->
 
         <!-- Responsive Settings Options -->
-        @auth
-            <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+            @auth
                 <div class="px-4">
                     <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
                     <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                 </div>
+            @endauth
 
-                <div class="mt-3 space-y-1">
+            <div class="mt-3 space-y-1">
+                @auth
                     <x-responsive-nav-link :href="route('convertFile')">
                         {{ __('Convert') }}
                     </x-responsive-nav-link>
@@ -125,11 +136,17 @@
                     <x-responsive-nav-link :href="route('comments')">
                         {{ __('Comments') }}
                     </x-responsive-nav-link>
+                @endauth
 
-                    <x-responsive-nav-link :href="route('about')">
-                        {{ __('About') }}
-                    </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('about')">
+                    {{ __('About') }}
+                </x-responsive-nav-link>
 
+                <x-responsive-nav-link :href="route('statistics')">
+                    {{ __('Statistics') }}
+                </x-responsive-nav-link>
+
+                @auth
                     @if (Auth::user()->is_admin)
                         <x-responsive-nav-link :href="route('admin.index')">
                             {{ __('Admin') }}
@@ -150,9 +167,10 @@
                             {{ __('Log out') }}
                         </x-responsive-nav-link>
                     </form>
-                </div>
+                @endauth
             </div>
-        @else
+        </div>
+
         <div class="mt-3 space-y-1">
             <x-responsive-nav-link :href="route('login')">
                 {{ __('Log in') }}
@@ -161,6 +179,6 @@
             <x-responsive-nav-link :href="route('register')">
                 {{ __('Register') }}
             </x-responsive-nav-link>
-        @endauth
+        </div>
     </div>
 </nav>
