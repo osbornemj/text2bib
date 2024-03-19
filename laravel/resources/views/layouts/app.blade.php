@@ -11,6 +11,17 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZL39M7E8WF"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-ZL39M7E8WF');
+        </script>
+        
     </head>
     <body class="font-sans antialiased max-w-4xl mx-auto bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
         <div class="min-h-screen">
