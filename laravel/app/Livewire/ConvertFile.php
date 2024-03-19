@@ -96,7 +96,7 @@ class ConvertFile extends Component
         // sets line_endings to 'cr', and does the conversion.
         // There must be a better way to handle this case --- perhaps by showing and hiding the divs on
         // convert-file.blade.php rather than using @includes?
-        
+
         $this->uploadForm->validate();
 
         $file = $this->uploadForm->file;
@@ -159,8 +159,13 @@ class ConvertFile extends Component
         $this->nonUtf8Entries = [];
 
         // Check for utf-8
-        foreach ($entries as $entry) {
-            if (!mb_check_encoding($entry)) {
+        foreach ($entries as $i => $entry) {
+            $encoding = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1'], true);
+            if ($encoding == 'ISO-8859-1') {
+                $entries[$i] = mb_convert_encoding($entry, 'UTF-8', 'ISO-8859-1');
+//                dump($entry);
+            } elseif ($encoding != 'UTF-8') {
+//            if (!mb_check_encoding($entry)) {
                 // Need to convert to UTF-8 because Livewire uses json encoding
                 // (and will crash if non-utf-8 string is passed to it)
                 $this->nonUtf8Entries[] = mb_convert_encoding($entry, "UTF-8");

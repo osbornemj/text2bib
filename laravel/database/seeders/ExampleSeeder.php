@@ -2703,7 +2703,31 @@ class ExampleSeeder extends Seeder
                             'pages' => '3716-21',
                             'volume' => '9',
                             ]
-                    ],                                                                                                    
+                    ],
+                    [
+                        'source' => 'Akomea-Frimpong, I., Tenakwah, E.S., Tenakwah, E.J. and Amponsah, M. (2022) Corporate governance and performance of pension funds in Ghana: A mixed-method study. International Journal of Financial Studies, 10(3), p.52. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Akomea-Frimpong, I. and Tenakwah, E. S. and Tenakwah, E. J. and Amponsah, M.',
+                            'title' => 'Corporate governance and performance of pension funds in Ghana: A mixed-method study',
+                            'journal' => 'International Journal of Financial Studies',
+                            'year' => '2022',
+                            'volume' => '10',
+                            'number' => '3',
+                            'pages' => '52',
+                            ]
+                    ],
+                    [
+                        'source' => 'Haider, A. J., Jameel, Z. N. \& Al-Hussaini, I. H. Review on: Titanium dioxide applications. \textit{Energy Procedia} \textbf{157}, 17–29 (2019). ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Haider, A. J. and Jameel, Z. N. and Al-Hussaini, I. H. Review on: Titanium dioxide applications',
+                            'title' => 'Energy Procedia',
+                            'year' => '2019',
+                            'journal' => '157',
+                            'pages' => '17-29',
+                            ]
+                    ],                                                                                                                        
                 ];
 
             DB::statement('DELETE FROM examples');

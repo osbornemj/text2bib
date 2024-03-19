@@ -1,6 +1,6 @@
 <x-app-layout>
 
-<div style="width:75%;">
+<div style="width:100%;">
     {!! $chartjs->render() !!}
 </div>
 
