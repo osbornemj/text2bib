@@ -154,6 +154,8 @@ class ConvertFile extends Component
 
         // Create array of entries
         $entries = explode($entrySeparator, $filestring);
+        // Remove empty entries and entries that are "\n"
+        $entries = array_filter($entries, fn($value) => ! empty($value) && $value != "\n");
 
         $this->itemSeparatorError = false;
         $this->nonUtf8Entries = [];
