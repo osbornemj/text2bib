@@ -7,27 +7,39 @@
     </div>
     <div class="mt-2">
 
+        User:
         @if ($output->correctness == -1)
             @if ($output->rawOutput)
                 <span class="bg-blue-600">Corrected</span>
-            @else
-                <x-basic-button wire:click="setCorrectness(1)" class="bg-red-500 dark:bg-red-400">
-                {{ __('Incorrect') }}
-            </x-basic-button>
             @endif
         @elseif ($output->correctness == 1) 
-            <x-basic-button wire:click="setCorrectness(-1)" class="bg-emerald-600 dark:bg-emerald-300">
-                {{ __('Correct') }}
-            </x-basic-button>
+            <span class="bg-emerald-600 dark:bg-emerald-300">Correct</span>
         @else
-            <x-basic-button wire:click="setCorrectness(1)" class="bg-slate-600 dark:bg-slate-300">
-                {{ __('Correct') }}
-            </x-basic-button>
-            <x-basic-button wire:click="setCorrectness(-1)" class="bg-slate-600 dark:bg-slate-300">
-                {{ __('Incorrect') }}
-            </x-basic-button>
+            <span class="bg-slate-600 dark:bg-slate-600">Unrated</span>
         @endif
+
         <br/>
+
+        Admin:
+        @if ($output->admin_correctness == -1)
+            <x-medium-button wire:click="setCorrectness(1)" class="bg-red-500 dark:bg-red-400">
+                {{ __('Incorrect') }}
+            </x-medium-button>
+        @elseif ($output->admin_correctness == 1) 
+            <x-medium-button wire:click="setCorrectness(-1)" class="p-0 bg-emerald-600 dark:bg-emerald-300">
+                {{ __('Correct') }}
+            </x-medium-button>
+        @else
+            <x-medium-button wire:click="setCorrectness(1)" class="bg-slate-600 dark:bg-slate-300">
+                {{ __('Correct') }}
+            </x-medium-button>
+            <x-medium-button wire:click="setCorrectness(-1)" class="bg-slate-600 dark:bg-slate-300">
+                {{ __('Incorrect') }}
+            </x-medium-button>
+        @endif
+
+        <br/>
+        
         {{ '@' }}{{ $output->itemType->name }}{{ '{' }}{{ $output->label }},
         @foreach ($convertedItem as $name => $content)
             <div class="ml-6">

@@ -36,7 +36,7 @@ class AdminConvertedItem extends Component
 
     public function setCorrectness($value)
     {
-        $this->output->correctness = $value;
+        $this->output->admin_correctness = $value;
         $this->output->save();
 
         if ($value == 1) {
