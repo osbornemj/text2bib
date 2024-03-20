@@ -2727,7 +2727,33 @@ class ExampleSeeder extends Seeder
                             'journal' => '157',
                             'pages' => '17-29',
                             ]
-                    ],                                                                                                                        
+                    ],
+                    [
+                        'source' => '﻿Dhirani, Lubna Luxmi, Noorain Mukhtiar, Bhawani Shankar Chowdhry, y Thomas Newe. 2023. «Ethical Dilemmas and Privacy Issues in Emerging Technologies: A Review.» Sensors 23, 1151. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Dhirani, Lubna Luxmi and Noorain Mukhtiar and Bhawani Shankar Chowdhry and Thomas Newe',
+                            'title' => 'Ethical Dilemmas and Privacy Issues in Emerging Technologies: A Review.',
+                            'journal' => 'Sensors',
+                            'year' => '2023',
+                            'volume' => '23',
+                            'pages' => '1151',
+                            ]
+                    ],
+                    [
+                        'source' => 'Friedman, Batya, Peter Kahn, y Alan Borning. 2006. «Value Sensitive Design and Information Systems.» En Human-Computer Interaction in Management Information Systems: Foundations, de P. Zhang y D. Galletta (Eds.), 1-27. New York: M.E. Sharpe, Inc:. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'author' => 'Friedman, Batya and Peter Kahn and Alan Borning',
+                            'title' => 'Value Sensitive Design and Information Systems',
+                            'year' => '2006',
+                            'pages' => '1-27',
+                            'booktitle' => 'Human-Computer Interaction in Management Information Systems: Foundations',
+                            'editor' => 'P. Zhang and D. Galletta',
+                            'publisher' => 'M. E. Sharpe, Inc.',
+                            'address' => 'New York',
+                            ]
+                    ],                                                                                                                                                                
                 ];
 
             DB::statement('DELETE FROM examples');
