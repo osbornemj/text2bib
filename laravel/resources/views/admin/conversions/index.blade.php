@@ -12,8 +12,15 @@
                 <li>
                     <x-link href="{{ url('/admin/showConversion/' . $conversion->id) }}">Conversion</x-link>
                     &nbsp;&bull;&nbsp;
-                    {{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}:
+                    {{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}
+                    &nbsp;&bull;&nbsp;
+                    user
                     @foreach ($conversion->correctnessCounts() as $key => $value)
+                        <span class="@if ($key == -1) bg-red-500 @elseif ($key == 1) bg-emerald-500 @else bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
+                    @endforeach
+                    &nbsp;&bull;&nbsp;
+                    admin
+                    @foreach ($conversion->adminCorrectnessCounts() as $key => $value)
                         <span class="@if ($key == -1) bg-red-500 @elseif ($key == 1) bg-emerald-500 @else bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
                     @endforeach
                     &nbsp;&bull;&nbsp;

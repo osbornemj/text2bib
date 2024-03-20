@@ -47,6 +47,11 @@ class Conversion extends Model
         return $this->hasMany(Output::class)->pluck('correctness')->countBy()->sortKeys();
     }
 
+    public function adminCorrectnessCounts(): Collection
+    {
+        return $this->hasMany(Output::class)->pluck('admin_correctness')->countBy()->sortKeys();
+    }
+
     public static function boot()
     {
         parent::boot();
