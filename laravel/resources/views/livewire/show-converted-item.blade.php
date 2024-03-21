@@ -66,7 +66,7 @@
 
     </div>
 
-    @if ($status == 'changes') 
+    @if ($correctness == 2) 
         <button class="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest focus:outline-none transition ease-in-out duration-150 bg-blue-500">Corrected</button>
     @else
         @if ($correctness == 1)
@@ -96,6 +96,11 @@
         <div style="display: block;" id="text1{{ $outputId }}">
     @endif
 
+        @if ($correctness == 2)
+            <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Edit your correction</a>
+        @endif
+
+        {{--
         @if ($correctionExists)
             @if ($correctionsEnabled)
                 <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Edit your correction</a>
@@ -103,10 +108,9 @@
                 Your conversion error report can no longer be edited because someone has commented on it.
             @endif
         @else
-            {{--
             <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="showForm">Correct entry and optionally report conversion error</a>
-            --}}
         @endif
+        --}}
     </div>
 
     <div style="display:{{ $displayState }};" class="dark:bg-slate-600 bg-slate-300 p-4 mt-4" id="reportForm{{ $outputId }}">
@@ -159,7 +163,7 @@
         </form>                                            
     </div>
 </div>
-</div>
+
 
 
 

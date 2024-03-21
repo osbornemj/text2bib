@@ -32,7 +32,7 @@ class ShowConvertedItem extends Component
 
     public $displayState;
     public $status;
-    public $correctness = 0;
+    public $correctness;
     public $correctionExists;
     public $priorReportExists;
     public $correctionsEnabled;
@@ -49,6 +49,8 @@ class ShowConvertedItem extends Component
 
         $this->displayState = 'none';
 
+        $output = Output::find($this->outputId);
+        $this->correctness = $output->correctness;
         $this->correctionsEnabled = true;
         $this->correctionExists = false;
         $this->priorReportExists = false;
@@ -148,7 +150,6 @@ class ShowConvertedItem extends Component
         if ($output->item_type_id != $this->itemTypeId) {
             $changes = true;
         } else {
-            //foreach ($output->item as $name => $content) {
             foreach ($this->fields as $field) {
                 if ((isset($output->item[$field]) && $output->item[$field] != $this->form->$field)
                         ||
@@ -239,10 +240,9 @@ class ShowConvertedItem extends Component
 
             $this->status = 'changes';
             $this->displayState = 'none';
-            // correctness set to 0 because then 'correct' and 'incorrect' buttons are neutral,
-            // and 'corrected' button appears because 'status' is 'changes'.
-            $this->correctness = 0;
-            $output->update(['correctness' => -1]);
+            // correctness = 2 for item that has been corrected
+            $this->correctness = 2;
+            $output->update(['correctness' => 2]);
 
             $this->insertPublisherJournalCity($output);
         }

@@ -15,6 +15,7 @@ use App\Models\Name;
 use App\Models\Publisher;
 use App\Models\VonName;
 
+use App\Traits\MakeScholarTitle;
 use App\Traits\Stopwords;
 
 use PhpSpellcheck\Spellchecker\Aspell;
@@ -84,6 +85,7 @@ class Converter
     var $workingPaperNumberRegExp;
 
     use Stopwords;
+    use MakeScholarTitle;
 
     public function __construct()
     {
@@ -2111,8 +2113,7 @@ class Converter
 
         $item->title = $this->requireUc($item->title);
 
-        $scholarTitle = str_replace(' ', '+', $item->title);
-        $scholarTitle = str_replace(["'", '"', "{", "}", "\\"], "", $scholarTitle);
+        $scholarTitle = $this->makeScholarTitle($item->title);
 
         $returner = [
             'source' => $originalEntry,

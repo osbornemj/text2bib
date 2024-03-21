@@ -2729,7 +2729,7 @@ class ExampleSeeder extends Seeder
                             ]
                     ],
                     [
-                        'source' => '﻿Dhirani, Lubna Luxmi, Noorain Mukhtiar, Bhawani Shankar Chowdhry, y Thomas Newe. 2023. «Ethical Dilemmas and Privacy Issues in Emerging Technologies: A Review.» Sensors 23, 1151. ',
+                        'source' => 'Dhirani, Lubna Luxmi, Noorain Mukhtiar, Bhawani Shankar Chowdhry, y Thomas Newe. 2023. «Ethical Dilemmas and Privacy Issues in Emerging Technologies: A Review.» Sensors 23, 1151. ',
                         'type' => 'article',
                         'bibtex' => [
                             'author' => 'Dhirani, Lubna Luxmi and Noorain Mukhtiar and Bhawani Shankar Chowdhry and Thomas Newe',
@@ -2753,7 +2753,20 @@ class ExampleSeeder extends Seeder
                             'publisher' => 'M. E. Sharpe, Inc.',
                             'address' => 'New York',
                             ]
-                    ],                                                                                                                                                                
+                    ],
+                    [
+                        'source' => 'Kruger, J., & Dunning, D. (2009). Unskilled and unaware of it: How difficulties in recognizing one\'s own incompetence lead to inflated self-assessments. In Advances in Experimental Social Psychology (Vol. 41, pp. 1–70). Academic Press. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'author' => 'Kruger, J. and Dunning, D.',
+                            'year' => '2009',
+                            'title' => 'Unskilled and unaware of it: How difficulties in recognizing one\'s own incompetence lead to inflated self-assessments',
+                            'pages' => '1-70',
+                            'volume' => '41',
+                            'publisher' => 'Academic Press',
+                            'booktitle' => 'Advances in Experimental Social Psychology',
+                            ]
+                    ],                                                                                                                                                                                    
                 ];
 
             DB::statement('DELETE FROM examples');

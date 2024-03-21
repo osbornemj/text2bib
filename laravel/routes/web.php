@@ -59,6 +59,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
         Route::get('/convertFile', 'convertFile')->name('convertFile');
         Route::post('/convertFile', 'convertFile')->name('convertFile');
+        Route::get('/conversions', 'conversions')->name('conversions');
+        Route::get('/showConversion/{id}', 'showConversion')->name('showConversion');
+        Route::get('/downloadSource/{userFileId}', 'downloadSource')->name('downloadSource');
     });
 
     Route::controller(ErrorReportController::class)->group(function () {

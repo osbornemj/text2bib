@@ -33,6 +33,7 @@ class ConvertFile extends Component
     private Converter $converter;
 
     public $conversionExists = false;
+    public $conversionCount;
 
     public $convertedItems;
     public $conversionId;
@@ -71,6 +72,9 @@ class ConvertFile extends Component
         foreach ($defaults as $setting => $default) {
             $this->uploadForm->$setting = $userSettings ? $userSettings->$setting : $default;
         }
+
+        $user = Auth::user();
+        $this->conversionCount = $user->conversions->count();
     }
 
     /*
