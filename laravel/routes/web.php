@@ -103,13 +103,13 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     });
 
     Route::controller(ConversionAdminController::class)->group(function () {
-        Route::get('/admin/showConversion/{conversionId}', 'showConversion')->name('admin.showConversion');
+        Route::get('/admin/showConversion/{conversionId}/{page}', 'showConversion')->name('admin.showConversion');
         Route::get('/admin/convert/{fileId}/{itemSeparator?}', 'convert')->name('admin.convert');
         Route::get('/admin/conversions', 'index')->name('admin.conversions');
         Route::get('/admin/formatExample/{outputId}', 'formatExample')->name('admin.formatExample');
         Route::get('/admin/downloadSource/{userFileId}', 'downloadSource')->name('admin.downloadSource');
         Route::delete('/admin/conversion/{conversionId}', 'destroy')->name('admin.conversion.destroy');
-        Route::get('/admin/conversionExamined/{conversionId}', 'examined')->name('admin.conversion.examined');
+        Route::get('/admin/conversionExamined/{conversionId}/{page}', 'examined')->name('admin.conversion.examined');
         Route::get('/admin/conversionUnexamined/{conversionId}', 'unexamined')->name('admin.conversion.unexamined');
     });
 

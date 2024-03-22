@@ -17,6 +17,7 @@ use App\Models\UserFile;
 use App\Traits\AddLabels;
 
 use App\Services\Converter;
+use Illuminate\Support\Facades\Request;
 
 class ConversionAdminController extends Controller
 {
@@ -39,7 +40,7 @@ class ConversionAdminController extends Controller
         return view('admin.conversions.index', compact('conversions'));
     }
 
-    public function showConversion(int $conversionId): View
+    public function showConversion(int $conversionId, int $page): View
     {
         $outputs = Output::where('conversion_id', $conversionId)
                     ->with('itemType')
@@ -48,7 +49,7 @@ class ConversionAdminController extends Controller
 
         $conversion = Conversion::find($conversionId);
 
-        return view('admin.conversions.show', compact('outputs', 'conversion'));
+        return view('admin.conversions.show', compact('outputs', 'conversion', 'page'));
     }
 
     public function destroy(int $conversionId)
@@ -59,12 +60,12 @@ class ConversionAdminController extends Controller
         return back();
     }
 
-    public function examined(int $conversionId)
+    public function examined(int $conversionId, int $page)
     {
         $conversion = Conversion::find($conversionId);
         $conversion->update(['examined_at' => now()]);
 
-        return back();
+        return redirect('admin/conversions?page=' . $page . '#' . $conversionId);
     }
 
     public function unexamined(int $conversionId)

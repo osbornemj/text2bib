@@ -10,7 +10,8 @@
             <ul>
             @foreach ($conversions as $conversion)
                 <li>
-                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id) }}">Conversion</x-link>
+                    <a name="{{ $conversion->id }}"></a>
+                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/' . $conversions->currentPage()) }}">Conversion</x-link>
                     &nbsp;&bull;&nbsp;
                     {{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}
                     &nbsp;&bull;&nbsp;

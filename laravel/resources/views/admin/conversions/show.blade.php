@@ -2,7 +2,9 @@
 
     <div class="sm:px-0 pt-4 space-y-6">
         <div class="px-4 pt-0 sm:rounded-lg">
-                <x-link href="{{ url('admin/conversions') }}">All conversions</x-link>
+                All conversions: <x-link href="{{ url('admin/conversions?page=' . $page) }}">current page</x-link>
+                &nbsp;&bull;&nbsp;
+                <x-link href="{{ url('admin/conversions') }}">first page</x-link>
         </div>
     </div>
 
@@ -37,7 +39,7 @@
                     [<x-link href="{{ url('admin/conversionUnexamined/' . $conversion->id) }}">remove</x-link>]
                 </div>
                 @else
-                    <x-link href="{{ url('admin/conversionExamined/' . $conversion->id) }}">Record conversion examined</x-link>
+                    <x-link href="{{ url('admin/conversionExamined/' . $conversion->id . '/' . $page) }}">Record conversion examined</x-link>
                 @endif
             </div>
 
