@@ -136,13 +136,13 @@ class Converter
 
         $this->articleRegExp = 'article [0-9]*';
 
-        $this->edsRegExp1 = '/\([Ee]ds?\.?\)|\([Ee]ditors?\)/';
+        $this->edsRegExp1 = '/[\(\[][Ee]ds?\.?[\)\]]|[\(\[][Ee]ditors?[\)\]]/';
         $this->edsRegExp2 = '/ed(\.|ited) by/i';
         $this->edsRegExp3 = '/[Ee]ds?\.|^[Ee]ds?\.| [Ee]ditors?/';
-        $this->edsRegExp4 = '/( [Ee]ds?[\. ]|\([Ee]ds?\.?\)| [Ee]ditors?| \([Ee]ditors?\))/';
-        $this->editorStartRegExp = '/^\(?[Ee]dited by|^\(?[Ee]ds?\.?|^\([Ee]ditors?/';
-        $this->editorEndRegExp = '\(?eds?\.?\)?$|\(?editors?\)?$';
-        $this->editorRegExp = '( eds?[\. ]|\(eds?\.?\)| editors?| \(editors?\))';
+        $this->edsRegExp4 = '/( [Ee]ds?[\. ]|[\(\[][Ee]ds?\.?[\)\]]| [Ee]ditors?| [\(\[][Ee]ditors?[\)\]])/';
+        $this->editorStartRegExp = '/^[\(\[]?[Ee]dited by|^[\(\[]?[Ee]ds?\.?|^[\(\[][Ee]ditors?/';
+        $this->editorEndRegExp = '[\(\[]?eds?\.?[\)\]]?$|[\(\[]?editors?[\)\]]?$';
+        $this->editorRegExp = '( eds?[\. ]|[\(\[]eds?\.?[\)\]]| editors?| [\(\[]editors?[\)\]])';
 
         $this->editionRegExp = '(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh) (rev\. |revised )?(ed\.|edition)';
 
@@ -373,8 +373,12 @@ class Converter
                 }
                 $remainder = Str::before($remainder, $matches[0]);
             } else {
-                $urlPlus = $this->extractLabeledContent($remainder, '', 'https?://\S+ ?.*$');
-                $url = trim(Str::before($urlPlus, ' '), ',.;');
+                $urlPlus = $this->extractLabeledContent($remainder, '', '(\\\url{)?https?://\S+ ?.*$');
+                if (Str::startsWith($urlPlus, '\url{')) {
+                    $url = rtrim(substr($urlPlus,5), '}');
+                } else {
+                    $url = trim(Str::before($urlPlus, ' '), ',.;');
+                }
                 $afterUrl = (strpos($urlPlus, ' ') !== false) ? Str::after($urlPlus, ' ') : '';
                 if ($afterUrl) {
                     $warnings[] = "[u2] The string \"" . $afterUrl . "\" remains unidentified.";
@@ -1123,9 +1127,10 @@ class Converter
                     $warnings[] = "Pages not found.";
                 }
 
+                $remainder = ltrim($remainder, '., ');
                 // Next case occurs if remainder previously was like "pages 2-33 in ..."
-                if (substr($remainder, 0, 3) == 'in ') {
-                    $remainder = substr($remainder, 3);
+                if (Str::startsWith($remainder, ['in ', 'In ', 'in: ', 'In: '])) {
+                    $remainder = ltrim(substr($remainder, 3));
                 }
                 $this->verbose("[in2] Remainder: " . $remainder);
 
@@ -3184,7 +3189,7 @@ class Converter
       */
     private function isEd(string $string): int
     {
-        preg_match('/^\(?[Ee]d(s?)\.?\)?,?$/', $string, $matches);
+        preg_match('/^[\(\[]?[Ee]d(s?)\.?[\)\]]?[.,]?$/', $string, $matches);
         if (count($matches) == 0) {
             return 0;
         } else {

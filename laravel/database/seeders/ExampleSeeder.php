@@ -2578,7 +2578,7 @@ class ExampleSeeder extends Seeder
                             'title' => 'Fundamental polyhedrons and limit sets of {K}leinian groups',
                             'author' => 'Ahlfors, L.',
                             'volume' => '55',
-                            'journal' => 'Proc. Nat. Acad. Sci. U.S.A.',
+                            'journal' => 'Proc. Nat. Acad. Sci. U. S. A.',
                             ]
                     ],
                     [
@@ -2626,7 +2626,7 @@ class ExampleSeeder extends Seeder
                             'title' => 'Soil health indicators under climate change: a review of current knowledge',
                             'pages' => '25-45',
                             'publisher' => 'Springer',
-                            'address' => 'Heidelberg',
+                            'address' => 'Berlin',
                             'booktitle' => 'Soil Health and Climate Change',
                             'editor' => 'B. Singh and A. Cowie and K. Chan',
                             ]
@@ -2660,7 +2660,7 @@ class ExampleSeeder extends Seeder
                         'source' => '\bibitem{} Ahmed, Fahad. 2022. ``Syrian refugee children in Turkey and coronavirus disease 2019: A close-up view.’’ \textit{Journal of Global Health} 12. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8889378/}. ',
                         'type' => 'article',
                         'bibtex' => [
-                            'url' => 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8889378/}',
+                            'url' => 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8889378/',
                             'author' => 'Ahmed, Fahad',
                             'year' => '2022',
                             'title' => 'Syrian refugee children in Turkey and coronavirus disease 2019: A close-up view',
@@ -2766,7 +2766,33 @@ class ExampleSeeder extends Seeder
                             'publisher' => 'Academic Press',
                             'booktitle' => 'Advances in Experimental Social Psychology',
                             ]
-                    ],                                                                                                                                                                                    
+                    ],
+                    [
+                        'source' => 'Breeding LC, Dixon DL. A bonded provisional fixed prosthesis to be worn after implant surgery. J Prosthet Dent 1995;74(1):114-16. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Breeding, L. C. and Dixon, D. L.',
+                            'title' => 'A bonded provisional fixed prosthesis to be worn after implant surgery',
+                            'year' => '1995',
+                            'journal' => 'J Prosthet Dent',
+                            'volume' => '74',
+                            'number' => '1',
+                            'pages' => '114-16',
+                            ]
+                    ],
+                    [
+                        'source' => 'Berglin GM. A technique for fabricating a fixed provisional prosthesis on osseointegrated fixtures. J Prosthet Dent 1989;61(3):347-8. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Berglin, G. M.',
+                            'title' => 'A technique for fabricating a fixed provisional prosthesis on osseointegrated fixtures',
+                            'year' => '1989',
+                            'journal' => 'J Prosthet Dent',
+                            'volume' => '61',
+                            'number' => '3',
+                            'pages' => '347-8',
+                            ]
+                    ],                                                                                                                                                                                                                            
                 ];
 
             DB::statement('DELETE FROM examples');
