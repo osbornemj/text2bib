@@ -20,6 +20,11 @@
                     Status: <span class="{{ $errorReport->status->color() }}">{{ $errorReport->status->name }}</span>
                 @endif
             </p>
+            @if (Auth::user()->is_admin)
+                <div class="mt-4">
+                    <x-link href="{{ url('admin/formatExample/' . $errorReport->output->id)}}" target="_blank">Format for Examples Seeder</x-link>
+                </div>
+            @endif
             <dl>
                 <x-dt>Source</x-dt>
                 <x-dd>

@@ -2828,6 +2828,20 @@ class ExampleSeeder extends Seeder
                             'volume' => '42',
                             'number' => '01',
                             ]
+                    ],
+                    [
+                        'source' => '\bibitem{fonik4} C. Webber, H. Patel, A. Cunningham, A. Fox, J. Vousden, A. Castles and L. Shapiro, “An experimental comparison of additional training in phoneme awareness, letter-sound knowledge and decoding for struggling beginner readers,”\emph{ British Journal of Educational Psychology,} vol. 94, pp. 282-305, Nov. 2023, doi: https://doi.org/10.1111/bjep.12641. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'doi' => '10.1111/bjep.12641',
+                            'author' => 'C. Webber and H. Patel and A. Cunningham and A. Fox and J. Vousden and A. Castles and L. Shapiro',
+                            'title' => 'An experimental comparison of additional training in phoneme awareness, letter-sound knowledge and decoding for struggling beginner readers',
+                            'year' => '2023',
+                            'month' => 'November',
+                            'journal' => 'Journal of Educational Psychology',
+                            'pages' => '282-305',
+                            'volume' => '94',
+                            ]
                     ],                                                                                                                                                                                                                                                
                 ];
 
