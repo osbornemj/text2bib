@@ -43,7 +43,7 @@
                         {{ $conversion->created_at }}
                         @if ($conversion->examined_at)
                             {{-- using dark: prefix doesn't work on production server here??? --}}
-                            <span class="text-teal-900 bg-emerald-500 ml-2 px-2 text-sm uppercase rounded">Examined {{ $conversion->examined_at }}</span>
+                            <span class="text-black bg-emerald-500 ml-2 px-2 text-sm uppercase rounded">Examined {{ $conversion->examined_at }}</span>
                         @endif
                     </div>
                 </li>
