@@ -59,6 +59,22 @@ class ConversionAdminController extends Controller
         return back();
     }
 
+    public function examined(int $conversionId)
+    {
+        $conversion = Conversion::find($conversionId);
+        $conversion->update(['examined_at' => now()]);
+
+        return back();
+    }
+
+    public function unexamined(int $conversionId)
+    {
+        $conversion = Conversion::find($conversionId);
+        $conversion->update(['examined_at' => null]);
+
+        return back();
+    }
+
     public function downloadSource(int $userFileId)
     {
         $userFile = UserFile::find($userFileId);

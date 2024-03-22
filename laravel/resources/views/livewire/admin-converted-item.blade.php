@@ -15,7 +15,7 @@
         @elseif ($output->correctness == 1) 
             <span class="bg-emerald-600 dark:bg-emerald-300">Correct</span>
         @else
-            <span class="bg-slate-600 dark:bg-slate-600">Unrated</span>
+            <span class="bg-slate-300 dark:bg-slate-600">Unrated</span>
         @endif
 
         <br/>
@@ -30,10 +30,10 @@
                 {{ __('Correct') }}
             </x-medium-button>
         @else
-            <x-medium-button wire:click="setCorrectness(1)" class="bg-slate-600 dark:bg-slate-300">
+            <x-medium-button wire:click="setCorrectness(1)" class="bg-slate-400 dark:bg-slate-300">
                 {{ __('Correct') }}
             </x-medium-button>
-            <x-medium-button wire:click="setCorrectness(-1)" class="bg-slate-600 dark:bg-slate-300">
+            <x-medium-button wire:click="setCorrectness(-1)" class="bg-slate-400 dark:bg-slate-300">
                 {{ __('Incorrect') }}
             </x-medium-button>
         @endif
