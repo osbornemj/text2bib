@@ -321,12 +321,16 @@ class Converter
         // Get doi if any //
         ////////////////////
 
-        $doi = $this->extractLabeledContent($remainder, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._\-]+');
+        $doi = $this->extractLabeledContent(
+            $remainder,
+            ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/',
+            '[^ ]+'
+        );
+
+        // In case item says 'doi: https://...'
+        $doi = Str::replaceStart('https://doi.org/', '', $doi);
 
         if ($doi) {
-            if (!preg_match('/[0-9]+/', $doi)) {
-                $warnings[] = 'The doi appears to be invalid.';
-            }
             $this->setField($item, 'doi', $doi, 'setField 1');
         } else {
             $this->verbose("No doi found.");
@@ -936,7 +940,7 @@ class Converter
                 // Get journal
                 $remainder = ltrim($remainder, '., ');
                 // If there are any commas not preceded by digits and not followed by digits or spaces, add spaces after them
-                $remainder = preg_replace('/[^0-9],([^ 0-9])/', ', $1', $remainder);
+                $remainder = preg_replace('/([^0-9]),([^ 0-9])/', '$1, $2', $remainder);
 
                 if ($journal) {
                     // Remove $journal and any surrounding italics

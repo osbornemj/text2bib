@@ -2838,11 +2838,24 @@ class ExampleSeeder extends Seeder
                             'title' => 'An experimental comparison of additional training in phoneme awareness, letter-sound knowledge and decoding for struggling beginner readers',
                             'year' => '2023',
                             'month' => 'November',
-                            'journal' => 'Journal of Educational Psychology',
+                            'journal' => 'British Journal of Educational Psychology',
                             'pages' => '282-305',
                             'volume' => '94',
                             ]
-                    ],                                                                                                                                                                                                                                                
+                    ],
+                    [
+                        'source' => '[8] X. Zuo et al., “Satellite constellation reconfiguration using surrogate-based optimization,” Journal of Aerospace Engineering, vol. 35, no. 4, 2022. doi:10.1061/(asce)as.1943-5525.0001438  ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'X. Zuo and others',
+                            'title' => 'Satellite constellation reconfiguration using surrogate-based optimization',
+                            'journal' => 'Journal of Aerospace Engineering',
+                            'year' => '2022',
+                            'volume' => '35',
+                            'number' => '4',
+                            'doi' => '10.1061/(asce)as.1943-5525.0001438',
+                            ]
+                    ],                                                                                                                                                                                                                                                                    
                 ];
 
             DB::statement('DELETE FROM examples');
