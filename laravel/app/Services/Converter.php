@@ -156,8 +156,9 @@ class Converter
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})';
         $this->startPagesRegExp = '/^pages |^pp\.?|^p\.|^p /i';
 
-        $this->inRegExp1 = '/^[iI]n:? /';
-        $this->inRegExp2 = '/( [iI]n: |[,.] [Ii]n | in\) )/';
+        // en for Spanish (and French?)
+        $this->inRegExp1 = '/^[iIeE]n:? /';
+        $this->inRegExp2 = '/( [iIeE]n: |[,.] [IiEe]n | [ei]n\) )/';
 
         $this->startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
         $this->forthcomingRegExp = 'forthcoming( at| in)?|in press|accepted( at)?|to appear in';
@@ -2604,7 +2605,8 @@ class Converter
     private function isAnd(string $string): bool
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
-        return mb_strtolower($string) == $this->phrases['and'] || in_array($string, ['\\&', '&']) || $string == 'with';
+        // 'y' is for Spanish
+        return mb_strtolower($string) == $this->phrases['and'] || in_array($string, ['\\&', '&', 'y']) || $string == 'with';
     }
 
     private function getStringBeforeChar(string $string, string $char): string

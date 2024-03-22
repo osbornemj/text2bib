@@ -2741,7 +2741,7 @@ class ExampleSeeder extends Seeder
                             ]
                     ],
                     [
-                        'source' => 'Friedman, Batya, Peter Kahn, y Alan Borning. 2006. «Value Sensitive Design and Information Systems.» En Human-Computer Interaction in Management Information Systems: Foundations, de P. Zhang y D. Galletta (Eds.), 1-27. New York: M.E. Sharpe, Inc:. ',
+                        'source' => 'Friedman, Batya, Peter Kahn, y Alan Borning. 2006. «Value Sensitive Design and Information Systems.» En Human-Computer Interaction in Management Information Systems: Foundations, P. Zhang y D. Galletta (Eds.), 1-27. New York: M.E. Sharpe, Inc:. ',
                         'type' => 'incollection',
                         'bibtex' => [
                             'author' => 'Friedman, Batya and Peter Kahn and Alan Borning',
@@ -2750,7 +2750,7 @@ class ExampleSeeder extends Seeder
                             'pages' => '1-27',
                             'booktitle' => 'Human-Computer Interaction in Management Information Systems: Foundations',
                             'editor' => 'P. Zhang and D. Galletta',
-                            'publisher' => 'M. E. Sharpe, Inc.',
+                            'publisher' => 'M. E. Sharpe, Inc',
                             'address' => 'New York',
                             ]
                     ],
@@ -2792,7 +2792,43 @@ class ExampleSeeder extends Seeder
                             'number' => '3',
                             'pages' => '347-8',
                             ]
-                    ],                                                                                                                                                                                                                            
+                    ],
+                    [
+                        'source' => 'Amazon. (n.d.). How Amazon uses CRM to improve customer service. Retrieved from https://www.salesforce.com/in/crm/what-is-crm/ ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'author' => 'Amazon',
+                            'title' => 'How Amazon uses CRM to improve customer service',
+                            'year' => 'n.d.',
+                            'url' => 'https://www.salesforce.com/in/crm/what-is-crm/',
+                            ]
+                    ],
+                    [
+                        'source' => 'Chen, Q., M. Tyrer, C. D. Hills et al. 2010. Immobilisation of Heavy Metal in Cement-Based Solidification/Stabilisation: A Review. Cement & Concrete Research 40, no. 5: 787–94. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Chen, Q. and M. Tyrer and C. D. Hills and others',
+                            'title' => 'Immobilisation of Heavy Metal in Cement-Based Solidification/Stabilisation: A Review',
+                            'year' => '2010',
+                            'journal' => 'Cement & Concrete Research',
+                            'volume' => '40',
+                            'number' => '5',
+                            'pages' => '787-94',
+                            ]
+                    ],
+                    [
+                        'source' => 'Chen, S. J., L., R., Z. S. Xu, A. A. Khoreshok, H. B. Shao, and F. Feng. 2023. Surface Subsidence Laws of Footwall Coal Seam Mining of Normal Fault Under Different Overburden Strata. Journal of Shandong University of Science & Technology (Natural Science) 42, no. 01: 38–48. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Chen, S. J. L. R. and Z. S. Xu and A. A. Khoreshok and H. B. Shao and F. Feng',
+                            'year' => '2023',
+                            'title' => 'Surface Subsidence Laws of Footwall Coal Seam Mining of Normal Fault Under Different Overburden Strata',
+                            'journal' => 'Journal of Shandong University of Science & Technology (Natural Science)',
+                            'pages' => '38-48',
+                            'volume' => '42',
+                            'number' => '01',
+                            ]
+                    ],                                                                                                                                                                                                                                                
                 ];
 
             DB::statement('DELETE FROM examples');
