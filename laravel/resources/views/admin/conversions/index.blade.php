@@ -42,7 +42,7 @@
                         @endif
                         {{ $conversion->created_at }}
                         @if ($conversion->examined_at)
-                            <span class="bg-teal-200 dark:bg-emerald-500 dark:text-teal-900 text-sm ml-2 px-2 py-0 uppercase rounded">Examined {{ $conversion->examined_at }}</span>
+                            <span class="bg-teal-200 dark:bg-emerald-500 dark:text-teal-900 text-sm ml-2 px-2 py-0 rounded">Examined {{ $conversion->examined_at }}</span>
                         @endif
                     </div>
                 </li>
