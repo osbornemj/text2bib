@@ -33,7 +33,7 @@
                 <br/>
                 @if ($conversion->examined_at)
                 <div class="mt-1">
-                    <span class="inline-block bg-teal-200 text-teal-800 text-xs px-2 py-1 uppercase font-semibold tracking-wide rounded">Examined {{ $conversion->examined_at }}</span> [<x-link href="{{ url('admin/conversionUnexamined/' . $conversion->id) }}">remove</x-link>]
+                    <span class="inline-block bg-teal-200 text-teal-800 dark:bg-teal-200 dark:text-teal-800 text-xs px-2 py-1 uppercase font-semibold tracking-wide rounded">Examined {{ $conversion->examined_at }}</span> [<x-link href="{{ url('admin/conversionUnexamined/' . $conversion->id) }}">remove</x-link>]
                 </div>
                 @else
                     <x-link href="{{ url('admin/conversionExamined/' . $conversion->id) }}">Record conversion examined</x-link>
