@@ -357,15 +357,26 @@ class Converter
 
         // Entry contains "retrieved from http ... <access date>".
         // Assumes URL is at the end of entry.
-        $urlAndAccessDate = $this->extractLabeledContent($remainder, ' [Rr]etrieved from ', 'http\S+( .*)?$');
+        $urlWithAccessDateAfter = $this->extractLabeledContent($remainder, ' [Rr]etrieved from ', 'http\S+( .*)?$');
+        // Dates are between 10 and 17 characters long
+        $labelRegExp = ' [Rr]etrieved (?P<date1>[a-zA-Z0-9 ]{10,17} )?from | [Aa]ccessed (?P<date2>[a-zA-Z0-9 ]{10,17} )?at ';
+        $urlWithAccessDateBefore = $this->extractLabeledContent($remainder, $labelRegExp, 'http[^ ]+$', true);
 
         $accessDate = '';
-        if ($urlAndAccessDate) {
-            if (Str::contains($urlAndAccessDate, ' ')) {
-                $url = trim(Str::before($urlAndAccessDate, ' '), ',.;');
-                $accessDate = trim(Str::after($urlAndAccessDate, ' '), '.');
+        if ($urlWithAccessDateAfter) {
+            if (Str::contains($urlWithAccessDateAfter, ' ')) {
+                $url = trim(Str::before($urlWithAccessDateAfter, ' '), ',.;');
+                $accessDate = trim(Str::after($urlWithAccessDateAfter, ' '), '.');
             } else {
-                $url = trim($urlAndAccessDate);
+                $url = trim($urlWithAccessDateAfter);
+            }
+        } elseif ($urlWithAccessDateBefore) {
+            $url = $urlWithAccessDateBefore['content'];
+            preg_match('/' . $labelRegExp . '/', ' ' . $urlWithAccessDateBefore['label'] . ' ', $matches);
+            if ($matches['date1']) {
+                $accessDate = trim($matches['date1']);
+            } elseif ($matches['date2']) {
+                $accessDate = trim($matches['date2']);
             }
         } else {
             // Entry ends 'http ... " followed by a string including 'retrieve' or 'access' or 'view'
