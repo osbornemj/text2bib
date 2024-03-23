@@ -18,6 +18,10 @@
                 {{ $conversion->created_at }}
                 &nbsp;&bull;&nbsp;
                 <x-link href="{{ url('admin/downloadSource/' . $conversion->user_file_id) }}">source file</x-link>
+                @if ($conversion->version)
+                    &nbsp;&bull;&nbsp;
+                    code version {{ $conversion->version }}
+                @endif
                 <br/>
                 sep = {{ $conversion->item_separator}}
                 &nbsp;&bull;&nbsp;

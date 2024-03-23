@@ -30,7 +30,7 @@ class DownloadBibtexController extends Controller
                     ->get();
 
         return new StreamedResponse(
-            function () use ($outputs, $includeSource, $lineEndings) {
+            function () use ($outputs, $includeSource, $lineEndings, $conversion) {
                 if ($lineEndings == 'w') {
                     $cr = "\r\n";
                 } elseif ($lineEndings == 'l') {
@@ -38,6 +38,12 @@ class DownloadBibtexController extends Controller
                 }
 
                 $handle = fopen('php://output', 'w');
+                $prologue = '% Created ' . $conversion->created_at . ' by https://text2bib.org.';
+                if ($conversion->version) {
+                    $prologue .= ' Algorithm version ' . $conversion->version . '.';
+                }
+                $prologue .= $cr . $cr;
+                fwrite($handle, $prologue);
                 foreach ($outputs as $output) {
                     $item = '';
                     if ($includeSource) {

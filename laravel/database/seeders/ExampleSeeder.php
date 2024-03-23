@@ -2891,6 +2891,16 @@ class ExampleSeeder extends Seeder
                             'volume' => '15',
                             'pages' => '051',
                             ]
+                    ],
+                    [
+                        'source' => 'Alkhawaldeh, F. (2022). False textual information detection, a deep learning approach (Doctoral dissertation, University of York).  ',
+                        'type' => 'phdthesis',
+                        'bibtex' => [
+                            'author' => 'Alkhawaldeh, F.',
+                            'year' => '2022',
+                            'title' => 'False textual information detection, a deep learning approach',
+                            'school' => 'University of York',
+                            ]
                     ],                                                                                                                                                                                                                                                                                                                                
                 ];
 

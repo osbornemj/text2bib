@@ -1,11 +1,16 @@
 <div>
 
-    <h2 class="font-semibold text-xl leading-tight my-4">
+    <h2 class="font-semibold text-xl leading-tight mt-4">
         {{ __('Convert from text to BibTeX') }}
     </h2>
+    <p>
+        <div class="text-sm">
+            Algorithm version {{ $version }}
+        </div>
+    </p>
 
     @if ($conversionCount)
-        <div class="space-y-6 mb-4">
+        <div class="space-y-6 my-4">
             <x-link href="{{ url('conversions') }}">Your previous conversions</x-link>
         </div>
     @endif

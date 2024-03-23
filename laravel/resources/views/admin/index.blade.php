@@ -8,6 +8,13 @@
     <div class="sm:px-4 space-y-6">
         <div class="pt-0">
             <h3 class="font-semibold text-l">
+                Versions
+            </h3>
+            <p>
+                Current: {{ $latestVersion }}.  <x-link href="{{ url('admin/addVersion') }}">Add version</x-link>.
+            </p>
+
+            <h3 class="font-semibold text-l mt-2">
                 Examples
             </h3>
             <p>

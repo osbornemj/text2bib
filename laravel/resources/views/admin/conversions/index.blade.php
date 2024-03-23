@@ -25,9 +25,10 @@
                         <span class="@if ($key == -1) bg-red-500 @elseif ($key == 1) bg-emerald-500 @else bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
                     @endforeach
                     &nbsp;&bull;&nbsp;
-                    <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id) }}">convert (line sep)</x-link>
+                    convert:
+                    <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id) }}">line sep</x-link>
                     &nbsp;&bull;&nbsp;
-                    <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id . '/cr') }}">convert (cr sep)</x-link>
+                    <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id . '/cr') }}">cr sep</x-link>
                     <form method="post" action="{{ url('/admin/conversion/' . $conversion->id) }}" class="inline-flex">
                         @csrf
                         @method('delete')
@@ -42,6 +43,10 @@
                             &nbsp;&bull;&nbsp;
                         @endif
                         {{ $conversion->created_at }}
+                        @if ($conversion->version)
+                            &nbsp;&bull;&nbsp;
+                            {{ $conversion->version }}
+                        @endif
                         @if ($conversion->examined_at)
                             {{-- using dark: prefix doesn't work on production server here??? --}}
                             <span class="text-black bg-emerald-500 ml-2 px-2 text-sm uppercase rounded">Examined {{ $conversion->examined_at }}</span>

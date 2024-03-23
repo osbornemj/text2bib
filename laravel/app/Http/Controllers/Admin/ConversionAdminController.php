@@ -13,7 +13,7 @@ use App\Models\Conversion;
 use App\Models\ItemType;
 use App\Models\Output;
 use App\Models\UserFile;
-
+use App\Models\Version;
 use App\Traits\AddLabels;
 
 use App\Services\Converter;
@@ -91,6 +91,8 @@ class ConversionAdminController extends Controller
             $itemSeparator = 'line';
         }
 
+        $version = Version::latest()->first()->created_at;
+
         $conversion = new Conversion;
         if ($itemSeparator) {
             $conversion->item_separator = $itemSeparator;
@@ -98,6 +100,7 @@ class ConversionAdminController extends Controller
         $conversion->report_type == 'detailed';
         $conversion->user_file_id = $fileId;
         $conversion->user_id = Auth::id();
+        $conversion->version = $version;
         $conversion->save();
 
         // Get file that user uploaded

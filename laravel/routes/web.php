@@ -100,6 +100,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::controller(AdminController::class)->group(function () {
         Route::get('/admin/index', 'index')->name('admin.index');
+        Route::get('/admin/addVersion', 'addVersion')->name('admin.addVersion');
     });
 
     Route::controller(ConversionAdminController::class)->group(function () {

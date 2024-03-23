@@ -19,7 +19,7 @@ use App\Traits\AddLabels;
 use Livewire\Component;
 
 use App\Livewire\Forms\ConvertFileForm;
-
+use App\Models\Version;
 use App\Services\Converter;
 
 class ConvertFile extends Component
@@ -34,6 +34,7 @@ class ConvertFile extends Component
 
     public $conversionExists = false;
     public $conversionCount;
+    public $version;
 
     public $convertedItems;
     public $conversionId;
@@ -75,6 +76,7 @@ class ConvertFile extends Component
 
         $user = Auth::user();
         $this->conversionCount = $user->conversions->count();
+        $this->version = Version::latest()->first()->created_at;
     }
 
     /*
@@ -142,6 +144,7 @@ class ConvertFile extends Component
         if ($redo) {
             $conversion->item_separator = 'cr';
         }
+        $conversion->version = $this->version;
         $conversion->save();
 
         $this->conversionId = $conversion->id;

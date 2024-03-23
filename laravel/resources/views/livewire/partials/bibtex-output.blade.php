@@ -11,6 +11,10 @@
             <div class="mt-4">
                 <p>
                     {{ count($convertedItems) }} {{ Str::plural('item', $convertedItems) }} converted
+                    @if ($version)
+                        &nbsp;&bull;&nbsp;
+                        algorithm version {{ $version }}
+                    @endif
                 </p>
             </div>
             <ul>
