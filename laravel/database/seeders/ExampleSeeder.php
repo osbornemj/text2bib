@@ -2901,7 +2901,33 @@ class ExampleSeeder extends Seeder
                             'title' => 'False textual information detection, a deep learning approach',
                             'school' => 'University of York',
                             ]
-                    ],                                                                                                                                                                                                                                                                                                                                
+                    ],
+                    [
+                        'source' => '[7] Roussille, Hector, Önder Gürcan e Fabien Michel: Agr4bs: A generic multi-agent organizational model for blockchain systems. Big Data and Cognitive Computing, 6(1):1, 2021. 2 ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Roussille, Hector and {\"O}nder G{\"u}rcan and Fabien Michel',
+                            'title' => 'Agr4bs: A generic multi-agent organizational model for blockchain systems',
+                            'year' => '2021',
+                            'journal' => 'Big Data and Cognitive Computing',
+                            'pages' => '1',
+                            'volume' => '6',
+                            'issue' => '1',
+                            ]
+                    ],
+                    [
+                        'source' => ' [41] Almeida, Patrícia Albieri de, Gisela Lobo BP Tartuce e Marina Muniz Rossa Nunes: Quais as razões para a baixa atratividade da docência por alunos do ensino médio? Psicologia Ensino & Formação, 5(2):103–121, 2014. 43 ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Almeida, Patr{\\\'\i}cia Albieri de and Gisela Lobo B. P. Tartuce and Marina Muniz Rossa Nunes',
+                            'title' => 'Quais as raz{\=o}es para a baixa atratividade da doc{\^e}ncia por alunos do ensino m{\\\'e}dio?',
+                            'journal' => 'Psicologia Ensino and Forma\c{c}{\=a}o',
+                            'volume' => '5',
+                            'number' => '2',
+                            'pages' => '103--121',
+                            'year' => '2014',
+                            ]
+                    ],                                                                                                                                                                                                                                                                                                                                                                        
                 ];
 
             DB::statement('DELETE FROM examples');
