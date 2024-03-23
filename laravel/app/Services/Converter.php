@@ -193,10 +193,12 @@ class Converter
 
         $this->bookTitleAbbrevs = ['Proc', 'Amer', 'Conf', 'Cont', 'Sci', 'Int', "Auto", 'Symp'];
 
-        $this->workingPaperRegExp = '(preprint|working paper|discussion paper|technical report|'
+        $this->workingPaperRegExp = '(preprint|working paper|discussion paper|technical report|report no.|'
                 . 'research paper|mimeo|unpublished paper|unpublished manuscript|manuscript|'
                 . 'under review|submitted|in preparation)';
-        $this->workingPaperNumberRegExp = ' (\\\\#|number|no\.?)? ?(\d{1,5}),?';
+        // Working paper number can contain letters and dashes, but must contain at least one digit
+        // (otherwise word following "manuscript" will be matched, for example)
+        $this->workingPaperNumberRegExp = ' (\\\\#|number|no\.?)? ?(?=.*[0-9])([a-zA-Z0-9\-]+),?';
 
         $this->monthsRegExp = 'January|Jan[., ]|February|Feb[., ]|March|Mar[., ]|April|Apr[., ]|May|June|Jun[., ]|July|Jul[., ]|'
                 . 'August|Aug[., ]|September|Sept?[., ]|October|Oct[., ]|November|Nov[., ]|December|Dec[., ]';
@@ -1079,6 +1081,8 @@ class Converter
                 // If string before type, take that to be institution, else take string after number
                 // to be institution---handles both 'CORE Discussion Paper 34' and 'Discussion paper 34, CORE'
                 $type = $workingPaperMatches[1][0] ?? '';
+                // Following line deals with "Report No." case
+                $type = trim(Str::replaceLast(' No.', '', $type));
                 if ($type) {
                     $this->setField($item, 'type', $type, 'setField 27');
                 }

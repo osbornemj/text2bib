@@ -2855,7 +2855,19 @@ class ExampleSeeder extends Seeder
                             'number' => '4',
                             'doi' => '10.1061/(asce)as.1943-5525.0001438',
                             ]
-                    ],                                                                                                                                                                                                                                                                    
+                    ],
+                    [
+                        'source' => '[1] K. Howard and A. Ah, "Large Constellations of Satellites: Mitigating Environmental and Other Effects", Government Accountability Office, Washington, DC, USA, GAO Report No. GAO-22-105166, 2022. ',
+                        'type' => 'techreport',
+                        'bibtex' => [
+                            'author' => 'K. Howard and A. Ah',
+                            'title' => 'Large Constellations of Satellites: Mitigating Environmental and Other Effects',
+                            'year' => '2022',
+                            'number' => 'GAO-22-105166',
+                            'institution' => 'Government Accountability Office, Washington, DC, USA, GAO',
+                            'type' => 'Report',
+                            ]
+                    ],                                                                                                                                                                                                                                                                                        
                 ];
 
             DB::statement('DELETE FROM examples');
