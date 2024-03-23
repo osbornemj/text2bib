@@ -346,7 +346,7 @@ class Converter
 
         if ($eprint) {
             $this->setField($item, 'archiveprefix', 'arXiv', 'setField 2');
-            $this->setField($item, 'eprint', $eprint, 'setField 3');
+            $this->setField($item, 'eprint', rtrim($eprint, '}'), 'setField 3');
         } else {
             $this->verbose("No arXiv info found.");
         }
@@ -391,9 +391,9 @@ class Converter
                 }
                 $remainder = Str::before($remainder, $matches[0]);
             } else {
-                $urlPlus = $this->extractLabeledContent($remainder, '', '(\\\url{)?https?://\S+ ?.*$');
-                if (Str::startsWith($urlPlus, '\url{')) {
-                    $url = rtrim(substr($urlPlus,5), '}');
+                $urlPlus = $this->extractLabeledContent($remainder, '', '(\\\(url|href){)?https?://\S+ ?.*$');
+                if (Str::startsWith($urlPlus, ['\url{', '\href{'])) {
+                    $url = trim(substr($urlPlus, 5), '{}');
                 } else {
                     $url = trim(Str::before($urlPlus, ' '), ',.;');
                 }
@@ -1828,7 +1828,7 @@ class Converter
                 }
 
                 if (!isset($item->booktitle)) {
-                    $this->setField($item, 'booktitle', trim($booktitle, ' .,'), 'setField 58');
+                    $this->setField($item, 'booktitle', trim($booktitle, ' .,('), 'setField 58');
                 }
                 if (!$item->booktitle) {
                     $warnings[] = "Book title not found.";
@@ -2624,8 +2624,8 @@ class Converter
     private function isAnd(string $string): bool
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
-        // 'y' is for Spanish
-        return mb_strtolower($string) == $this->phrases['and'] || in_array($string, ['\\&', '&', 'y']) || $string == 'with';
+        // 'y' is for Spanish, 'et' for French
+        return mb_strtolower($string) == $this->phrases['and'] || in_array($string, ['\\&', '&', 'y', 'et']) || $string == 'with';
     }
 
     private function getStringBeforeChar(string $string, string $char): string
@@ -2828,6 +2828,8 @@ class Converter
 
             $edResult = $this->isEd($word);
 
+            $nextWord = isset($words[$i+1]) ? rtrim($words[$i+1], ',') : null;
+
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
             } elseif ($edResult) {
@@ -2855,8 +2857,8 @@ class Converter
                 break;  // exit from foreach
             } elseif ($determineEnd && $done) {
                 break;  // exit from foreach
-            } elseif ($this->isAnd($word)) {
-                // Word is 'and' or equivalent
+            } elseif ($this->isAnd($word) && ($word != 'et' || ! in_array($nextWord, ['al..', 'al.', 'al']))) {
+                // Word is 'and' or equivalent, and if it is "et" it is not followed by "al".
                 $hasAnd = $prevWordAnd = true;
                 $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName) . ' and');
                 $fullName = '';
@@ -2866,17 +2868,16 @@ class Converter
                 $reason = 'Word is "and" or equivalent';
             } elseif ($word == 'et') {
                 // Word is 'et'
-                $nextWord = rtrim($words[$i+1], ',');
                 $this->verbose('nextWord: ' . $nextWord);
                 if (in_array($nextWord, ['al..', 'al.', 'al'])) {
                     $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
                     array_shift($remainingWords);
                     $remainder = implode(" ", $remainingWords);
+                    $year = $this->getYear($remainder, $remains, $trash);
+                    $remainder = trim($remains);
                     $done = true;
                     $case = 14;
                     $reason = 'Word is "et" and next word is "al." or "al"';
-                } else {
-                    $this->verbose("'et' not followed by 'al' or 'al.', so not sure what to do");
                 }
             } elseif ($determineEnd && substr($word, -1) == '.' && strlen($lettersOnlyWord) > 3
                     && mb_strtolower(substr($word, -2, 1)) == substr($word, -2, 1)) {
@@ -3093,12 +3094,13 @@ class Converter
                 }
 
                 if ($determineEnd && $text = $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after)) {
-                    if (in_array($text, ['et al', 'et al.'])) {
+                    if (in_array($text, ['et al', 'et al.', 'et. al.'])) {
                         $this->verbose('[convertToAuthors 13a]');
                         $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
                         array_shift($remainingWords);
                         array_shift($remainingWords);
                         $remainder = implode(" ", $remainingWords);
+                        //$year = $this->getYear($remainder, $remains, $trash);
                         $done = true;
                         $case = 19;
                     } else {
@@ -3435,6 +3437,14 @@ class Converter
     {
         $year = '';
         $remains = $string;
+
+        if ($start) {
+            if (Str::startsWith($remains, ['(n.d.)', '[n.d.]'])) {
+                $remains = substr($remains, 6);
+                $year = 'n.d.';
+                return $year;
+            }
+        }
 
         // Year can be (1980), [1980], '1980 ', '1980,', '1980.', '1980)', '1980:' or end with '1980' if not at start and
         // (1980), [1980], ' 1980 ', '1980,', '1980.', or '1980)' if at start; instead of 1980, can be of form
@@ -4075,21 +4085,22 @@ class Converter
                 $this->verbose('No number assigned');
             } else {
                 // A letter or sequence of letters is permitted after an issue number
-                $numberOfMatches = preg_match('/(' . $this->volumeRegExp . ')?([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:|;)(' . $this->numberRegExp . ')?( )?(([1-9][0-9]{0,6}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                $numberOfMatches = preg_match('/(' . $this->volumeRegExp . ')?(?P<volume>[1-9][0-9]{0,3})( ?, |\(| | \(|\.|:|;)(?P<numberDesignation>' . $this->numberRegExp . ')?( )?(\()?(?P<number>([0-9]{1,7}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                //dd($matches);
                 if ($numberOfMatches) {
                     $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : '') . (isset($matches[8][0]) ? ', 8: ' . $matches[8][0] : ''));
-                    $this->setField($item, 'volume', $matches[2][0], 'getVolumeAndNumberForArticle 6');
-                    if (strlen($matches[7][0]) < 5) {
-                        $this->setField($item, 'number', $matches[6][0], 'getVolumeAndNumberForArticle 7');
-                        if ($matches[4][0]) {
+                    $this->setField($item, 'volume', $matches['volume'][0], 'getVolumeAndNumberForArticle 6');
+                    if (strlen($matches['number'][0]) < 5) {
+                        $this->setField($item, 'number', $matches['number'][0], 'getVolumeAndNumberForArticle 7');
+                        if ($matches['numberDesignation'][0]) {
                             $containsNumberDesignation = true;
                         }
                     } else {
-                        $this->setField($item, 'note', 'Article ' . $matches[6][0], 'getVolumeAndNumberForArticle 8');
+                        $this->setField($item, 'note', 'Article ' . $matches['number'][0], 'getVolumeAndNumberForArticle 8');
                     }
                     // if a match is empty, [][1] component is -1
                     $take = $matches[1][1] >= 0 ? $matches[1][1] : $matches[2][1];
-                    $drop = $matches[6][1] + strlen($matches[6][0]);
+                    $drop = $matches['number'][1] + strlen($matches['number'][0]);
                     $this->verbose('take: ' . $take . ', drop: ' . $drop);
                 } else {
                     // Look for "vol" etc. followed possibly by volume number and then something other than an issue number
@@ -4116,7 +4127,10 @@ class Converter
                                 $this->setField($item, 'volume', $matches[1], 'getVolumeAndNumberForArticle 14');
                             } else {
                                 // Assume all of $remainder is volume (might be something like '123 (Suppl. 19)')
-                                $this->setField($item, 'volume', trim($remainder, ' ,;'), 'getVolumeAndNumberForArticle 15');
+                                if (! Str::contains($remainder, ['('])) {
+                                    $remainder = rtrim($remainder, ')');
+                                }
+                                $this->setField($item, 'volume', trim($remainder, ' ,;:.'), 'getVolumeAndNumberForArticle 15');
                             }
                             unset($item->number);
                             $take = 0;

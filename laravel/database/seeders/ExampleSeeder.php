@@ -2733,7 +2733,7 @@ class ExampleSeeder extends Seeder
                         'type' => 'article',
                         'bibtex' => [
                             'author' => 'Dhirani, Lubna Luxmi and Noorain Mukhtiar and Bhawani Shankar Chowdhry and Thomas Newe',
-                            'title' => 'Ethical Dilemmas and Privacy Issues in Emerging Technologies: A Review.',
+                            'title' => 'Ethical Dilemmas and Privacy Issues in Emerging Technologies: A Review',
                             'journal' => 'Sensors',
                             'year' => '2023',
                             'volume' => '23',
@@ -2867,7 +2867,31 @@ class ExampleSeeder extends Seeder
                             'institution' => 'Government Accountability Office, Washington, DC, USA, GAO',
                             'type' => 'Report',
                             ]
-                    ],                                                                                                                                                                                                                                                                                        
+                    ],
+                    [
+                        'source' => '\bibitem{AM} Arteaga, J. R. B., and   Malakhaltsev, M. A. {\it A remark on Ricci flow on left invariant metrics.} \href{https://arxiv.org/abs/math/0507473}{	arXiv:math/0507473}. ',
+                        'type' => 'unpublished',
+                        'bibtex' => [
+                            'archiveprefix' => 'arXiv',
+                            'eprint' => 'math/0507473',
+                            'note' => 'https://arxiv.org/abs/math/0507473',
+                            'author' => 'Arteaga, J. R. B. and Malakhaltsev, M. A.',
+                            'title' => 'A remark on Ricci flow on left invariant metrics',
+                            'year' => '',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{DelBarco} Del Barco, V., and San Martin, L. A. B. {\it De Rham 2-Cohomology of Real Flag Manifolds.} Symmetry, Integrability and Geometry: Methods and Applications (SIGMA) 15(051) (2019)',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Del Barco, V. and San Martin, L. A. B.',
+                            'title' => 'De Rham 2-Cohomology of Real Flag Manifolds',
+                            'year' => '2019',
+                            'journal' => 'Symmetry, Integrability and Geometry: Methods and Applications (SIGMA)',
+                            'volume' => '15',
+                            'pages' => '051',
+                            ]
+                    ],                                                                                                                                                                                                                                                                                                                                
                 ];
 
             DB::statement('DELETE FROM examples');
