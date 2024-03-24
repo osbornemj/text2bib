@@ -9,7 +9,7 @@
 
         User:
         @if ($output->correctness == 2)
-            <span class="bg-blue-600 dark:bg-blue-600">Corrected</span>
+            <span class="bg-blue-600">Corrected</span>
         @elseif ($output->correctness == 1) 
             <span class="bg-emerald-600 dark:bg-emerald-300">Correct</span>
         @else
