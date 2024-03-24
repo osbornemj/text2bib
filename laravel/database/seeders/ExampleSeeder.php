@@ -2947,11 +2947,11 @@ class ExampleSeeder extends Seeder
                         'type' => 'inproceedings',
                         'bibtex' => [
                             'author' => 'Acar, G. and Eubank, C. and Englehardt, S. and Juarez, M. and Narayanan, A. and Diaz, C.',
-                            'title' => 'November). The web never forgets: Persistent tracking mechanisms in the wild',
+                            'title' => 'The web never forgets: Persistent tracking mechanisms in the wild',
                             'year' => '2014',
                             'month' => 'November',
                             'pages' => '674-689',
-                            'booktitle' => 'Proceedings of the ACM SIGSAC Conference on Computer and Communications Security',
+                            'booktitle' => 'Proceedings of the 2014 ACM SIGSAC Conference on Computer and Communications Security',
                             ]
                     ],
                     [
@@ -2998,7 +2998,53 @@ class ExampleSeeder extends Seeder
                             'booktitle' => 'AIP Conference Proceedings',
                             ]
                     ],
-                    
+                    [
+                        'source' => 'Kristian Østergaard: Die Antithese Physis/Nomos als rhetorische Problemstellung im Dialog Gorgias. In: Classica et Mediaevalia 50, 1999, 81–96. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Kristian {\O}stergaard',
+                            'title' => 'Die Antithese Physis/Nomos als rhetorische Problemstellung im Dialog Gorgias',
+                            'year' => '1999',
+                            'journal' => 'Classica et Mediaevalia',
+                            'pages' => '81-96',
+                            'volume' => '50',
+                            ]
+                    ],
+                    [
+                        'source' => 'Casella, A., & Mortari, V. (1950/2007). La técnica de la orquesta contemporánea. Buenos Aires: Ricordi. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'author' => 'Casella, A. and Mortari, V.',
+                            'title' => 'La t{\\\'e}cnica de la orquesta contempor{\\\'a}nea',
+                            'address' => 'Buenos Aires',
+                            'publisher' => 'Ricordi',
+                            'year' => '1950/2007',
+                            ]
+                    ],
+                    [
+                        'source' => 'Wang, Y., Skerry-Ryan, R. J., Stanton, D., Wu, Y., Weiss, R. J., Jaitly, N., & Bengio, S. (2017). Tacotron: Towards end-to-end speech synthesis. arXiv preprint arXiv:1703.10135. ',
+                        'type' => 'unpublished',
+                        'bibtex' => [
+                            'archiveprefix' => 'arXiv',
+                            'eprint' => '1703.10135',
+                            'author' => 'Wang, Y. and Skerry-Ryan, R. J. and Stanton, D. and Wu, Y. and Weiss, R. J. and Jaitly, N. and Bengio, S.',
+                            'year' => '2017',
+                            'title' => 'Tacotron: Towards end-to-end speech synthesis',
+                            'note' => 'arXiv preprint',
+                            ]
+                    ],
+                    [
+                        'source' => 'van den Oord, A., Dieleman, S., Zen, H., Simonyan, K., Vinyals, O., Graves, A., & Kavukcuoglu, K. (2016). Wavenet: A generative model for raw audio. In 9th ISCA Speech Synthesis Workshop (pp. 125–125). ',
+                        'type' => 'inproceedings',
+                        'bibtex' => [
+                            'author' => 'van den Oord, A. and Dieleman, S. and Zen, H. and Simonyan, K. and Vinyals, O. and Graves, A. and Kavukcuoglu, K.',
+                            'year' => '2016',
+                            'journal' => 'Wavenet: A generative model for raw audio',
+                            'pages' => '125-125',
+                            'booktitle' => '9th ISCA Speech Synthesis Workshop',
+                            ]
+                    ],
+                                        
                                                                                                                                                                                                                                                                                                                                                                                             
                 ];
 

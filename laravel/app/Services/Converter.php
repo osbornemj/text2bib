@@ -193,7 +193,7 @@ class Converter
 
         $this->bookTitleAbbrevs = ['Proc', 'Amer', 'Conf', 'Cont', 'Sci', 'Int', "Auto", 'Symp'];
 
-        $this->workingPaperRegExp = '(preprint|working paper|discussion paper|technical report|report no.|'
+        $this->workingPaperRegExp = '(preprint|arXiv preprint|working paper|discussion paper|technical report|report no.|'
                 . 'research paper|mimeo|unpublished paper|unpublished manuscript|manuscript|'
                 . 'under review|submitted|in preparation)';
         // Working paper number can contain letters and dashes, but must contain at least one digit
@@ -496,7 +496,7 @@ class Converter
 
         $isEditor = false;
 
-        $authorConversion = $this->convertToAuthors($words, $remainder, $year, $isEditor);
+        $authorConversion = $this->convertToAuthors($words, $remainder, $year, $month, $day, $isEditor);
 
         $authorstring = $authorConversion['authorstring'];
         $oneWordAuthor = $authorConversion['oneWordAuthor'];
@@ -508,6 +508,10 @@ class Converter
         $authorstring = $this->trimRightBrace($authorstring);
         if ($authorstring and $authorstring[0] == '{') {
             $authorstring = strstr($authorstring, ' ');
+        }
+
+        if ($month) {
+            $this->setField($item, 'month', $month, 'setField 112');
         }
 
         //////////////////////////
@@ -589,7 +593,7 @@ class Converter
             if (!$year) {
                 // Space prepended to $remainder in case it starts with year, because getYear requires space 
                 // (but perhaps could be rewritten to avoid it).
-                $year = $this->getYear(' '. $remainder, $newRemainder, $month, false, true);
+                $year = $this->getYear(' '. $remainder, $newRemainder, $month, $day, false, true);
             }
 
             if ($year) {
@@ -967,6 +971,10 @@ class Converter
                 }
 
                 if ($journal) {
+                    // For journal publications, journal name is not normally preceded by "in", but if it is, remove it.
+                    if (Str::startsWith($journal, ['in: ', 'In: '])) {
+                        $journal = substr($journal, 4);
+                    }
                     $this->setField($item, 'journal', $journal, 'setField 19');
                 } else {
                     $warnings[] = "Item seems to be article, but journal not found.  Setting type to unpublished.";
@@ -1166,7 +1174,7 @@ class Converter
                                 $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
                             }
                             $isEditor = true;
-                            $editorConversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $isEditor, false, 'editors');
+                            $editorConversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $month, $day, $isEditor, false, 'editors');
                             $this->setField($item, 'editor', trim($editorConversion['authorstring']), 'setField 34');
                         } else {
                             $this->verbose('No editors found');
@@ -1314,7 +1322,7 @@ class Converter
                             $this->verbose('tempRemainder contains \'(\' and ends with \')\'');
                             $booktitle = Str::beforeLast($tempRemainderMinusEds, '(');
                             $editorString = Str::afterLast($tempRemainderMinusEds, '(');
-                            $result = $this->convertToAuthors(explode(' ', $editorString), $remainder, $trash, $isEditor, true, 'editors');
+                            $result = $this->convertToAuthors(explode(' ', $editorString), $remainder, $trash, $month, $day, $isEditor, true, 'editors');
                         } else {
                             $trash2 = false;
                             // Include edition in title (because no BibTeX field for edition for incollection)
@@ -1327,7 +1335,7 @@ class Converter
                                 $this->setField($item, 'note', $note);
                             }
                             $isEditor = true;
-                            $result = $this->convertToAuthors(explode(' ', $tempRemainder), $remainder, $trash, $isEditor, true, 'editors');
+                            $result = $this->convertToAuthors(explode(' ', $tempRemainder), $remainder, $trash, $month, $day, $isEditor, true, 'editors');
                         }
                         $this->setField($item, 'editor', trim($result['authorstring']));
                         $remainderContainsEds = true;
@@ -1350,7 +1358,7 @@ class Converter
                         // Authors and publication info
                         $rest = trim($matches[3]);
                         $isEditor = true;
-                        $result = $this->convertToAuthors(explode(' ', $rest), $remainder, $trash, $isEditor, true, 'editors');
+                        $result = $this->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $isEditor, true, 'editors');
                         $this->setField($item, 'editor', trim($result['authorstring']));
                         $updateRemainder = false;
                     }
@@ -1452,7 +1460,7 @@ class Converter
                             // $isEditor is used only for a book (with an editor, not an author)
                             $isEditor = false;
 
-                            $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $isEditor, $determineEnd ?? true, 'editors');
+                            $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $month, $day, $isEditor, $determineEnd ?? true, 'editors');
                             $editorString = trim($editorConversion['authorstring'], '() ');
                             foreach ($editorConversion['warnings'] as $warning) {
                                 $warnings[] = $warning;
@@ -1521,7 +1529,7 @@ class Converter
                                 if (! empty($endAuthorPos)) {
                                     // CASE 2
                                     $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
-                                    $authorConversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $isEditor, false, 'editors');
+                                    $authorConversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $month, $day, $isEditor, false, 'editors');
                                     $this->setField($item, 'editor', trim($authorConversion['authorstring'], ' '), 'setField 44');
                                     foreach ($authorConversion['warnings'] as $warning) {
                                         $warnings[] = $warning;
@@ -1575,7 +1583,7 @@ class Converter
                             // Previous version---why drop first 3 chars?
                             // $editor = trim(substr($remainder, 3, $j-3), ' .,');
 
-                            $editorConversion = $this->convertToAuthors(explode(' ', trim(substr($remainder, 0, $j), ' .,')), $trash1, $trash2, $isEditor, false, 'editors');
+                            $editorConversion = $this->convertToAuthors(explode(' ', trim(substr($remainder, 0, $j), ' .,')), $trash1, $trash2, $month, $day, $isEditor, false, 'editors');
                             $editor = $editorConversion['authorstring'];
                             foreach ($editorConversion['warnings'] as $warning) {
                                 $warnings[] = $warning;
@@ -1600,7 +1608,7 @@ class Converter
                         $this->verbose("[ed6] Remainder starts with editor string");
                         $editorString = substr($remainder, 0, $matches[0][1]);
                         $this->verbose("editorString is " . $editorString);
-                        $editorConversion = $this->convertToAuthors(explode(' ', $editorString), $trash1, $trash2, $isEditor, false, 'editors');
+                        $editorConversion = $this->convertToAuthors(explode(' ', $editorString), $trash1, $trash2, $month, $day, $isEditor, false, 'editors');
                         $editor = $editorConversion['authorstring'];
                         foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
@@ -1612,7 +1620,7 @@ class Converter
                         // seem unlikely to have editors), but an 
                         // editor of an incollection does not need such a string
                         $this->verbose("[ed4] Remainder starts with editor string");
-                        $editorConversion = $this->convertToAuthors(explode(' ', $remainder), $remainder, $trash2, $isEditor, true, 'editors');
+                        $editorConversion = $this->convertToAuthors(explode(' ', $remainder), $remainder, $trash2, $month, $day, $isEditor, true, 'editors');
                         $editor = $editorConversion['authorstring'];
                         foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
@@ -1638,7 +1646,7 @@ class Converter
                         // convertToAuthors determine end of string, need to redefine remainder below.
                         $isEditor = false;
 
-                        $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $isEditor, true, 'editors');
+                        $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $month, $day, $isEditor, true, 'editors');
                         $authorstring = $editorConversion['authorstring'];
                         $this->setField($item, 'editor', trim($authorstring, '() '), 'setField 47');
                         foreach ($editorConversion['warnings'] as $warning) {
@@ -2621,14 +2629,21 @@ class Converter
      */
     private function isDate(string $string): bool
     {
-        $str = str_replace([","], "", trim($string, ',. '));
-        $isDate1 = preg_match('/^[1-3]?[0-9] (' . $this->monthsRegExp . ') ?(19|20)[0-9][0-9]/', $str);
-        $isDate2 = preg_match('/^(' . $this->monthsRegExp . ') ?[1-3]?[0-9] (19|20)[0-9][0-9]/', $str);
-        $isDate3 = preg_match('/^[1-3]?[0-9][\-\/][01]?[0-9][\-\/](19|20)[0-9][0-9]/', $str);
-        $isDate4 = preg_match('/^[01]?[0-9][\-\/][1-3]?[0-9][\-\/](19|20)[0-9][0-9]/', $str);
-        $isDate5 = preg_match('/^(19|20)[0-9][0-9][\-\/][1-3]?[0-9][\-\/][01]?[0-9]/', $str);
+        $year = '(19|20)[0-9]{2}';
+        $monthName = $this->monthsRegExp;
+        $day = '[1-3]?[0-9]';
+        $monthNumber = '[01]?[0-9]';
 
-        return $isDate1 || $isDate2 || $isDate3 || $isDate4 || $isDate5;
+        $str = str_replace([","], "", trim($string, ',. '));
+        $isDate1 = preg_match('/^' . $day . ' (' . $monthName . ') ?'. $year . '$/', $str);
+        $isDate2 = preg_match('/^(' . $monthName . ') ?' . $day . ' '. $year . '$/', $str);
+        $isDate3 = preg_match('/^' . $day . '[\-\/ ]' . $monthNumber . '[\-\/ ]'. $year . '$/', $str);
+        $isDate4 = preg_match('/^' . $monthNumber . '[\-\/ ]' . $day . '[\-\/ ]'. $year . '$/', $str);
+        $isDate5 = preg_match('/^'. $year . '[\-\/, ]' . $day . '[\-\/ ]' . $monthNumber . '$/', $str);
+        $isDate6 = preg_match('/^'. $year . '[, ]' . $monthName . ' ' . $day . '$/', $str);
+        $isDate7 = preg_match('/^'. $year . '[, ]' . $day . ' ' . $monthName . '$/', $str);
+
+        return $isDate1 || $isDate2 || $isDate3 || $isDate4 || $isDate5 || $isDate6;
     }
 
     private function isAnd(string $string): bool
@@ -2636,11 +2651,6 @@ class Converter
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
         // 'y' is for Spanish, 'e' for Portuguese, 'et' for French
         return mb_strtolower($string) == $this->phrases['and'] || in_array($string, ['\\&', '&', 'y', 'e', 'et']) || $string == 'with';
-    }
-
-    private function getStringBeforeChar(string $string, string $char): string
-    {
-        return Str::before($string, $char);
     }
 
     /*
@@ -2755,7 +2765,7 @@ class Converter
      * @param string $type: 'authors' or 'editors'
      * @return array, with author string, warnings, and oneWordAuthor flag
      */
-    private function convertToAuthors(array $words, string|null &$remainder, string|null &$year, bool &$isEditor, bool $determineEnd = true, string $type = 'authors'): array
+    private function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, bool &$isEditor, bool $determineEnd = true, string $type = 'authors'): array
     {
         $namePart = $authorIndex = $case = 0;
         $prevWordAnd = $prevWordVon = $done = $isEditor = $hasAnd = $multipleAuthors = false;
@@ -2819,8 +2829,10 @@ class Converter
                 break;
             }
 
-            $this->verbose(['text' => 'Word ' . $i . ": ", 'words' => [$word], 'content' => " - authorIndex: " . $authorIndex . ", namePart: " . $namePart]);
-            $this->verbose("fullName: " . $fullName);
+            if (!$done) {
+                $this->verbose(['text' => 'Word ' . $i . ": ", 'words' => [$word], 'content' => " - authorIndex: " . $authorIndex . ", namePart: " . $namePart]);
+                $this->verbose("fullName: " . $fullName);
+            }
             
             if (isset($itemYear)) {
                 $year = $itemYear;
@@ -2854,7 +2866,7 @@ class Converter
                     $warnings[] = "String for editors detected after only one part of name.";
                 }
                 // Check for year following editors
-                if ($year = $this->getYear($remainder, $remains, $trash)) {
+                if ($year = $this->getYear($remainder, $remains, $trash1, $trash2)) {
                     $remainder = $remains;
                     $this->verbose("Year detected, so ending name string (word: " . $word .")");
                 } else {
@@ -2883,7 +2895,7 @@ class Converter
                     $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
                     array_shift($remainingWords);
                     $remainder = implode(" ", $remainingWords);
-                    $year = $this->getYear($remainder, $remains, $trash);
+                    $year = $this->getYear($remainder, $remains, $trash1, $trash2);
                     $remainder = trim($remains);
                     $done = true;
                     $case = 14;
@@ -2907,7 +2919,7 @@ class Converter
                     // a single name.  If string is followed by year or quotedOrItalics, that seems right,
                     // in which case we may have an entry like "Economist. 2005. ..."
                     $remainder = implode(" ", $remainingWords);
-                    if ($year = $this->getYear($remainder, $remainder, $trash)) {
+                    if ($year = $this->getYear($remainder, $remainder, $trash1, $trash2)) {
                         $this->verbose('[convertToAuthors 1]');
                         // Don't use spaceOutInitials in this case, because string is not initials.  Could be
                         // something like autdiogames.net, in which case don't want to put space before period.
@@ -2950,7 +2962,7 @@ class Converter
                     $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, and namePart is > 0';
                 }
                 $this->verbose("Remainder: " . $remainder);
-                if ($year = $this->getYear($remainder, $remains, $trash)) {
+                if ($year = $this->getYear($remainder, $remains, $trash1, $trash2)) {
                     $remainder = $remains;
                 }
                 $this->verbose("Remains: " . $remains);
@@ -2977,7 +2989,7 @@ class Converter
                     $fullName .= ' ' . $word;
                     $remainder = implode(" ", $remainingWords);
                     $this->addToAuthorString(6, $authorstring, ' ' . ltrim($this->formatAuthor($fullName)));
-                    if ($year = $this->getYear($remainder, $remains, $trash)) {
+                    if ($year = $this->getYear($remainder, $remains, $trash1, $trash2)) {
                         $remainder = $remains;
                         $this->verbose("Year detected");
                     }
@@ -3041,7 +3053,7 @@ class Converter
                             $namePart++;
                         }
                         // Following occurs in case of name that is a single string, like "IMF"
-                        if ($year = $this->getYear(implode(" ", $remainingWords), $remains, $trash)) {
+                        if ($year = $this->getYear(implode(" ", $remainingWords), $remains, $trash1, $trash2)) {
                             $this->verbose('[convertToAuthors 10]');
                             $remainder = $remains;
                             $done = true;
@@ -3119,7 +3131,6 @@ class Converter
                         array_shift($remainingWords);
                         array_shift($remainingWords);
                         $remainder = implode(" ", $remainingWords);
-                        //$year = $this->getYear($remainder, $remains, $trash);
                         $done = true;
                         $case = 19;
                     } else {
@@ -3129,13 +3140,12 @@ class Converter
                         $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
                         $case = 7;
                     }
-                } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), $remainder, $month, true, true)) {
-                    $this->verbose('[convertToAuthors 14]');
+                } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), $remainder, $month, $day, true, true)) {
+                    $this->verbose('[convertToAuthors 14] Ending author string: word is "'. $word . '", year is next.');
                     $done = true;
                     $fullName = ($fullName[0] != ' ' ? ' ' : '') . $fullName;
                     $this->addToAuthorString(10, $authorstring, $this->formatAuthor($fullName));
                     $case = 8;
-                    $reason = 'Remainder starts with year';
                 } elseif (
                         $determineEnd &&
                         isset($remainingWords[0]) &&
@@ -3165,8 +3175,8 @@ class Converter
                             &&
                             (
                                 ($this->isInitials($words[$i + 1]) && $namePart == 0)
-                                || $this->getYear($words[$i + 2], $trash, $trash2)
-                                || ($this->isInitials($words[$i + 2]) && $this->getYear($words[$i + 3], $trash, $trash2))
+                                || $this->getYear($words[$i + 2], $trash, $trash1, $trash2)
+                                || ($this->isInitials($words[$i + 2]) && $this->getYear($words[$i + 3], $trash, $trash1, $trash2))
                             )
                         ) {
                             $fullName .= ',';
@@ -3185,7 +3195,7 @@ class Converter
                         // that case, you need to look further ahead.)
                         if (!$prevWordHasComma && $i + 2 < count($words)
                                 && (
-                                    $this->getYear($words[$i + 2], $trash, $trash2)
+                                    $this->getYear($words[$i + 2], $trash, $trash1, $trash2)
                                     ||
                                     $this->getQuotedOrItalic($words[$i + 2], true, false, $before, $after)
                                 )) {
@@ -3454,10 +3464,11 @@ class Converter
      * @param boolean $allowMonth = false (allow string like "(April 1998)" or "(April-May 1998)" or "April 1998:"
      * @return string year
      */
-    private function getYear(string $string, string|null &$remains, string|null &$month, bool $start = true, bool $allowMonth = false): string
+    private function getYear(string $string, string|null &$remains, string|null &$month, string|null &$day, bool $start = true, bool $allowMonth = false): string
     {
         $year = '';
         $remains = $string;
+        $months = $this->monthsRegExp;
 
         if ($start) {
             if (Str::startsWith($remains, ['(n.d.)', '[n.d.]'])) {
@@ -3465,17 +3476,28 @@ class Converter
                 $year = 'n.d.';
                 return $year;
             }
+
+            if ($allowMonth) {
+                // (year month) or [year month] or (year month day) or [year month day]
+                if (preg_match('/^[\(\[](?P<date>(?P<year>(18|19|20)[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{2})?)[\)\]]/', $string, $matches1)) {
+                    $year = $matches1['year'] ?? null;
+                    $month = $matches1['month'] ?? null;
+                    $day = $matches1['day'] ?? null;
+                    $date = $matches1['date'] ?? null;
+                    $remains = substr($remains, strlen($matches1[0]));
+                    return $year;
+                }
+            }
         }
 
         // Year can be (1980), [1980], '1980 ', '1980,', '1980.', '1980)', '1980:' or end with '1980' if not at start and
         // (1980), [1980], ' 1980 ', '1980,', '1980.', or '1980)' if at start; instead of 1980, can be of form
-        // 1980/1 or 1980/81 or 1980-1 or 1980-81 or 1980-1981
+        // 1980/1 or 1980/81 or 1980/1981 or 1980-1 or 1980-81 or 1980-1981
         // NOTE: '1980:' could be a volume number---might need to check for that
-        $months = $this->monthsRegExp;
         $monthRegExp = '((' . $months . ')([-\/](' . $months . '))?)?';
         // In following line, [1-2]?[0-9]? added to allow second year to have four digits.  Should be (18|19|20), but that
         // would mean adding a group, which would require the recalculation of all the indices ...
-        $yearRegExp = '((18|19|20)([0-9]{2})(-[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,2})?)[a-z]?';
+        $yearRegExp = '((18|19|20)([0-9]{2})(-[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
         $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
 
         // Require space or ',' in front of year if search is not restricted to start or in parens or brackets,
@@ -3792,10 +3814,11 @@ class Converter
     private function isNotName(string $word1, string $word2): bool
     {
         $words = [$word1, $word2];
+        //dd($words);
         $this->verbose(['text' => 'Arguments of isNotName: ', 'words' => [$words[0], $words[1]]]);
         $result = false;
         // Following reg exp allows {\'A} and \'{A} and \'A (but also allows {\'{A}, which it shouldn't)
-        $accentRegExp = '/^\{?(\\\"|\\\\\'|\\\`|\\\\\^|\\\H|\\\v|\\\~|\\\k|\\\c|\\\\\.)\{?[A-Z]\}?/';
+        $accentRegExp = '/(^\{?(\\\"|\\\\\'|\\\`|\\\\\^|\\\H|\\\v|\\\~|\\\k|\\\c|\\\\\.)\{?[A-Z]\}?|^\{\\\O\})/';
         
         for ($i = 0; $i < 2; $i++) {
             if (preg_match($accentRegExp, $words[$i])) {

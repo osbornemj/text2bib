@@ -36,7 +36,13 @@ class StatisticsController extends Controller
                 'data' => $userCounts,
             ],
         ])
-        ->options([]);
+        ->options([
+            "scales" => [
+                "y" => [
+                    "beginAtZero" => true
+                    ]
+                ]
+         ]);
 
         $chartjsConversions = app()->chartjs
         ->name('conversionCounts')
@@ -49,7 +55,13 @@ class StatisticsController extends Controller
                 'data' => $conversionCounts,
             ],
         ])
-        ->options([]);
+        ->options([
+            "scales" => [
+                "y" => [
+                    "beginAtZero" => true
+                    ]
+                ]
+         ]);
 
         $chartjsItems = app()->chartjs
         ->name('itemCounts')
@@ -62,7 +74,13 @@ class StatisticsController extends Controller
                 'data' => $itemCounts,
             ],
         ])
-        ->options([]);
+        ->options([
+            "scales" => [
+                "y" => [
+                    "beginAtZero" => true
+                    ]
+                ]
+         ]);
 
         return view('statistics', compact('chartjsUsers', 'chartjsConversions', 'chartjsItems'));
     }
