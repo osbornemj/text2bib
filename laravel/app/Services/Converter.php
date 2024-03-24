@@ -4014,7 +4014,7 @@ class Converter
         $volumeWordLetterRx = '('. $this->volumeRegExp . ')(?P<vol>' . $letterNumber . ')';
         $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRange . ')';
         $pagesRx = '('. $pages . ')?(?P<pp>' . $numberRange . ')';
-        $punc1 = '(}? |, ?|: ?| ?\()';
+        $punc1 = '(}? |, ?| ?: ?| ?\()';
         $punc2 = '(\)?[ :] ?|\)?, ?| ?: ?)';
 
         if (preg_match('/^' . $volumeRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/', $remainder, $matches)) {
@@ -4401,8 +4401,8 @@ class Converter
         $string = str_replace("\\textbf{\\ }", " ", $string);
         $string = str_replace("\\textit{ }", " ", $string);
         $string = str_replace("\\textit{\\ }", " ", $string);
-        // Replace ~ with space if not preceded by \
-        $string = preg_replace('/([^\\\])~/', '$1 ', $string);
+        // Replace ~ with space if not preceded by \ or / (as it will be in a URL)
+        $string = preg_replace('/([^\/\\\])~/', '$1 ', $string);
         $string = str_replace("\\/", "", $string);
 
         // Delete ^Z and any trailing space (^Z is at end of last entry of DOS file)

@@ -2930,7 +2930,76 @@ class ExampleSeeder extends Seeder
                             'month' => 'August',
                             'pages' => '381',
                             ]
-                    ],                                                                                                                                                                                                                                                                                                                                                                        
+                    ],
+                    [
+                        'source' => 'Abuljadayel, F., & Omar, A. A. (2022, December 12). Saudi Arabia Says $50 Billion Investments Agreed With China. Retrieved from Bloomberg.com Website: https://www.bloomberg.com/news/articles/2022-12-11/saudi-arabia-says-50-billion-investments-agreed-at-china-summit?leadSource=uverify',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'url' => 'https://www.bloomberg.com/news/articles/2022-12-11/saudi-arabia-says-50-billion-investments-agreed-at-china-summit?leadSource=uverify',
+                            'author' => 'Abuljadayel, F. and Omar, A. A.',
+                            'title' => 'Saudi Arabia Says $50 Billion Investments Agreed With China',
+                            'year' => '2022',
+                            'urldate' => 'December 12, 2022',
+                            ]
+                    ],
+                    [
+                        'source' => 'Acar, G., Eubank, C., Englehardt, S., Juarez, M., Narayanan, A., & Diaz, C. (2014, November). The web never forgets: Persistent tracking mechanisms in the wild. In Proceedings of the 2014 ACM SIGSAC Conference on Computer and Communications Security (pp. 674- 689). ',
+                        'type' => 'inproceedings',
+                        'bibtex' => [
+                            'author' => 'Acar, G. and Eubank, C. and Englehardt, S. and Juarez, M. and Narayanan, A. and Diaz, C.',
+                            'title' => 'November). The web never forgets: Persistent tracking mechanisms in the wild',
+                            'year' => '2014',
+                            'month' => 'November',
+                            'pages' => '674-689',
+                            'booktitle' => 'Proceedings of the ACM SIGSAC Conference on Computer and Communications Security',
+                            ]
+                    ],
+                    [
+                        'source' => 'Ackerman, M.S. & Davis, D.T. (n.d.). Privacy and security issues in e-commerce. https://web.eecs.umich.edu/~ackerm/pub/03e05/EC-privacy.ackerman.pdf. ',
+                        'type' => 'unpublished',
+                        'bibtex' => [
+                            'author' => 'Ackerman, M. S. and Davis, D. T.',
+                            'year' => 'n.d.',
+                            'title' => 'Privacy and security issues in e-commerce',
+                            'note' => 'https://web.eecs.umich.edu/~ackerm/pub/03e05/EC-privacy.ackerman.pdf',
+                            ]
+                    ],
+                    [
+                        'source' => 'Shvartzshnaider, Y., Balashankar, A., Patidar, V., Wies, T., & Subramanian, L. (2020). Beyond the text: Analysis of privacy statements through syntactic and semantic role labeling. arXiv preprint arXiv:2010.00678. ',
+                        'type' => 'unpublished',
+                        'bibtex' => [
+                            'archiveprefix' => 'arXiv',
+                            'eprint' => '2010.00678',
+                            'author' => 'Shvartzshnaider, Y. and Balashankar, A. and Patidar, V. and Wies, T. and Subramanian, L.',
+                            'year' => '2020',
+                            'title' => 'Beyond the text: Analysis of privacy statements through syntactic and semantic role labeling',
+                            'note' => 'arXiv preprint',
+                            ]
+                    ],
+                    [
+                        'source' => 'Honda, K., and S. Sekito. "Two Kinds of Martensite." Nature 121 (1928): 744. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Honda, K. and S. Sekito',
+                            'title' => 'Two Kinds of Martensite',
+                            'journal' => 'Nature',
+                            'year' => '1928',
+                            'volume' => '121',
+                            'pages' => '744',
+                            ]
+                    ],
+                    [
+                        'source' => 'Msolli, S., M. Bettaieb, and F. Abed-Meraim. "Modelling of Void Coalescence Initiation and Its Impact on the Prediction of Material Failure." AIP Conference Proceedings (2016). ',
+                        'type' => 'inproceedings',
+                        'bibtex' => [
+                            'author' => 'Msolli, S. and M. Bettaieb and F. Abed-Meraim',
+                            'title' => 'Modelling of Void Coalescence Initiation and Its Impact on the Prediction of Material Failure',
+                            'year' => '2016',
+                            'booktitle' => 'AIP Conference Proceedings',
+                            ]
+                    ],
+                    
+                                                                                                                                                                                                                                                                                                                                                                                            
                 ];
 
             DB::statement('DELETE FROM examples');
