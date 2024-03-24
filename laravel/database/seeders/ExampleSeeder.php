@@ -2718,17 +2718,6 @@ class ExampleSeeder extends Seeder
                             ]
                     ],
                     [
-                        'source' => 'Haider, A. J., Jameel, Z. N. \& Al-Hussaini, I. H. Review on: Titanium dioxide applications. \textit{Energy Procedia} \textbf{157}, 17–29 (2019). ',
-                        'type' => 'article',
-                        'bibtex' => [
-                            'author' => 'Haider, A. J. and Jameel, Z. N. and Al-Hussaini, I. H. Review on: Titanium dioxide applications',
-                            'title' => 'Energy Procedia',
-                            'year' => '2019',
-                            'journal' => '157',
-                            'pages' => '17-29',
-                            ]
-                    ],
-                    [
                         'source' => 'Dhirani, Lubna Luxmi, Noorain Mukhtiar, Bhawani Shankar Chowdhry, y Thomas Newe. 2023. «Ethical Dilemmas and Privacy Issues in Emerging Technologies: A Review.» Sensors 23, 1151. ',
                         'type' => 'article',
                         'bibtex' => [
@@ -2912,7 +2901,7 @@ class ExampleSeeder extends Seeder
                             'journal' => 'Big Data and Cognitive Computing',
                             'pages' => '1',
                             'volume' => '6',
-                            'issue' => '1',
+                            'number' => '1',
                             ]
                     ],
                     [
@@ -2921,11 +2910,25 @@ class ExampleSeeder extends Seeder
                         'bibtex' => [
                             'author' => 'Almeida, Patr{\\\'\i}cia Albieri de and Gisela Lobo B. P. Tartuce and Marina Muniz Rossa Nunes',
                             'title' => 'Quais as raz{\=o}es para a baixa atratividade da doc{\^e}ncia por alunos do ensino m{\\\'e}dio?',
-                            'journal' => 'Psicologia Ensino and Forma\c{c}{\=a}o',
+                            'journal' => 'Psicologia Ensino & Forma\c{c}{\=a}o',
                             'volume' => '5',
                             'number' => '2',
-                            'pages' => '103--121',
+                            'pages' => '103-121',
                             'year' => '2014',
+                            ]
+                    ],
+                    [
+                        'source' => 'P. Palensky, D. Dietrich. "Demand Side Management: Demand Response, Intelligent Energy Systems, and Smart Loads". IEEE TRANSACTIONS ON INDUSTRIAL INFORMATICS, VOL. 7, NO. 3, AUGUST 2011 381. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'P. Palensky and D. Dietrich',
+                            'title' => 'Demand Side Management: Demand Response, Intelligent Energy Systems, and Smart Loads',
+                            'year' => '2011',
+                            'journal' => 'IEEE TRANSACTIONS ON INDUSTRIAL INFORMATICS',
+                            'volume' => '7',
+                            'number' => '3',
+                            'month' => 'August',
+                            'pages' => '381',
                             ]
                     ],                                                                                                                                                                                                                                                                                                                                                                        
                 ];

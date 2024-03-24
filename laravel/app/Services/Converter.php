@@ -148,10 +148,10 @@ class Converter
 
         $this->volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
-        $this->volRegExp2 = '/^[Vv]ol(\.|ume)? ?/';
-        $this->volumeRegExp = '[Vv]olume ?|[Vv]ol\.? ?|{\\\bf |\\\textbf{|\\\textit{';
+        $this->volRegExp2 = '/^vol(\.|ume)? ?/i';
+        $this->volumeRegExp = '[Vv]olume ?|[Vv]ol\.? ?|VOL\.? ?|{\\\bf |\\\textbf{|\\\textit{';
 
-        $this->numberRegExp = '[Nn]os?\.?:? ?|[Nn]umbers? ?|[Ii]ssues? ?';
+        $this->numberRegExp = '[Nn][Oo]s?\.?:? ?|[Nn]umbers? ?|[Ii]ssues? ?';
 
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})';
         $this->startPagesRegExp = '/^pages |^pp\.?|^p\.|^p /i';
@@ -600,25 +600,7 @@ class Converter
             }
             if (isset($month)) {
                 $containsMonth = true;
-                // If month is parsable, parse it: 
-                // translate 'Jan' or 'Jan.' or 'January', for example, to 'January'.
-                $month1 = trim(Str::before($month, '-'), ', ');
-                if (preg_match('/^[a-zA-Z.]*$/', $month1)) {
-                    $fullMonth1 = Carbon::parse('1 ' . $month1)->format('F');
-                } else {
-                    $fullMonth1 = $month1;
-                }
-
-                $month2 = Str::contains($month, '-') ? Str::after($month, '-') : null;
-                if ($month2 && preg_match('/^[a-zA-Z.]*$/', $month2)) {
-                    $fullMonth2 = Carbon::parse('1 ' . $month2)->format('F');
-                } elseif ($month2) {
-                    $fullMonth2 = $month2;
-                } else {
-                    $fullMonth2 = null;
-                }
-
-                $this->setField($item, 'month', $fullMonth1 . ($fullMonth2 ? '-' . $fullMonth2 : ''), 'setField 15');
+                $this->setField($item, 'month', $this->fixMonth($month), 'setField 15');
             }
         }
 
@@ -1013,11 +995,12 @@ class Converter
                     if ($remainder) {
                         // Get month, if any
                         $months = $this->monthsRegExp;
-                        $regExp = '(\(?(' . $months . '\)?)([-\/](' . $months . ')\)?)?)';
+                        $regExp = '/(\(?(' . $months . '\)?)([-\/](' . $months . ')\)?)?)/i';
                         preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
 
                         if (! empty($matches[0][0][0])) {
-                            $this->setField($item, 'month', trim($matches[0][0][0], '()'), 'setField 21');
+                            $month = trim($matches[0][0][0], '()');
+                            $this->setField($item, 'month', $this->fixMonth($month), 'setField 21');
                             $remainder = substr($remainder, 0, $matches[0][0][1]) . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
                             $this->verbose('Remainder: ' . $remainder);
                         }
@@ -2062,7 +2045,7 @@ class Converter
 
                 $remainder = $this->findAndRemove($remainder, $this->fullThesisRegExp);
 
-                $remainder = trim($remainder, ' .,');
+                $remainder = trim($remainder, ' .,)');
                 if (strpos($remainder, ':') === false) {
                     $this->setField($item, 'school', $remainder, 'setField 87');
                 } else {
@@ -2152,6 +2135,33 @@ class Converter
         ];
 
         return $returner;
+    }
+
+    /*
+     * If month (or month range) is parsable, parse it: 
+     * translate 'Jan' or 'Jan.' or 'January' or 'JANUARY', for example, to 'January'.
+    */
+    private function fixMonth(string $month): string
+    {
+        $month1 = trim(Str::before($month, '-'), ', ');
+        if (preg_match('/^[a-zA-Z.]*$/', $month1)) {
+            $fullMonth1 = Carbon::parse('1 ' . $month1)->format('F');
+        } else {
+            $fullMonth1 = $month1;
+        }
+
+        $month2 = Str::contains($month, '-') ? Str::after($month, '-') : null;
+        if ($month2 && preg_match('/^[a-zA-Z.]*$/', $month2)) {
+            $fullMonth2 = Carbon::parse('1 ' . $month2)->format('F');
+        } elseif ($month2) {
+            $fullMonth2 = $month2;
+        } else {
+            $fullMonth2 = null;
+        }
+
+        $months = $fullMonth1 . ($fullMonth2 ? '-' . $fullMonth2 : '');
+
+        return $months;
     }
 
     private function setField(stdClass &$item, string $fieldName, string $string, string $id = ''): void
@@ -2269,7 +2279,7 @@ class Converter
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
-                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?Volume /', $remainder)
+                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume /', $remainder)
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9]\./', $remainder)
                         || preg_match('/^' . $this->fullThesisRegExp . '/', $remainder)
@@ -2379,7 +2389,7 @@ class Converter
                             $this->verbose("Not ending title, case 6");
                         // otherwise assume the punctuation ends the title.
                         } else {
-                            $this->verbose("Ending title, case 6");
+                            $this->verbose("Ending title, case 6 (word '" . $word ."')");
                             $title = rtrim(implode(' ', $initialWords), '.,');
                             break;
                         }
@@ -2879,6 +2889,15 @@ class Converter
                     $case = 14;
                     $reason = 'Word is "et" and next word is "al." or "al"';
                 }
+            } elseif ($determineEnd && substr($word, -1) == ':') {
+                $this->verbose('[convertToAuthors 1a]');
+                $nameComponent = $word;
+                $fullName .= ' '. trim($nameComponent, '.');
+                $this->addToAuthorString(15, $authorstring, $fullName);
+                $remainder = implode(" ", $remainingWords);
+                $case = 17;
+                $reason = 'Word ends in colon';
+                $done = true;
             } elseif ($determineEnd && substr($word, -1) == '.' && strlen($lettersOnlyWord) > 3
                     && mb_strtolower(substr($word, -2, 1)) == substr($word, -2, 1)) {
                 // If $determineEnd and word ends in period and word has > 3 chars (hence not "St.") and previous letter
@@ -2979,7 +2998,7 @@ class Converter
                     $fullName .= ' ' . substr($word,0,-1);
                     $namePart = 0;
                     $authorIndex++;
-                    $case = 19;
+                    $case = 21;
                 } else {
                     $this->verbose('[convertToAuthors 7]');
                     if (!$prevWordAnd && $authorIndex) {
@@ -3081,7 +3100,7 @@ class Converter
                     $fullName .= " " . $nameComponent;
                 }
 
-                // $bareWords is array of words at start of $remainingWords that don't end ends in ','
+                // $bareWords is array of words at start of $remainingWords that don't end end in ','
                 // or '.' or ')' or ':' or is a year in parens or brackets or starts with quotation mark
                 $bareWords = $this->bareWords($remainingWords, false);
                 // If 'and' has not already occurred ($hasAnd is false), its occurrence in $barewords is compatible
@@ -3119,8 +3138,9 @@ class Converter
                     $reason = 'Remainder starts with year';
                 } elseif (
                         $determineEnd &&
-                        count($bareWords) > 2 && 
+                        isset($remainingWords[0]) &&
                         ! $this->isAnd($remainingWords[0]) && 
+                        count($bareWords) > 2 &&
                         $nameScore['score'] / $nameScore['count'] < 0.25 &&
                         ! $this->isInitials($remainingWords[0])
                     ) {
@@ -3129,6 +3149,7 @@ class Converter
                     // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
                     // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
                     // at comma.
+                    //dump($word);
                     $this->verbose('[convertToAuthors 15]');
                     $done = true;
                     $this->addToAuthorString(11, $authorstring, $this->formatAuthor($fullName));
@@ -3994,9 +4015,9 @@ class Converter
         $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRange . ')';
         $pagesRx = '('. $pages . ')?(?P<pp>' . $numberRange . ')';
         $punc1 = '(}? |, ?|: ?| ?\()';
-        $punc2 = '(\)?[ :]|, ?| ?: ?)';
+        $punc2 = '(\)?[ :] ?|\)?, ?| ?: ?)';
 
-        if (preg_match('/^' . $volumeRx . $punc1 . $numberRx . $punc2 . $pagesRx . '$/', $remainder, $matches)) {
+        if (preg_match('/^' . $volumeRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
             $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
             $this->setField($item, 'pages', str_replace(['---', '--'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
@@ -4146,6 +4167,8 @@ class Converter
             }
             $remainder = substr($remainder, 0, $take) . substr($remainder, $drop);
             $remainder = trim($remainder, ',. )(');
+
+            //dd($remainder);
             $this->verbose('remainder: ' . ($remainder ? $remainder : '[empty]'));
             if ($remainder && ctype_digit($remainder)) {
                 $this->setField($item, 'pages', $remainder, 'getVolumeAndNumberForArticle 16'); // could be a single page
