@@ -3152,14 +3152,17 @@ class Converter
                         ! $this->isAnd($remainingWords[0]) && 
                         count($bareWords) > 2 &&
                         $nameScore['score'] / $nameScore['count'] < 0.25 &&
-                        ! $this->isInitials($remainingWords[0])
+                        (
+                            ! $this->isInitials($remainingWords[0])
+                            ||
+                            ($remainingWords[0] == 'A' && isset($remainingWords[1]) && $remainingWords[1][0] == strtolower($remainingWords[1][0]))
+                        )
                     ) {
                     // Low nameScore relative to number of bareWords (e.g. less than 25% of words not in dictionary)
                     // Note that this check occurs only when $namePart > 0---so it rules out double-barelled
                     // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
                     // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
                     // at comma.
-                    //dump($word);
                     $this->verbose('[convertToAuthors 15]');
                     $done = true;
                     $this->addToAuthorString(11, $authorstring, $this->formatAuthor($fullName));
@@ -3907,15 +3910,21 @@ class Converter
             if (strpos($name, ',') !== false) {
                 $commaPassed = true;
             }
-            // If name is not ALL uppercase, a period has not yet occured, there are fewer than 3 letters
+//            dump($name, $allUppercase, $initialPassed, $commaPassed, $lettersOnlyName);
+            // If name (all components) is not ALL uppercase, there are fewer than 3 letters
             // in $name or a comma has occurred, and all letters in the name are uppercase, assume $name
             // is initials.  Put periods and spaces as appropriate.
-            if (! $allUppercase && ! $initialPassed && (strlen($lettersOnlyName) < 3 || $commaPassed) 
+            if (! $allUppercase && (strlen($lettersOnlyName) < 3 || $commaPassed) 
                         && strtoupper($lettersOnlyName) == $lettersOnlyName && $lettersOnlyName != 'III') {
+                    //dd($name);
                 // First deal with single accented initial
                 // Case of multiple accented initials not currently covered
                 if (preg_match('/^\\\\\S\{[a-zA-Z]\}\.$/', $name)) {  // e.g. \'{A}.
                     $fName .= $name; 
+                } elseif (preg_match('/^\{\\\\\S[a-zA-Z]\}\.$/', $name)) {  // e.g. {\'A}.
+                    $fName .= $name;
+                } elseif (preg_match('/^\{\\\\\S[a-zA-Z]\}$/', $name)) {  // e.g. {\'A}
+                    $fName .= $name . '.';
                 } elseif (preg_match('/^\\\\\S\{[a-zA-Z]\}$/', $name)) {  // e.g. \'{A}
                     $fName .= $name . '.';
                 } elseif (preg_match('/^\\\\\S[a-zA-Z]$/', $name)) {  // e.g. \'A

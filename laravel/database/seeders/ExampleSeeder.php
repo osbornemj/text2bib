@@ -1743,7 +1743,7 @@ class ExampleSeeder extends Seeder
                         'year' => '1990',
                         'month' => 'May',
                         'title' => 'Optimal eigenstructure achievement with robustness guarantees',
-                        'author' => 'R. F Wilson and J. R Cloutier',
+                        'author' => 'R. F. Wilson and J. R. Cloutier',
                         'booktitle' => 'Proc. Amer. Control Conf., San Diego, CA',
                         ]
                 ],
@@ -1754,7 +1754,7 @@ class ExampleSeeder extends Seeder
                         'year' => '1990',
                         'month' => 'December',
                         'title' => 'Generalized and robust eigenstructure assignment',
-                        'author' => 'R. F Wilson and J. R Cloutier',
+                        'author' => 'R. F. Wilson and J. R. Cloutier',
                         'booktitle' => 'Proc. AIAA Missile Sci. Conf., Monterey, CA',
                         ]
                 ],
