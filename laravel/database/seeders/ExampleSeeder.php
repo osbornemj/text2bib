@@ -2939,7 +2939,7 @@ class ExampleSeeder extends Seeder
                             'author' => 'Abuljadayel, F. and Omar, A. A.',
                             'title' => 'Saudi Arabia Says $50 Billion Investments Agreed With China',
                             'year' => '2022',
-                            'urldate' => 'December 12, 2022',
+                            'urldate' => '2022, December 12',
                             ]
                     ],
                     [
@@ -3044,8 +3044,41 @@ class ExampleSeeder extends Seeder
                             'booktitle' => '9th ISCA Speech Synthesis Workshop',
                             ]
                     ],
-                                        
-                                                                                                                                                                                                                                                                                                                                                                                            
+                    [
+                        'source' => 'Beckers, G. J., Suthers, R. A., & Ten Cate, C. (2003). Pure-tone birdsong by resonance filtering of harmonic overtones. Proceedings of the National Academy of Sciences, 100(12), 7372-7376. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Beckers, G. J. and Suthers, R. A. and Ten Cate, C.',
+                            'title' => 'Pure-tone birdsong by resonance filtering of harmonic overtones',
+                            'year' => '2003',
+                            'journal' => 'Proceedings of the National Academy of Sciences',
+                            'volume' => '100',
+                            'number' => '12',
+                            'pages' => '7372-7376',
+                            ]
+                    ],
+                    [
+                        'source' => 'Billot, B., Greve, D. N., Puonti, O., Thielscher, A., Van Leemput, K., Fischl, B., . . . Iglesias, J. E. (2021). SynthSeg: Domain Randomisation for Segmentation of Brain MRI Scans of any Contrast and Resolution. arXiv:2108.09559. ',
+                        'type' => 'unpublished',
+                        'bibtex' => [
+                            'archiveprefix' => 'arXiv',
+                            'eprint' => '2108.09559',
+                            'author' => 'Billot, B. and Greve, D. N. and Puonti, O. and Thielscher, A. and Van Leemput, K. and Fischl, B. and Iglesias, J. E.',
+                            'title' => 'SynthSeg: Domain Randomisation for Segmentation of Brain MRI Scans of any Contrast and Resolution',
+                            'year' => '2021',
+                            ]
+                    ],
+                    [
+                        'source' => '[1] Network Rail, “How Network Rail Buys Utlities,” [Online]. Available: https://safety.networkrail.co.uk/wp-content/uploads/2017/03/How-Network-Rail-buys-energy-v2-2017-03.docx. [Accessed 13 12 2023]. ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'url' => 'https://safety.networkrail.co.uk/wp-content/uploads/2017/03/How-Network-Rail-buys-energy-v2-2017-03.docx',
+                            'author' => 'Network Rail',
+                            'title' => 'How Network Rail Buys Utlities',
+                            'year' => '2023',
+                            'urldate' => '13 12 2023',
+                            ]
+                    ],                    
                 ];
 
             DB::statement('DELETE FROM examples');

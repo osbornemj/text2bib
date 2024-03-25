@@ -3,6 +3,7 @@
         <h2 class="font-semibold text-xl leading-tight">
             Journals
         </h2>
+        {{ $checkedJournals->count()}} found
     </x-slot>
 
     <div class="px-4 sm:px-4 sm:rounded-lg">
