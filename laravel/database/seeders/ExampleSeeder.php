@@ -2489,7 +2489,6 @@ class ExampleSeeder extends Seeder
                         'source' => '\bibitem{PMP-PUB-2957}Baker, E. A. G., J. L. Wegrzyn, U. U. Sezen, T. Falk, P. E. Maloney, D. R. Vogler, C. Jensen, J. Mitton, J. Wright, B. Knaus, H. Rai, R. Cronn, D. Gonzalez-Ibeas, H. A. Vasquez-Gross, R. A. Famula, J.-J. Liu, L. M. Kueppers, and D. B. Neale. Comparative transcriptomics among four white pine species. ',
                         'type' => 'unpublished',
                         'bibtex' => [
-                            'note' => '',
                             'year' => '',
                             'title' => 'Comparative transcriptomics among four white pine species',
                             'author' => 'Baker, E. A. G. and J. L. Wegrzyn and U. U. Sezen and T. Falk and P. E. Maloney and D. R. Vogler and C. Jensen and J. Mitton and J. Wright and B. Knaus and H. Rai and R. Cronn and D. Gonzalez-Ibeas and H. A. Vasquez-Gross and R. A. Famula and J.-J. Liu and L. M. Kueppers and D. B. Neale',
@@ -3063,7 +3062,7 @@ class ExampleSeeder extends Seeder
                         'bibtex' => [
                             'archiveprefix' => 'arXiv',
                             'eprint' => '2108.09559',
-                            'author' => 'Billot, B. and Greve, D. N. and Puonti, O. and Thielscher, A. and Van Leemput, K. and Fischl, B. and Iglesias, J. E.',
+                            'author' => 'Billot, B. and Greve, D. N. and Puonti, O. and Thielscher, A. and Van Leemput, K. and Fischl, B. and others and Iglesias, J. E.',
                             'title' => 'SynthSeg: Domain Randomisation for Segmentation of Brain MRI Scans of any Contrast and Resolution',
                             'year' => '2021',
                             ]
@@ -3078,7 +3077,120 @@ class ExampleSeeder extends Seeder
                             'year' => '2023',
                             'urldate' => '13 12 2023',
                             ]
-                    ],                    
+                    ],
+                    [
+                        'source' => '\bibitem{mni1}Mazziotta, J., Toga, A., Evans, A., Fox, P., Lancaster, J., Zilles, K., ...\& Mazoyer, B. (2001). A four-dimensional probabilistic atlas of the human brain. \textit{Journal of the American Medical Informatics Association}, 8(5), 401-430. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Mazziotta, J. and Toga, A. and Evans, A. and Fox, P. and Lancaster, J. and Zilles, K. and others and Mazoyer, B.',
+                            'title' => 'A four-dimensional probabilistic atlas of the human brain',
+                            'year' => '2001',
+                            'journal' => 'Journal of the American Medical Informatics Association',
+                            'pages' => '401-430',
+                            'volume' => '8',
+                            'number' => '5',
+                            ]
+                    ],
+                    [
+                        'source' => 'Dunaway S, Rothaus A, Zhang Y, Luisa Kadekaro A, Andl T, Andl CD. Divide and conquer: two stem cell populations in squamous epithelia, reserves and the active duty forces. Int J Oral Sci. 2019;11: 26. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Dunaway, S. and Rothaus, A. and Zhang, Y. and Luisa Kadekaro, A. and Andl, T. and Andl C. D.',
+                            'title' => 'Divide and conquer: two stem cell populations in squamous epithelia, reserves and the active duty forces',
+                            'journal' => 'Int J Oral Sci',
+                            'year' => '2019',
+                            'volume' => '11',
+                            'pages' => '26',
+                            ]
+                    ],
+                    [
+                        'source' => 'Alcolea MP, Jones PH. Cell competition: winning out by losing notch. Cell Cycle. 2015;14: 9–17. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Alcolea, M. P. and Jones PH. ',
+                            'title' => 'Cell competition winning out by losing notch',
+                            'journal' => 'Cell Cycle',
+                            'year' => '2015',
+                            'volume' => '14',
+                            'pages' => '9-17',
+                            ]
+                    ],
+                    [
+                        'source' => 'Andreatta M, Carmona SJ. UCell: Robust and scalable single-cell gene signature scoring. Comput Struct Biotechnol J. 2021;19: 3796–3798. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Andreatta, M. and Carmona SJ.',
+                            'title' => ' UCell: Robust and scalable single-cell gene signature scoring',
+                            'year' => '2021',
+                            'journal' => 'Comput Struct Biotechnol J',
+                            'volume' => '19',
+                            'pages' => '3796-3798',
+                            ]
+                    ],
+                    [
+                        'source' => '45	Yoon, H. M., Lee, E. J., & Lim, K. H. (2018). Study on benzo (a) pyran content and its transfer ratio in extracts of medicinal herbs. Korean Chem. Eng. Res, 56, 832-840. . ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Yoon, H. M. and Lee, E. J. and Lim, K. H.',
+                            'year' => '2018',
+                            'title' => 'Study on benzo (a) pyran content and its transfer ratio in extracts of medicinal herbs',
+                            'journal' => 'Korean Chem. Eng. Res',
+                            'volume' => '56',
+                            'pages' => '832-840',
+                            ]
+                    ],
+                    [
+                        'source' => '41	Wang, Y., Gou, Y., Zhang, L., Li, C., Wang, Z., Liu, Y., ... & Ma, S. (2022). Levels and health risk of pesticide residues in Chinese herbal medicines. Frontiers in pharmacology, 12, 3941.  ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Wang, Y. and Gou, Y. and Zhang, L. and Li, C. and Wang, Z. and Liu, Y. and others and Ma, S.',
+                            'year' => '2022',
+                            'title' => 'Levels and health risk of pesticide residues in Chinese herbal medicines',
+                            'journal' => 'Frontiers in pharmacology',
+                            'volume' => '12',
+                            'pages' => '3941',
+                            ]
+                    ],
+                    [
+                        'source' => '3.	Stavros V Konstantinides, Guy Meyer, Cecilia Becattini et al. 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism developed in collaboration with the European Respiratory Society. Eur Heart J. 2020;41(4):543–603 ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Stavros V. Konstantinides and Guy Meyer and Cecilia Becattini and others',
+                            'title' => '2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism developed in collaboration with the European Respiratory Society',
+                            'year' => '2020',
+                            'journal' => 'Eur Heart J.',
+                            'volume' => '41',
+                            'number' => '4',
+                            'pages' => '543-603',
+                            ]
+                    ],
+                    [
+                        'source' => '8.	Goldhaber SZ, Come PC, Lee RT, Braunwald E, Parker JA, Haire WD, Feldstein ML, Miller M, Toltzis R, Smith JL, Taveira da Silva AM, Mogtader A, McDonough TJ. Alteplase versus heparin in acute pulmonary embolism: randomised trial assessing right-ventricular function and pulmonary perfusion. Lancet 1993;341:507_511 ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Goldhaber, S. Z. and Come, P. C. and Lee, R. T. and Braunwald, E. and Parker, J. A. and Haire, W. D. and Feldstein, M. L. and Miller, M. and Toltzis, R. and Smith, J. L. and Taveira da Silva, A. M. and Mogtader, A. and McDonough, T. J.',
+                            'title' => 'Alteplase versus heparin in acute pulmonary embolism: randomised trial assessing right-ventricular function and pulmonary perfusion',
+                            'year' => '1993',
+                            'journal' => 'Lancet',
+                            'pages' => '507-511',
+                            'volume' => '341',
+                            ]
+                    ],
+                    [
+                        'source' => 'Kumar, N., Gurumurthy, R. K., Prakash, P. G., Kurian, S. M., Wentland, C., Brinkmann, V., Mollenkopf, H.-J., Krammer, T., Toussaint, C., Saliba, A.-E., Biebl, M., Juergensen, C., Wiedenmann, B., Meyer, T. F., & Chumduri, C. (2021). Spatial organisation and homeostasis of epithelial lineages at the gastroesophageal junction is regulated by the divergent Wnt mucosal microenvironment. In bioRxiv (p. 2021.08.05.455222). https://doi.org/10.1101/2021.08.05.455222 ',
+                        'type' => 'unpublished',
+                        'bibtex' => [
+                            'doi' => '10.1101/2021.08.05.455222',
+                            'author' => 'Kumar, N. and Gurumurthy, R. K. and Prakash, P. G. and Kurian, S. M. and Wentland, C. and Brinkmann, V. and Mollenkopf, H.-J. and Krammer, T. and Toussaint, C. and Saliba, A.-E. and Biebl, M. and Juergensen, C. and Wiedenmann, B. and Meyer, T. F. and Chumduri, C.',
+                            'year' => '2021',
+                            'title' => 'Spatial organisation and homeostasis of epithelial lineages at the gastroesophageal junction is regulated by the divergent Wnt mucosal microenvironment',
+                            'archiveprefix' => 'bioXiv',
+                            'eprint' => 'p. 2021.08.05.455222',
+                            ]
+                    ],
+                    
+                    
+                                                           
                 ];
 
             DB::statement('DELETE FROM examples');

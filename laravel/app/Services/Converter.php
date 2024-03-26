@@ -347,6 +347,7 @@ class Converter
         if ($eprint) {
             $this->setField($item, 'archiveprefix', 'arXiv', 'setField 2');
             $this->setField($item, 'eprint', rtrim($eprint, '}'), 'setField 3');
+            $itemKind = 'unpublished';
         } else {
             $this->verbose("No arXiv info found.");
         }
@@ -449,8 +450,20 @@ class Converter
         // word.
         $word = '';
         $words = [];
+        $skip = 0;
         foreach ($chars as $i => $char) {
-            if (in_array($char, ['.', ',']) 
+            if ($skip) {
+                $skip--;
+            } elseif ($char == '.' && isset($chars[$i+4]) && $chars[$i+1] . $chars[$i+2] . $chars[$i+3] . $chars[$i+4] == ' . .') {
+                // change '. . .' to '...'
+                $words[] = '...';
+                $word = '';
+                if (isset($chars[$i+5]) && $chars[$i+5] == ' ') {
+                    $skip = 5;
+                } else {
+                    $skip = 4;
+                }
+            } elseif (in_array($char, ['.', ',']) 
                     && isset($chars[$i+1]) 
                     && ! in_array($chars[$i+1], [' ', '.', ',', ';', '-', '"', "'"]) 
                     && ! (isset($chars[$i-1]) && ctype_digit($chars[$i-1]) && ctype_digit($chars[$i+1]))
@@ -468,6 +481,7 @@ class Converter
                 $word = '';
             }
         }
+
         if ($word) {
             $words[] = $word;
         }
@@ -804,7 +818,9 @@ class Converter
         // Use features of string to determine item type //
         ///////////////////////////////////////////////////
 
-        if (isset($item->url) && ($oneWordAuthor || ($containsUrlAccessInfo && $itemYear && $itemMonth && $itemDay))
+        if ($itemKind) {
+            // $itemKind is already set
+        } elseif (isset($item->url) && ($oneWordAuthor || ($containsUrlAccessInfo && $itemYear && $itemMonth && $itemDay))
         ) {
             $this->verbose("Item type case 0");
             $itemKind = 'online';
@@ -2139,6 +2155,10 @@ class Converter
             unset($item->institution);
         }
 
+        if (isset($item->note) && ! $item->note) {
+            unset($item->note);
+        }
+
         foreach ($warnings as $warning) {
             $this->verbose(['warning' => $warning]);
         }
@@ -2882,6 +2902,15 @@ class Converter
 
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
+            } elseif ($word == '...') {
+                $this->verbose('[convertToAuthors 20]');
+                $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
+                //array_shift($remainingWords);
+                $fullName = '';
+                $namePart = 0;
+                $authorIndex++;
+                $remainder = implode(" ", $remainingWords);
+                $case = 22;
             } elseif ($edResult) {
                 if ($edResult == 1 && $multipleAuthors) {
                    $warnings[] = "More than one editor has been identified, but string denoting editors (\"" . $word . "\") is singular";
@@ -3093,6 +3122,10 @@ class Converter
                 // namePart > 0 and word doesn't end in some character, then lowercase letter, then period
                 $prevWordAnd = false;
 
+// if ($word == 'Divide') {
+//     dd($authorstring, $fullName);
+//     // at this point, should just add $fullName to $authorstring and stop
+// }
                 // 2023.8.2: trimRightBrace removed to deal with conversion of example containing name Oblo{\v z}insk{\' y}
                 // However, it must have been included here for a reason, so probably it should be included under
                 // some conditions.
@@ -3131,6 +3164,13 @@ class Converter
                     }
                     $this->verbose('Name with Jr., Sr., or III; fullName: ' . $fullName);
                     $case = 15;
+//                 } elseif (isset($words[$i+2]) && strtolower($words[$i+1][0]) == $words[$i+1][0] && strtolower($words[$i+2][0]) == $words[$i+2][0]) {
+//                     $this->verbose('[convertToAuthors 22]');
+//                     $this->addToAuthorString(30, $authorstring, $this->formatAuthor($fullName));
+//                     $done = true;
+//                     $remainder = $word . ' ' . implode(" ", $remainingWords);
+//                     $this->verbose('Remainder: ' . $remainder);
+// //                    dd($word, $remainder, $fullName, $authorstring);
                 } else {
                     $this->verbose('[convertToAuthors 12]');
                     // Don't rtrim '}' because it could be part of the name: e.g. Oblo{\v z}insk{\' y}.
@@ -4065,7 +4105,7 @@ class Converter
         // First check for some common patterns
         $number = '[1-9][0-9]{0,3}';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
-        $numberRange = $number . '(--?-?' . $number . ')?';
+        $numberRange = $number . '((--?-?|_)' . $number . ')?';
         $pages = '[Pp]p?( |\. )|[Pp]ages ';
         $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')';
         $numberRx = '('. $this->numberRegExp . ')?(?P<num>' . $numberRange . ')';
@@ -4080,11 +4120,11 @@ class Converter
         if (preg_match('/^' . $volumeRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
             $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
-            $this->setField($item, 'pages', str_replace(['---', '--'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
+            $this->setField($item, 'pages', str_replace(['---', '--', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
             $remainder = '';
         } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
-            $this->setField($item, 'pages', str_replace(['---', '--'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5');
+            $this->setField($item, 'pages', str_replace(['---', '--', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5');
             $remainder = '';
         } elseif (preg_match('/^' . $volumeWordRx . $punc1 . $numberWordRx . '$/', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
@@ -4092,7 +4132,7 @@ class Converter
             $remainder = '';
         } elseif (preg_match('/^' . $volumeWordLetterRx . $punc1 . $pagesRx . '$/', $remainder, $matches)) {
                $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
-               $this->setField($item, 'pages', str_replace(['---', '--'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5');
+               $this->setField($item, 'pages', str_replace(['---', '--', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5');
                $remainder = '';
         } else {
             // If none of the common patterns fits, fall back on approach that first looks for a page range then
