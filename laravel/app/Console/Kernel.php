@@ -32,15 +32,10 @@ class Kernel extends ConsoleKernel
                 $fileModifiedDateTime = Carbon::parse($time);
                 
                 if (Carbon::now()->gt($fileModifiedDateTime->addDays(7))) {
-                    echo $file."<br>";
+                    //echo $file."<br>";
                     Storage::disk("public")->delete($file);
                 }
             }
-
-            //     if (Storage::disk('public')->lastModified($file) < now()->subDays(7)->getTimestamp()) {
-            //         Storage::disk('public')->delete($file);
-            //     }
-            // }
         })
         ->dailyAt('2:30')
         ->emailOutputOnFailure(config('app.job_failure_email'));
