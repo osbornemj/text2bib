@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
                 $fileModifiedDateTime = Carbon::parse($time);
                 
                 if (Carbon::now()->gt($fileModifiedDateTime->addDays(7))) {
-                    //echo $file."<br>";
+                    echo $file."<br>";
                     Storage::disk("public")->delete($file);
                 }
             }
