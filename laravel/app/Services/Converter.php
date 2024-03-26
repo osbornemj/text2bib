@@ -2850,6 +2850,7 @@ class Converter
                 $remainingWords = array_merge([$firstWord, '(' . Str::after($word, '(')], $remain);
                 $word = $firstWord;
             }
+            
             if ($case == 12 
                     && ! in_array($word, ['Jr.', 'Jr.,', 'Sr.', 'Sr.,', 'III', 'III,']) 
                     // Deal with names like Bruine de Bruin, W.

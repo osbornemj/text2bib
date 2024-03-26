@@ -3095,7 +3095,7 @@ class ExampleSeeder extends Seeder
                         'source' => 'Dunaway S, Rothaus A, Zhang Y, Luisa Kadekaro A, Andl T, Andl CD. Divide and conquer: two stem cell populations in squamous epithelia, reserves and the active duty forces. Int J Oral Sci. 2019;11: 26. ',
                         'type' => 'article',
                         'bibtex' => [
-                            'author' => 'Dunaway, S. and Rothaus, A. and Zhang, Y. and Luisa Kadekaro, A. and Andl, T. and Andl C. D.',
+                            'author' => 'Dunaway, S. and Rothaus, A. and Zhang, Y. and Luisa Kadekaro, A. and Andl, T. and Andl, C. D.',
                             'title' => 'Divide and conquer: two stem cell populations in squamous epithelia, reserves and the active duty forces',
                             'journal' => 'Int J Oral Sci',
                             'year' => '2019',
@@ -3186,6 +3186,51 @@ class ExampleSeeder extends Seeder
                             'title' => 'Spatial organisation and homeostasis of epithelial lineages at the gastroesophageal junction is regulated by the divergent Wnt mucosal microenvironment',
                             'archiveprefix' => 'bioXiv',
                             'eprint' => 'p. 2021.08.05.455222',
+                            ]
+                    ],
+                    [
+                        'source' => 'Aichelin. (n.d.). LFP vs NMC batteries: Unveiling the differences for a sustainable future. Retrieved from Aichelin AT Industrial furnace solutions: https://www.aichelin.at/en/products/topics/lfp-vs-nmc-battery ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'author' => 'Aichelin',
+                            'title' => 'LFP vs NMC batteries: Unveiling the differences for a sustainable future',
+                            'year' => 'n.d.',
+                            'url' => 'https://www.aichelin.at/en/products/topics/lfp-vs-nmc-battery',
+                            'note' => 'Retrieved from Aichelin AT Industrial furnace solutions',
+                            ]
+                    ],
+                    [
+                        'source' => 'Brakels, R. (2017). P-Type And N-Type Solar Cells’ Excellent Electron Adventure. Retrieved from Solar Quotes Blog: https://www.solarquotes.com.au/blog/p-type-and-n-type-solar-cells-excellent-electron-adventure/ ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'author' => 'Brakels, R.',
+                            'title' => 'P-Type And N-Type Solar Cells\' Excellent Electron Adventure',
+                            'year' => '2017',
+                            'url' => 'https://www.solarquotes.com.au/blog/p-type-and-n-type-solar-cells-excellent-electron-adventure/',
+                            'note' => 'Retrieved from Solar Quotes Blog',
+                            ]
+                    ],
+                    [
+                        'source' => 'Pickerel, K. (2018, July 2). The difference between n-type and p-type solar cells. Retrieved from Solar Power World: https://www.solarpowerworldonline.com/2018/07/the-difference-between-n-type-and-p-type-solar-cells/ ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'author' => 'Pickerel, K.',
+                            'title' => 'The difference between n-type and p-type solar cells',
+                            'year' => '2018',
+                            'url' => 'https://www.solarpowerworldonline.com/2018/07/the-difference-between-n-type-and-p-type-solar-cells/',
+                            'urldate' => '2018, July 2',
+                            'note' => 'Retrieved from Solar Power World',
+                            ]
+                    ],
+                    [
+                        'source' => 'Reynolds, M. (2022, January 4). Gravity Could Solve Clean Energy’s One Major Drawback. Retrieved from https://www.wired.com/story/energy-vault-gravity-storage/ ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'author' => 'Reynolds, M.',
+                            'title' => 'Gravity Could Solve Clean Energy’s One Major Drawback',
+                            'year' => '2022',
+                            'url' => 'https://www.wired.com/story/energy-vault-gravity-storage/',
+                            'urldate' => '2022, January 4',
                             ]
                     ],
                     
