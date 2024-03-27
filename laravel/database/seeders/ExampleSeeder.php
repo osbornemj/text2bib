@@ -3234,6 +3234,80 @@ class ExampleSeeder extends Seeder
                             'urldate' => '2022, January 4',
                             ]
                     ],
+                    [
+                        'source' => 'Gracyk, T., Rhythm and Noise: An Aesthetics of Rock, Durham: Duke University Press, 1996. ',
+                        'type' => 'book',
+                        'bibtex' => [
+                            'author' => 'Gracyk, Theodore',
+                            'title' => 'Rhythm and Noise: An Aesthetics of Rock',
+                            'year' => '1996',
+                            'address' => 'Durham',
+                            'publisher' => 'Duke University Press',
+                            ]
+                    ],
+                    [
+                        'source' => 'Karki, M. (2022) Deepfake and real images, Kaggle. Available at: https://www.kaggle.com/datasets/manjilkarki/deepfake-and-real-images (Accessed: 9 July 2023).  ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'url' => 'https://www.kaggle.com/datasets/manjilkarki/deepfake-and-real-images',
+                            'author' => 'Karki, M.',
+                            'year' => '2022',
+                            'title' => 'Deepfake and real images, Kaggle',
+                            'urldate' => '9 July 2023',
+                            ]
+                    ],
+                    [
+                        'source' => 'Bishop-Taylor, R., Nanson, R., Sagar, S., Lymburner, L. (2021). Mapping Australia\'s dynamic coastline at mean sea level using three decades of Landsat imagery. *Remote Sensing of Environment*, 267, 112734. https://doi.org/10.1016/j.rse.2021.112734  ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'doi' => '10.1016/j.rse.2021.112734',
+                            'author' => 'Bishop-Taylor, R. and Nanson, R. and Sagar, S. and Lymburner, L.',
+                            'year' => '2021',
+                            'title' => 'Mapping Australia\'s dynamic coastline at mean sea level using three decades of Landsat imagery',
+                            'journal' => 'Remote Sensing of Environment',
+                            'volume' => '267',
+                            'note' => 'Article 112734',
+                            ]
+                    ],
+                    [
+                        'source' => 'Anilan, T., Satilmis, U., Kankal, M., & Yuksek, O. (2016). Application of Artificial Neural Networks and regression analysis to L-moments based regional frequency analysis in the Eastern Black Sea Basin, Turkey. KSCE Journal of Civil Engineering, 20, 2082-2092. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Anilan, T. and Satilmis, U. and Kankal, M. and Yuksek, O.',
+                            'year' => '2016',
+                            'title' => 'Application of Artificial Neural Networks and regression analysis to L-moments based regional frequency analysis in the Eastern Black Sea Basin, Turkey',
+                            'journal' => 'KSCE Journal of Civil Engineering',
+                            'volume' => '20',
+                            'pages' => '2082-2092',
+                            ]
+                    ],
+                    [
+                        'source' => 'Barnard, P. L., Erikson, L. H., Foxgrover, A. C., Hart, J. A. F., Limber, P., O’Neill, A. C., ... & Jones, J. M. (2019). Dynamic flood modeling essential to assess the coastal impacts of climate change. Scientific reports, 9(1), 4309. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Barnard, P. L. and Erikson, L. H. and Foxgrover, A. C. and Hart, J. A. F. and Limber, P. and O\'Neill, A. and others and Jones, J. M.',
+                            'title' => 'C',
+                            'year' => '2019',
+                            'title' => 'Dynamic flood modeling essential to assess the coastal impacts of climate change',
+                            'journal' => 'Scientific reports',
+                            'volume' => '9',
+                            'number' => '1',
+                            'pages' => '4309',
+                            ]
+                    ],
+                    [
+                        'source' => 'Cai, W., Santoso, A., Collins, M., Dewitte, B., Karamperidou, C., Kug, J. S., ... & Zhong, W. (2021). Changing El Niño–Southern oscillation in a warming climate. Nature Reviews Earth & Environment, 2(9), 628-644. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Cai, W. and Santoso, A. and Collins, M. and Dewitte, B. and Karamperidou, C. and Kug, J. and others and Zhong, W.',
+                            'year' => '2021',
+                            'title' => 'Changing El Ni{\~n}o--Southern oscillation in a warming climate',
+                            'journal' => 'Nature Reviews Earth & Environment',
+                            'volume' => '2',
+                            'number' => '9',
+                            'pages' => '628-644',
+                            ]
+                    ],                    
                     
                     
                                                            
