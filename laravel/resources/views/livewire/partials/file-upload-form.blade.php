@@ -28,7 +28,7 @@
                     <b>Either</b> each reference in your file must be on a separate line <b>or</b> the references must be separated by blank lines.
                 </li>
                 <li>
-                    Each reference must start with either the authors or the year, and if it starts with the year, the authors must come next.  In addition, the reference must include a title.
+                    Each reference must start with either the authors or the year, and if it starts with the year, the authors must come next.  In addition, each reference must include a title.
                 </li>
                 <li>
                     Your file must be plain text (txt), with character encoding utf-8.
