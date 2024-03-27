@@ -1205,7 +1205,7 @@ class ExampleSeeder extends Seeder
                     'bibtex' => [
                         'year' => '1999',
                         'pages' => '799-824',
-                        'title' => 'To each according to...? Markets, tournaments and the matching problem with borrowing constraints',
+                        'title' => 'To each according to ... ? Markets, tournaments and the matching problem with borrowing constraints',
                         'author' => 'Fern{\\\'a}ndez, R. and J. Gal{\\\'\i}',
                         'volume' => '66',
                         'journal' => 'Review of Economic Studies',
@@ -2939,6 +2939,7 @@ class ExampleSeeder extends Seeder
                             'title' => 'Saudi Arabia Says $50 Billion Investments Agreed With China',
                             'year' => '2022',
                             'urldate' => '2022, December 12',
+                            'note' => 'Retrieved from Bloomberg.com Website',
                             ]
                     ],
                     [
@@ -3078,7 +3079,7 @@ class ExampleSeeder extends Seeder
                             'urldate' => '13 12 2023',
                             ]
                     ],
-                    [
+                    [   
                         'source' => '\bibitem{mni1}Mazziotta, J., Toga, A., Evans, A., Fox, P., Lancaster, J., Zilles, K., ...\& Mazoyer, B. (2001). A four-dimensional probabilistic atlas of the human brain. \textit{Journal of the American Medical Informatics Association}, 8(5), 401-430. ',
                         'type' => 'article',
                         'bibtex' => [
@@ -3107,8 +3108,8 @@ class ExampleSeeder extends Seeder
                         'source' => 'Alcolea MP, Jones PH. Cell competition: winning out by losing notch. Cell Cycle. 2015;14: 9–17. ',
                         'type' => 'article',
                         'bibtex' => [
-                            'author' => 'Alcolea, M. P. and Jones PH. ',
-                            'title' => 'Cell competition winning out by losing notch',
+                            'author' => 'Alcolea, M. P. and Jones, P. H.',
+                            'title' => 'Cell competition: winning out by losing notch',
                             'journal' => 'Cell Cycle',
                             'year' => '2015',
                             'volume' => '14',
@@ -3119,7 +3120,7 @@ class ExampleSeeder extends Seeder
                         'source' => 'Andreatta M, Carmona SJ. UCell: Robust and scalable single-cell gene signature scoring. Comput Struct Biotechnol J. 2021;19: 3796–3798. ',
                         'type' => 'article',
                         'bibtex' => [
-                            'author' => 'Andreatta, M. and Carmona SJ.',
+                            'author' => 'Andreatta, M. and Carmona, S. J.',
                             'title' => ' UCell: Robust and scalable single-cell gene signature scoring',
                             'year' => '2021',
                             'journal' => 'Comput Struct Biotechnol J',
@@ -3184,7 +3185,7 @@ class ExampleSeeder extends Seeder
                             'author' => 'Kumar, N. and Gurumurthy, R. K. and Prakash, P. G. and Kurian, S. M. and Wentland, C. and Brinkmann, V. and Mollenkopf, H.-J. and Krammer, T. and Toussaint, C. and Saliba, A.-E. and Biebl, M. and Juergensen, C. and Wiedenmann, B. and Meyer, T. F. and Chumduri, C.',
                             'year' => '2021',
                             'title' => 'Spatial organisation and homeostasis of epithelial lineages at the gastroesophageal junction is regulated by the divergent Wnt mucosal microenvironment',
-                            'archiveprefix' => 'bioXiv',
+                            'archiveprefix' => 'bioRxiv',
                             'eprint' => 'p. 2021.08.05.455222',
                             ]
                     ],
@@ -3227,7 +3228,7 @@ class ExampleSeeder extends Seeder
                         'type' => 'online',
                         'bibtex' => [
                             'author' => 'Reynolds, M.',
-                            'title' => 'Gravity Could Solve Clean Energy’s One Major Drawback',
+                            'title' => 'Gravity Could Solve Clean Energy\'s One Major Drawback',
                             'year' => '2022',
                             'url' => 'https://www.wired.com/story/energy-vault-gravity-storage/',
                             'urldate' => '2022, January 4',
