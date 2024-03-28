@@ -325,9 +325,13 @@ class Converter
 
         $doi = $this->extractLabeledContent(
             $remainder,
-            ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/',
+            ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/|doi.org/',
             '[^ ]+'
         );
+
+        if (substr_count($doi, ')') > substr_count($doi, '(') && substr($doi, -1) == ')') {
+            $doi = substr($doi, 0, -1);
+        }
 
         // In case item says 'doi: https://...'
         $doi = Str::replaceStart('https://doi.org/', '', $doi);
@@ -424,7 +428,7 @@ class Converter
         }
 
         if (! empty($url)) {
-            $this->setField($item, 'url', $url, 'setField 4');
+            $this->setField($item, 'url', rtrim($url, ')'), 'setField 4');
             if (! empty($accessDate)) {
                 $this->setField($item, 'urldate', $accessDate, 'setField 5a');
             }

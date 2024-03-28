@@ -3318,7 +3318,83 @@ class ExampleSeeder extends Seeder
                             'volume' => '90',
                             'pages' => '487-497',
                             ]
-                    ],                    
+                    ],
+                    [
+                        'source' => '\bibitem{1}  Vandromme P, Schmitt FG, Souissi S, Buskey EJ, Strickler JR,  Wu C-H, Hwang JS. 2010  Symbolic analysis of plankton swimming trajectories: case study of {\em Strobilidium} sp (Protista) helical walking under various food conditions.  {\em Zool. Stud.} {\bf 49}, 289-303.  (https://archimer.ifremer.fr/doc/00070/18171/) ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'url' => 'https://archimer.ifremer.fr/doc/00070/18171/',
+                            'author' => 'Vandromme, P. and Schmitt, F. G. and Souissi, S. and Buskey, E. J. and Strickler, J. R. and Wu, C.-H. and Hwang, J. S.',
+                            'year' => '2010',
+                            'title' => 'Symbolic analysis of plankton swimming trajectories: case study of {\em Strobilidium} sp (Protista) helical walking under various food conditions',
+                            'journal' => 'Zool. Stud.',
+                            'pages' => '289-303',
+                            'volume' => '49',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{2}  Almeida PJ, Vieira MV, Kajin M, Forero-Medina G,  Cerqueira R.  2010  Indices of movement behaviour: conceptual background,  effects of scale and location errors. {\em Zoologia} (Curitiba) {\bf 27}, 674–680.  (doi.org/10.1590/S1984-46702010000500002) ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Almeida, P. J. and Vieira, M. V. and Kajin, M. and Forero-Medina, G. and Cerqueira, R.',
+                            'year' => '2010',
+                            'title' => 'Indices of movement behaviour: conceptual background, effects of scale and location errors',
+                            'journal' => 'Zoologia',
+                            'pages' => '674-680',
+                            'volume' => '27',
+                            'doi' => '10.1590/S1984-46702010000500002',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{rasher-2016} Lasley-Rasher RS, Nagel K, Angra A, Yen J.  2016 Intoxicated copepods: ingesting toxic phytoplankton leads to risky behaviour. {\em Proc. R. Soc. B} {\bf 283}, 20160176. (https://doi.org/10.1098/rspb.2016.0176) ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'doi' => '10.1098/rspb.2016.0176',
+                            'author' => 'Lasley-Rasher, R. S. and Nagel, K. and Angra, A. and Yen, J.',
+                            'year' => '2016',
+                            'title' => 'Intoxicated copepods: ingesting toxic phytoplankton leads to risky behaviour',
+                            'journal' => 'Proc. R. Soc. B',
+                            'volume' => '283',
+                            'note' => 'Article 20160176',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{S27}  Schmitt FG, Seuront L, Hwang JS, Souissi S, Tseng LC. 2006  Scaling of swimming sequences in copepod behavior:  data analysis and simulation.  {\em Physica A} {\bf 364}, 287-296.  (doi.org/10.1016/j.physa.2005.09.04) ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Schmitt, F. G. and Seuront, L. and Hwang, J. S. and Souissi, S. and Tseng, L. C.',
+                            'year' => '2006',
+                            'title' => 'Scaling of swimming sequences in copepod behavior: data analysis and simulation',
+                            'journal' => 'Physica A',
+                            'pages' => '287-296',
+                            'volume' => '364',
+                            'doi' => '10.1016/j.physa.2005.09.04',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{S36}  Anderson TW, Goodman LA.  1957  Statistical inference about Markov chains.  {\em Ann. Math. Statist.} {\bf 28}, 89-110.  (http://www.jstor.org/stable/2237025) ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'url' => 'http://www.jstor.org/stable/2237025',
+                            'author' => 'Anderson, T. W. and Goodman, L. A.',
+                            'year' => '1957',
+                            'title' => 'Statistical inference about {M}arkov chains',
+                            'journal' => 'Ann. Math. Statist.',
+                            'pages' => '89-110',
+                            'volume' => '28',
+                            ]
+                    ],
+                    [
+                        'source' => 'Baade, A., Peng, P., and Harwath, D. Mae-ast: Masked autoencoding audio spectrogram transformer. arXiv, abs/2203.16691, 2022. ',
+                        'type' => 'unpublished',
+                        'bibtex' => [
+                            'author' => 'Baade, A. and Peng, P. and Harwath, D. Mae-ast',
+                            'title' => 'Masked autoencoding audio spectrogram transformer. arXiv, abs/2203.16691, 2022',
+                            'year' => '',
+                            ]
+                    ],
+                    
+                                        
                     
                     
                                                            
