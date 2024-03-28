@@ -3039,7 +3039,7 @@ class ExampleSeeder extends Seeder
                         'bibtex' => [
                             'author' => 'van den Oord, A. and Dieleman, S. and Zen, H. and Simonyan, K. and Vinyals, O. and Graves, A. and Kavukcuoglu, K.',
                             'year' => '2016',
-                            'journal' => 'Wavenet: A generative model for raw audio',
+                            'title' => 'Wavenet: A generative model for raw audio',
                             'pages' => '125-125',
                             'booktitle' => '9th ISCA Speech Synthesis Workshop',
                             ]
@@ -3238,7 +3238,7 @@ class ExampleSeeder extends Seeder
                         'source' => 'Gracyk, T., Rhythm and Noise: An Aesthetics of Rock, Durham: Duke University Press, 1996. ',
                         'type' => 'book',
                         'bibtex' => [
-                            'author' => 'Gracyk, Theodore',
+                            'author' => 'Gracyk, T.',
                             'title' => 'Rhythm and Noise: An Aesthetics of Rock',
                             'year' => '1996',
                             'address' => 'Durham',
@@ -3285,8 +3285,7 @@ class ExampleSeeder extends Seeder
                         'source' => 'Barnard, P. L., Erikson, L. H., Foxgrover, A. C., Hart, J. A. F., Limber, P., O’Neill, A. C., ... & Jones, J. M. (2019). Dynamic flood modeling essential to assess the coastal impacts of climate change. Scientific reports, 9(1), 4309. ',
                         'type' => 'article',
                         'bibtex' => [
-                            'author' => 'Barnard, P. L. and Erikson, L. H. and Foxgrover, A. C. and Hart, J. A. F. and Limber, P. and O\'Neill, A. and others and Jones, J. M.',
-                            'title' => 'C',
+                            'author' => 'Barnard, P. L. and Erikson, L. H. and Foxgrover, A. C. and Hart, J. A. F. and Limber, P. and O\'Neill, A. C. and others and Jones, J. M.',
                             'year' => '2019',
                             'title' => 'Dynamic flood modeling essential to assess the coastal impacts of climate change',
                             'journal' => 'Scientific reports',
@@ -3299,13 +3298,25 @@ class ExampleSeeder extends Seeder
                         'source' => 'Cai, W., Santoso, A., Collins, M., Dewitte, B., Karamperidou, C., Kug, J. S., ... & Zhong, W. (2021). Changing El Niño–Southern oscillation in a warming climate. Nature Reviews Earth & Environment, 2(9), 628-644. ',
                         'type' => 'article',
                         'bibtex' => [
-                            'author' => 'Cai, W. and Santoso, A. and Collins, M. and Dewitte, B. and Karamperidou, C. and Kug, J. and others and Zhong, W.',
+                            'author' => 'Cai, W. and Santoso, A. and Collins, M. and Dewitte, B. and Karamperidou, C. and Kug, J. S. and others and Zhong, W.',
                             'year' => '2021',
                             'title' => 'Changing El Ni{\~n}o--Southern oscillation in a warming climate',
                             'journal' => 'Nature Reviews Earth & Environment',
                             'volume' => '2',
                             'number' => '9',
                             'pages' => '628-644',
+                            ]
+                    ],
+                    [
+                        'source' => '\bibitem{Nash1962} J. Nash, Le problème de Cauchy pour les équations différentielles d’un fluide 	général, Bull. Soc. Math. France 90 (1962) 487–497. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'J. Nash',
+                            'title' => 'Le probl{\`e}me de Cauchy pour les {\\\'e}quations diff{\\\'e}rentielles d\'un fluide g{\\\'e}n{\\\'e}ral',
+                            'year' => '1962',
+                            'journal' => 'Bull. Soc. Math. France',
+                            'volume' => '90',
+                            'pages' => '487-497',
                             ]
                     ],                    
                     

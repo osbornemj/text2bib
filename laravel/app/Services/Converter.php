@@ -172,7 +172,7 @@ class Converter
         $this->forthcomingRegExp7 = '/^[Tt]o appear in/';
 
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
-        $this->proceedingsRegExp = 'proceedings of |conference on |symposium on |.* meeting |.* conference proceedings|proc\..*(conf\.|conference)?|actas del ';
+        $this->proceedingsRegExp = 'proceedings of |conference on |symposium on |.* meeting |.* conference proceedings|proc\..*(conf\.|conference)?|.* workshop |actas del ';
         $this->proceedingsExceptions = ['Proceedings of the National Academy', 'Proceedings of the Royal Society'];
 
         $this->thesisRegExp = '( [Tt]hesis| [Dd]issertation)';
@@ -364,7 +364,7 @@ class Converter
 
         // Entry contains "retrieved from http ... <access date>".
         // Assumes URL is at the end of entry (or absent).  After "retrieved from" may be words like "New York Times website:".
-        $urlWithAccessDateAfter = $this->extractLabeledContent($remainder, '( [Rr]etrieved from [A-Za-z.: ]{0,50} ?|Available: )', 'http\S+( .*)?$', true);
+        $urlWithAccessDateAfter = $this->extractLabeledContent($remainder, '( [Rr]etrieved from [A-Za-z.: ]{0,50} ?|Available( at)?: )', 'http\S+( .*)?$', true);
         // Dates are between 10 and 17 characters long
         $labelRegExp = ' [Rr]etrieved (?P<date1>[a-zA-Z0-9 ]{10,17} )?from | [Aa]ccessed (?P<date2>[a-zA-Z0-9 ]{10,17} )?at ';
         $urlWithAccessDateBefore = $this->extractLabeledContent($remainder, $labelRegExp, 'http[^ ]+$', true);
@@ -1031,7 +1031,7 @@ class Converter
                     if (Str::startsWith($journal, ['in: ', 'In: '])) {
                         $journal = substr($journal, 4);
                     }
-                    $this->setField($item, 'journal', $journal, 'setField 19');
+                    $this->setField($item, 'journal', trim($journal, '*'), 'setField 19');
                 } else {
                     $warnings[] = "Item seems to be article, but journal not found.  Setting type to unpublished.";
                     $itemKind = 'unpublished';  // but continue processing as if journal
@@ -2422,9 +2422,19 @@ class Converter
                         ) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
                         $skipNextWord = true;
-                    // else if next word is short and ends with period, assume it is the first word of the publication info, which
-                    // is an abbreviation,
-                    } elseif ($nextWord && strlen($nextWord) < 8 && Str::endsWith($nextWord, '.') && (! $journal || rtrim($nextWord, '.') == rtrim(strtok($journal, ' '), '.'))) {
+                    // else if next word is short and ends with period, and either $word does not end in a comma, or $nextWord
+                    // is the last one or $nextWord is not
+                    // in the dictionary or $nextWord is initials or the following word starts with a lowercase letter,
+                    // assume it is the first word of the publication info, which is an abbreviation.
+                    } elseif 
+                        (
+                            $nextWord && 
+                            strlen($nextWord) < 8 &&
+                            Str::endsWith($nextWord, '.') && 
+                            isset($words[$key+2]) &&
+                            (! Str::endsWith($word, ',') || ! $this->inDict(substr($nextWord,0,-1)) || $this->isInitials($nextWord) || mb_strtolower($words[$key+2][0]) == $words[$key+2][0]) && 
+                            (! $journal || rtrim($nextWord, '.') == rtrim(strtok($journal, ' '), '.'))
+                        ) {
                         $this->verbose("Ending title, case 4");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
@@ -2461,23 +2471,31 @@ class Converter
                     } else {
                         // else if word ends with period and there are 5 or more words till next punctuation, which is a period,
                         // and at least three non-stopwords are all lowercase, continue [to catch Example 116]
-                        $wordsToNextPeriod = explode(' ',  $stringToNextPeriod);
+                        // Treat hyphens in words as spaces
+                        $modStringToNextPeriod = preg_replace('/([a-z])-([a-z])/', '$1 $2', $stringToNextPeriod);
+                        $wordsToNextPeriod = explode(' ',  $modStringToNextPeriod);
                         $lcWordCount = 0;
                         foreach ($wordsToNextPeriod as $remainingWord) {
-                            if (!in_array($remainingWord, $this->stopwords) && mb_strtolower($remainingWord) == $remainingWord) {
+                            if (!in_array($remainingWord, $this->stopwords) && ctype_alpha($remainingWord[0]) && mb_strtolower($remainingWord) == $remainingWord) {
                                 $lcWordCount++;
                             }
                         }
                         if ($lcWordCount > 2
-                            && Str::endsWith($word, ['.']) 
-                            && substr_count($stringToNextPeriod, ',') == 0
-                            && substr_count($stringToNextPeriod, ':') == 0
-                            && substr_count($stringToNextPeriod, ' ') > 3
+                            // comma added in next line to deal with one case, but it may be dangerous
+                            && Str::endsWith($word, ['.', ',']) 
+                            && substr_count($modStringToNextPeriod, ',') == 0
+                            && substr_count($modStringToNextPeriod, ':') == 0
+                            && substr_count($modStringToNextPeriod, ' ') > 3
 
                         ) {
-                            $this->verbose("Not ending title, case 6");
-                        // otherwise assume the punctuation ends the title.
+                            $this->verbose("Not ending title, case 6 (word '" . $word ."')");
+                        } elseif (! isset($words[$key+2])) {
+                            $this->verbose("Adding \$nextWord (" . $nextWord . "), last in string, and ending title (word '" . $word ."')");
+                            $title = implode(' ', $initialWords) . ' ' . $nextWord;
+                            $remainder = '';
+                            break;
                         } else {
+                            // otherwise assume the punctuation ends the title.
                             $this->verbose("Ending title, case 6 (word '" . $word ."')");
                             $title = rtrim(implode(' ', $initialWords), '.,');
                             break;
@@ -2746,7 +2764,7 @@ class Converter
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
         // 'y' is for Spanish, 'e' for Portuguese, 'et' for French
-        return mb_strtolower($string) == $this->phrases['and'] || in_array($string, ['\\&', '&', 'y', 'e', 'et']) || $string == 'with';
+        return mb_strtolower($string) == $this->phrases['and'] || in_array($string, ['\&', '&', 'y', 'e', 'et']) || $string == 'with';
     }
 
     /*
@@ -2954,12 +2972,17 @@ class Converter
                 //
             } elseif ($word == '...') {
                 $this->verbose('[convertToAuthors 1]');
-                $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
+                if (isset($words[$i+1]) && $this->isAnd($words[$i+1])) {
+                    $this->addToAuthorString(3, $authorstring, ' and others');
+                } else {
+                    $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
+                }
                 //array_shift($remainingWords);
                 $fullName = '';
                 $namePart = 0;
                 $authorIndex++;
                 $remainder = implode(" ", $remainingWords);
+                $done = false;
             } elseif ($edResult) {
                 $this->verbose('[convertToAuthors 2]');
                 if ($edResult == 1 && $multipleAuthors) {
@@ -2987,6 +3010,7 @@ class Converter
             } elseif ($determineEnd && $done) {
                 break;  // exit from foreach
             } elseif ($this->isAnd($word) && ($word != 'et' || ! in_array($nextWord, ['al..', 'al.', 'al']))) {
+                //dump($word);
                 $this->verbose('[convertToAuthors 3]');
                 // Word is 'and' or equivalent, and if it is "et" it is not followed by "al".
                 $hasAnd = $prevWordAnd = true;
@@ -3255,18 +3279,21 @@ class Converter
                         $determineEnd &&
                         isset($remainingWords[0]) &&
                         ! $this->isAnd($remainingWords[0]) && 
-//                        count($bareWords) > 2 &&
-//                        $nameScore['score'] / $nameScore['count'] < 0.25 &&
-                        (count($bareWords) > 2
+                        (count($bareWords) > 3
                             ||
                             (
-                                $this->inDict($remainingWords[0])
-                                && isset($remainingWords[1]) && $this->inDict($remainingWords[1]) && strtolower($remainingWords[1][0]) == $remainingWords[1][0]
+                                ($this->inDict($remainingWords[0]) && ! $this->isInitials(trim($remainingWords[0], ',')))
+                                && isset($remainingWords[1]) && $this->inDict($remainingWords[1]) && strtolower($remainingWords[1][0]) == $remainingWords[1][0] && $remainingWords[1] != '...'
                                 && isset($remainingWords[2]) && $this->inDict($remainingWords[2]) && strtolower($remainingWords[2][0]) == $remainingWords[2][0]
                             )
                         )
                         &&
-                        ($nameScore['count'] == 0 || $nameScore['score'] / $nameScore['count'] < 0.25) &&
+                        (
+                            $nameScore['count'] == 0 ||
+                            $nameScore['score'] / $nameScore['count'] < 0.25 ||
+                            (mb_strtolower($bareWords[1]) == $bareWords[1] && ! $this->isAnd($bareWords[1]) && ! in_array($bareWords[1], $this->vonNames))
+                        )
+                        &&
                         (
                             ! $this->isInitials($remainingWords[0])
                             ||
@@ -3278,6 +3305,7 @@ class Converter
                     // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
                     // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
                     // at comma.
+                    //dd($word);
                     $this->verbose('[convertToAuthors 28]');
                     $done = true;
                     $this->addToAuthorString(11, $authorstring, $this->formatAuthor($fullName));
@@ -3302,6 +3330,11 @@ class Converter
                             $this->addToAuthorString(12, $authorstring, $this->formatAuthor($fullName));
                             $case = 11;
                         }
+                    } elseif (substr($words[$i+1],-1) != ',' && isset($words[$i+2]) && $this->isAnd($words[$i+2])) {
+                        // $nameComplete and next word does not end in a comma and following work is 'and'
+                        $this->verbose('[convertToAuthors 30]');
+                        $this->addToAuthorString(13, $authorstring, $this->formatAuthor($fullName));
+                        $done = true;
                     } else {
                         // If word ends in comma or semicolon and 'and' has not occurred.
                         // To cover case of last name containing a space, look ahead to see if next word
@@ -3316,25 +3349,28 @@ class Converter
                                     ||
                                     $this->getQuotedOrItalic($words[$i + 2], true, false, $before, $after)
                                 )) {
-                            $this->verbose('[convertToAuthors 30]');
+                            $this->verbose('[convertToAuthors 31]');
                             $fullName .= ',';
                         } else {
-                            $this->verbose('[convertToAuthors 31]');
+                            //dump($word, $bareWords, $nameScore);
                             // Low name score relative to number of bareWords (e.g. less than 25% of words not in dictionary)
-                            if ($nameScore['count'] > 1 && $nameScore['score'] / $nameScore['count'] < 0.25) {
-                                $this->addToAuthorString(13, $authorstring, $this->formatAuthor($fullName));
+                            if ($nameScore['count'] > 2 && $nameScore['score'] / $nameScore['count'] < 0.25) {
+                                $this->verbose('[convertToAuthors 32]');
+                                $this->addToAuthorString(14, $authorstring, $this->formatAuthor($fullName));
                                 $done = true;
                             // publication info must take at least 7 words, so with author name there must be at
                             // least 9 words left for author to be added.  Applies mostly to books with short titles.
                             } elseif ($type == 'authors' && count($remainingWords) < 9 && $determineEnd) {
+                                $this->verbose('[convertToAuthors 33]');
                                 $this->addToAuthorString(15, $authorstring, $this->formatAuthor($fullName));
                                 $done = true;
                             }
+                            $this->verbose('[convertToAuthors 34]');
                             $case = 12;
                         }
                     }
                 } else {
-                    $this->verbose('[convertToAuthors 32]');
+                    $this->verbose('[convertToAuthors 35]');
                     if ($wordIsVon) {
                         $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name, so 'namePart' not incremented");
                     } else {
@@ -3868,6 +3904,7 @@ class Converter
             }
 
             if ($stop) {
+                $barewords[] = substr($word, 0, -1);
                 break;
             } else {
                 $barewords[] = $word;
@@ -3890,10 +3927,15 @@ class Converter
         $score = 0;
         foreach ($words as $word) {
             // Names are in dictionary with initial u.c. letter, so convert word to l.c. to exclude them as regular words
-            $word = mb_strtolower($word);
-            if ($word != 'and' || !$ignoreAnd) {
-                $wordsToCheck[] = $word;
-                if (in_array($word, $this->stopwords)) {
+            $lcword = mb_strtolower($word);
+            if (
+                    ($lcword != 'and' || ! $ignoreAnd) &&
+                    ((isset($word[0]) && mb_strtoupper($word[0]) == $word[0]) || in_array($word, $this->vonNames)) &&
+                    ! $this->isInitials($word) &&
+                    ! in_array($word, $this->dictionaryNames)
+                ) {
+                $wordsToCheck[] = $lcword;
+                if (in_array($lcword, $this->stopwords)) {
                     $score -= 2;
                 }
                 if (in_array($word, $this->vonNames)) {
@@ -3905,7 +3947,7 @@ class Converter
         // Number of words in string not in dictionary
         $score += iterator_count($aspell->check($string, ['en_US']));
         
-        $returner = ['count' => count($wordsToCheck), 'score' => $score];
+        $returner = ['count' => count($words), 'score' => $score];
 
         return $returner;
     }
@@ -4325,6 +4367,7 @@ class Converter
     private function cleanText(string $string, string|null $charEncoding): string
     {
         $string = str_replace("\\newblock", "", $string);
+        $string = str_replace("\\newpage", "", $string);
         // Replace each tab with a space
         $string = str_replace("\t", " ", $string);
         $string = str_replace("\\textquotedblleft ", "``", $string);
