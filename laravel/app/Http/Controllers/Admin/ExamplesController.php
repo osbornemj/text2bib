@@ -18,8 +18,13 @@ class ExamplesController extends Controller
             ->with('fields')
             ->paginate(100);
 
-        return view('admin.examples.index')
-            ->with('examples', $examples);
+        $typeOptions = ['verbose' => 'verbose', 'brief' => 'brief'];
+        $utf8Options = ['utf8leave' => 'do not convert accents to TeX', 'utf8' => 'convert accents to TeX'];
+        $languageOptions = ['en' => 'en', 'fr' => 'fr', 'es' => 'es'];
+        $detailOptions = ['show' => 'show', 'hide' => 'hide'];
+
+        return view('admin.examples.index',
+            compact('examples', 'typeOptions', 'utf8Options', 'languageOptions', 'detailOptions'));
     }
 
     public function create(): View

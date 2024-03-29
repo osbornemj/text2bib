@@ -3389,15 +3389,97 @@ class ExampleSeeder extends Seeder
                         'type' => 'unpublished',
                         'bibtex' => [
                             'author' => 'Baade, A. and Peng, P. and Harwath, D. Mae-ast',
-                            'title' => 'Masked autoencoding audio spectrogram transformer. arXiv, abs/2203.16691, 2022',
-                            'year' => '',
+                            'title' => 'Masked autoencoding audio spectrogram transformer',
+                            'archiveprefix' => 'arXiv',
+                            'eprint' => 'abs/2203.16691',
+                            'year' => '2022',
+                            ]
+                    ],
+                    [
+                        'source' => 'Ba, J. L., Kiros, J. R., and Hinton, G. E. Layer normalization. arXiv, abs/1607.06450, 2016. ',
+                        'type' => 'unpublished',
+                        'bibtex' => [
+                            'author' => 'Ba, J. L. and Kiros, J. R. and Hinton, G. E.',
+                            'title' => 'Layer normalization',
+                            'year' => '2016',
+                            'archiveprefix' => 'arXiv',
+                            'eprint' => 'abs/1607.06450',
+                            ]
+                    ],
+                    [
+                        'source' => '\item Bather, J.\ (1995), \textquotedblleft Response Adaptive Allocation and Selection Bias,\textquotedblright\ in:{\it \ Adaptive Designs, }eds.\ N. Flournoy and W.F. Rosenberger, Hayward, CA: Institute of Mathematical Statistics, pp.\ 23-35. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'author' => 'Bather, J.',
+                            'year' => '1995',
+                            'title' => 'Response Adaptive Allocation and Selection Bias',
+                            'pages' => '23-35',
+                            'booktitle' => 'Adaptive Designs',
+                            'editor' => 'N. Flournoy and W.F. Rosenberger',
+                            'publisher' => 'Institute of Mathematical Statistics',
+                            'address' => 'Hayward, CA',
+                            ]
+                    ],
+                    [
+                        'source' => '\item Bischoff, W. (2010), \textquotedblleft An Improvement in the Lack-of-Fit Optimality of the (Absolutely) Continuous Uniform Design in Respect of Exact Designs,\textquotedblright\ in\ {\it mODa 9 - Advances in Model-Oriented Design and Analysis}, eds. Giovagnoli, G., Atkinson, A. and Torsney, B. ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'author' => 'Bischoff, W.',
+                            'year' => '2010',
+                            'title' => 'An Improvement in the Lack-of-Fit Optimality of the (Absolutely) Continuous Uniform Design in Respect of Exact Designs',
+                            'booktitle' => 'mODa 9 - Advances in Model-Oriented Design and Analysis',
+                            'address' => 'Giovagnoli, G. and Atkinson, A. and Torsney, B',
+                            ]
+                    ],
+                    [
+                        'source' => '\item Herzberg, A. M., Prescott, P. and Akhtar, M. (1987); Equi-information robust designs: Which designs are possible?,"{\it The Canadian Journal of Statistics}, 15, 71-76. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Herzberg, A. M. and Prescott, P. and Akhtar, M.',
+                            'year' => '1987',
+                            'title' => 'Equi-information robust designs: Which designs are possible?',
+                            'journal' => 'The Canadian Journal of Statistics',
+                            'volume' => '15',
+                            'pages' => '71-76',
+                            ]
+                    ],
+                    [
+                        'source' => 'Afaneh, M. (2020, Avril 6). Bluetooth Addresses & Privacy in Bluetooth Low Energy. Consulté le Mars 21, 2023, sur NovelBits: https://novelbits.io/bluetooth-address-privacy-ble/ ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'url' => 'https://novelbits.io/bluetooth-address-privacy-ble/',
+                            'author' => 'Afaneh, M.',
+                            'title' => 'Bluetooth Addresses & Privacy in Bluetooth Low Energy',
+                            'year' => '2020',
+                            'month' => 'Avril',
+                            'urldate' => 'Mars 21, 2023',
+                            ]
+                    ],
+                    [
+                        'source' => 'BlueZ Project. (2022, Novembre 14). BlueZ. Consulté le Mars 27, 2023, sur BlueZ: http://www.bluez.org/ ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'url' => 'http://www.bluez.org/',
+                            'author' => 'BlueZ Project',
+                            'title' => 'BlueZ',
+                            'year' => '2022',
+                            'month' => 'Novembre',
+                            'urldate' => 'Mars 27, 2023',
+                            ]
+                    ],
+                    [
+                        'source' => 'Osborn, Z. (2020, Juin 3). peer_to_peer_ble. Récupéré sur Github: https://github.com/keinix/peer_to_peer_ble ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'url' => 'https://github.com/keinix/peer_to_peer_ble',
+                            'urldate' => '2020, Juin 3',
+                            'author' => 'Osborn, Z.',
+                            'title' => 'peer_to_peer_ble',
+                            'year' => '2020',
+                            'note' => 'Github',
                             ]
                     ],
                     
-                                        
-                    
-                    
-                                                           
                 ];
 
             DB::statement('DELETE FROM examples');

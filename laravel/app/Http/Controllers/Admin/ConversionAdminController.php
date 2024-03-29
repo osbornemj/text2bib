@@ -93,10 +93,13 @@ class ConversionAdminController extends Controller
 
         $version = Version::latest()->first()->created_at;
 
+        $userConversion = Conversion::where('user_file_id', $fileId)->first();
+
         $conversion = new Conversion;
         if ($itemSeparator) {
             $conversion->item_separator = $itemSeparator;
         }
+        $conversion->language = $userConversion->language;
         $conversion->report_type == 'detailed';
         $conversion->user_file_id = $fileId;
         $conversion->user_id = Auth::id();

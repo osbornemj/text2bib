@@ -9,6 +9,7 @@ use App\Models\Conversion;
 use App\Models\Example;
 
 use App\Services\Converter;
+use Illuminate\Http\Request;
 
 class ExampleCheckController extends Controller
 {
@@ -19,13 +20,16 @@ class ExampleCheckController extends Controller
         $this->converter = new Converter;
     }
 
-    public function runExampleCheck(bool $verbose = false, bool $showDetailsIfCorrect = false, int $id = null, string $charEncoding = 'utf8'): View
+    public function runExampleCheck(Request $request, string $reportType = 'details', string $language = 'en', string $detailsIfCorrect = 'show', int $id = null, string $charEncoding = 'utf8'): View
     {
+        $id = $request->exampleId ?: $id;
         $examples = $id ? [Example::find($id)] : Example::all();
 
         $conversion = new Conversion;
-        $conversion->char_encoding = $charEncoding ? $charEncoding : 'utf8';
-        $conversion->report_type = $verbose ? 'detailed' : 'standard';
+        $conversion->char_encoding = $request->char_encoding ?: $charEncoding;
+        $conversion->report_type = $request->report_type ?: $reportType;
+        $conversion->language = $request->language ?: $language;
+        $detailsIfCorrect = $request->detailsIfCorret ?: $detailsIfCorrect;
 
         $results = [];
         $allCorrect = true;
@@ -88,11 +92,11 @@ class ExampleCheckController extends Controller
                 }
             }
 
-            if (($verbose && $result['result'] == 'incorrect') || $showDetailsIfCorrect) {
+            if (($conversion->report_type == 'details' && $result['result'] == 'incorrect') || $detailsIfCorrect == 'show') {
                 $result['details'] = $output['details'];
             }
 
-            if (isset($result) && ($result['result'] == 'incorrect' || $showDetailsIfCorrect)) {
+            if (isset($result) && ($result['result'] == 'incorrect' || $detailsIfCorrect == 'show')) {
                 $results[$example->id] = $result;
             }
         }
@@ -100,6 +104,6 @@ class ExampleCheckController extends Controller
         $exampleCount = count($examples);
 
         return view('admin.examples.checkResult',
-            compact('results', 'verbose', 'showDetailsIfCorrect', 'allCorrect', 'exampleCount'));
+            compact('results', 'reportType', 'detailsIfCorrect', 'allCorrect', 'exampleCount'));
     }
 }

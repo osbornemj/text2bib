@@ -7,12 +7,16 @@
     </x-slot>
 
     <div class="px-4 sm:rounded-lg">
-        @if ($allCorrect && !$showDetailsIfCorrect) 
+        @if ($allCorrect && $detailsIfCorrect == 'hide') 
             <span class="bg-green-600">All correct</span> ({{ $exampleCount }} {{ Str::plural('item', $exampleCount) }})
         @else
             <div class="pb-2">
                 <p>
-                    {{ count($results) }} incorrect {{ Str::plural('conversion', $results) }}
+                    @if (count($results) == 1)
+                        1 conversion
+                    @else
+                        {{ count($results) }} incorrect {{ Str::plural('conversion', $results) }}
+                    @endif
                 </p>
             </div>
             @foreach ($results as $id => $result)
@@ -24,9 +28,9 @@
                             <span class="bg-red-500 text-white dark:bg-red-600">incorrect</span> 
                         @endif
                     &nbsp;&bull;&nbsp;
-                    <x-link href="{{ url('/admin/runExampleCheck/1/' . ($showDetailsIfCorrect ? '1' : '0') . '/' . $id) }}">verbose conversion</x-link>
+                    <x-link href="{{ url('/admin/runExampleCheck/1/' . ($detailsIfCorrect == 'show' ? '1' : '0') . '/' . $id) }}">verbose conversion</x-link>
                     &nbsp;&bull;&nbsp;
-                    <x-link href="{{ url('/admin/runExampleCheck/0/' . ($showDetailsIfCorrect ? '1' : '0') . '/' . $id) }}">brief conversion</x-link>
+                    <x-link href="{{ url('/admin/runExampleCheck/0/' . ($detailsIfCorrect == 'show' ? '1' : '0') . '/' . $id) }}">brief conversion</x-link>
                     @if (isset($result['typeError']))
                         <div class="mt-4">
                         Type <span class="text-blue-700 dark:bg-rose-300 bg-rose-400">{{ $result['typeError']['content'] }}</span> instead of <span class="text-blue-700 dark:bg-green-300 bg-green-400">{{ $result['typeError']['correct']}}</span>
@@ -43,7 +47,7 @@
                         {{ $value['correct'] ?: '[null]' }}
                         </div>
                     @endforeach
-                    @if ($verbose)
+                    @if ($reportType == 'details')
                         <div class="mt-4">
                             <ul>
                             @foreach ($result['details'] as $details)

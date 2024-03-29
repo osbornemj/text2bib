@@ -18,6 +18,7 @@ class Conversion extends Model
 
     protected $attributes = [
         'item_separator' => 'line',
+        'language' => 'en',
         'label_style' => 'short',
         'override_labels' => false,
         'line_endings' => 'w',

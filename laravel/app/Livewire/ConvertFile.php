@@ -41,6 +41,7 @@ class ConvertFile extends Component
     public $outputId;
     public $includeSource;
     public $reportType;
+    public $conversion;
 
     public $itemTypeOptions;
     public $itemTypes;
@@ -60,6 +61,7 @@ class ConvertFile extends Component
 
         $defaults = [
             'item_separator' => 'line',
+            'language' => 'en',
             'label_style' => 'short',
             'override_labels' => '1',
             'line_endings' => 'w',
@@ -143,6 +145,9 @@ class ConvertFile extends Component
         $conversion->user_id = Auth::id();
         if ($redo) {
             $conversion->item_separator = 'cr';
+        }
+        if ($conversion->language != 'en') {
+            $conversion->char_encoding = 'utf8leave';
         }
         $conversion->version = $this->version;
         $conversion->save();
@@ -228,7 +233,8 @@ class ConvertFile extends Component
             }
 
             $this->conversionExists = true;
-
+            $this->conversion = $conversion;
+            
             $this->convertedItems = $convertedItems;
             $this->includeSource = $conversion->include_source;
             $this->reportType = $conversion->report_type;

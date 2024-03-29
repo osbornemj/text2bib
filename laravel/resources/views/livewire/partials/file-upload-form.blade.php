@@ -53,7 +53,7 @@
     </div>
 
     <div>
-        <x-input-label for="item_separator" :value="__('Item separator')"  class="mt-4"/>
+        <x-input-label for="item_separator" :value="__('Item separator')" class="mt-4"/>
     
         <x-radio-input wire:model="uploadForm.item_separator" value="line" class="peer/line" /> 
         <x-value-label for="line" class="peer-checked/line:text-blue-600 ml-1" :value="__('Blank line')" />
@@ -69,6 +69,25 @@
         <x-option-info class="peer-checked/cr:block">
             Every line in your file is a separate item.
         </x-option-info>
+    </div>
+
+    <div>
+        <x-input-label for="language" :value="__('Language of auxiliary words in references')" class="mt-4"/>
+    
+        <x-radio-input wire:model="uploadForm.language" value="en" class="peer/en" /> 
+        <x-value-label for="en" class="peer-checked/en:text-blue-600 ml-1" :value="__('English')" />
+
+        <x-radio-input wire:model="uploadForm.language" value="fr" class="peer/fr ml-4" />
+        <x-value-label for="fr" class="peer-checked/fr:text-blue-600 ml-1" :value="__('French')" />
+
+        <x-radio-input wire:model="uploadForm.language" value="es" class="peer/es ml-4" />
+        <x-value-label for="es" class="peer-checked/es:text-blue-600 ml-1" :value="__('Spanish')" />
+
+        <x-input-error :messages="$errors->get('uploadForm.language')" class="mt-2" />
+
+        <div class="mt-2 dark:text-gray-300">
+            Select the language of the auxiliary words in your references, like the month of publication, the word for "and" between authors' names, and the words meaning "retrieved from" for a webpage.  The language of the reference itself (e.g. the title) is not relevant to this setting.  If you choose a setting other than English, accented letters will not be converted to TeX, regardless of the value you choose for that setting (which is modern TeX systems should cause no issues).
+        </div>
     </div>
 
     <div>
