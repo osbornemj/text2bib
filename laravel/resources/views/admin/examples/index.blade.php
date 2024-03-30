@@ -43,12 +43,16 @@
                         @endforeach
                     </div>
                     <div class="mt-2">
+                        @php
+                            $selected = [];
+                            $selected[$example->language] = true;
+                        @endphp
                         <form method="POST" action="{{ url('/admin/runExampleCheck') }}" class="mt-0 space-y-0">
                             @csrf
                             <input type="hidden" id="exampleId" name="exampleId" value="{{ $example->id }}"/>
                             <x-select-input id="report_type" name="report_type" :options="$typeOptions" class="p-2"></x-select-input-plain>
                             <x-select-input id="char_encoding" name="char_encoding" :options="$utf8Options" class="p-2"></x-select-input-plain>
-                            <x-select-input id="language" name="language" :options="$languageOptions" class="p-2"></x-select-input-plain>
+                            <x-select-input id="language" name="language" :options="$languageOptions" :selected="$selected" class="p-2"></x-select-input-plain>
                             <x-select-input id="detailsIfCorrect" name="detailsIfCorrect" :options="$detailOptions" class="p-2"></x-select-input-plain>
                             <x-primary-button class="ml-0">
                                 {{ __('Submit') }}

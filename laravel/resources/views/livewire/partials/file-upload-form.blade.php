@@ -86,7 +86,7 @@
         <x-input-error :messages="$errors->get('uploadForm.language')" class="mt-2" />
 
         <div class="mt-2 dark:text-gray-300">
-            Select the language of the auxiliary words in your references, like the month of publication, the word for "and" between authors' names, and the words meaning "retrieved from" for a webpage.  The language of the reference itself (e.g. the title) is not relevant to this setting.  If you choose a setting other than English, accented letters will not be converted to TeX, regardless of the value you choose for that setting (which is modern TeX systems should cause no issues).
+            Select the language of the <b>auxiliary</b> words in your references, like the month of publication and the words meaning "retrieved from" for a webpage.  The language of the reference itself (e.g. the title) is not relevant to this setting.  If you choose a setting other than English, accented letters will not be converted to TeX, regardless of the value you choose for that setting (which should cause no issues for modern TeX systems).  Even if you select English, words for "and" between authors' name in some languages other than English will be handled correctly.  (If you want languages to be added, post a Comment.)
         </div>
     </div>
 

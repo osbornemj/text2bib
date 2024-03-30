@@ -20,25 +20,40 @@ class ExampleCheckController extends Controller
         $this->converter = new Converter;
     }
 
-    public function runExampleCheck(Request $request, string $reportType = 'details', string $language = 'en', string $detailsIfCorrect = 'show', int $id = null, string $charEncoding = 'utf8'): View
+    public function runExampleCheck(Request $request, string $reportType = 'detailed', string $language = 'en', string $detailsIfCorrect = 'hide', int $id = null, string $charEncoding = 'utf8'): View
     {
-        $id = $request->exampleId ?: $id;
-        $examples = $id ? [Example::find($id)] : Example::all();
-
         $conversion = new Conversion;
         $conversion->char_encoding = $request->char_encoding ?: $charEncoding;
         $conversion->report_type = $request->report_type ?: $reportType;
         $conversion->language = $request->language ?: $language;
-        $detailsIfCorrect = $request->detailsIfCorret ?: $detailsIfCorrect;
+        $detailsIfCorrect = $request->detailsIfCorrect ?: $detailsIfCorrect;
+
+        $id = $request->exampleId ?: $id;
+        // If single example is being converted, save language of conversion to the example
+        // (so that when all examples are converted that language is used for this example)
+        if ($id) {
+            $example = Example::find($id);
+            $example->update(['language' => $conversion->language]);
+            $examples = [$example];
+        } else {
+            $examples = Example::all();
+        }
 
         $results = [];
         $allCorrect = true;
 
         foreach ($examples as $example) {
+
             $correctType = $correctContent = true;
             $result = null;
 
-            $output = $this->converter->convertEntry($example->source, $conversion);
+            $reportType = $conversion->report_type;
+
+            if ($example->language != 'en') {
+                $conversion->char_encoding = 'utf8leave';
+            }
+
+            $output = $this->converter->convertEntry($example->source, $conversion, $example->language);
             
             $unidentified = '';
             if (isset($output['item']->unidentified)) {
@@ -92,9 +107,11 @@ class ExampleCheckController extends Controller
                 }
             }
 
-            if (($conversion->report_type == 'details' && $result['result'] == 'incorrect') || $detailsIfCorrect == 'show') {
+            if (($conversion->report_type == 'detailed' && $result['result'] == 'incorrect') || $detailsIfCorrect == 'show') {
                 $result['details'] = $output['details'];
             }
+
+            $result['language'] = $example->language;
 
             if (isset($result) && ($result['result'] == 'incorrect' || $detailsIfCorrect == 'show')) {
                 $results[$example->id] = $result;

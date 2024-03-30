@@ -23,8 +23,9 @@ use stdClass;
 
 class Converter
 {
-    var $boldCodes;
+    var $accessedRegExp1;
     var $articleRegExp;
+    var $boldCodes;
     var $bookTitleAbbrevs;
     var $cities;
     var $detailLines;
@@ -237,10 +238,11 @@ class Converter
             'fr' => '( [Rr]écupéré sur [A-Za-z.: ]{0,50} ?|Disponible( à)?: )',
             'es' => '( [Oo]btenido de [A-Za-z.: ]{0,50} ?|Disponible( en)?: )',
         ];
+        // Dates are between 10 and 17 characters long
         $this->retrievedFromRegExp2 = [
-            'en' => ' [Rr]etrieved (?P<date1>[a-zA-Z0-9 ]{10,17} )?from | [Aa]ccessed (?P<date2>[a-zA-Z0-9 ]{10,17} )?at ',
-            'fr' => ' [Rr]écupéré (?P<date1>[a-zA-Z0-9 ]{10,17} )?sur | [Cc]onsulté (?P<date2>[a-zA-Z0-9 ]{10,17} )?à ',
-            'es' => ' [Oo]btenido (?P<date1>[a-zA-Z0-9 ]{10,17} )?de | [Aa]ccedido (?P<date2>[a-zA-Z0-9 ]{10,17} )?en ',
+            'en' => ' [Rr]etrieved (?P<date1>[a-zA-Z0-9 ]{10,17} )?from | [Aa]ccessed (?P<date2>[a-zA-Z0-9, ]{10,17} )?at ',
+            'fr' => ' [Rr]écupéré (?P<date1>[a-zA-Z0-9 ]{10,17} )?sur | [Cc]onsulté (le )?(?P<date2>[a-zA-Z0-9, ]{10,17} )?(à|sur) ',
+            'es' => ' [Oo]btenido (?P<date1>[a-zA-Z0-9 ]{10,17} )?de | [Aa]ccedido (?P<date2>[a-zA-Z0-9, ]{10,17} )?en ',
         ];
 
         $this->monthsRegExp = [
@@ -273,7 +275,8 @@ class Converter
     //   'warnings'
     //   'notices'
     //   'details': array of text lines
-    public function convertEntry(string $rawEntry, Conversion $conversion): array|null
+    // $language: if set, overrides $conversion->language (used when admin converts examples)
+    public function convertEntry(string $rawEntry, Conversion $conversion, string|null $language = null): array|null
     {
         $warnings = $notices = [];
         $this->detailLines = [];
@@ -282,6 +285,8 @@ class Converter
         $item = new \stdClass();
         $itemKind = null;
         $itemLabel = null;
+
+        $language = $language ?: $conversion->language;
 
         // Remove comments and concatenate lines in entry
         // (do so before cleaning text, otherwise \textquotedbleft, e.g., at end of line will not be cleaned)
@@ -354,7 +359,7 @@ class Converter
             $this->verbose(['label' => $itemLabel]);
         }
 
-        $phrases = $this->phrases[$conversion->language];
+        $phrases = $this->phrases[$language];
 
         $isArticle = $containsPageRange = $containsProceedings = false;
 
@@ -418,78 +423,170 @@ class Converter
         // Entry contains "retrieved from http ... <access date>".
         // Assumes URL is at the end of entry (or absent).  After "retrieved from" may be words like "New York Times website:".
 
-        // English: ( [Rr]etrieved from [A-Za-z.: ]{0,50} ?|Available( at)?: )
-        $retrievedFromRegExp1 = $this->retrievedFromRegExp1[$conversion->language];
-        $urlWithAccessDateAfter = $this->extractLabeledContent($remainder, $retrievedFromRegExp1, 'http\S+( .*)?$', true);
-        // Dates are between 10 and 17 characters long
-        $labelRegExp = $this->retrievedFromRegExp2[$conversion->language];
-        $urlWithAccessDateBefore = $this->extractLabeledContent($remainder, $labelRegExp, 'http[^ ]+$', true);
+        // English: '( [Rr]etrieved from [A-Za-z.: ]{0,50} ?|Available( at)?: )'
 
-        $containsUrlAccessInfo = $urlWithAccessDateAfter || $urlWithAccessDateBefore;
+        $this->retrievedFromRegExp1 = [
+            'en' => '( [Rr]etrieved from |Available( at)?: )',
+            'fr' => '( [Rr]écupéré sur |Disponible( à)?: )',
+            'es' => '( [Oo]btenido de |Disponible( en)?: )',
+        ];
 
-        $accessDate = '';
-        if ($urlWithAccessDateAfter) {
-            $retrieveText = trim($urlWithAccessDateAfter['label'], ':');
-            if (strlen($retrieveText) > 15) {
-                $this->setField($item, 'note', $retrieveText);
-            }
-            $urlAndDate = $urlWithAccessDateAfter['content'];
-            if (Str::contains($urlAndDate, ' ')) {
-                $url = trim(Str::before($urlAndDate, ' '), ',.;');
-                $accessInfo = trim(Str::after($urlAndDate, ' '), '.');
-                $dateResult = $this->isDate($accessInfo, $conversion->language, 'contains');
-                if ($dateResult) {
-                    $accessDate = $dateResult['date'];
-                    $year = $dateResult['year'];
-                }
-            } else {
-                $url = trim($urlAndDate);
-            }
-        } elseif ($urlWithAccessDateBefore) {
-            $url = $urlWithAccessDateBefore['content'];
-            preg_match('/' . $labelRegExp . '/', ' ' . $urlWithAccessDateBefore['label'] . ' ', $matches);
-            if ($matches['date1']) {
-                $accessDate = trim($matches['date1']);
-            } elseif ($matches['date2']) {
-                $accessDate = trim($matches['date2']);
-            }
-        } else {
-            // Entry ends 'http ... " followed by a string including 'retrieve' or 'access' or 'view'
-            if (preg_match('/(http\S+ ).*((retrieve|access|view).*)$/', $remainder, $matches)) {
-                $url = trim($matches[1], ' ,.;()');
-                $possibleDate = $matches[3] ? Str::after($matches[2], ' ') : $matches[2];
-                $possibleDate = trim($possibleDate, ' ,.)');
-                if ($this->isDate($possibleDate, $conversion->language)) {
-                    $accessDate = $possibleDate;
-                } else {
-                    $warnings[] = "[u1] The string \"" . $possibleDate . "\" remains unidentified.";
-                }
-                $remainder = Str::before($remainder, $matches[0]);
-            } else {
-                $urlPlus = $this->extractLabeledContent($remainder, '', '(\\\(url|href){)?https?://\S+ ?.*$');
-                if (Str::startsWith($urlPlus, ['\url{', '\href{'])) {
-                    $url = trim(substr($urlPlus, 5), '{}');
-                } else {
-                    $url = trim(Str::before($urlPlus, ' '), ',.;');
-                }
-                $afterUrl = (strpos($urlPlus, ' ') !== false) ? Str::after($urlPlus, ' ') : '';
-                if ($afterUrl) {
-                    $warnings[] = "[u2] The string \"" . $afterUrl . "\" remains unidentified.";
-                }
+        // Dates are between 8 and 17 characters long
+        $dateRegExp = '[a-zA-Z0-9,/\- ]{8,17}';
+        $this->retrievedFromRegExp2 = [
+            'en' => ' [Rr]etrieved (?P<date1>' . $dateRegExp . ' )?from | [Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
+            'fr' => ' [Rr]écupéré (?P<date1>' . $dateRegExp . ' )?sur | [Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?(à|sur) ',
+            'es' => ' [Oo]btenido (?P<date1>' . $dateRegExp . ' )?de | [Aa]ccedido (?P<date2>' . $dateRegExp . ' )?en ',
+        ];
+
+        $this->accessedRegExp1 = [
+            'en' => '([Rr]etrieved |[Aa]ccessed |[Vv]iewed )(?P<date2>' . $dateRegExp . ')',
+            'fr' => '([Rr]écupéré |[Cc]onsulté (le )?)(?P<date2>' . $dateRegExp . ')',
+            'es' => '([Oo]btenido [Aa]ccedido )(?P<date2>' . $dateRegExp . ')',
+        ];
+
+        $retrievedFromRegExp1 = $this->retrievedFromRegExp1[$language];
+        $retrievedFromRegExp2 = $this->retrievedFromRegExp2[$language];
+        $accessedRegExp1 = $this->accessedRegExp1[$language];
+
+        $urlRegExp = '(\\\url{|\\\href{)?(?P<url>http\S+)(})?';
+        // Date after URL
+        preg_match(
+            '%(?P<retrievedFrom>' . $retrievedFromRegExp1 . ')(?P<siteName>.*)? ?' . $urlRegExp . '(?P<date1> .*)?$%i',
+            $remainder,
+            $matches,
+        );
+
+        // Date before URL
+        if (! count($matches)) {
+            preg_match(
+                '%(?P<retrievedFrom>' . $retrievedFromRegExp2 . ')(?P<siteName>.*)? ?' . $urlRegExp . '(?P<note> .*)?$%i',
+                $remainder,
+                $matches,
+            );
+        }
+
+        // No text before URL
+        if (! count($matches)) {
+            preg_match(
+                '%' . $urlRegExp . ',? ?\(?' . $accessedRegExp1 . '\)?$%i',
+                $remainder,
+                $matches,
+            );
+        }
+
+        // Only URL, with access info, but maybe followed by note
+        if (! count($matches)) {
+            preg_match(
+                '%' . $urlRegExp . '(?P<note>.*)$%i',
+                $remainder,
+                $matches,
+            );
+        }
+
+        if (count($matches)) {
+            $remainder = substr($remainder, 0, -strlen($matches[0]));
+            $retrievedFrom = $matches['retrievedFrom'] ?? null;
+            $date1 = $matches['date1'] ?? null;
+            $date2 = $matches['date2'] ?? null;
+            $date = $date1 ?: $date2;
+            $siteName = $matches['siteName'] ?? null;
+            $url = $matches['url'] ?? null;
+            $note = $matches['note'] ?? null;
+
+            $dateResult = $this->isDate(trim($date, ' .,'), $language, 'contains');
+            if ($dateResult) {
+                $accessDate = $dateResult['date'];
+                $year = $dateResult['year'];
             }
         }
 
+        $containsUrlAccessInfo = false;
         if (! empty($url)) {
-            $this->setField($item, 'url', rtrim($url, ')'), 'setField 4');
+            $this->setField($item, 'url', rtrim($url, ')},. '), 'setField 4');
             if (! empty($accessDate)) {
-                $this->setField($item, 'urldate', $accessDate, 'setField 5a');
+                $this->setField($item, 'urldate', rtrim($accessDate, '., '), 'setField 5a');
+                $containsUrlAccessInfo = true;
             }
             if (! empty($year)) {
                 $this->setField($item, 'year', $year, 'setField 5b');
             }
+            if (! empty($siteName)) {
+                $this->setField($item, 'note', trim(trim($retrievedFrom . $siteName, ':,; ') . $note, '{}'), 'setField 5c');
+            }
         } else {
             $this->verbose("No url found.");
         }
+
+        // $accessDate = '';
+        // if ($urlWithAccessDateAfter) {
+        //     $retrieveText = trim($urlWithAccessDateAfter['label'], ':');
+        //     if (strlen($retrieveText) > 15) {
+        //         $this->setField($item, 'note', $retrieveText, 'setField 1a');
+        //     }
+        //     $urlAndDate = $urlWithAccessDateAfter['content'];
+        //     if (Str::contains($urlAndDate, ' ')) {
+        //         $url = trim(Str::before($urlAndDate, ' '), ',.;');
+        //         $accessInfo = trim(Str::after($urlAndDate, ' '), '.');
+        //         $dateResult = $this->isDate($accessInfo, $language, 'contains');
+        //         if ($dateResult) {
+        //             $accessDate = $dateResult['date'];
+        //             $year = $dateResult['year'];
+        //         }
+        //     } else {
+        //         $url = trim($urlAndDate);
+        //     }
+        // }    
+
+        // $urlWithAccessDateBefore = $this->extractLabeledContent($remainder, $labelRegExp, '(.*)http[^ ]+$', true);
+
+        // $containsUrlAccessInfo = $urlWithAccessDateAfter || $urlWithAccessDateBefore;
+
+        // if ($urlWithAccessDateBefore) {
+        //     $url = $urlWithAccessDateBefore['content'];
+        //     preg_match('/' . $labelRegExp . '/', ' ' . $urlWithAccessDateBefore['label'] . ' ', $matches);
+        //     if ($matches['date1']) {
+        //         $accessDate = trim($matches['date1']);
+        //     } elseif ($matches['date2']) {
+        //         $accessDate = trim($matches['date2']);
+        //     }
+        // } else {
+        //     // Entry ends 'http ... " followed by a string including 'retrieve' or 'access' or 'view'
+        //     if (preg_match('/(http\S+ ).*((retrieve|access|view).*)$/', $remainder, $matches)) {
+        //         $url = trim($matches[1], ' ,.;()');
+        //         $possibleDate = $matches[3] ? Str::after($matches[2], ' ') : $matches[2];
+        //         $possibleDate = trim($possibleDate, ' ,.)');
+        //         if ($this->isDate($possibleDate, $language)) {
+        //             $accessDate = $possibleDate;
+        //         } else {
+        //             $warnings[] = "[u1] The string \"" . $possibleDate . "\" remains unidentified.";
+        //         }
+        //         $remainder = Str::before($remainder, $matches[0]);
+        //     } else {
+        //         $urlPlus = $this->extractLabeledContent($remainder, '', '(\\\(url|href){)?https?://\S+ ?.*$');
+        //         if (Str::startsWith($urlPlus, ['\url{', '\href{'])) {
+        //             $url = trim(substr($urlPlus, 5), '{}');
+        //         } else {
+        //             $url = trim(Str::before($urlPlus, ' '), ',.;');
+        //         }
+        //         $afterUrl = (strpos($urlPlus, ' ') !== false) ? Str::after($urlPlus, ' ') : '';
+        //         if ($afterUrl) {
+        //             $warnings[] = "[u2] The string \"" . $afterUrl . "\" remains unidentified.";
+        //         }
+        //     }
+        // }
+
+        // if (! empty($url)) {
+        //     $this->setField($item, 'url', rtrim($url, ')'), 'setField 4');
+        //     if (! empty($accessDate)) {
+        //         $this->setField($item, 'urldate', rtrim($accessDate, '., '), 'setField 5a');
+        //     }
+        //     if (! empty($year)) {
+        //         $this->setField($item, 'year', $year, 'setField 5b');
+        //     }
+        // } else {
+        //     $this->verbose("No url found.");
+        // }
 
         /////////////////////
         // Get ISBN if any //
@@ -599,7 +696,7 @@ class Converter
 
         $isEditor = false;
 
-        $authorConversion = $this->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, true, 'authors', $conversion->language);
+        $authorConversion = $this->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, true, 'authors', $language);
 
         $itemYear = $year;
         $itemMonth = $month;
@@ -701,7 +798,7 @@ class Converter
             if (!$year) {
                 // Space prepended to $remainder in case it starts with year, because getYear requires space 
                 // (but perhaps could be rewritten to avoid it).
-                $year = $this->getYear(' '. $remainder, $newRemainder, $month, $day, $date, false, true, $conversion->language);
+                $year = $this->getYear(' '. $remainder, $newRemainder, $month, $day, $date, false, true, $language);
             }
 
             if ($year) {
@@ -712,7 +809,7 @@ class Converter
             }
             if (isset($month)) {
                 $containsMonth = true;
-                $this->setField($item, 'month', $this->fixMonth($month), 'setField 15');
+                $this->setField($item, 'month', $this->fixMonth($month, $language), 'setField 15');
             }
         }
 
@@ -782,7 +879,7 @@ class Converter
                 || preg_match($this->edsRegExp2, $remainder)
                 || (
                     preg_match($this->edsRegExp3, $remainder, $matches, PREG_OFFSET_CAPTURE)
-                    && ! in_array(substr($remainder, $matches[0][1] - 4, 3), $this->ordinals[$conversion->language])
+                    && ! in_array(substr($remainder, $matches[0][1] - 4, 3), $this->ordinals[$language])
                     && ! in_array(substr($remainder, $matches[0][1] - 5, 4), ['rev.', 'Rev.'])
                 )
         ) {
@@ -1114,13 +1211,13 @@ class Converter
 
                     if ($remainder) {
                         // Get month, if any
-                        $months = $this->monthsRegExp[$conversion->language];
+                        $months = $this->monthsRegExp[$language];
                         $regExp = '/(\(?(' . $months . '\)?)([-\/](' . $months . ')\)?)?)/i';
                         preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
 
                         if (! empty($matches[0][0][0])) {
                             $month = trim($matches[0][0][0], '()');
-                            $this->setField($item, 'month', $this->fixMonth($month), 'setField 21');
+                            $this->setField($item, 'month', $this->fixMonth($month, $language), 'setField 21');
                             $remainder = substr($remainder, 0, $matches[0][0][1]) . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
                             $this->verbose('Remainder: ' . $remainder);
                         }
@@ -1181,7 +1278,7 @@ class Converter
 
                 if (! $item->note && ! empty($item->url)) {
                     $this->verbose('Moving content of url field to note');
-                    $this->setField($item, 'note', $item->url, 'setField 26');
+                    $this->setField($item, 'note', trim($item->url, '{}'), 'setField 26');
                     unset($item->url);
                 }
 
@@ -1299,7 +1396,7 @@ class Converter
                                 $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
                             }
                             $isEditor = true;
-                            $editorConversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $month, $day, $date, $isEditor, false, 'editors', $conversion->language);
+                            $editorConversion = $this->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $month, $day, $date, $isEditor, false, 'editors', $language);
                             $this->setField($item, 'editor', trim($editorConversion['authorstring']), 'setField 34');
                         } else {
                             $this->verbose('No editors found');
@@ -1447,7 +1544,7 @@ class Converter
                             $this->verbose('tempRemainder contains \'(\' and ends with \')\'');
                             $booktitle = Str::beforeLast($tempRemainderMinusEds, '(');
                             $editorString = Str::afterLast($tempRemainderMinusEds, '(');
-                            $result = $this->convertToAuthors(explode(' ', $editorString), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $conversion->language);
+                            $result = $this->convertToAuthors(explode(' ', $editorString), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
                         } else {
                             $trash2 = false;
                             // Include edition in title (because no BibTeX field for edition for incollection)
@@ -1460,7 +1557,7 @@ class Converter
                                 $this->setField($item, 'note', $note);
                             }
                             $isEditor = true;
-                            $result = $this->convertToAuthors(explode(' ', $tempRemainder), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $conversion->language);
+                            $result = $this->convertToAuthors(explode(' ', $tempRemainder), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
                         }
                         $this->setField($item, 'editor', trim($result['authorstring']));
                         $remainderContainsEds = true;
@@ -1483,7 +1580,7 @@ class Converter
                         // Authors and publication info
                         $rest = trim($matches[3]);
                         $isEditor = true;
-                        $result = $this->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $conversion->language);
+                        $result = $this->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
                         $this->setField($item, 'editor', trim($result['authorstring']));
                         $updateRemainder = false;
                     }
@@ -1585,7 +1682,7 @@ class Converter
                             // $isEditor is used only for a book (with an editor, not an author)
                             $isEditor = false;
 
-                            $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, $determineEnd ?? true, 'editors', $conversion->language);
+                            $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, $determineEnd ?? true, 'editors', $language);
                             $editorString = trim($editorConversion['authorstring'], '() ');
                             foreach ($editorConversion['warnings'] as $warning) {
                                 $warnings[] = $warning;
@@ -1654,7 +1751,7 @@ class Converter
                                 if (! empty($endAuthorPos)) {
                                     // CASE 2
                                     $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
-                                    $authorConversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $month, $day, $date, $isEditor, false, 'editors', $conversion->language);
+                                    $authorConversion = $this->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $month, $day, $date, $isEditor, false, 'editors', $language);
                                     $this->setField($item, 'editor', trim($authorConversion['authorstring'], ' '), 'setField 44');
                                     foreach ($authorConversion['warnings'] as $warning) {
                                         $warnings[] = $warning;
@@ -1708,7 +1805,7 @@ class Converter
                             // Previous version---why drop first 3 chars?
                             // $editor = trim(substr($remainder, 3, $j-3), ' .,');
 
-                            $editorConversion = $this->convertToAuthors(explode(' ', trim(substr($remainder, 0, $j), ' .,')), $trash1, $trash2, $month, $day, $date, $isEditor, false, 'editors', $conversion->language);
+                            $editorConversion = $this->convertToAuthors(explode(' ', trim(substr($remainder, 0, $j), ' .,')), $trash1, $trash2, $month, $day, $date, $isEditor, false, 'editors', $language);
                             $editor = $editorConversion['authorstring'];
                             foreach ($editorConversion['warnings'] as $warning) {
                                 $warnings[] = $warning;
@@ -1733,7 +1830,7 @@ class Converter
                         $this->verbose("[ed6] Remainder starts with editor string");
                         $editorString = substr($remainder, 0, $matches[0][1]);
                         $this->verbose("editorString is " . $editorString);
-                        $editorConversion = $this->convertToAuthors(explode(' ', $editorString), $trash1, $trash2, $month, $day, $date, $isEditor, false, 'editors', $conversion->language);
+                        $editorConversion = $this->convertToAuthors(explode(' ', $editorString), $trash1, $trash2, $month, $day, $date, $isEditor, false, 'editors', $language);
                         $editor = $editorConversion['authorstring'];
                         foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
@@ -1745,7 +1842,7 @@ class Converter
                         // seem unlikely to have editors), but an 
                         // editor of an incollection does not need such a string
                         $this->verbose("[ed4] Remainder starts with editor string");
-                        $editorConversion = $this->convertToAuthors(explode(' ', $remainder), $remainder, $trash2, $month, $day, $date, $isEditor, true, 'editors', $conversion->language);
+                        $editorConversion = $this->convertToAuthors(explode(' ', $remainder), $remainder, $trash2, $month, $day, $date, $isEditor, true, 'editors', $language);
                         $editor = $editorConversion['authorstring'];
                         foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
@@ -1771,7 +1868,7 @@ class Converter
                         // convertToAuthors determine end of string, need to redefine remainder below.
                         $isEditor = false;
 
-                        $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, true, 'editors', $conversion->language);
+                        $editorConversion = $this->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, true, 'editors', $language);
                         $authorstring = $editorConversion['authorstring'];
                         $this->setField($item, 'editor', trim($authorstring, '() '), 'setField 47');
                         foreach ($editorConversion['warnings'] as $warning) {
@@ -2282,11 +2379,11 @@ class Converter
      * If month (or month range) is parsable, parse it: 
      * translate 'Jan' or 'Jan.' or 'January' or 'JANUARY', for example, to 'January'.
     */
-    private function fixMonth(string $month): string
+    private function fixMonth(string $month, string $language = 'en'): string
     {
         $month1 = trim(Str::before($month, '-'), ', ');
         if (preg_match('/^[a-zA-Z.]*$/', $month1)) {
-            $fullMonth1 = Carbon::parse('1 ' . $month1)->format('F');
+            $fullMonth1 = Carbon::parse('1 ' . $month1)->locale($language)->format('F');
         } else {
             $fullMonth1 = $month1;
         }
@@ -2793,16 +2890,16 @@ class Converter
         $starts = $type == 'is' ? '^' : '';
         $ends = $type == 'is' ? '$' : '';
  
-        $str = str_replace([","], "", trim($string, ',. '));
+        //$str = str_replace([","], "", trim($string, ',. '));
         $matches = [];
         $isDates = [];
-        $isDates[1] = preg_match('/(' . $starts . $day . ' (' . $monthName . ') ?'. $year . $ends . ')/' , $str, $matches[1]);
-        $isDates[2] = preg_match('/(' . $starts . '(' . $monthName . ') ?' . $day . ' '. $year . $ends . ')/', $str, $matches[2]);
-        $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/ ]' . $monthNumber . '[\-\/ ]'. $year . $ends . ')/', $str, $matches[3]);
-        $isDates[4] = preg_match('/(' . $starts . $monthNumber . '[\-\/ ]' . $day . '[\-\/ ]'. $year . $ends . ')/', $str, $matches[4]);
-        $isDates[5] = preg_match('/(' . $starts . $year . '[\-\/, ]' . $day . '[\-\/ ]' . $monthNumber . $ends . ')/', $str, $matches[5]);
-        $isDates[6] = preg_match('/(' . $starts . $year . '[, ]' . $monthName . ' ' . $day . $ends . ')/', $str, $matches[6]);
-        $isDates[7] = preg_match('/(' . $starts . $year . '[, ]' . $day . ' ' . $monthName . $ends . ')/', $str, $matches[7]);
+        $isDates[1] = preg_match('/(' . $starts . $day . ' (' . $monthName . '),? ?'. $year . $ends . ')/i' , $string, $matches[1]);
+        $isDates[2] = preg_match('/(' . $starts . '(' . $monthName . ') ?' . $day . ',? '. $year . $ends . ')/i', $string, $matches[2]);
+        $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/ ]' . $monthNumber . '[\-\/ ]'. $year . $ends . ')/i', $string, $matches[3]);
+        $isDates[4] = preg_match('/(' . $starts . $monthNumber . '[\-\/ ]' . $day . '[\-\/ ]'. $year . $ends . ')/i', $string, $matches[4]);
+        $isDates[5] = preg_match('/(' . $starts . $year . '[\-\/, ]' . $day . '[\-\/ ]' . $monthNumber . $ends . ')/i', $string, $matches[5]);
+        $isDates[6] = preg_match('/(' . $starts . $year . '[, ]' . $monthName . ' ' . $day . $ends . ')/i', $string, $matches[6]);
+        $isDates[7] = preg_match('/(' . $starts . $year . '[, ]' . $day . ' ' . $monthName . $ends . ')/i', $string, $matches[7]);
 
         if ($type == 'is') {
             return max($isDates);
@@ -3686,7 +3783,7 @@ class Converter
 
             if ($allowMonth) {
                 // (year month) or [year month] or (year month day) or [year month day]
-                if (preg_match('/^[\(\[](?P<date>(?P<year>(18|19|20)[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]/', $string, $matches1)) {
+                if (preg_match('/^[\(\[](?P<date>(?P<year>(18|19|20)[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]/i', $string, $matches1)) {
                     $year = $matches1['year'] ?? null;
                     $month = $matches1['month'] ?? null;
                     $day = $matches1['day'] ?? null;

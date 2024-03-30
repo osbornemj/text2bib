@@ -18,7 +18,7 @@ class ExamplesController extends Controller
             ->with('fields')
             ->paginate(100);
 
-        $typeOptions = ['verbose' => 'verbose', 'brief' => 'brief'];
+        $typeOptions = ['detailed' => 'details', 'brief' => 'brief'];
         $utf8Options = ['utf8leave' => 'do not convert accents to TeX', 'utf8' => 'convert accents to TeX'];
         $languageOptions = ['en' => 'en', 'fr' => 'fr', 'es' => 'es'];
         $detailOptions = ['show' => 'show', 'hide' => 'hide'];

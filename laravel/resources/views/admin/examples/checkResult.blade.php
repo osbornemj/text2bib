@@ -28,9 +28,9 @@
                             <span class="bg-red-500 text-white dark:bg-red-600">incorrect</span> 
                         @endif
                     &nbsp;&bull;&nbsp;
-                    <x-link href="{{ url('/admin/runExampleCheck/1/' . ($detailsIfCorrect == 'show' ? '1' : '0') . '/' . $id) }}">verbose conversion</x-link>
+                    <x-link href="{{ url('/admin/runExampleCheck/detailed/' . $result['language'] . '/show/' . $id) }}">verbose conversion</x-link>
                     &nbsp;&bull;&nbsp;
-                    <x-link href="{{ url('/admin/runExampleCheck/0/' . ($detailsIfCorrect == 'show' ? '1' : '0') . '/' . $id) }}">brief conversion</x-link>
+                    <x-link href="{{ url('/admin/runExampleCheck/brief/' . $result['language'] . '/show/' . $id) }}">brief conversion</x-link>
                     @if (isset($result['typeError']))
                         <div class="mt-4">
                         Type <span class="text-blue-700 dark:bg-rose-300 bg-rose-400">{{ $result['typeError']['content'] }}</span> instead of <span class="text-blue-700 dark:bg-green-300 bg-green-400">{{ $result['typeError']['correct']}}</span>
@@ -47,7 +47,7 @@
                         {{ $value['correct'] ?: '[null]' }}
                         </div>
                     @endforeach
-                    @if ($reportType == 'details')
+                    @if ($reportType == 'detailed')
                         <div class="mt-4">
                             <ul>
                             @foreach ($result['details'] as $details)

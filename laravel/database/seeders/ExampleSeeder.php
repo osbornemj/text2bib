@@ -3465,6 +3465,7 @@ class ExampleSeeder extends Seeder
                             'year' => '2022',
                             'month' => 'Novembre',
                             'urldate' => 'Mars 27, 2023',
+                            'note' => 'Consulté le Mars 27, 2023, sur BlueZ',
                             ]
                     ],
                     [
@@ -3476,9 +3477,10 @@ class ExampleSeeder extends Seeder
                             'author' => 'Osborn, Z.',
                             'title' => 'peer_to_peer_ble',
                             'year' => '2020',
-                            'note' => 'Github',
+                            'note' => 'Récupéré sur Github',
                             ]
                     ],
+                   
                     
                 ];
 
