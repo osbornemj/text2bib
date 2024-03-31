@@ -23,19 +23,7 @@
                     code version {{ $conversion->version }}
                 @endif
                 <br/>
-                sep = {{ $conversion->item_separator}}
-                &nbsp;&bull;&nbsp;
-                labels = {{ $conversion->label_style }}
-                &nbsp;&bull;&nbsp;
-                line endings = {{ $conversion->line_endings }}
-                &nbsp;&bull;&nbsp;
-                {{ $conversion->char_encoding }}
-                &nbsp;&bull;&nbsp;
-                {{ $conversion->percent_comment ? '% = comment' : '% != comment' }}
-                &nbsp;&bull;&nbsp;
-                {{ $conversion->include_source ? 'include source' : 'no source' }}
-                &nbsp;&bull;&nbsp;
-                {{ $conversion->report_type }} report
+                @include('index.partials.settings')
                 <br/>
                 @if ($conversion->examined_at)
                 <div class="mt-1">

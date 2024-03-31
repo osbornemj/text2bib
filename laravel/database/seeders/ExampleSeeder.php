@@ -3599,6 +3599,18 @@ class ExampleSeeder extends Seeder
                             'title' => 'Who We Are',
                             ]
                     ],
+                    [
+                        'source' => 'Kjaer, A. M. (2018, December 27). State capture. Retrieved November 24, 2023, from Encyclopedia Britannica: https://www.britannica.com/topic/state-capture ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'url' => 'https://www.britannica.com/topic/state-capture',
+                            'month' => 'December',
+                            'author' => 'Kjaer, A. M.',
+                            'year' => '2018',
+                            'title' => 'State capture',
+                            'urldate' => 'November 24, 2023',
+                            ]
+                    ],
                     
                                       
                     
