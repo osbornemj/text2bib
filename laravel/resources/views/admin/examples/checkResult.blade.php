@@ -27,10 +27,28 @@
                         @else
                             <span class="bg-red-500 text-white dark:bg-red-600">incorrect</span> 
                         @endif
-                    &nbsp;&bull;&nbsp;
-                    <x-link href="{{ url('/admin/runExampleCheck/detailed/' . $result['language'] . '/show/' . $id) }}">verbose conversion</x-link>
-                    &nbsp;&bull;&nbsp;
-                    <x-link href="{{ url('/admin/runExampleCheck/brief/' . $result['language'] . '/show/' . $id) }}">brief conversion</x-link>
+                        <div class="mt-2">
+                            {{ $result['source']}}
+                        </div>
+                        <div class="mt-2">
+                            @php
+                                $selectedLanguage = [];
+                                $selectedLanguage[$result['language']] = true;
+                                $selectedCharEncoding = [];
+                                $selectedCharEncoding[$result['charEncoding']] = true;
+                            @endphp
+                            <form method="POST" action="{{ url('/admin/runExampleCheck') }}" class="mt-0 space-y-0">
+                                @csrf
+                                <input type="hidden" id="exampleId" name="exampleId" value="{{ $id }}"/>
+                                <x-select-input id="report_type" name="report_type" :options="$typeOptions" class="p-2"></x-select-input-plain>
+                                <x-select-input id="char_encoding" name="char_encoding" :selected="$selectedCharEncoding" :options="$utf8Options" class="p-2"></x-select-input-plain>
+                                <x-select-input id="language" name="language" :options="$languageOptions" :selected="$selectedLanguage" class="p-2"></x-select-input-plain>
+                                <x-select-input id="detailsIfCorrect" name="detailsIfCorrect" :options="$detailOptions" class="p-2"></x-select-input-plain>
+                                <x-primary-button class="ml-0">
+                                    {{ __('Submit') }}
+                                </x-primary-button>
+                            </form>
+                        </div>
                     @if (isset($result['typeError']))
                         <div class="mt-4">
                         Type <span class="text-blue-700 dark:bg-rose-300 bg-rose-400">{{ $result['typeError']['content'] }}</span> instead of <span class="text-blue-700 dark:bg-green-300 bg-green-400">{{ $result['typeError']['correct']}}</span>

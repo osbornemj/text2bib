@@ -20,7 +20,7 @@ class ExampleCheckController extends Controller
         $this->converter = new Converter;
     }
 
-    public function runExampleCheck(Request $request, string $reportType = 'detailed', string $language = 'en', string $detailsIfCorrect = 'hide', int $id = null, string $charEncoding = 'utf8'): View
+    public function runExampleCheck(Request $request, string $reportType = 'brief', string $language = 'en', string $detailsIfCorrect = 'hide', int $id = null, string $charEncoding = 'utf8'): View
     {
         $conversion = new Conversion;
         $conversion->char_encoding = $request->char_encoding ?: $charEncoding;
@@ -28,12 +28,17 @@ class ExampleCheckController extends Controller
         $conversion->language = $request->language ?: $language;
         $detailsIfCorrect = $request->detailsIfCorrect ?: $detailsIfCorrect;
 
+        $typeOptions = ['detailed' => 'details', 'brief' => 'brief'];
+        $utf8Options = ['utf8leave' => 'do not convert accents to TeX', 'utf8' => 'convert accents to TeX'];
+        $languageOptions = ['en' => 'en', 'fr' => 'fr', 'es' => 'es', 'pt' => 'pt'];
+        $detailOptions = ['show' => 'show', 'hide' => 'hide'];
+
         $id = $request->exampleId ?: $id;
         // If single example is being converted, save language of conversion to the example
         // (so that when all examples are converted that language is used for this example)
         if ($id) {
             $example = Example::find($id);
-            $example->update(['language' => $conversion->language]);
+            $example->update(['language' => $conversion->language, 'char_encoding' => $conversion->char_encoding]);
             $examples = [$example];
         } else {
             $examples = Example::all();
@@ -53,7 +58,7 @@ class ExampleCheckController extends Controller
                 $conversion->char_encoding = 'utf8leave';
             }
 
-            $output = $this->converter->convertEntry($example->source, $conversion, $example->language);
+            $output = $this->converter->convertEntry($example->source, $conversion, $example->language, $example->char_encoding);
             
             $unidentified = '';
             if (isset($output['item']->unidentified)) {
@@ -112,6 +117,7 @@ class ExampleCheckController extends Controller
             }
 
             $result['language'] = $example->language;
+            $result['charEncoding'] = $example->char_encoding;
 
             if (isset($result) && ($result['result'] == 'incorrect' || $detailsIfCorrect == 'show')) {
                 $results[$example->id] = $result;
@@ -121,6 +127,6 @@ class ExampleCheckController extends Controller
         $exampleCount = count($examples);
 
         return view('admin.examples.checkResult',
-            compact('results', 'reportType', 'detailsIfCorrect', 'allCorrect', 'exampleCount'));
+            compact('results', 'reportType', 'detailsIfCorrect', 'allCorrect', 'exampleCount', 'typeOptions', 'utf8Options', 'languageOptions', 'detailOptions'));
     }
 }

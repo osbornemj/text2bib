@@ -2938,6 +2938,7 @@ class ExampleSeeder extends Seeder
                             'author' => 'Abuljadayel, F. and Omar, A. A.',
                             'title' => 'Saudi Arabia Says $50 Billion Investments Agreed With China',
                             'year' => '2022',
+                            'month' => 'December',
                             'urldate' => '2022, December 12',
                             'note' => 'Retrieved from Bloomberg.com Website',
                             ]
@@ -3159,7 +3160,7 @@ class ExampleSeeder extends Seeder
                             'author' => 'Stavros V. Konstantinides and Guy Meyer and Cecilia Becattini and others',
                             'title' => '2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism developed in collaboration with the European Respiratory Society',
                             'year' => '2020',
-                            'journal' => 'Eur Heart J.',
+                            'journal' => 'Eur Heart J',
                             'volume' => '41',
                             'number' => '4',
                             'pages' => '543-603',
@@ -3218,6 +3219,7 @@ class ExampleSeeder extends Seeder
                             'author' => 'Pickerel, K.',
                             'title' => 'The difference between n-type and p-type solar cells',
                             'year' => '2018',
+                            'month' => 'July',
                             'url' => 'https://www.solarpowerworldonline.com/2018/07/the-difference-between-n-type-and-p-type-solar-cells/',
                             'urldate' => '2018, July 2',
                             'note' => 'Retrieved from Solar Power World',
@@ -3230,6 +3232,7 @@ class ExampleSeeder extends Seeder
                             'author' => 'Reynolds, M.',
                             'title' => 'Gravity Could Solve Clean Energy\'s One Major Drawback',
                             'year' => '2022',
+                            'month' => 'January',
                             'url' => 'https://www.wired.com/story/energy-vault-gravity-storage/',
                             'urldate' => '2022, January 4',
                             ]
@@ -3428,7 +3431,7 @@ class ExampleSeeder extends Seeder
                             'year' => '2010',
                             'title' => 'An Improvement in the Lack-of-Fit Optimality of the (Absolutely) Continuous Uniform Design in Respect of Exact Designs',
                             'booktitle' => 'mODa 9 - Advances in Model-Oriented Design and Analysis',
-                            'address' => 'Giovagnoli, G. and Atkinson, A. and Torsney, B',
+                            'editor' => 'Giovagnoli, G. and Atkinson, A. and Torsney, B.',
                             ]
                     ],
                     [
@@ -3453,6 +3456,7 @@ class ExampleSeeder extends Seeder
                             'year' => '2020',
                             'month' => 'Avril',
                             'urldate' => 'Mars 21, 2023',
+                            'note' => 'Consulté le Mars 21, 2023, sur NovelBits',
                             ]
                     ],
                     [
@@ -3477,10 +3481,126 @@ class ExampleSeeder extends Seeder
                             'author' => 'Osborn, Z.',
                             'title' => 'peer_to_peer_ble',
                             'year' => '2020',
+                            'month' => 'Juin',
                             'note' => 'Récupéré sur Github',
                             ]
                     ],
-                   
+                    [
+                        'source' => '[11] D. E. Edmunds and W. D. Evans, “Preliminaries,” in Fractional Sobolev Spaces and Inequalities, Cambridge: Cambridge University Press, 2022, pp. 1–17 ',
+                        'type' => 'incollection',
+                        'bibtex' => [
+                            'author' => 'D. E. Edmunds and W. D. Evans',
+                            'title' => 'Preliminaries',
+                            'year' => '2022',
+                            'pages' => '1-17',
+                            'address' => 'Cambridge',
+                            'publisher' => 'Cambridge University Press',
+                            'booktitle' => 'Fractional Sobolev Spaces and Inequalities',
+                            ]
+                    ],
+                    [
+                        'source' => 'McKinsey, “What is Central Bank Digital Currency (CBDC)?”, 2023, https://www.mckinsey.com/featured-insights/mckinsey-explainers/what-is-central-bank-digital-currency-cbdc  ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'author' => 'McKinsey',
+                            'title' => 'What is Central Bank Digital Currency (CBDC)?',
+                            'year' => '2023',
+                            'url' => 'https://www.mckinsey.com/featured-insights/mckinsey-explainers/what-is-central-bank-digital-currency-cbdc',
+                            ]
+                    ],
+                    [
+                        'source' => 'Oliver Wyman, “Four Visions for the Future of Digital Money”, 2023, https://www.oliverwymanforum.com/future-of-money/2023/may/four-visions-for-digital-money.html  ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'author' => 'Oliver Wyman',
+                            'title' => 'Four Visions for the Future of Digital Money',
+                            'year' => '2023',
+                            'url' => 'https://www.oliverwymanforum.com/future-of-money/2023/may/four-visions-for-digital-money.html',
+                            ]
+                    ],
+                    [
+                        'source' => 'Akdağ, Ahmet (2016), “Telhisü’l Miftâh’ın Beyân Bölümünün Mütercimi Bilinmeyen Bir Tercümesi”, Uluslararası Türkçe Edebiyat  Kültür Eğitim  Dergisi, V(3), s. 1243-1266. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Akdağ, Ahmet',
+                            'year' => '2016',
+                            'title' => 'Telhisü\'l Miftâh\'ın Beyân Bölümünün Mütercimi Bilinmeyen Bir Tercümesi',
+                            'journal' => 'Uluslararası Türkçe Edebiyat Kültür Eğitim Dergisi',
+                            'pages' => '1243-1266',
+                            'volume' => 'V',
+                            'number' => '3',
+                            ]
+                    ],
+                    [
+                        'source' => 'Center for Disease Control and Prevention. History of Ebola Disease Outbreaks. Cases and Outbreaks of Ebola Disease by Year. Estados Unidos: CDC, 2023. Disponível em: https://www.cdc.gov/vhf/ebola/history/chronology.html?CDC_AA_refVal=https',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'author' => 'Center For Desease Control and Prevention',
+                            'title' => 'History of Ebola Disease Outbreaks. Cases and Outbreaks of Ebola Disease by Year',
+                            'year' => '2023',
+                            'url' => 'https://www.cdc.gov/vhf/ebola/history/chronology.html?CDC_AA_refVal=https',
+                            'note' => 'Estados Unidoes: CDC',
+                            ]
+                    ],
+                    [
+                        'source' => 'FRIEDEN, Thomas R. et al. Ebola 2014—new challenges, new global response and responsibility. New England Journal of Medicine, v. 371, n. 13, p. 1177-1180, 2014. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'Frieden, Thomas R. and others',
+                            'title' => 'Ebola 2014---new challenges, new global response and responsibility',
+                            'journal' => 'New England Journal of Medicine',
+                            'year' => '2014',
+                            'volume' => '371',
+                            'number' => '13',
+                            'pages' => '1177-1180',
+                            ]
+                    ],
+                    [
+                        'source' => 'Center for Disease Control and Prevention. Marburg (Marburg Virus Disease). Estados Unidos: CDC, 2023. Disponível em: https://www.cdc.gov/vhf/marburg/index.html. Acesso em: 15 mar. 2023. ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'author' => 'Center for Disease Control and Prevention',
+                            'title' => 'Marburg (Marburg Virus Disease)',
+                            'year' => '2023',
+                            'url' => 'https://www.cdc.gov/vhf/marburg/index.html',
+                            'urldate' => '15 mar. 2023',
+                            'note' => 'Estados Unidos: CDC',
+                            ]
+                    ],
+                    [
+                        'source' => 'Md. Rezaul Bashar , Mirza A.F.M. Rashidul Hasan , Md. Altab Hossain and Dipankar Das , 2004. Handwritten Bangla Numerical Digit Recognition using Histogram Technique. Asian Journal of Information Technology, 3: 611-615. URL: https://medwelljournals.com/abstract/?doi=ajit.2004.611.615  ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'url' => 'https://medwelljournals.com/abstract/?doi=ajit.2004.611.615',
+                            'author' => 'Md. Rezaul Bashar and Mirza A. F. M. Rashidul Hasan and Md. Altab Hossain and Dipankar Das',
+                            'year' => '2004',
+                            'title' => 'Handwritten Bangla Numerical Digit Recognition using Histogram Technique',
+                            'journal' => 'Asian Journal of Information Technology',
+                            'pages' => '611-615',
+                            'volume' => '3',
+                            ]
+                    ], 
+                    [
+                        'source' => 'Wang, Panqu & Chen, Pengfei & Yuan, Ye & Liu, Ding & Huang, Zehua & Hou, Xiaodi & Cottrell, Garrison. (2017). Understanding Convolution for Semantic Segmentation. https://doi.org/10.48550/arXiv.1702.08502 ',
+                        'type' => 'unpublished',
+                        'bibtex' => [
+                            'doi' => '10.48550/arXiv.1702.08502',
+                            'author' => 'Wang, Panqu and Chen, Pengfei and Yuan, Ye and Liu, Ding and Huang, Zehua and Hou, Xiaodi and Cottrell, Garrison',
+                            'year' => '2017',
+                            'title' => 'Understanding Convolution for Semantic Segmentation',
+                            ]
+                    ],
+                    [
+                        'source' => 'Go-Ahead Group. Who We Are. [online] Available at: [https://www.go-ahead.com/who-we-are]. ',
+                        'type' => 'online',
+                        'bibtex' => [
+                            'url' => 'https://www.go-ahead.com/who-we-are]',
+                            'author' => 'Go-Ahead Group',
+                            'title' => 'Who We Are',
+                            ]
+                    ],
+                    
+                                      
                     
                 ];
 
