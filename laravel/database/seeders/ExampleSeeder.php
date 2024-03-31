@@ -3457,7 +3457,9 @@ class ExampleSeeder extends Seeder
                             'month' => 'Avril',
                             'urldate' => 'Mars 21, 2023',
                             'note' => 'Consulté le Mars 21, 2023, sur NovelBits',
-                            ]
+                        ],
+                        'language' => 'fr',
+                        'char_encoding' => 'utf8leave',
                     ],
                     [
                         'source' => 'BlueZ Project. (2022, Novembre 14). BlueZ. Consulté le Mars 27, 2023, sur BlueZ: http://www.bluez.org/ ',
@@ -3470,7 +3472,9 @@ class ExampleSeeder extends Seeder
                             'month' => 'Novembre',
                             'urldate' => 'Mars 27, 2023',
                             'note' => 'Consulté le Mars 27, 2023, sur BlueZ',
-                            ]
+                        ],
+                        'language' => 'fr',
+                        'char_encoding' => 'utf8leave',
                     ],
                     [
                         'source' => 'Osborn, Z. (2020, Juin 3). peer_to_peer_ble. Récupéré sur Github: https://github.com/keinix/peer_to_peer_ble ',
@@ -3483,7 +3487,9 @@ class ExampleSeeder extends Seeder
                             'year' => '2020',
                             'month' => 'Juin',
                             'note' => 'Récupéré sur Github',
-                            ]
+                        ],
+                        'language' => 'fr',
+                        'char_encoding' => 'utf8leave',
                     ],
                     [
                         'source' => '[11] D. E. Edmunds and W. D. Evans, “Preliminaries,” in Fractional Sobolev Spaces and Inequalities, Cambridge: Cambridge University Press, 2022, pp. 1–17 ',
@@ -3529,7 +3535,8 @@ class ExampleSeeder extends Seeder
                             'pages' => '1243-1266',
                             'volume' => 'V',
                             'number' => '3',
-                            ]
+                        ],
+                        'char_encoding' => 'utf8leave',
                     ],
                     [
                         'source' => 'Center for Disease Control and Prevention. History of Ebola Disease Outbreaks. Cases and Outbreaks of Ebola Disease by Year. Estados Unidos: CDC, 2023. Disponível em: https://www.cdc.gov/vhf/ebola/history/chronology.html?CDC_AA_refVal=https',
@@ -3565,7 +3572,9 @@ class ExampleSeeder extends Seeder
                             'url' => 'https://www.cdc.gov/vhf/marburg/index.html',
                             'urldate' => '15 mar. 2023',
                             'note' => 'Estados Unidos: CDC',
-                            ]
+                        ],
+                        'language' => 'pt',
+                        'char_encoding' => 'utf8leave',
                     ],
                     [
                         'source' => 'Md. Rezaul Bashar , Mirza A.F.M. Rashidul Hasan , Md. Altab Hossain and Dipankar Das , 2004. Handwritten Bangla Numerical Digit Recognition using Histogram Technique. Asian Journal of Information Technology, 3: 611-615. URL: https://medwelljournals.com/abstract/?doi=ajit.2004.611.615  ',
@@ -3624,6 +3633,8 @@ class ExampleSeeder extends Seeder
                 $ex = Example::create([
                     'source' => $example['source'],
                     'type' => $example['type'],
+                    'language' => isset($example['language']) ? $example['language'] : 'en',
+                    'char_encoding' => isset($example['char_encoding']) ? $example['char_encoding'] : 'utf8',
                 ]);
                 foreach ($example['bibtex'] as $key => $value) {
                     ExampleField::create([
