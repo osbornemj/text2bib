@@ -14,9 +14,6 @@
             Starting in the summer of 2023, Osborne reimplemented the system using the <x-link href="https://laravel.com" target="_blank">Laravel</x-link> framework, at the same time making many improvements in the conversion engine.  The new version was released on 2024.3.15.
         </x-paragraph>
         <x-paragraph class="mt-4">
-            While the current version of the system has many improvements relative to the previous one, a few little-used features of the previous system are not currently supported.  For example, the script no longer attempts to support languages other than English (the support in the previous version was very incomplete) and only the utf-8 character encoding is supported.
-        </x-paragraph>
-        <x-paragraph class="mt-4">
             The source code is available on Github: <x-link href="https://github.com/osbornemj/text2bib" target="_blank">https://github.com/osbornemj/text2bib</x-link>.
         </x-paragraph>
         <x-paragraph class="mt-4">
