@@ -2444,7 +2444,7 @@ class ExampleSeeder extends Seeder
                         'bibtex' => [
                             'year' => '2007',
                             'pages' => '82-83',
-                            'title' => 'Depredaci{\\\'o}n de culebra de herradura, Hemorrhois hippocrepis , sobre sapillo pintojo ib{\\\'e}rico, Discoglossus galganoi y sapillo pintojo meridional Discoglossus jeanneae',
+                            'title' => 'Depredaci{\\\'o}n de culebra de herradura, Hemorrhois hippocrepis, sobre sapillo pintojo ib{\\\'e}rico, Discoglossus galganoi y sapillo pintojo meridional Discoglossus jeanneae',
                             'author' => 'Barnestein, J. A. M. and Gonz{\\\'a}lez De La Vega, J. P.',
                             'volume' => '18',
                             'journal' => 'Bolet{\\\'\i}n de la Asociaci{\\\'o}n Herpetol{\\\'o}gica Espa{\~n}ola',
@@ -2489,7 +2489,6 @@ class ExampleSeeder extends Seeder
                         'source' => '\bibitem{PMP-PUB-2957}Baker, E. A. G., J. L. Wegrzyn, U. U. Sezen, T. Falk, P. E. Maloney, D. R. Vogler, C. Jensen, J. Mitton, J. Wright, B. Knaus, H. Rai, R. Cronn, D. Gonzalez-Ibeas, H. A. Vasquez-Gross, R. A. Famula, J.-J. Liu, L. M. Kueppers, and D. B. Neale. Comparative transcriptomics among four white pine species. ',
                         'type' => 'unpublished',
                         'bibtex' => [
-                            'year' => '',
                             'title' => 'Comparative transcriptomics among four white pine species',
                             'author' => 'Baker, E. A. G. and J. L. Wegrzyn and U. U. Sezen and T. Falk and P. E. Maloney and D. R. Vogler and C. Jensen and J. Mitton and J. Wright and B. Knaus and H. Rai and R. Cronn and D. Gonzalez-Ibeas and H. A. Vasquez-Gross and R. A. Famula and J.-J. Liu and L. M. Kueppers and D. B. Neale',
                             ]
@@ -2865,7 +2864,6 @@ class ExampleSeeder extends Seeder
                             'note' => 'https://arxiv.org/abs/math/0507473',
                             'author' => 'Arteaga, J. R. B. and Malakhaltsev, M. A.',
                             'title' => 'A remark on Ricci flow on left invariant metrics',
-                            'year' => '',
                             ]
                     ],
                     [
@@ -3122,7 +3120,7 @@ class ExampleSeeder extends Seeder
                         'type' => 'article',
                         'bibtex' => [
                             'author' => 'Andreatta, M. and Carmona, S. J.',
-                            'title' => ' UCell: Robust and scalable single-cell gene signature scoring',
+                            'title' => 'UCell: Robust and scalable single-cell gene signature scoring',
                             'year' => '2021',
                             'journal' => 'Comput Struct Biotechnol J',
                             'volume' => '19',
@@ -3391,8 +3389,8 @@ class ExampleSeeder extends Seeder
                         'source' => 'Baade, A., Peng, P., and Harwath, D. Mae-ast: Masked autoencoding audio spectrogram transformer. arXiv, abs/2203.16691, 2022. ',
                         'type' => 'unpublished',
                         'bibtex' => [
-                            'author' => 'Baade, A. and Peng, P. and Harwath, D. Mae-ast',
-                            'title' => 'Masked autoencoding audio spectrogram transformer',
+                            'author' => 'Baade, A. and Peng, P. and Harwath, D.',
+                            'title' => 'Mae-ast: Masked autoencoding audio spectrogram transformer',
                             'archiveprefix' => 'arXiv',
                             'eprint' => 'abs/2203.16691',
                             'year' => '2022',
@@ -3418,7 +3416,7 @@ class ExampleSeeder extends Seeder
                             'title' => 'Response Adaptive Allocation and Selection Bias',
                             'pages' => '23-35',
                             'booktitle' => 'Adaptive Designs',
-                            'editor' => 'N. Flournoy and W.F. Rosenberger',
+                            'editor' => 'N. Flournoy and W. F. Rosenberger',
                             'publisher' => 'Institute of Mathematical Statistics',
                             'address' => 'Hayward, CA',
                             ]
@@ -3603,7 +3601,7 @@ class ExampleSeeder extends Seeder
                         'source' => 'Go-Ahead Group. Who We Are. [online] Available at: [https://www.go-ahead.com/who-we-are]. ',
                         'type' => 'online',
                         'bibtex' => [
-                            'url' => 'https://www.go-ahead.com/who-we-are]',
+                            'url' => 'https://www.go-ahead.com/who-we-are',
                             'author' => 'Go-Ahead Group',
                             'title' => 'Who We Are',
                             ]
@@ -3618,8 +3616,89 @@ class ExampleSeeder extends Seeder
                             'year' => '2018',
                             'title' => 'State capture',
                             'urldate' => 'November 24, 2023',
+                            'note' => 'Retrieved November 24, 2023, from Encyclopedia Britannica',
                             ]
                     ],
+                    [
+                        'source' => '\bibitem{ref7} He, K., Sun, J., & Tang, X. (2010). Single image haze removal using dark channel prior. In IEEE transactions on pattern analysis and machine intelligence, 33(12), 2341-2353. ',
+                        'type' => 'article',
+                        'bibtex' => [
+                            'author' => 'He, K. and Sun, J. and Tang, X.',
+                            'title' => 'Single image haze removal using dark channel prior',
+                            'journal' => 'IEEE transactions on pattern analysis and machine intelligence',
+                            'year' => '2010',
+                            'volume' => '33',
+                            'number' => '12',
+                            'pages' => '2341-2353',
+                            ]
+                        ],
+                        [
+                            'source' => '\bibitem{ref16} Hitam, M. S., Awalludin, E. A., Yussof, W. N. J. H. W., & Bachok, Z. (2013, January). Mixture contrast limited adaptive histogram equalization for underwater image enhancement. In 2013 International conference on computer applications technology (ICCAT) (pp. 1-5). IEEE. ',
+                            'type' => 'inproceedings',
+                            'bibtex' => [
+                                'author' => 'Hitam, M. S. and Awalludin, E. A. and Yussof, W. N. J. H. W. and Bachok, Z.',
+                                'title' => 'Mixture contrast limited adaptive histogram equalization for underwater image enhancement',
+                                'year' => '2013',
+                                'month' => 'January',
+                                'pages' => '1-5',
+                                'booktitle' => '2013 International conference on computer applications technology (ICCAT)',
+                                'publisher' => 'IEEE',
+                                ]
+                        ],
+                        [
+                            'source' => 'HOSTER HA, ZANES RP Jr, VON HAAM E. Studies in Hodgkin\'s syndrome; the association of viral hepatitis and Hodgkin\'s disease; a preliminary report. Cancer Res. 1949 Aug;9(8):473-80. PMID: 18134519. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Hoster, H. A. and Zanes R. P. Jr and Von Haam, E.',
+                                'title' => 'Studies in Hodgkin\'s syndrome; the association of viral hepatitis and Hodgkin\'s disease; a preliminary report',
+                                'year' => '1949',
+                                'month' => 'August',
+                                'journal' => 'Cancer Res.',
+                                'pages' => '473-80',
+                                'volume' => '9',
+                                'number' => '8',
+                                'note' => 'PMID: 18134519',
+                                ]
+                        ],
+                        [
+                            'source' => 'GEORGIADES J, ZIELINSKI T, CICHOLSKA A et al. Research on the oncolytic effect of APC viruses in cancer of the cervix uteri; preliminary report. Biul Inst Med Morsk Gdansk. 1959;10:49-57. PMID: 13827367. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Georgiades, J. and Zielinski, T. and Cicholska, A. and others',
+                                'title' => 'Research on the oncolytic effect of APC viruses in cancer of the cervix uteri; preliminary report',
+                                'year' => '1959',
+                                'journal' => 'Biul Inst Med Morsk Gdansk',
+                                'pages' => '49-57',
+                                'volume' => '10',
+                                'note' => 'PMID: 13827367',
+                                ]
+                        ],
+                        [
+                            'source' => 'Albetis, J., Duthoit, S., Guttler, F., Jacquin, A., Goulard, M., Poilvé, H., ... & Dedieu, G. (2017). Detection of Flavescence dorée grapevine disease using unmanned aerial vehicle (UAV) multispectral imagery. Remote Sensing, 9(4), 308. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Albetis, J. and Duthoit, S. and Guttler, F. and Jacquin, A. and Goulard, M. and Poilv{\\\'e}, H. and others and Dedieu, G.',
+                                'year' => '2017',
+                                'title' => 'Detection of Flavescence dor{\\\'e}e grapevine disease using unmanned aerial vehicle (UAV) multispectral imagery',
+                                'journal' => 'Remote Sensing',
+                                'volume' => '9',
+                                'number' => '4',
+                                'pages' => '308',
+                                ]
+                        ],
+                        [
+                            'source' => 'Potena, C., Nardi, D., & Pretto, A. (2017). Fast and accurate crop and weed identification with summarized train sets for precision agriculture. In Intelligent Autonomous Systems 14: Proceedings of the 14th International Conference IAS-14 14 (pp. 105-121). Springer International Publishing. ',
+                            'type' => 'inproceedings',
+                            'bibtex' => [
+                                'author' => 'Potena, C. and Nardi, D. and Pretto, A.',
+                                'year' => '2017',
+                                'title' => 'Fast and accurate crop and weed identification with summarized train sets for precision agriculture',
+                                'pages' => '105-121',
+                                'publisher' => 'Springer International Publishing',
+                                'booktitle' => 'Intelligent Autonomous Systems 14: Proceedings of the 14th International Conference IAS-14 14',
+                                ]
+                        ],
+                        
                     
                                       
                     
