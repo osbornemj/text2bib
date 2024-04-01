@@ -61,7 +61,7 @@ trait AddLabels
         }
 
         if ($conversion->label_style == 'short') {
-            $label = mb_strtolower($label) . substr($item->year, 2);
+            $label = mb_strtolower($label) . (isset($item->year) ? substr($item->year, 2) : '');
         } elseif ($conversion->label_style == 'gs') {
             $firstAuthor = count($authors) ? $authors[0] : 'none';
 

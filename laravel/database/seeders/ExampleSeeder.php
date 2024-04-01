@@ -3698,6 +3698,17 @@ class ExampleSeeder extends Seeder
                                 'booktitle' => 'Intelligent Autonomous Systems 14: Proceedings of the 14th International Conference IAS-14 14',
                                 ]
                         ],
+                        [
+                            'source' => 'Ababneh S. Y., & Gurcan M. N., “An efficient graph-cut segmentation for knee bone osteoarthritis medical images”. 2010 IEEE International Conference on Electro/Information Technology. ©2010 IEEE [doi:10.1109/eit.2010.5612191]  ',
+                            'type' => 'inproceedings',
+                            'bibtex' => [
+                                'year' => '2010',
+                                'title' => 'An efficient graph-cut segmentation for knee bone osteoarthritis medical images',
+                                'author' => 'Ababneh, S. Y. and Gurcan, M. N.',
+                                'booktitle' => '2010 IEEE International Conference on Electro/Information Technology',
+                                'doi' => '10.1109/eit.2010.5612191',
+                                ]
+                        ],
                         
                     
                                       

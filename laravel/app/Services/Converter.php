@@ -215,7 +215,7 @@ class Converter
         $this->forthcomingRegExp7 = '/^[Tt]o appear in/';
 
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
-        $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(international )?conference on|^symposium on |^.* meeting |^.* conference proceedings|^proc\..*(conf\.|conference)?|^.* workshop |^actas del )';
+        $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on |^.* meeting |^.* conference proceedings|^proc\..*(conf\.|conference)?|^.* workshop |^actas del )';
         $this->proceedingsExceptions = ['Proceedings of the National Academy', 'Proceedings of the Royal Society', 'Proc. R. Soc.'];
 
         $this->thesisRegExp = '( [Tt]hesis| [Dd]issertation)';
@@ -403,7 +403,7 @@ class Converter
 
         $doi = $this->extractLabeledContent(
             $remainder,
-            ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/|doi.org/',
+            ' \[?doi:? | \[?doi: ?|https?://dx.doi.org/|https?://doi.org/|doi.org/',
             '[^ ]+'
         );
 
@@ -413,6 +413,7 @@ class Converter
 
         // In case item says 'doi: https://...'
         $doi = Str::replaceStart('https://doi.org/', '', $doi);
+        $doi = rtrim($doi, ']');
 
         if ($doi) {
             $this->setField($item, 'doi', $doi, 'setField 1');
