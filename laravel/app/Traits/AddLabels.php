@@ -77,7 +77,7 @@ trait AddLabels
                 // last name is segment up to comma
                 $label = mb_strtolower(substr($firstAuthor, 0, strpos($firstAuthor, ',')));
             }
-            $label .= $item->year;
+            $label .= isset($item->year) ? $item->year : '';
             $title = $item->title;
             if (Str::startsWith($title, ['A ', 'The ', 'On ', 'An '])) {
                 $title = Str::after($title, ' ');   
@@ -87,7 +87,7 @@ trait AddLabels
 
             $label .= mb_strtolower($this->onlyLetters($firstTitleWord));
         } else {
-            $label .= $item->year;
+            $label .= isset($item->year) ? $item->year : '';
         }
 
         return $label;
