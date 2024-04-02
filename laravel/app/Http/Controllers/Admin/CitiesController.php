@@ -44,10 +44,10 @@ class CitiesController extends Controller
      */
     public function store(StoreCityRequest $request)
     {
-        $input = $request->all();
+        $input = $request->except('_token');
         $input['checked'] = 1;
 
-        City::create($input);
+        City::firstOrCreate($input);
 
         return redirect()->route('cities.index');
     }

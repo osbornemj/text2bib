@@ -83,8 +83,8 @@
         <x-radio-input wire:model="uploadForm.language" value="es" class="peer/es ml-4" />
         <x-value-label for="es" class="peer-checked/es:text-blue-600 ml-1" :value="__('Spanish')" />
 
-        <x-radio-input wire:model="uploadForm.language" value="es" class="peer/pt ml-4" />
-        <x-value-label for="es" class="peer-checked/pt:text-blue-600 ml-1" :value="__('Portuguese')" />
+        <x-radio-input wire:model="uploadForm.language" value="pt" class="peer/pt ml-4" />
+        <x-value-label for="pt" class="peer-checked/pt:text-blue-600 ml-1" :value="__('Portuguese')" />
 
         <x-input-error :messages="$errors->get('uploadForm.language')" class="mt-2" />
 

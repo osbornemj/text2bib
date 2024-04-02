@@ -3452,7 +3452,7 @@ class ExampleSeeder extends Seeder
                             'author' => 'Afaneh, M.',
                             'title' => 'Bluetooth Addresses & Privacy in Bluetooth Low Energy',
                             'year' => '2020',
-                            'month' => 'Avril',
+                            'month' => 'avril',
                             'urldate' => 'Mars 21, 2023',
                             'note' => 'Consulté le Mars 21, 2023, sur NovelBits',
                         ],
@@ -3467,7 +3467,7 @@ class ExampleSeeder extends Seeder
                             'author' => 'BlueZ Project',
                             'title' => 'BlueZ',
                             'year' => '2022',
-                            'month' => 'Novembre',
+                            'month' => 'novembre',
                             'urldate' => 'Mars 27, 2023',
                             'note' => 'Consulté le Mars 27, 2023, sur BlueZ',
                         ],
@@ -3483,7 +3483,7 @@ class ExampleSeeder extends Seeder
                             'author' => 'Osborn, Z.',
                             'title' => 'peer_to_peer_ble',
                             'year' => '2020',
-                            'month' => 'Juin',
+                            'month' => 'juin',
                             'note' => 'Récupéré sur Github',
                         ],
                         'language' => 'fr',
@@ -3699,7 +3699,7 @@ class ExampleSeeder extends Seeder
                                 ]
                         ],
                         [
-                            'source' => 'Ababneh S. Y., & Gurcan M. N., “An efficient graph-cut segmentation for knee bone osteoarthritis medical images”. 2010 IEEE International Conference on Electro/Information Technology. ©2010 IEEE [doi:10.1109/eit.2010.5612191]  ',
+                            'source' => 'Ababneh S. Y., & Gurcan M. N., “An efficient graph-cut segmentation for knee bone osteoarthritis medical images”. 2010 IEEE International Conference on Electro/Information Technology. ©2010. [doi:10.1109/eit.2010.5612191]  ',
                             'type' => 'inproceedings',
                             'bibtex' => [
                                 'year' => '2010',
@@ -3709,6 +3709,129 @@ class ExampleSeeder extends Seeder
                                 'doi' => '10.1109/eit.2010.5612191',
                                 ]
                         ],
+                        [
+                            'source' => 'Fisch   C. "William Withering: an account of foxglove and some of its medical uses 1785–1985", J Am Coll Cardiol. 1985:5(5):1A–2A. https://doi.org/10.1016/S0735-1097(85)80456-3 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1016/S0735-1097(85)80456-3',
+                                'author' => 'Fisch, C.',
+                                'title' => 'William Withering: an account of foxglove and some of its medical uses 1785--1985',
+                                'year' => '1985',
+                                'journal' => 'J Am Coll Cardiol',
+                                'volume' => '5',
+                                'number' => '5',
+                                'pages' => '1A-2A',
+                                ]
+                        ],
+                        [
+                            'source' => '[30]	K. C. Song, S. M. Lee, T. S. Park, and B. S. Lee, “Preparation of colloidal silver nanoparticles by chemical reduction method,” Korean Journal of Chemical Engineering, vol. 26, no. 1, pp. 153–155, Jan. 2009, doi: 10.1007/s11814-009-0024-y. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1007/s11814-009-0024-y',
+                                'author' => 'K. C. Song and S. M. Lee and T. S. Park and B. S. Lee',
+                                'title' => 'Preparation of colloidal silver nanoparticles by chemical reduction method',
+                                'journal' => 'Korean Journal of Chemical Engineering',
+                                'year' => '2009',
+                                'month' => 'January',
+                                'volume' => '26',
+                                'number' => '1',
+                                'pages' => '153-155',
+                                ]
+                        ],
+                        [
+                            'source' => '[58]	K. R. Raghupathi, R. T. Koodali, and A. C. Manna, “Size-dependent bacterial growth inhibition and mechanism of antibacterial activity of zinc oxide nanoparticles,” Langmuir, vol. 27, no. 7, pp. 4020–4028, Apr. 2011, doi: 10.1021/la104825u. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1021/la104825u',
+                                'author' => 'K. R. Raghupathi and R. T. Koodali and A. C. Manna',
+                                'title' => 'Size-dependent bacterial growth inhibition and mechanism of antibacterial activity of zinc oxide nanoparticles',
+                                'journal' => 'Langmuir',
+                                'year' => '2011',
+                                'month' => 'April',
+                                'volume' => '27',
+                                'number' => '7',
+                                'pages' => '4020-4028',
+                                ]
+                        ],
+                        [
+                            'source' => 'Théry, C., Witwer, K. W., Aikawa, E., Alcaraz, M. J., Anderson, J. D., Andriantsitohaina, R., Antoniou, A., Arab, T., Archer, F., Atkin-Smith, G. K., Ayre, D. C., Bach, J. M., Bachurski, D., Baharvand, H., Balaj, L., Baldacchino, S., Bauer, N. N., Baxter, A. A., Bebawy, M., … Zuba-Surma, E. K. (2018). Minimal information for studies of extracellular vesicles 2018 (MISEV2018): a position statement of the International Society for Extracellular Vesicles and update of the MISEV2014 guidelines. Journal of Extracellular Vesicles, 7(1). https://doi.org/10.1080/20013078.2018.1535750 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1080/20013078.2018.1535750',
+                                'author' => 'Th{\\\'e}ry, C. and Witwer, K. W. and Aikawa, E. and Alcaraz, M. J. and Anderson, J. D. and Andriantsitohaina, R. and Antoniou, A. and Arab, T. and Archer, F. and Atkin-Smith, G. K. and Ayre, D. C. and Bach, J. M. and Bachurski, D. and Baharvand, H. and Balaj, L. and Baldacchino, S. and Bauer, N. N. and Baxter, A. A. and Bebawy, M. and others and Zuba-Surma, E. K.',
+                                'year' => '2018',
+                                'title' => 'Minimal information for studies of extracellular vesicles 2018 (MISEV2018): a position statement of the International Society for Extracellular Vesicles and update of the MISEV2014 guidelines',
+                                'journal' => 'Journal of Extracellular Vesicles',
+                                'pages' => '1',
+                                'volume' => '7',
+                                ]
+                        ],
+                        [
+                            'source' => 'Zhang, J., Li, S., Li, L., Li, M., Guo, C., Yao, J., & Mi, S. (2015). Exosome and exosomal microRNA: Trafficking, sorting, and function. In Genomics, Proteomics and Bioinformatics (Vol. 13, Issue 1, pp. 17–24). Beijing Genomics Institute. https://doi.org/10.1016/j.gpb.2015.02.001 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1016/j.gpb.2015.02.001',
+                                'author' => 'Zhang, J. and Li, S. and Li, L. and Li, M. and Guo, C. and Yao, J. and Mi, S.',
+                                'year' => '2015',
+                                'title' => 'Exosome and exosomal microRNA: Trafficking, sorting, and function',
+                                'journal' => 'Genomics, Proteomics and Bioinformatics',
+                                'volume' => '13',
+                                'number' => '1',
+                                'pages' => '17-24',
+                                ]
+                        ],
+                        [
+                            'source' => '\bibitem{ref12}	Yueqian Li and Masoud Salehi, “An efficient decoding algorithm for concatenated RS-convolutional codes,” 2009 43rd Annual Conference on Information Sciences and Systems, pp. 411–413, Mar. 2009, doi: 10.1109/CISS.2009.5054755. ',
+                            'type' => 'inproceedings',
+                            'bibtex' => [
+                                'doi' => '10.1109/CISS.2009.5054755',
+                                'author' => 'Yueqian Li and Masoud Salehi',
+                                'title' => 'An efficient decoding algorithm for concatenated RS-convolutional codes',
+                                'year' => '2009',
+                                'month' => 'March',
+                                'pages' => '411-413',
+                                'booktitle' => '2009 43rd Annual Conference on Information Sciences and Systems',
+                                ]
+                        ],
+                        [
+                            'source' => '﻿Abenavoli, L., Larussa, T., Corea, A., Procopio, A., Boccuto, L., Dallio, M., . . . Luzza, F. (3 de Feb. de 2021). Polyphenols and Non-Alcoholic Fatty Liver Disease. Nutrients. doi:10.3390/nu13020494. ',
+                            'type' => 'unpublished',
+                            'bibtex' => [
+                                'doi' => '10.3390/nu13020494',
+                                'year' => '2021',
+                                'month' => 'Feb',
+                                'title' => 'Polyphenols and Non-Alcoholic Fatty Liver Disease. Nutrients',
+                                'author' => 'Abenavoli, L. and Larussa, T. and Corea, A. and Procopio, A. and Boccuto, L. and Dallio, M. and others and Luzza, F.',
+                            ],
+                            'language' =>'pt',
+                        ],
+                        [
+                            'source' => 'Aguiar, J. E., & Miwa, M. (2009). O vinho e sua história - Do Império Romano, pela Idade Média, até os nossos dias, o vinho acompanhou os principais momentos da história da humanidade e se transformou. Obtido de https://revistaadega.uol.com.br/artigo/o-vinho-e-sua-historia_1064.html ',
+                            'type' => 'online',
+                            'bibtex' => [
+                                'url' => 'https://revistaadega.uol.com.br/artigo/o-vinho-e-sua-historia_1064.html',
+                                'year' => '2009',
+                                'title' => 'O vinho e sua história - Do Império Romano, pela Idade Média, até os nossos dias, o vinho acompanhou os principais momentos da história da humanidade e se transformou',
+                                'author' => 'Aguiar, J. E. and Miwa, M.',
+                                ]
+                        ],
+                        [
+                            'source' => 'M.V. Moreno-Arribas & Polo, M. (12 de 01 de 2007). Winemaking biochemistry and microbiology: current knowledge and future trends. Food Science and Nutrition , 45(4), pp. 265-286. doi:https://doi.org/10.1080/10408690490478118 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1080/10408690490478118',
+                                'pages' => '265-286',
+                                'title' => 'de 01 de 2007). Winemaking biochemistry and microbiology: current knowledge and future trends',
+                                'author' => 'M. V. Moreno-Aribas and Polo, M.',
+                                'year' => '2007',
+                                'month' => '01',
+                                'number' => '4',
+                                'volume' => '45',
+                                'journal' => 'Food Science and Nutrition',
+                                ]
+                        ],
+                        
+
                         
                     
                                       

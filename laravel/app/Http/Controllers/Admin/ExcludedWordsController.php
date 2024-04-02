@@ -40,9 +40,9 @@ class ExcludedWordsController extends Controller
      */
     public function store(StoreExcludedWordRequest $request)
     {
-        $input = $request->all();
+        $input = $request->except('_token');
 
-        ExcludedWord::create($input);
+        ExcludedWord::firstOrCreate($input);
 
         return redirect()->route('excludedWords.index');
     }

@@ -40,9 +40,9 @@ class NamesController extends Controller
      */
     public function store(StoreNameRequest $request)
     {
-        $input = $request->all();
+        $input = $request->except('_token');
 
-        Name::create($input);
+        Name::firstOrCreate($input);
 
         return redirect()->route('names.index');
     }

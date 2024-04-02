@@ -16,6 +16,9 @@
                         algorithm version {{ $version }}
                     @endif
                 </p>
+                <p class="mt-2 text-emerald-700 dark:text-emerald-600">
+                    You can help me improve the algorithm by pointing out items that meet the requirements but nevertheless are converted incorrectly.  Submit either an error report or a comment (and please reply to any request for clarification).
+                </p>
                 <p class="mt-2">
                     @include('index.partials.settings')
                 </p>

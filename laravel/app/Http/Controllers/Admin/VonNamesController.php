@@ -40,9 +40,9 @@ class VonNamesController extends Controller
      */
     public function store(StoreVonNameRequest $request)
     {
-        $input = $request->all();
+        $input = $request->except('_token');
 
-        VonName::create($input);
+        VonName::firstOrCreate($input);
 
         return redirect()->route('vonNames.index');
     }

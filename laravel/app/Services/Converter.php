@@ -175,6 +175,8 @@ class Converter
                 ['1er', '2e', '3e', '4e', '5r', '6e', '7e'],
             'es' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
+            'pt' =>
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
         ];
 
         $this->articleRegExp = 'article [0-9]*';
@@ -191,7 +193,7 @@ class Converter
 
         $this->volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
-        $this->volRegExp2 = '/^vol(\.|ume)? ?|^v\. /i';
+        $this->volRegExp2 = '/^\(?vol(\.|ume)? ?|^\(?v\. /i';
         $this->volumeRegExp = '[Vv]olume ?|[Vv]ol\.? ?|VOL\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{';
 
         $this->numberRegExp = '[Nn][Oo]s?\.?:? ?|[Nn]umbers? ?|[Nn]\. |[Ii]ssues? ?';
@@ -215,7 +217,7 @@ class Converter
         $this->forthcomingRegExp7 = '/^[Tt]o appear in/';
 
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
-        $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on |^.* meeting |^.* conference proceedings|^proc\..*(conf\.|conference)?|^.* workshop |^actas del )';
+        $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on |^.* meeting |^.* conference proceedings|^.* proceedings of the (.*) conference|^proc\..*(conf\.|conference)?|^.* workshop |^actas del )';
         $this->proceedingsExceptions = ['Proceedings of the National Academy', 'Proceedings of the Royal Society', 'Proc. R. Soc.'];
 
         $this->thesisRegExp = '( [Tt]hesis| [Dd]issertation)';
@@ -247,7 +249,7 @@ class Converter
             'en' => '(Retrieved from |Available( at)?:? )',
             'fr' => '(Récupéré sur |Disponible( à)?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
-            'pt' => '(Disponível( em)?:? )'
+            'pt' => '(Disponível( em)?:? |Obtido de:? )'
         ];
 
         // Dates are between 8 and 18 characters long
@@ -256,14 +258,14 @@ class Converter
             'en' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
             'fr' => '[Rr]écupéré (?P<date1>' . $dateRegExp . ' )?sur |[Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?(à|sur) ',
             'es' => '[Oo]btenido (?P<date1>' . $dateRegExp . ' )?de |[Aa]ccedido (?P<date2>' . $dateRegExp . ' )?en ',
-            'pt' => '[Oo]btenido (?P<date1>' . $dateRegExp . ' )?de |[Aa]cesso (?P<date2>' . $dateRegExp . ' )?em ',
+            'pt' => '[Oo]btido (?P<date1>' . $dateRegExp . ' )?de |[Aa]cesso (?P<date2>' . $dateRegExp . ' )?em ',
         ];
 
         $this->accessedRegExp1 = [
             'en' => '([Rr]etrieved |[Aa]ccessed |[Vv]iewed )(?P<date2>' . $dateRegExp . ')',
             'fr' => '([Rr]écupéré |[Cc]onsulté (le )?)(?P<date2>' . $dateRegExp . ')',
             'es' => '([Oo]btenido |[Aa]ccedido )(?P<date2>' . $dateRegExp . ')',
-            'pt' => '([Oo]btenido |[Aa]cesso )(?P<date2>' . $dateRegExp . ')',
+            'pt' => '([Oo]btido |[Aa]cesso )(?P<date2>' . $dateRegExp . ')',
         ];
 
         $this->monthsRegExp = [
@@ -667,7 +669,8 @@ class Converter
         }
 
         if ($month) {
-            $this->setField($item, 'month', $month, 'setField 112');
+            // Using fixMonth here yields a Carbon error for $month = 'Avril' and $language = 'fr'
+            $this->setField($item, 'month', $this->fixMonth($month, $language), 'setField 112');
         }
 
         //////////////////////////
@@ -2404,16 +2407,18 @@ class Converter
     */
     private function fixMonth(string $month, string $language = 'en'): string
     {
+        Carbon::setLocale($language);
+
         $month1 = trim(Str::before($month, '-'), ', ');
         if (preg_match('/^[a-zA-Z.]*$/', $month1)) {
-            $fullMonth1 = Carbon::parse('1 ' . $month1)->locale($language)->format('F');
+            $fullMonth1 = Carbon::parseFromLocale('1 ' . $month1, $language)->monthName;
         } else {
             $fullMonth1 = $month1;
         }
 
         $month2 = Str::contains($month, '-') ? Str::after($month, '-') : null;
         if ($month2 && preg_match('/^[a-zA-Z.]*$/', $month2)) {
-            $fullMonth2 = Carbon::parse('1 ' . $month2)->format('F');
+            $fullMonth2 = Carbon::parseFromLocale('1 ' . $month2, $language)->monthName;
         } elseif ($month2) {
             $fullMonth2 = $month2;
         } else {
@@ -2582,7 +2587,7 @@ class Converter
                 if (
                     Str::endsWith($word, ['.', '!', '?', ','])
                     ||
-                    ($nextWord && $nextWord[0] == '(' && isset($nextWord[2]) && $nextWord[2] != ')')
+                    ($nextWord && $nextWord[0] == '(' && substr($nextWord, -1) != ')')
                     ) {
                     // if first character  of next word is lowercase letter and does not end in period
                     // OR $word and $nextWord are A. and D. or B. and C.
@@ -2652,7 +2657,7 @@ class Converter
                         $wordsToNextPeriod = explode(' ',  $modStringToNextPeriod);
                         $lcWordCount = 0;
                         foreach ($wordsToNextPeriod as $remainingWord) {
-                            if (!in_array($remainingWord, $this->stopwords) && ctype_alpha($remainingWord[0]) && mb_strtolower($remainingWord) == $remainingWord) {
+                            if (!in_array($remainingWord, $this->stopwords) && isset($remainingWords[0]) && ctype_alpha($remainingWord[0]) && mb_strtolower($remainingWord) == $remainingWord) {
                                 $lcWordCount++;
                             }
                         }
@@ -2909,9 +2914,12 @@ class Converter
      */
     private function isDate(string $string, string $language = 'en', string $type = 'is'): bool|array
     {
+        $ofs = ['en' => '', 'fr' => '', 'es' => '', 'pt' =>'de'];
+
         $year = '(?P<year>(19|20)[0-9]{2})';
         $monthName = $this->monthsRegExp[$language];
-        $day = '[1-3]?[0-9]';
+        $of = $ofs[$language];
+        $day = '[0-3]?[0-9]';
         $monthNumber = '[01]?[0-9]';
 
         $starts = $type == 'is' ? '^' : '';
@@ -2920,9 +2928,9 @@ class Converter
         //$str = str_replace([","], "", trim($string, ',. '));
         $matches = [];
         $isDates = [];
-        $isDates[1] = preg_match('/(' . $starts . $day . ' (' . $monthName . '),? ?'. $year . $ends . ')/i' , $string, $matches[1]);
+        $isDates[1] = preg_match('/(' . $starts . $day . $of . ' (' . $monthName . '),? ?' . $of . $year . $ends . ')/i' , $string, $matches[1]);
         $isDates[2] = preg_match('/(' . $starts . '(' . $monthName . ') ?' . $day . ',? '. $year . $ends . ')/i', $string, $matches[2]);
-        $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/ ]' . $monthNumber . '[\-\/ ]'. $year . $ends . ')/i', $string, $matches[3]);
+        $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/ ]' . $of . $monthNumber . '[\-\/ ]'. $of . $year . $ends . ')/i', $string, $matches[3]);
         $isDates[4] = preg_match('/(' . $starts . $monthNumber . '[\-\/ ]' . $day . '[\-\/ ]'. $year . $ends . ')/i', $string, $matches[4]);
         $isDates[5] = preg_match('/(' . $starts . $year . '[\-\/, ]' . $day . '[\-\/ ]' . $monthNumber . $ends . ')/i', $string, $matches[5]);
         $isDates[6] = preg_match('/(' . $starts . $year . '[, ]' . $monthName . ' ' . $day . $ends . ')/i', $string, $matches[6]);
@@ -2933,7 +2941,7 @@ class Converter
         } elseif ($type == 'contains') {
             foreach ($isDates as $i => $isDate) {
                 if (isset($matches[$i][0]) && $matches[$i][0]) {
-                    return ['date' => $matches[$i][0], 'year' => $matches[$i]['year']];
+                    return ['date' => $matches[$i][0], 'year' => isset($matches[$i]['year']) ? $matches[$i]['year'] : ''];
                 }
             }
             return false;
@@ -3150,7 +3158,7 @@ class Converter
 
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
-            } elseif ($word == '...') {
+            } elseif (in_array($word, ['...', '…'])) {
                 $this->verbose('[convertToAuthors 1]');
                 if (isset($words[$i+1]) && $this->isAnd($words[$i+1], $language)) {
                     $this->addToAuthorString(3, $authorstring, ' and others');
@@ -3473,8 +3481,8 @@ class Converter
                         (count($bareWords) > 3
                             ||
                             (
-                                ($this->inDict($remainingWords[0]) && ! $this->isInitials(trim($remainingWords[0], ',')))
-                                && ! empty($remainingWords[1]) && $this->inDict($remainingWords[1]) && strtolower($remainingWords[1][0]) == $remainingWords[1][0] && $remainingWords[1] != '...'
+                                ($this->inDict(trim($remainingWords[0], ',')) && ! $this->isInitials(trim($remainingWords[0], ',')))
+                                && ! empty($remainingWords[1]) && $this->inDict($remainingWords[1]) && strtolower($remainingWords[1][0]) == $remainingWords[1][0] && $remainingWords[1] != '...' && ! in_array($remainingWords[1][0], ["'", "`"])
                                 && ! empty($remainingWords[2]) && $this->inDict($remainingWords[2]) && strtolower($remainingWords[2][0]) == $remainingWords[2][0]
                             )
                         )
@@ -3496,7 +3504,7 @@ class Converter
                     // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
                     // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
                     // at comma.
-                    //dd($word);
+                    //dd($remainingWords[0], $this->inDict($remainingWords[0]), in_array($remainingWords[0], $this->dictionaryNames));
                     $this->verbose('[convertToAuthors 28]');
                     $done = true;
                     $this->addToAuthorString(11, $authorstring, $this->formatAuthor($fullName));
@@ -4093,8 +4101,10 @@ class Converter
         $barewords = [];
         foreach ($words as $j => $word) {
             $stop = false;
+            $endsWithPunc = false;
             if (Str::endsWith($word, ['.', ',', ')', ':', '}'])) {
                 $stop = true;
+                $endsWithPunc = true;
             }
             if (preg_match('/(\(|\[)(18|19|20)([0-9][0-9])(\)|\])/', $word)) {
                 $stop = true;
@@ -4113,7 +4123,7 @@ class Converter
             }
 
             if ($stop) {
-                $barewords[] = substr($word, 0, -1);
+                $barewords[] = $endsWithPunc ? substr($word, 0, -1) : $word;
                 break;
             } else {
                 $barewords[] = $word;
@@ -4399,7 +4409,7 @@ class Converter
     {
         $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
         // First check for some common patterns
-        $number = '[1-9][0-9]{0,3}';
+        $number = '[1-9][0-9]{0,3}[A-Za-z]?';
         $numberWithRoman = '([1-9][0-9]{0,3}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
         $numberRange = $number . '((--?-?|_)' . $number . ')?';
@@ -4813,6 +4823,9 @@ class Converter
         // Replace ~ with space if not preceded by \ or / (as it will be in a URL)
         $string = preg_replace('/([^\/\\\])~/', '$1 ', $string);
         $string = str_replace("\\/", "", $string);
+        // Remove copyright symbol
+        $string = str_replace("©", "", $string);
+
         // Fix errors like 'x{\em ' by adding space after the x [might not be error?]
         $string = preg_replace('/([^ ])(\{\\\[A-Za-z]{2,8} )/', '$1 $2', $string);
 

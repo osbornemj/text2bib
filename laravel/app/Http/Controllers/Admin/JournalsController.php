@@ -44,10 +44,10 @@ class JournalsController extends Controller
      */
     public function store(StoreJournalRequest $request)
     {
-        $input = $request->all();
+        $input = $request->except('_token');
         $input['checked'] = 1;
 
-        Journal::create($input);
+        Journal::firstOrCreate($input);
 
         return redirect()->route('journals.index');
     }

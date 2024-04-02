@@ -40,9 +40,9 @@ class DictionaryNamesController extends Controller
      */
     public function store(StoreDictionaryNameRequest $request)
     {
-        $input = $request->all();
+        $input = $request->except('_token');
 
-        DictionaryName::create($input);
+        DictionaryName::firstOrCreate($input);
 
         return redirect()->route('dictionaryNames.index');
     }

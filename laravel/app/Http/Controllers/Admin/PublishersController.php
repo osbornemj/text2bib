@@ -44,10 +44,10 @@ class PublishersController extends Controller
      */
     public function store(StorePublisherRequest $request)
     {
-        $input = $request->all();
+        $input = $request->except('_token');
         $input['checked'] = 1;
 
-        Publisher::create($input);
+        Publisher::firstOrCreate($input);
 
         return redirect()->route('publishers.index');
     }
