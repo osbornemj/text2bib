@@ -3928,6 +3928,121 @@ class ExampleSeeder extends Seeder
                                 'pages' => '169-184',
                                 ]
                         ],
+                        [
+                            'source' => ' Dratch, Rabbi Mark. 2003. ‘Forgiving the Unforgivable? Jewish Insights into Repentance and Forgiveness’. Journal of Religion & Abuse 4 (4): 7–24. https://doi.org/10.1300/J154v04n04_02. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Dratch, Rabbi Mark',
+                                'title' => 'Forgiving the Unforgivable? Jewish Insights into Repentance and Forgiveness',
+                                'journal' => 'Journal of Religion & Abuse',
+                                'year' => '2003',
+                                'volume' => '4',
+                                'number' => '4',
+                                'pages' => '7-24',
+                                'doi' => '10.1300/J154v04n04_02',
+                                ]
+                        ],
+                        [
+                            'source' => ' Amati, Ghila. 2023. ‘Discovering the Depths Within: Kook’s Zionism and the Philosophy of Life of Henri Bergson.’ Religions 14 (2). https://doi.org/10.3390/rel14020261. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Amati, Ghila',
+                                'title' => 'Discovering the Depths Within: Kook\'s Zionism and the Philosophy of Life of Henri Bergson',
+                                'journal' => 'Religions',
+                                'year' => '2023',
+                                'volume' => '14',
+                                'number' => '2',
+                                'doi' => '10.3390/rel14020261',
+                                ]
+                        ],
+                        [
+                            'source' => ' Amati, Ghila. Forthcoming. ‘Freedom, Creativity, the Self, and God: Between Rabbi Kook and Bergson’s Lebensphilosophie.’ Harvard Theological Review. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Amati, Ghila',
+                                'title' => 'Freedom, Creativity, the Self, and God: Between Rabbi Kook and Bergson’s Lebensphilosophie',
+                                'journal' => 'Harvard Theological Review',
+                                'year' => 'Forthcoming',
+                                ]
+                        ],
+                        [
+                            'source' => ' Beer, Moshe. 2011. ‘Al Maaseu Kapparah Shel Baale Teshuvah Besifrut Chazal’. In Sages of the Mishnah and the Talmud: Teachings, Activities and Leadership. Ramat Gan: Bar-Ilan University Press, 216–239. ',
+                            'type' => 'incollection',
+                            'bibtex' => [
+                                'author' => 'Beer, Moshe',
+                                'title' => 'Al Maaseu Kapparah Shel Baale Teshuvah Besifrut Chazal',
+                                'year' => '2011',
+                                'pages' => '216-239',
+                                'address' => 'Ramat Gan',
+                                'publisher' => 'Bar Ilan University Press',
+                                ]
+                        ],
+                        [
+                            'source' => ' Gilbert, Maurice. 2002. ‘God, Sin and Mercy: Sirach 15:11–18:14’ In Ben Sira’s God: Proceedings of the International Ben Sira Conference: Durham – Ushaw College 2001, edited by R. Egger Wenzel, 118–135. Berlin: de Gruyter. ',
+                            'type' => 'incollection',
+                            'bibtex' => [
+                                'author' => 'Gilbert, Maurice',
+                                'title' => 'God, Sin and Mercy: Sirach 15:11–18:14',
+                                'year' => '2002',
+                                'pages' => '118–135',
+                                'editor' => 'R. Egger Wenzel',
+                                'address' => 'Berlin',
+                                'publisher' => 'de Gruyter',
+                                'booktitle' => 'Ben Sira\'s God: Proceedings of the International Ben Sira Conference: Durham – Ushaw College 2001',
+                                ]
+                        ],
+                        [
+                            'source' => ' Ish Shalom, Benjamin. 1993. Rabbi Avraham Itzhak Ha-Cohen Kook: Between Rationalism and Mysticism. Translated by Ora Wiskind-Elper. Albany: State University of New York Press. ',
+                            'type' => 'book',
+                            'bibtex' => [
+                                'author' => 'Ish Shalom, Benjamin',
+                                'title' => 'Rabbi Avraham Itzhak Ha-Cohen Kook: Between Rationalism and Mysticism',
+                                'year' => '1993',
+                                'note' => 'Translated by Ora Wiskind-Elper',
+                                'address' => 'Albany',
+                                'publisher' => 'State University of New York Press',
+                                ]
+                        ],
+                        [
+                            'source' => ' Nachman of Breslov. 1995. Likutey Moharan. Translated by Ozer Bergman and Moshe Mykoff. Jerusalem/New York: Breslov Research Institue. ',
+                            'type' => 'book',
+                            'bibtex' => [
+                                'author' => 'Nachman of Breslov',
+                                'title' => 'Likutey Moharan',
+                                'year' => '1995',
+                                'note' => 'Translated by Ozer Bergman and Moshe Mykoff.',
+                                'address' => 'Jerusalem/New York',
+                                'publisher' => 'Breslov Research Institue',
+                                ]
+                        ],
+                        [
+                            'source' => ' Petuchowski, Jakob J. 1968. ‘The Concept of “Teshuvah” in the Bible and the Talmud’. Judaism 17 (2): 175. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Petuchowski, Jakob J.',
+                                'title' => 'The Concept of “Teshuvah” in the Bible and the Talmud',
+                                'journal' => 'Judaism',
+                                'year' => '1968',
+                                'volume' => '17',
+                                'number' => '2',
+                                'pages' => '175',
+                                ]
+                        ],
+                        [
+                            'source' => ' Strauss, Leo. 2013. Leo Strauss on Maimonides: The Complete Writings. Edited by Kenneth Green Hart. Chicago: University of Chicago Press. ',
+                            'type' => 'book',
+                            'bibtex' => [
+                                'author' => 'Strauss, Leo.',
+                                'title' => 'Leo Strauss on Maimonides: The Complete Writings',
+                                'year' => '2013',
+                                'editor' => 'Kenneth Green Hart',
+                                'address' => 'Chicago',
+                                'publisher' => 'University of Chicago Press',
+                                ]
+                        ],
+                        
+                        
+                        
                         
                         
 

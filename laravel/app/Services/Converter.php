@@ -2657,7 +2657,7 @@ class Converter
                         $wordsToNextPeriod = explode(' ',  $modStringToNextPeriod);
                         $lcWordCount = 0;
                         foreach ($wordsToNextPeriod as $remainingWord) {
-                            if (!in_array($remainingWord, $this->stopwords) && isset($remainingWords[0]) && ctype_alpha($remainingWord[0]) && mb_strtolower($remainingWord) == $remainingWord) {
+                            if (! in_array($remainingWord, $this->stopwords) && isset($remainingWord[0]) && ctype_alpha($remainingWord[0]) && mb_strtolower($remainingWord) == $remainingWord) {
                                 $lcWordCount++;
                             }
                         }
