@@ -17,12 +17,12 @@
                     &nbsp;&bull;&nbsp;
                     user
                     @foreach ($conversion->correctnessCounts() as $key => $value)
-                        <span class="@if ($key == -1) bg-red-500 @elseif ($key == 1) bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
+                        <span class="@if ($key == -1) bg-red-300 dark:bg-red-500 @elseif ($key == 1) bg-emerald-300 dark:bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-300 dark:bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
                     @endforeach
                     &nbsp;&bull;&nbsp;
                     admin
                     @foreach ($conversion->adminCorrectnessCounts() as $key => $value)
-                        <span class="@if ($key == -1) bg-red-500 @elseif ($key == 1) bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
+                        <span class="@if ($key == -1) bg-red-300 dark:bg-red-500 @elseif ($key == 1) bg-emerald-300 dark:bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-300 dasrk:bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
                     @endforeach
                     @if ($conversion->non_utf8_detected)
                         &nbsp;&bull;&nbsp;

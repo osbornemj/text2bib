@@ -54,7 +54,7 @@
                     Journals
                 </x-link>
                 @if ($uncheckedJournalCount)
-                    <span class="bg-red-500 text-xs px-1">{{ $uncheckedJournalCount }}</span>
+                    <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedJournalCount }}</span>
                 @endif
                 (journal names, based on conversions marked as correct by users and approved by administrator)
             </p>
@@ -69,7 +69,7 @@
                     Publishers
                 </x-link>
                 @if ($uncheckedPublisherCount)
-                    <span class="bg-red-500 text-xs px-1">{{ $uncheckedPublisherCount }}</span>
+                    <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedPublisherCount }}</span>
                 @endif
                 (publishing companies, base on conversions marked as correct by users and approved by administrator)
             </p>
@@ -78,7 +78,7 @@
                     Publication cities
                 </x-link>
                 @if ($uncheckedCityCount)
-                    <span class="bg-red-500 text-xs px-1">{{ $uncheckedCityCount }}</span>
+                    <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedCityCount }}</span>
                 @endif
                 (cities in which publishers are located, for the <code>address</code> field of a book)
             </p>
