@@ -19,6 +19,10 @@
 
         @include('livewire.partials.item-separator-error')
 
+    @elseif ($this->isBibtex)
+
+        @include('livewire.partials.is-bibtex')
+
     @elseif (count($this->nonUtf8Entries))
 
         @include('livewire.partials.non-utf8-entries')

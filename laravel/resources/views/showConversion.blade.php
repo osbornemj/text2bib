@@ -10,8 +10,10 @@
     <div class="sm:px-0 pt-0 space-y-6">
         <div class="px-4 sm:rounded-lg">
             <x-link href="{{ url('downloadBibtex/' . $conversion->id) }}">Download BibTeX file</x-link>
-            &nbsp;&bull;&nbsp;
-            <x-link href="{{ url('downloadSource/' . $conversion->user_file_id) }}">source file</x-link>
+            @if ($fileExists)
+                &nbsp;&bull;&nbsp;
+                <x-link href="{{ url('downloadSource/' . $conversion->user_file_id) }}">source file</x-link>
+            @endif
         </div>
     </div>
 

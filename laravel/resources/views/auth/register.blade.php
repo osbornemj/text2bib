@@ -5,6 +5,12 @@
         <div style="display: none;">
             <input id="empty" type="text" size="32" maxlength="32" class="form-control" name="empty" >
         </div>
+
+        <div class="mt-4">
+            <p>
+                Please enter your real name, not a made-up name.
+            </p>
+        </div>
         
         <!-- First name -->
         <div>

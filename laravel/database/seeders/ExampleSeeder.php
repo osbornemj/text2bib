@@ -3821,7 +3821,7 @@ class ExampleSeeder extends Seeder
                             'bibtex' => [
                                 'doi' => '10.1080/10408690490478118',
                                 'pages' => '265-286',
-                                'title' => 'de 01 de 2007). Winemaking biochemistry and microbiology: current knowledge and future trends',
+                                'title' => 'Winemaking biochemistry and microbiology: current knowledge and future trends',
                                 'author' => 'M. V. Moreno-Aribas and Polo, M.',
                                 'year' => '2007',
                                 'month' => '01',
@@ -3830,6 +3830,105 @@ class ExampleSeeder extends Seeder
                                 'journal' => 'Food Science and Nutrition',
                                 ]
                         ],
+                        [
+                            'source' => '\bibitem[Bekta\c{s} {\em et~al.}, 2022]{bektas22} Bekta\c{s} AB {\em et~al}. Fast and interpretable genomic data analysis using multiple approximate kernel learning. {\em Bioinformatics} 2022;\textbf{38}:Issue Supplement\_1, i77--i83. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Bekta\c{s}, A. B. and others',
+                                'title' => 'Fast and interpretable genomic data analysis using multiple approximate kernel learning',
+                                'year' => '2022',
+                                'journal' => 'Bioinformatics',
+                                'volume' => '38',
+                                'pages' => 'i77-i83',
+                                'number' => 'Supplement 1',
+                                ]
+                        ],
+                        [
+                            'source' => '[68]	M.G. Gubler, A.J. Kovacs, La structure du polyethylene considere comme un melange de n-paraffines, Journal of Polymer Science XXXIV (1959) 551–568. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'M. G. Gubler and A. J. Kovacs',
+                                'title' => 'La structure du polyethylene considere comme un melange de n-paraffines',
+                                'year' => '1959',
+                                'journal' => 'Journal of Polymer Science',
+                                'volume' => 'XXXIV',
+                                'pages' => '551-568',
+                                ]
+                        ],
+                        [
+                            'source' => ' \bibitem{daily17} J. Daily, J. Peterson, Predictive Maintenance: How Big Data Analysis Can Improve Maintenance. In: Richter, K., Walther, J. (eds) Supply Chain Integration Challenges in Commercial Aerospace. Springer, Cham. 2017 doi:/10.1007/978-3-319-46155-7\_18 ',
+                            'type' => 'incollection',
+                            'bibtex' => [
+                                'author' => 'J. Daily and J. Peterson ',
+                                'title' => 'Predictive Maintenance: How Big Data Analysis Can Improve Maintenance',
+                                'year' => '2017',
+                                'doi' => '10.1007/978-3-319-46155-7_18',
+                                'editor' => 'Richter, K. and Walther, J',
+                                'address' => 'Cham',
+                                'publisher' => 'Springer',
+                                'booktitle' => 'Supply Chain Integration Challenges in Commercial Aerospace',
+                                ]
+                        ],
+                        [
+                            'source' => 'Berthrong, John H. (1994). All Under Heaven: Transforming Paradigms in Confucian-Christian Dialogue. Albany: State University of New York Press. ',
+                            'type' => 'book',
+                            'bibtex' => [
+                                'author' => 'Berthrong, John H.',
+                                'year' => '1994',
+                                'title' => 'All Under Heaven: Transforming Paradigms in Confucian-Christian Dialogue',
+                                'publisher' => 'State University of New York Press',
+                                'address' => 'Albany',
+                                ]
+                        ],
+                        [
+                            'source' => '_______. Transformations of the Confucian Way. Boulder, Co.: Westview Press, 1998. ',
+                            'type' => 'book',
+                            'bibtex' => [
+                                'author' => 'Berthrong, John H.',
+                                'title' => 'Transformations of the Confucian Way',
+                                'year' => '1998',
+                                'address' => 'Boulder, Co',
+                                'publisher' => 'Westview Press',
+                                ]
+                        ],
+                        [
+                            'source' => '[22] Fei Hua, Yanhao Chen, Yuwei Jin, Chi Zhang, Ari Hayes, Youtao Zhang, and Eddy Z. Zhang. 2021. AutoBraid: A Framework for Enabling Efficient Surface Code Communication in Quantum Computing. In MICRO-54: 54th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO \'21). ACM, New York, NY, USA, 925–936. ',
+                            'type' => 'inproceedings',
+                            'bibtex' => [
+                                'author' => 'Fei Hua and Yanhao Chen and Yuwei Jin and Chi Zhang and Ari Hayes and Youtao Zhang and Eddy Z. Zhang',
+                                'title' => 'AutoBraid: A Framework for Enabling Efficient Surface Code Communication in Quantum Computing',
+                                'year' => '2021',
+                                'booktitle' => 'MICRO-54: 54th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO \'21)',
+                                'pages' => '925-936',
+                                'address' => 'New York, NY, USA',
+                                'publisher' => 'ACM',
+                                ]
+                        ],
+                        [
+                            'source' => '\bibitem[Garlan and Shaw 1993]{GARLAN_SHAW:1993}Garlan, D. \& Shaw, M.: ``An Introduction to Software Architecture\'\'; {\em Advances In Software Engineering And Knowledge Engineering}. pp. 1-39 (1993), doi: 10.1142/9789812798039\_0001 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1142/9789812798039_0001',
+                                'author' => 'Garlan, D. and Shaw, M.',
+                                'title' => 'An Introduction to Software Architecture',
+                                'year' => '1993',
+                                'journal' => 'Advances In Software Engineering And Knowledge Engineering',
+                                'pages' => '1-39',
+                                ]
+                        ],
+                        [
+                            'source' => '\bibitem[Hasselbring 2018]{HASSELBRING:2018}Hasselbring, W.: ``Software Architecture: Past, Present, Future\'\'; {\em The Essence Of Software Engineering}. pp. 169-184 (2018), doi: 10.1007/978-3-319-73897-0\_10 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1007/978-3-319-73897-0_10',
+                                'author' => 'Hasselbring, W.',
+                                'title' => 'Software Architecture: Past, Present, Future',
+                                'year' => '2018',
+                                'journal' => 'The Essence Of Software Engineering',
+                                'pages' => '169-184',
+                                ]
+                        ],
+                        
                         
 
                         

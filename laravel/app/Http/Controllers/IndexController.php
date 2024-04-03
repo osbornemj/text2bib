@@ -48,7 +48,7 @@ class IndexController extends Controller
     {
         $conversion = Conversion::find($conversionId);
 
-        if (!$conversion || $conversion->user_id != Auth::user()->id) {
+        if (!$conversion || $conversion->user_id != Auth::id()) {
             abort(403);
         }
 
@@ -77,7 +77,9 @@ class IndexController extends Controller
         $itemTypes = ItemType::all();
         $itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
 
-        return view('showConversion', compact('convertedItems', 'conversion', 'itemTypes', 'itemTypeOptions'));
+        $fileExists = Storage::disk('public')->exists('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
+
+        return view('showConversion', compact('convertedItems', 'conversion', 'itemTypes', 'itemTypeOptions', 'fileExists'));
     }
 
     public function downloadSource(int $userFileId)

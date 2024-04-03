@@ -49,6 +49,7 @@ class ConvertFile extends Component
     public $entry = null;
     public $itemSeparatorError = false;
     public $nonUtf8Entries = [];
+    public $isBibtex;
 
     public function boot()
     {
@@ -161,40 +162,44 @@ class ConvertFile extends Component
         $filestring = str_replace(["\r\n", "\r"], "\n", $filestring);
         // If line consists only of tab and/or space followed by a linefeed, remove the tab and space.
         $filestring = preg_replace('/\n\t? ?\n/', "\n\n", $filestring);
+        $filestring = str_replace('\end{bibliography}', '', $filestring);
+        $this->isBibtex = Str::contains($filestring, ['@article', '@book', '@incollection', '@inproceedings', '@unpublished', '@online', '@techreport', '@phdthesis', '@mastersthesis']);
 
-        $entrySeparator = Str::startsWith($filestring, '<li>') ? '<li>' : ($conversion->item_separator == 'line' ? "\n\n" : "\n");
+        if (! $this->isBibtex) {
+            $entrySeparator = Str::startsWith($filestring, '<li>') ? '<li>' : ($conversion->item_separator == 'line' ? "\n\n" : "\n");
 
-        // Create array of entries
-        $entries = explode($entrySeparator, $filestring);
-        // Remove empty entries and entries that are "\n"
-        $entries = array_filter($entries, fn($value) => ! empty($value) && $value != "\n");
+            // Create array of entries
+            $entries = explode($entrySeparator, $filestring);
+            // Remove empty entries and entries that are "\n"
+            $entries = array_filter($entries, fn($value) => ! empty($value) && $value != "\n");
 
-        $this->itemSeparatorError = false;
-        $this->nonUtf8Entries = [];
+            $this->itemSeparatorError = false;
+            $this->nonUtf8Entries = [];
 
-        // Check for utf-8
-        foreach ($entries as $i => $entry) {
-//            $encoding = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1'], true);
-//            if ($encoding == 'ISO-8859-1') {
-//                $entries[$i] = mb_convert_encoding($entry, 'UTF-8', 'ISO-8859-1');
-////                dump($entry);
-//            } elseif ($encoding != 'UTF-8') {
-            if (!mb_check_encoding($entry)) {
-                // Need to convert to UTF-8 because Livewire uses json encoding
-                // (and will crash if non-utf-8 string is passed to it)
-                $this->nonUtf8Entries[] = mb_convert_encoding($entry, "UTF-8");
+            // Check for utf-8
+            foreach ($entries as $i => $entry) {
+    //            $encoding = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1'], true);
+    //            if ($encoding == 'ISO-8859-1') {
+    //                $entries[$i] = mb_convert_encoding($entry, 'UTF-8', 'ISO-8859-1');
+    ////                dump($entry);
+    //            } elseif ($encoding != 'UTF-8') {
+                if (!mb_check_encoding($entry)) {
+                    // Need to convert to UTF-8 because Livewire uses json encoding
+                    // (and will crash if non-utf-8 string is passed to it)
+                    $this->nonUtf8Entries[] = mb_convert_encoding($entry, "UTF-8");
+                }
+            }
+
+            // If encoding is correct, check for possible item_separator error
+            if (count($this->nonUtf8Entries) == 0 && count($entries) <= 2 && strlen($entries[0]) > 500) {
+                $this->entry = $entries[0];
+                $this->itemSeparatorError = true;
+                $conversion->delete();
             }
         }
-
-        // If encoding is correct, check for possible item_separator error
-        if (count($this->nonUtf8Entries) == 0 && count($entries) <= 2 && strlen($entries[0]) > 500) {
-            $this->entry = $entries[0];
-            $this->itemSeparatorError = true;
-            $conversion->delete();
-        }
        
-        // If item_separator and encoding seem correct, perform the conversion
-        if ($this->itemSeparatorError == false && count($this->nonUtf8Entries) == 0) {
+        // If file is not already a BibTeX file and item_separator and encoding seem correct, perform the conversion
+        if (! $this->isBibtex && $this->itemSeparatorError == false && count($this->nonUtf8Entries) == 0) {
             $convertedEntries = [];
             $i = 0;
             foreach ($entries as $entry) {
