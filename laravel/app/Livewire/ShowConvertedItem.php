@@ -16,6 +16,9 @@ use App\Models\Journal;
 use App\Models\Output;
 use App\Models\Publisher;
 use App\Models\RawOutput;
+use App\Models\User;
+
+use App\Notifications\ErrorReportPosted;
 
 class ShowConvertedItem extends Component
 {
@@ -236,6 +239,11 @@ class ShowConvertedItem extends Component
                 }
 
                 $this->errorReport = $newErrorReport;
+
+                $admins = User::where('is_admin', true)->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new ErrorReportPosted($newErrorReport->id));
+                }
             }
 
             $this->status = 'changes';
