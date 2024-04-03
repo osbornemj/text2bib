@@ -31,7 +31,7 @@
                     Each reference must start with either the authors or the year, and if it starts with the year, the authors must come next.  In addition, each reference must include a title.
                 </li>
                 <li>
-                    Your file must be plain text (txt), with character encoding utf-8.
+                    Your file must be plain text (txt), with character encoding utf-8.  (If the character encoding is not utf-8, the system will attempt to convert it to utf-8, but may not do so accurately.)
                 </li>
                 <li>
                     The size of your file must be at most 100K.
