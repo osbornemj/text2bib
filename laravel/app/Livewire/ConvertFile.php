@@ -50,6 +50,7 @@ class ConvertFile extends Component
     public $itemSeparatorError = false;
     public $nonUtf8Entries = [];
     public $isBibtex;
+    public $notUtf8;
 
     public function boot()
     {
@@ -177,13 +178,14 @@ class ConvertFile extends Component
             $this->nonUtf8Entries = [];
 
             // Check for utf-8
+            $this->notUtf8 = false;
             foreach ($entries as $i => $entry) {
-    //            $encoding = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1'], true);
-    //            if ($encoding == 'ISO-8859-1') {
-    //                $entries[$i] = mb_convert_encoding($entry, 'UTF-8', 'ISO-8859-1');
-    ////                dump($entry);
-    //            } elseif ($encoding != 'UTF-8') {
-                if (!mb_check_encoding($entry)) {
+                $encoding = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+                if (in_array($encoding, ['ISO-8859-1', 'Windows-1252'])) {
+                    $entries[$i] = mb_convert_encoding($entry, 'UTF-8', ['ISO-8859-1', 'Windows-1252']);
+                    $this->notUtf8 = true;
+                    $conversion->update(['non_utf8_detected' => true]);
+                } elseif ($encoding != 'UTF-8') {
                     // Need to convert to UTF-8 because Livewire uses json encoding
                     // (and will crash if non-utf-8 string is passed to it)
                     $this->nonUtf8Entries[] = mb_convert_encoding($entry, "UTF-8");
@@ -191,8 +193,8 @@ class ConvertFile extends Component
             }
 
             // If encoding is correct, check for possible item_separator error
-            if (count($this->nonUtf8Entries) == 0 && count($entries) <= 2 && strlen($entries[0]) > 500) {
-                $this->entry = $entries[0];
+            if (count($this->nonUtf8Entries) == 0 && count($entries) <= 2 && strlen($entries[array_key_first($entries)]) > 500) {
+                $this->entry = $entries[array_key_first($entries)];
                 $this->itemSeparatorError = true;
                 $conversion->delete();
             }

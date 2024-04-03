@@ -24,6 +24,10 @@
                     @foreach ($conversion->adminCorrectnessCounts() as $key => $value)
                         <span class="@if ($key == -1) bg-red-500 @elseif ($key == 1) bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
                     @endforeach
+                    @if ($conversion->non_utf8_detected)
+                        &nbsp;&bull;&nbsp;
+                        <span class="text-red-600 dark:text-red-400">Not UTF-8</span>
+                    @endif
                     &nbsp;&bull;&nbsp;
                     convert:
                     <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id) }}">line sep</x-link>

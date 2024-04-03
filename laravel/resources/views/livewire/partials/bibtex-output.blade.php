@@ -16,6 +16,11 @@
                         algorithm version {{ $version }}
                     @endif
                 </p>
+                @if ($notUtf8)
+                    <p class="mt-2 text-red-600 dark:text-red-400">
+                        The character encoding in the file you uploaded is not UTF-8.  The script has attempted to convert it to UTF-8, but may not have succeeded.  You may get better results by using <x-link href="https://notepad-plus-plus.org/" target="_blank">Notepad++</x-link> to convert it. (Within Notepad++, click on "Encoding", and then  on "Convert to UTF-8".)
+                    </p>
+                @endif
                 <p class="mt-2 text-emerald-700 dark:text-emerald-600">
                     You can help me improve the algorithm by pointing out items that meet the requirements but nevertheless are converted incorrectly.  Submit either an error report or a comment (and please reply to any request for clarification).
                 </p>

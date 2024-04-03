@@ -28,7 +28,12 @@
                     @endif
                 </p>
             </div>
-            <div class="ml-0">
+            @if ($conversion->non_utf8_detected)
+                <div class="ml-0 mt-2 text-red-600 dark:text-red-400">
+                    The character encoding in your source file was detected not to be UTF-8.  It was converted to UTF-8, but the conversion may not be accurate. You may get better results by using <x-link href="https://notepad-plus-plus.org/" target="_blank">Notepad++</x-link> to convert it. (Within Notepad++, click on "Encoding", and then  on "Convert to UTF-8".)
+                </div>
+            @endif
+            <div class="ml-0 mt-2">
                 @include('index.partials.settings')
             </div>
 
