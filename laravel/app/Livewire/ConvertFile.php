@@ -162,12 +162,14 @@ class ConvertFile extends Component
 
         $sourceFile->update(['sha1_hash' => sha1($filestring)]);
 
-        /*
-        $previousUserFile = UserFile::where('user_id', Auth::id())->where('sha1_hash', $sourceFile->sha1_hash)->latest()->first();
+        $previousUserFile = UserFile::where('user_id', Auth::id())
+                ->where('sha1_hash', $sourceFile->sha1_hash)
+                ->where('created_at', '<', $sourceFile->created_at)
+                ->latest()
+                ->first();
+
         if ($previousUserFile) {
-//            dump('a');
             $previousConversion = Conversion::where('user_file_id', $previousUserFile->id)->first();
-            //dd($previousConversion, $conversion);
             if (
                 $previousConversion &&
                 $previousConversion->item_separator == $conversion->item_separator &&
@@ -179,16 +181,12 @@ class ConvertFile extends Component
                 $previousConversion->percent_comment == $conversion->percent_comment &&
                 $previousConversion->include_source == $conversion->include_source &&
                 $previousConversion->report_type == $conversion->report_type &&
-                $previousConversion->version == $conversion->version
+                $previousConversion->version == $conversion->version->toDateTimeString()
             ) {
                 $conversion->delete();
-                //dump('c');
                 return redirect('showConversion/' . $previousConversion->id . '/1');
-//                dd('d');
             }
         }
-//      dump('b');
-        */
 
         // Regularlize line-endings
         $filestring = str_replace(["\r\n", "\r"], "\n", $filestring);
@@ -196,7 +194,7 @@ class ConvertFile extends Component
         $filestring = preg_replace('/\n\t? ?\n/', "\n\n", $filestring);
         $filestring = str_replace('\end{bibliography}', '', $filestring);
 
-        // Remove BOM (byte order mark, which should appear only at start of file)
+        // Remove this string from file --- BOM (byte order mark) if at start of file, otherwise zero width no-break space
         $filestring = str_replace("\xEF\xBB\xBF", " ", $filestring);
 
         $this->isBibtex = Str::contains($filestring, ['@article', '@book', '@incollection', '@inproceedings', '@unpublished', '@online', '@techreport', '@phdthesis', '@mastersthesis']);

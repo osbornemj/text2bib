@@ -10,12 +10,12 @@
     </p>
 
     @if ($conversionCount)
-        <div class="space-y-6 my-4">
+        <div class="space-y-6 mt-4">
             <x-link href="{{ url('conversions') }}">Your previous conversions</x-link>
         </div>
     @endif
 
-    <div class="space-y-6 mb-4">
+    <div class="space-y-6 my-4">
         <div class="sm:pt-0">
             <h3 class="font-semibold text-lg leading-tight">
                 {{ __('Requirements')}}

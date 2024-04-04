@@ -4102,6 +4102,73 @@ class ExampleSeeder extends Seeder
                                 'pages' => '439-457',
                                 ]
                         ],
+                        [
+                            'source' => 'Perdana, F. R., Wahyu, H., & Daryanto. 2015. Perbandingan Metode Double Exponential Smoothing Dengan Triple Exponential Smoothing Pada Peramalan Penjualan Rokok. Jember: Universitas Muhammaadiyah Jember. ',
+                            'type' => 'book',
+                            'bibtex' => [
+                                'author' => 'Perdana, F. R. and Wahyu, H. and Daryanto',
+                                'title' => 'Perbandingan Metode Double Exponential Smoothing Dengan Triple Exponential Smoothing Pada Peramalan Penjualan Rokok',
+                                'year' => '2015',
+                                'address' => 'Jember',
+                                'publisher' => 'Universitas Muhammaadiyah Jember',
+                                ]
+                        ],
+                        [
+                            'source' => '23.	Piri, R., et al., "Global" cardiac atherosclerotic burden assessed by artificial intelligence-based versus manual segmentation in (18)F-sodium fluoride PET/CT scans: Head-to-head comparison. J Nucl Cardiol, 2022. 29(5): p. 2531-2539. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Piri, R. and others',
+                                'title' => '"Global" cardiac atherosclerotic burden assessed by artificial intelligence-based versus manual segmentation in (18)F-sodium fluoride PET/CT scans: He ad-to-head comparison',
+                                'year' => '2022',
+                                'journal' => 'J Nucl Cardiol',
+                                'pages' => '2531-2539',
+                                'volume' => '29',
+                                'number' => '5',
+                                ]
+                        ],
+                        [
+                            'source' => '\bibitem{b34}Peduzzi, P., Concato, J., Kemper, E., Holford, T.R., Feinstein, A. R. (1996). A simulation study of the number of events per variable in logistic regression analysis. Journal of Clinical Epidemiology. Dec;49(12):1373-9. doi: 10.1016/s0895-4356(96)00236-3. PMID: 8970487. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1016/s0895-4356(96)00236-3',
+                                'note' => 'PMID: 8970487',
+                                'author' => 'Peduzzi, P. and Concato, J. and Kemper, E. and Holford, T. R. and Feinstein, A. R.',
+                                'year' => '1996',
+                                'title' => 'A simulation study of the number of events per variable in logistic regression analysis',
+                                'journal' => 'Journal of Clinical Epidemiology',
+                                'pages' => '12',
+                                'month' => 'December',
+                                'volume' => '49',
+                                'number' => '12',
+                                'pages' => '1373-9'
+                                ]
+                        ],
+                        [
+                            'source' => 'Yan, B.; Luh, P.B.; Warner, G.; Zhang, P. Operation and Design Optimization of Microgrids with Renewables. IEEE Trans. Autom. Sci. Eng. 2017, 14, 573–585. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Yan, B. and Luh, P. B. and Warner, G. and Zhang, P.',
+                                'title' => ' Operation and Design Optimization of Microgrids and Renewables',
+                                'year' => '2017',
+                                'journal' => ', IEEE Trans Autom. Sci. Eng',
+                                'volume' => '14',
+                                'pages' => '573-585',
+                                ]
+                        ],
+                        [
+                            'source' => 'Erenoğlu, A.K., Şengör, İ., Erdinç, O., Taşcıkaraoğlu, A. and Catalão, J.P., 2022. Optimal energy management system for microgrids considering energy storage, demand response and renewable power generation. International Journal of Electrical Power & Energy Systems, 136, p.107714. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Erenoğlu, A. K. and Şengör, İ. and Erdinç, O. and Taşcıkaraoğlu, A. and Catalão, J. P.',
+                                'title' => 'Optimal energy management system for microgrids considering energy storage, demand response and renewable power generation',
+                                'year' => '2022',
+                                'journal' => 'International Journal of Electrical Power & Energy Systems',
+                                'volume' => '136',
+                                'note' => 'Article 107714',
+                            ],
+                            'char_encoding' => 'utf8leave',
+                        ],
+                        
                         
                         
                 ];

@@ -9,7 +9,7 @@
 
     @if ($redirected)
         <span class="px-4 mt-2 text-emerald-700 dark:text-emerald-600">
-            You have already converted the file you uploaded.  Here are the results of the conversion.
+            You have previously converted the file you uploaded.  Here are the results of the conversion.
         </span>
     @endif
 
