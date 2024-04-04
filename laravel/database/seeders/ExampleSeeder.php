@@ -4040,16 +4040,70 @@ class ExampleSeeder extends Seeder
                                 'publisher' => 'University of Chicago Press',
                                 ]
                         ],
+                        [
+                            'source' => '[11] 	YardLink, “What Is BIM and Why Is It Important in Construction?,” 12 October 2021. [Online]. Available: https://yardlink.com/blog/what-is-bim-and-why-is-it-important-in-construction. [Accessed 12 December 2023].  ',
+                            'type' => 'online',
+                            'bibtex' => [
+                                'url' => 'https://yardlink.com/blog/what-is-bim-and-why-is-it-important-in-construction',
+                                'urldate' => '12 December 2023',
+                                'year' => '2021',
+                                'month' => 'October',
+                                'author' => 'YardLink',
+                                'title' => 'What Is BIM and Why Is It Important in Construction?',
+                                ]
+                        ],
+                        [
+                            'source' => '\bibitem{ROGERS20141421}Rogers, D. Leaking Water Networks: An Economic and Environmental Disaster. {\em Procedia Engineering}. \textbf{70} pp. 1421-1429 (2014)',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Rogers, D.',
+                                'title' => 'Leaking Water Networks: An Economic and Environmental Disaster',
+                                'year' => '2014',
+                                'journal' => 'Procedia Engineering',
+                                'volume' => '70',
+                                'pages' => '1421-1429',
+                                ]
+                        ],
+                        [
+                            'source' => '\bibitem{Robus_Leak}Quiñones-Grueiro, M., Ares Milián, M., Sánchez Rivero, M., Silva Neto, A. \& Llanes-Santiago, O. Robust leak localization in water distribution networks using computational intelligence. {\em Neurocomputing}. \textbf{438} pp. 195-208 (2021)',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Qui{\~n}ones-Grueiro, M. and Ares Mili{\\\'a}n, M. and S{\\\'a}nchez Rivero, M. and Silva Neto, A. and Llanes-Santiago, O.',
+                                'title' => 'Robust leak localization in water distribution networks using computational intelligence',
+                                'year' => '2021',
+                                'journal' => 'Neurocomputing',
+                                'volume' => '438',
+                                'pages' => '195-208',
+                                ]
+                        ],
+                        [
+                            'source' => 'van der Geest, L.G.M.; Lemmens, V.E.P.P.; de Hingh, I.H.J.T.; van Laarhoven, C.J.H.M.; Bollen, T.L.; Nio, C.Y.; van Eijck, C.H.J.; Busch, O.R.C.; Besselink, M.G.; Dutch Pancreatic Cancer Group Nationwide Outcomes in Patients Undergoing Surgical Exploration without Resection for Pancreatic Cancer. Br. J. Surg. 2017, 104, 1568–1577, doi:10.1002/bjs.10602. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1002/bjs.10602',
+                                'author' => 'van der Geest, L. G. M. and Lemmens, V. E. P. P. and de Hingh, I. H. J. T. and van Laarhoven, C. J. H. M. and Bollen, T. L. and Nio, C. Y. and van Eijck, C. H. J. and Busch, O. R. C. and Besselink, M. G.',
+                                'title' => 'Dutch Pancreatic Cancer Group Nationwide Outcomes in Patients Undergoing Surgical Exploration without Resection for Pancreatic Cancer',
+                                'year' => '2017',
+                                'journal' => 'Br. J. Surg',
+                                'volume' => '104',
+                                'pages' => '1568-1577',
+                                ]
+                        ],
+                        [
+                            'source' => 'Tempero, M.A.; Malafa, M.P.; Al-Hawary, M.; Behrman, S.W.; Benson, A.B.; Cardin, D.B.; Chiorean, E.G.; Chung, V.; Czito, B.; Del Chiaro, M.; et al. Pancreatic Adenocarcinoma, Version 2.2021, NCCN Clinical Practice Guidelines in Oncology. J. Natl. Compr. Canc. Netw. 2021, 19, 439–457, doi:10.6004/jnccn.2021.0017. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.6004/jnccn.2021.0017',
+                                'author' => 'Tempero, M. A. and Malafa, M. P. and Al-Hawary, M. and Behrman, S. W. and Benson, A. B. and Cardin, D. B. and Chiorean, E. G. and Chung, V. and Czito, B. and Del Chiaro, M. and others',
+                                'title' => 'Pancreatic Adenocarcinoma, Version 2.2021, NCCN Clinical Practice Guidelines in Oncology',
+                                'year' => '2021',
+                                'journal' => 'J. Natl. Compr. Canc. Netw',
+                                'volume' => '19',
+                                'pages' => '439-457',
+                                ]
+                        ],
                         
                         
-                        
-                        
-                        
-
-                        
-                    
-                                      
-                    
                 ];
 
             DB::statement('DELETE FROM examples');

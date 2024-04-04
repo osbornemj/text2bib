@@ -7,7 +7,13 @@
         <x-link href="{{ url('conversions') }}">Your conversions</x-link>
     </x-slot>
 
-    <div class="sm:px-0 pt-0 space-y-6">
+    @if ($redirected)
+        <span class="px-4 mt-2 text-emerald-700 dark:text-emerald-600">
+            You have already converted the file you uploaded.  Here are the results of the conversion.
+        </span>
+    @endif
+
+    <div class="sm:px-0 pt-0 mt-2 space-y-6">
         <div class="px-4 sm:rounded-lg">
             <x-link href="{{ url('downloadBibtex/' . $conversion->id) }}">Download BibTeX file</x-link>
             @if ($fileExists)

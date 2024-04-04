@@ -95,7 +95,7 @@ class ConvertFile extends Component
     }
     */
 
-    public function submit(bool $redo = false): void
+    public function submit(bool $redo = false)//: void
     {
         // When a user clicks the link to resubmit a file on the page item-separator-error.blade.php,
         // *first* the form on the page file-upload-form.blade.php is submitted, *then* the form on the 
@@ -160,11 +160,44 @@ class ConvertFile extends Component
         // Get content of the file that the user uploaded
         $filestring = Storage::disk('public')->get('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
 
+        $sourceFile->update(['sha1_hash' => sha1($filestring)]);
+
+        /*
+        $previousUserFile = UserFile::where('user_id', Auth::id())->where('sha1_hash', $sourceFile->sha1_hash)->latest()->first();
+        if ($previousUserFile) {
+//            dump('a');
+            $previousConversion = Conversion::where('user_file_id', $previousUserFile->id)->first();
+            //dd($previousConversion, $conversion);
+            if (
+                $previousConversion &&
+                $previousConversion->item_separator == $conversion->item_separator &&
+                $previousConversion->language == $conversion->language &&
+                $previousConversion->label_style == $conversion->label_style &&
+                $previousConversion->override_labels == $conversion->override_labels &&
+                $previousConversion->line_endings == $conversion->line_endings &&
+                $previousConversion->char_encoding == $conversion->char_encoding &&
+                $previousConversion->percent_comment == $conversion->percent_comment &&
+                $previousConversion->include_source == $conversion->include_source &&
+                $previousConversion->report_type == $conversion->report_type &&
+                $previousConversion->version == $conversion->version
+            ) {
+                $conversion->delete();
+                //dump('c');
+                return redirect('showConversion/' . $previousConversion->id . '/1');
+//                dd('d');
+            }
+        }
+//      dump('b');
+        */
+
         // Regularlize line-endings
         $filestring = str_replace(["\r\n", "\r"], "\n", $filestring);
         // If line consists only of tab and/or space followed by a linefeed, remove the tab and space.
         $filestring = preg_replace('/\n\t? ?\n/', "\n\n", $filestring);
         $filestring = str_replace('\end{bibliography}', '', $filestring);
+
+        // Remove BOM (byte order mark, which should appear only at start of file)
+        $filestring = str_replace("\xEF\xBB\xBF", " ", $filestring);
 
         $this->isBibtex = Str::contains($filestring, ['@article', '@book', '@incollection', '@inproceedings', '@unpublished', '@online', '@techreport', '@phdthesis', '@mastersthesis']);
 
@@ -175,8 +208,10 @@ class ConvertFile extends Component
 
             // Create array of entries
             $entries = explode($entrySeparator, $filestring);
-            // Remove empty entries and entries that are "\n"
-            $entries = array_filter($entries, fn($value) => ! empty($value) && $value != "\n");
+
+            // Remove empty entries and entries that are "\n"; last condition eliminated stray lines with short text
+            // (has to exclude ones with strlen == 1 to clean up BOM)
+            $entries = array_filter($entries, fn($value) => ! empty($value) && $value != "\n" && strlen($value) > 10);
 
             $this->itemSeparatorError = false;
             $this->unknownEncodingEntries = [];
@@ -209,22 +244,20 @@ class ConvertFile extends Component
                 $conversion->delete();
             }
         }
-       
+
         // If file is not already a BibTeX file and item_separator and encoding seem correct, perform the conversion
         if (! $this->isBibtex && $this->itemSeparatorError == false && count($this->unknownEncodingEntries) == 0) {
             $convertedEntries = [];
-            $i = 0;
-            foreach ($entries as $entry) {
-                $i++;
-                // Some files start with \u{FEFF}, but this character is now converted to space by cleanText
+            foreach ($entries as $j => $entry) {
+                // Some files start with \u{FEFF}, but this character is now converted to space earlier in this method
                 if ($entry) {
                     // $convertedEntries is array with components 
                     // 'source', 'item', 'itemType', 'label', 'warnings', 'notices', 'details', 'scholarTitle'.
                     // 'label' (which depends on whole set of converted items) is updated later
                     $convertedEntry = $this->converter->convertEntry($entry, $conversion);
-                    $convertedEntry['detected_encoding'] = $encodings[$i-1];
+                    $convertedEntry['detected_encoding'] = $encodings[$j];
                     if ($convertedEntry) {
-                        $convertedEntries[] = $convertedEntry;
+                        $convertedEntries[$j] = $convertedEntry;
                     }
                 }
             }

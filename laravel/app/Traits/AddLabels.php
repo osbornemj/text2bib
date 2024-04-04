@@ -11,7 +11,7 @@ trait AddLabels
     {
         $baseLabels = [];
         foreach ($convertedItems as $key => $convertedItem) {
-            if ($convertedItem['label'] && !$conversion->override_labels) {
+            if (isset($convertedItem['label']) && $convertedItem['label'] && !$conversion->override_labels) {
                 $baseLabel = $convertedItem['label'];
             } else {
                 $baseLabel = $this->makeLabel($convertedItem['item'], $conversion);

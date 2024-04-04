@@ -44,7 +44,7 @@ class IndexController extends Controller
         return view('conversions', compact('conversions'));
     }
 
-    public function showConversion(int $conversionId): View
+    public function showConversion(int $conversionId, int $redirected = 0): View
     {
         $conversion = Conversion::find($conversionId);
 
@@ -85,7 +85,7 @@ class IndexController extends Controller
 
         $fileExists = Storage::disk('public')->exists('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
 
-        return view('showConversion', compact('convertedItems', 'conversion', 'itemTypes', 'itemTypeOptions', 'fileExists', 'convertedEncodingCount'));
+        return view('showConversion', compact('convertedItems', 'conversion', 'itemTypes', 'itemTypeOptions', 'fileExists', 'convertedEncodingCount', 'redirected'));
     }
 
     public function downloadSource(int $userFileId)

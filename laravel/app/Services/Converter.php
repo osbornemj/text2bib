@@ -2380,7 +2380,7 @@ class Converter
         }
 
         if (isset($item->journal)) {
-            $item->journal = trim($item->journal, '} ');
+            $item->journal = trim($item->journal, '}; ');
         }
 
         $item->title = $this->requireUc($item->title);
@@ -4611,7 +4611,8 @@ class Converter
             // Replace non-breaking space with regular space
             $string = str_replace("\xC2\xA0", " ", $string);
             // Replace zero-width non-breaking space with regular space
-            $string = str_replace("\xEF\xBB\xBF", " ", $string);
+            // Change is now made when file is uploaded
+            //$string = str_replace("\xEF\xBB\xBF", " ", $string);
 
             // http://www.utf8-chartable.de/unicode-utf8-table.pl (change "go to other block" to see various parts)
             $string = str_replace("\xE2\x80\x93", "--", $string);

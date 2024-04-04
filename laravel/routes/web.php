@@ -60,7 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/convertFile', 'convertFile')->name('convertFile');
         Route::post('/convertFile', 'convertFile')->name('convertFile');
         Route::get('/conversions', 'conversions')->name('conversions');
-        Route::get('/showConversion/{id}', 'showConversion')->name('showConversion');
+        Route::get('/showConversion/{id}/{flag?}', 'showConversion')->name('showConversion');
         Route::get('/downloadSource/{userFileId}', 'downloadSource')->name('downloadSource');
     });
 
