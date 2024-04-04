@@ -48,9 +48,10 @@ class ConvertFile extends Component
 
     public $entry = null;
     public $itemSeparatorError = false;
-    public $nonUtf8Entries = [];
+    public $unknownEncodingEntries = [];
     public $isBibtex;
     public $notUtf8;
+    public $convertedEncodingCount;
 
     public function boot()
     {
@@ -164,9 +165,12 @@ class ConvertFile extends Component
         // If line consists only of tab and/or space followed by a linefeed, remove the tab and space.
         $filestring = preg_replace('/\n\t? ?\n/', "\n\n", $filestring);
         $filestring = str_replace('\end{bibliography}', '', $filestring);
+
         $this->isBibtex = Str::contains($filestring, ['@article', '@book', '@incollection', '@inproceedings', '@unpublished', '@online', '@techreport', '@phdthesis', '@mastersthesis']);
 
-        if (! $this->isBibtex) {
+        if ($this->isBibtex) {
+            $conversion->update(['is_bibtex' => true]);
+        } else {
             $entrySeparator = Str::startsWith($filestring, '<li>') ? '<li>' : ($conversion->item_separator == 'line' ? "\n\n" : "\n");
 
             // Create array of entries
@@ -175,25 +179,31 @@ class ConvertFile extends Component
             $entries = array_filter($entries, fn($value) => ! empty($value) && $value != "\n");
 
             $this->itemSeparatorError = false;
-            $this->nonUtf8Entries = [];
+            $this->unknownEncodingEntries = [];
 
             // Check for utf-8
+            $encodings = [];
             $this->notUtf8 = false;
+            $this->convertedEncodingCount = 0;
             foreach ($entries as $i => $entry) {
-                $encoding = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
-                if (in_array($encoding, ['ISO-8859-1', 'Windows-1252'])) {
-                    $entries[$i] = mb_convert_encoding($entry, 'UTF-8', ['ISO-8859-1', 'Windows-1252']);
+                $encodings[$i] = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+                if (in_array($encodings[$i], ['ISO-8859-1', 'Windows-1252'])) {
+                    $entries[$i] = mb_convert_encoding($entry, 'UTF-8', $encodings[$i]);
+                    $this->convertedEncodingCount++;
                     $this->notUtf8 = true;
-                    $conversion->update(['non_utf8_detected' => true]);
-                } elseif ($encoding != 'UTF-8') {
+                } elseif ($encodings[$i] != 'UTF-8') {
                     // Need to convert to UTF-8 because Livewire uses json encoding
                     // (and will crash if non-utf-8 string is passed to it)
-                    $this->nonUtf8Entries[] = mb_convert_encoding($entry, "UTF-8");
+                    $this->unknownEncodingEntries[] = mb_convert_encoding($entry, "UTF-8");
                 }
             }
 
+            if ($this->notUtf8) {
+                $conversion->update(['non_utf8_detected' => true]);
+            }
+
             // If encoding is correct, check for possible item_separator error
-            if (count($this->nonUtf8Entries) == 0 && count($entries) <= 2 && strlen($entries[array_key_first($entries)]) > 500) {
+            if (count($this->unknownEncodingEntries) == 0 && count($entries) <= 2 && strlen($entries[array_key_first($entries)]) > 500) {
                 $this->entry = $entries[array_key_first($entries)];
                 $this->itemSeparatorError = true;
                 $conversion->delete();
@@ -201,7 +211,7 @@ class ConvertFile extends Component
         }
        
         // If file is not already a BibTeX file and item_separator and encoding seem correct, perform the conversion
-        if (! $this->isBibtex && $this->itemSeparatorError == false && count($this->nonUtf8Entries) == 0) {
+        if (! $this->isBibtex && $this->itemSeparatorError == false && count($this->unknownEncodingEntries) == 0) {
             $convertedEntries = [];
             $i = 0;
             foreach ($entries as $entry) {
@@ -212,6 +222,7 @@ class ConvertFile extends Component
                     // 'source', 'item', 'itemType', 'label', 'warnings', 'notices', 'details', 'scholarTitle'.
                     // 'label' (which depends on whole set of converted items) is updated later
                     $convertedEntry = $this->converter->convertEntry($entry, $conversion);
+                    $convertedEntry['detected_encoding'] = $encodings[$i-1];
                     if ($convertedEntry) {
                         $convertedEntries[] = $convertedEntry;
                     }
@@ -230,6 +241,7 @@ class ConvertFile extends Component
             foreach ($convertedEntries as $i => $convItem) {
                 $output = Output::create([
                     'source' => $convItem['source'],
+                    'detected_encoding' => $encodings[$i],
                     'conversion_id' => $conversion->id,
                     'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
                     'label' => $convItem['label'],

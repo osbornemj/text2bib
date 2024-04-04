@@ -58,6 +58,7 @@ class IndexController extends Controller
                     ->get();
 
         $convertedItems = [];
+        $convertedEncodingCount = 0;
         foreach ($outputs as $output) {
             $item = new \stdClass();
             foreach ($output->item as $field => $value) {
@@ -65,6 +66,7 @@ class IndexController extends Controller
             }
             $convItem['item'] = $item;
             $convItem['source'] = $output->source;
+            $convItem['detected_encoding'] = $output->detected_encoding;
             $convItem['itemType'] = $output->itemType->name;
             $convItem['label'] = $output->label;
             $convItem['warnings'] = [];
@@ -72,6 +74,10 @@ class IndexController extends Controller
             $convItem['scholarTitle'] = $this->makeScholarTitle($item->title);
 
             $convertedItems[$output->id] = $convItem;
+
+            if ($output->detected_encoding != 'UTF-8') {
+                $convertedEncodingCount++;
+            }
         }
 
         $itemTypes = ItemType::all();
@@ -79,7 +85,7 @@ class IndexController extends Controller
 
         $fileExists = Storage::disk('public')->exists('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
 
-        return view('showConversion', compact('convertedItems', 'conversion', 'itemTypes', 'itemTypeOptions', 'fileExists'));
+        return view('showConversion', compact('convertedItems', 'conversion', 'itemTypes', 'itemTypeOptions', 'fileExists', 'convertedEncodingCount'));
     }
 
     public function downloadSource(int $userFileId)

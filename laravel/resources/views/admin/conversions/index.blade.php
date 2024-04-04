@@ -28,6 +28,10 @@
                         &nbsp;&bull;&nbsp;
                         <span class="text-red-600 dark:text-red-400">Not UTF-8</span>
                     @endif
+                    @if ($conversion->is_bibtex)
+                        &nbsp;&bull;&nbsp;
+                        <span class="text-red-600 dark:text-red-400">BibTeX file</span>
+                    @endif
                     &nbsp;&bull;&nbsp;
                     convert:
                     <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id) }}">line sep</x-link>

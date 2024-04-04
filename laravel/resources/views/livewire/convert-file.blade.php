@@ -23,7 +23,7 @@
 
         @include('livewire.partials.is-bibtex')
 
-    @elseif (count($this->nonUtf8Entries))
+    @elseif (count($this->unknownEncodingEntries))
 
         @include('livewire.partials.non-utf8-entries')
 

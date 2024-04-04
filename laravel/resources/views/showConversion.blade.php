@@ -30,7 +30,7 @@
             </div>
             @if ($conversion->non_utf8_detected)
                 <div class="ml-0 mt-2 text-red-600 dark:text-red-400">
-                    The character encoding in your source file was detected not to be UTF-8.  It was converted to UTF-8, but the conversion may not be accurate. You may get better results by using <x-link href="https://notepad-plus-plus.org/" target="_blank">Notepad++</x-link> to convert it. (Within Notepad++, click on "Encoding", and then  on "Convert to UTF-8".)
+                    The character encoding in {{ $convertedEncodingCount }} {{ Str::plural('item', $convertedEncodingCount) }} in the file you uploaded is ISO-8859-1 or Windows-1252, not UTF-8 (as indicated in red in the following list).  The script has attempted to convert {{ $convertedEncodingCount > 1 ? 'these items' : 'this item' }} to UTF-8, but may not have succeeded.  You may get better results by using <x-link href="https://notepad-plus-plus.org/" target="_blank">Notepad++</x-link> to convert your file to UTF-8 before you upload it. (Within Notepad++, click on "Encoding", and then  on "Convert to UTF-8".)
                 </div>
             @endif
             <div class="ml-0 mt-2">
