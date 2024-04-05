@@ -4150,7 +4150,7 @@ class ExampleSeeder extends Seeder
                                 'author' => 'Yan, B. and Luh, P. B. and Warner, G. and Zhang, P.',
                                 'title' => ' Operation and Design Optimization of Microgrids and Renewables',
                                 'year' => '2017',
-                                'journal' => ', IEEE Trans Autom. Sci. Eng',
+                                'journal' => 'IEEE Trans Autom. Sci. Eng',
                                 'volume' => '14',
                                 'pages' => '573-585',
                                 ]
@@ -4164,7 +4164,7 @@ class ExampleSeeder extends Seeder
                                 'year' => '2022',
                                 'journal' => 'International Journal of Electrical Power & Energy Systems',
                                 'volume' => '136',
-                                'note' => 'Article 107714',
+                                'pages' => '107714',
                             ],
                             'char_encoding' => 'utf8leave',
                         ],
@@ -4179,6 +4179,19 @@ class ExampleSeeder extends Seeder
                                 'journal' => 'Mathematical Biosciences',
                                 'pages' => '108230-108230',
                                 'volume' => '315',
+                                ]
+                        ],
+                        [
+                            'source' => 'Burch JQ, and Campbell GB (1963) A new genus for a deep-water Californian naticid. Proceedings of the Malacological Society of London 35((5)), 221-223.',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Burch, J. Q. and Campbell, G. B.',
+                                'year' => '1963',
+                                'title' => 'A new genus for a deep-water Californian naticid',
+                                'volume' => '35',
+                                'number' => '5',
+                                'pages' => '221-223',
+                                'journal' => 'Proceedings of the Malacological Society of London',
                                 ]
                         ],
                         
