@@ -52,10 +52,10 @@
                         <form method="POST" action="{{ url('/admin/runExampleCheck') }}" class="mt-0 space-y-0">
                             @csrf
                             <input type="hidden" id="exampleId" name="exampleId" value="{{ $example->id }}"/>
-                            <x-select-input id="report_type" name="report_type" :options="$typeOptions" class="p-2 w-24"></x-select-input-plain>
-                            <x-select-input id="char_encoding" name="char_encoding" :options="$utf8Options" :selected="$selectedCharEncoding" class="p-2 w-64"></x-select-input-plain>
-                            <x-select-input id="language" name="language" :options="$languageOptions" :selected="$selectedLanguage" class="p-2 w-16"></x-select-input-plain>
-                            <x-select-input id="detailsIfCorrect" name="detailsIfCorrect" :options="$detailOptions" class="p-2 w-24"></x-select-input-plain>
+                            <x-select-input id="report_type" name="report_type" :options="$typeOptions" class="p-2 w-24"></x-select-input>
+                            <x-select-input id="char_encoding" name="char_encoding" :options="$utf8Options" :selected="$selectedCharEncoding" class="p-2 w-64"></x-select-input>
+                            <x-select-input id="language" name="language" :options="$languageOptions" :selected="$selectedLanguage" class="p-2 w-16"></x-select-input>
+                            <x-select-input id="detailsIfCorrect" name="detailsIfCorrect" :options="$detailOptions" class="p-2 w-24"></x-select-input>
                             <x-primary-button class="ml-0">
                                 {{ __('Submit') }}
                             </x-primary-button>

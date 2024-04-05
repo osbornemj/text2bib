@@ -4168,6 +4168,19 @@ class ExampleSeeder extends Seeder
                             ],
                             'char_encoding' => 'utf8leave',
                         ],
+                        [
+                            'source' => 'Alok Kumar Shukla, & Tripathi, D. (2019). Identification of potential biomarkers on microarray data using distributed gene selection approach. Mathematical Biosciences, 315, 108230–108230. https://doi.org/10.1016/j.mbs.2019.108230 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1016/j.mbs.2019.108230',
+                                'author' => 'Alok Kumar Shukla and Tripathi, D.',
+                                'year' => '2019',
+                                'title' => 'Identification of potential biomarkers on microarray data using distributed gene selection approach',
+                                'journal' => 'Mathematical Biosciences',
+                                'pages' => '108230-108230',
+                                'volume' => '315',
+                                ]
+                        ],
                         
                         
                         

@@ -17,7 +17,7 @@ use App\Models\Version;
 use App\Traits\AddLabels;
 
 use App\Services\Converter;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
 class ConversionAdminController extends Controller
 {
@@ -60,10 +60,14 @@ class ConversionAdminController extends Controller
         return back();
     }
 
-    public function examined(int $conversionId, int $page)
+    public function examined(FormRequest $request)
     {
+        $conversionId = $request->get('conversionId');
+        $page = $request->get('page');
+        $adminComment = $request->get('admin_comment');
+
         $conversion = Conversion::find($conversionId);
-        $conversion->update(['examined_at' => now()]);
+        $conversion->update(['examined_at' => now(), 'admin_comment' => $adminComment]);
 
         return redirect('admin/conversions?page=' . $page . '#' . $conversionId);
     }
@@ -71,7 +75,7 @@ class ConversionAdminController extends Controller
     public function unexamined(int $conversionId)
     {
         $conversion = Conversion::find($conversionId);
-        $conversion->update(['examined_at' => null]);
+        $conversion->update(['examined_at' => null, 'admin_comment' => null]);
 
         return back();
     }

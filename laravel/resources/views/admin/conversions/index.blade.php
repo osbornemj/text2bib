@@ -56,8 +56,13 @@
                             {{ $conversion->version }}
                         @endif
                         @if ($conversion->examined_at)
-                            {{-- using dark: prefix doesn't work on production server here??? --}}
-                            <span class="text-black bg-emerald-500 ml-2 px-2 text-sm uppercase rounded">Examined {{ $conversion->examined_at }}</span>
+                            <br/>
+                            <span class="text-black bg-emerald-500 px-2 text-sm uppercase rounded">Examined {{ $conversion->examined_at }}</span>
+                            @if ($conversion->admin_comment)
+                                &nbsp;
+                                <span class="text-emerald-500">{{ $conversion->admin_comment }}</span>
+                                &nbsp;
+                            @endif
                         @endif
                     </div>
                 </li>

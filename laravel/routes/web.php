@@ -110,7 +110,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/formatExample/{outputId}', 'formatExample')->name('admin.formatExample');
         Route::get('/admin/downloadSource/{userFileId}', 'downloadSource')->name('admin.downloadSource');
         Route::delete('/admin/conversion/{conversionId}', 'destroy')->name('admin.conversion.destroy');
-        Route::get('/admin/conversionExamined/{conversionId}/{page}', 'examined')->name('admin.conversion.examined');
+        Route::post('/admin/conversionExamined', 'examined')->name('admin.conversion.examined');
         Route::get('/admin/conversionUnexamined/{conversionId}', 'unexamined')->name('admin.conversion.unexamined');
     });
 
