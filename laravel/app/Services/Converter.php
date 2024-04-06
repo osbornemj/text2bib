@@ -1218,7 +1218,7 @@ class Converter
                         if ($result) {
                             // If remainder contains article number, put it in the note field
                             $this->addToField($item, 'note', $result[0], 'addToField 7');
-                        } elseif (!$item->pages && ! empty($item->number) && !$containsNumberDesignation) {
+                        } elseif (! $item->pages && ! empty($item->number) && !$containsNumberDesignation) {
                             // else if no pages have been found and a number has been set, assume the previously assigned number
                             // is in fact a single page
                             $this->setField($item, 'pages', $item->number, 'setField 23');
@@ -1227,7 +1227,7 @@ class Converter
                             $warnings[] = "Not sure the pages value is correct.";
                         }
 
-                        if (!$pagesReported && ! empty($item->pages)) {
+                        if (! $pagesReported && ! empty($item->pages)) {
                             $this->verbose(['fieldName' => 'Pages', 'content' => $item->pages]);
                         }
 
@@ -4487,7 +4487,7 @@ class Converter
                 $this->verbose('[p0] matches: 1: ' . $matches[1][$matchIndex][0] . '; 2: ' . $matches[2][$matchIndex][0] . '; 3: ' . $matches[3][$matchIndex][0]);
                 $this->verbose("Number of matches for a potential page range: " . $numberOfMatches);
                 $this->verbose("Match index: " . $matchIndex);
-                $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches[3][$matchIndex][0]), 'getVolumeNumberPagesForArticle 6');
+                $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches[3][$matchIndex][0]), 'getVolumeNumberPagesForArticle 10');
                 $take = $matches[0][$matchIndex][1];
                 $drop = $matches[3][$matchIndex][1] + strlen($matches[3][$matchIndex][0]);
             } else {
@@ -4593,8 +4593,12 @@ class Converter
                                 $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $matches[3][0], 'getVolumeAndNumberForArticle 9');
                                 $this->setField($item, 'volume', $matches[1][0], 'getVolumeAndNumberForArticle 10');
                             } elseif (preg_match('/^([0-9]*) *([0-9]*)[ ]*$/', $remainder, $matches)) {
-                                $this->setField($item, 'pages', $matches[2], 'getVolumeAndNumberForArticle 11');
-                                $this->setField($item, 'volume', $matches[1], 'getVolumeAndNumberForArticle 12');
+                                if (empty($item->pages)) {
+                                    $this->setField($item, 'pages', $matches[2], 'getVolumeAndNumberForArticle 11');
+                                }
+                                if (empty($item->volume)) {
+                                    $this->setField($item, 'volume', $matches[1], 'getVolumeAndNumberForArticle 12');
+                                }
                             } else {
                                 // Assume all of $remainder is volume (might be something like '123 (Suppl. 19)')
                                 if (! Str::contains($remainder, ['('])) {
@@ -4646,6 +4650,8 @@ class Converter
             //$string = str_replace("\xEF\xBB\xBF", " ", $string);
 
             // http://www.utf8-chartable.de/unicode-utf8-table.pl (change "go to other block" to see various parts)
+            $string = str_replace("\xE2\x80\x90", "-", $string);
+            $string = str_replace("\xE2\x80\x91", "-", $string);
             $string = str_replace("\xE2\x80\x93", "--", $string);
             $string = str_replace("\xE2\x80\x94", "---", $string);
             $string = str_replace("\xE2\x80\x98", "`", $string);

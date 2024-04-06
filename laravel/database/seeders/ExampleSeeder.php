@@ -4319,6 +4319,20 @@ class ExampleSeeder extends Seeder
                                 'pages' => '23-38',
                                 ]
                         ],
+                        [
+                            'source' => '\bibitem{feature_2} Nuñez, M. 2019. “Exploring Materials Band Structure Space with Unsupervised Machine Learning.” Computational Materials Science 158 (February): 117–23. https://doi.org/10.1016/j.commatsci.2018.11.002. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1016/j.commatsci.2018.11.002',
+                                'author' => 'Nu{\~n}ez, M.',
+                                'year' => '2019',
+                                'title' => 'Exploring Materials Band Structure Space with Unsupervised Machine Learning',
+                                'journal' => 'Computational Materials Science',
+                                'month' => 'February',
+                                'volume' => '158',
+                                'pages' => '117-23',
+                                ]
+                        ],
                        
                         
                         
