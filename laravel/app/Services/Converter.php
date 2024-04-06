@@ -218,7 +218,7 @@ class Converter
 
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
         $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on |^.* meeting |^.* conference proceedings|^.* proceedings of the (.*) conference|^proc\..*(conf\.|conference)?|^.* workshop |^actas del )';
-        $this->proceedingsExceptions = ['Proceedings of the National Academy', 'Proceedings of the Royal Society', 'Proc. R. Soc.'];
+        $this->proceedingsExceptions = '^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.';
 
         $this->thesisRegExp = '( [Tt]hesis| [Dd]issertation)';
         $this->fullThesisRegExp = '(PhD|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral|[Mm]aster\\\'?s?|MA|M\.A\.)( [Tt]hesis| [Dd]issertation)';
@@ -308,6 +308,7 @@ class Converter
         $this->itemType = null;
 
         $item = new \stdClass();
+        $item->note = '';
         $itemKind = null;
         $itemLabel = null;
 
@@ -428,7 +429,7 @@ class Converter
         /////////////////////
 
         if (preg_match('/pmid: [0-9]{6,9}/i', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-            $this->setField($item, 'note', $matches[0][0], 'setField 1a');
+            $this->addToField($item, 'note', $matches[0][0], 'addToField 1');
             $remainder = substr($remainder, 0, $matches[0][1]) . substr($remainder, $matches[0][1] + strlen($matches[0][0]));
             $remainder = trim($remainder, ' .');
         }
@@ -532,7 +533,7 @@ class Converter
                 $this->setField($item, 'year', $year, 'setField 5b');
             }
             if (! empty($siteName)) {
-                $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . trim(trim($retrievedFrom . $siteName, ':,; ') . $note, '{}'), 'setField 5c');
+                $this->addToField($item, 'note', trim(trim($retrievedFrom . $siteName, ':,; ') . $note, '{}'), 'addToField 2');
             }
         } else {
             $this->verbose("No url found.");
@@ -556,6 +557,16 @@ class Converter
         $match = $this->extractLabeledContent($remainder, ' ' . $this->oclcRegExp1, $this->oclcRegExp2);
         if ($match) {
             $this->setField($item, 'oclc', $match, 'setField 17');
+        }
+
+        /////////////////////////////////////
+        // Put "Translated by ..." in note //
+        /////////////////////////////////////
+
+        $result = $this->findRemoveAndReturn($remainder, 'translated by [^.,)]*[.,)]');
+        if ($result) {
+            $this->addToField($item, 'note', $result[0], 'addToField 3');
+            $remainder = $result['before'] . $result['after'];
         }
 
         ///////////////////////////////////////
@@ -731,7 +742,7 @@ class Converter
                 $this->setField($item, 'volume', $volume, 'setField 11');
             }
             if ($note) {
-                $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $note, 'setField 11a');
+                $this->addToField($item, 'note', $note, 'addToField 4');
             }
             $newRemainder = $remainder;
         }
@@ -1092,7 +1103,7 @@ class Converter
         if ($itemKind != 'unpublished') {
             $match = $this->extractLabeledContent($remainder, '', '\(?[Ii]n [Rr]eview\.?\)?$');
             if ($match) {
-                $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $match, 'setField 18');
+                $this->addToField($item, 'note', $match, 'addToField 5');
                 $this->verbose('"In review" string removed and put in note field');
                 $this->verbose('Remainder: ' . $remainder);
             }
@@ -1153,6 +1164,15 @@ class Converter
                     if (Str::startsWith($journal, ['in ', 'In '])) {
                         $journal = substr($journal, 3);
                     }
+                    // Attempt to remove period at end of journal name when it shouldn't be there
+                    // But too many strings used as abbreviations in journal names are in the dictionary
+                    // E.g. 'electron', 'soc', 'Am', 'phys'.
+                    // $journalWords = explode(' ', $journal);
+                    // $lastJournalWord = array_pop($journalWords);
+                    // if (substr($lastJournalWord, -1) == '.' && $this->inDict(substr($lastJournalWord, 0, -1))) {
+                    //     $lastJournalWord = substr($lastJournalWord, 0, -1);
+                    //     $journal = substr($journal, 0, -1);
+                    // }
                     $this->setField($item, 'journal', trim($journal, '*'), 'setField 19');
                 } else {
                     $warnings[] = "Item seems to be article, but journal not found.  Setting type to unpublished.";
@@ -1166,7 +1186,7 @@ class Converter
                 // If $remainder ends with 'forthcoming' phrase and contains no digits (which might be volume & number,
                 // for example, even if paper is forthcoming), put that in note.  Else look for pages & volume etc.
                 if (preg_match('/' . $this->endForthcomingRegExp . '/', $remainder) && !preg_match('/[0-9]/', $remainder)) {
-                    $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . trim($remainder, '()'), 'setField 20');
+                    $this->addToField($item, 'note', trim($remainder, '()'), 'addToField 6');
                     $remainder = '';
                 } else {
                     // Get pages
@@ -1185,7 +1205,7 @@ class Converter
                         preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
 
                         if (! empty($matches[0][0][0])) {
-                            $month = trim($matches[0][0][0], '()');
+                            $month = trim($matches[0][0][0], '();');
                             $this->setField($item, 'month', $this->fixMonth($month, $language), 'setField 21');
                             $remainder = substr($remainder, 0, $matches[0][0][1]) . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
                             $this->verbose('Remainder: ' . $remainder);
@@ -1197,7 +1217,7 @@ class Converter
                         $result = $this->findRemoveAndReturn($remainder, $this->articleRegExp);
                         if ($result) {
                             // If remainder contains article number, put it in the note field
-                            $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $result[0], 'setField 22');
+                            $this->addToField($item, 'note', $result[0], 'addToField 7');
                         } elseif (!$item->pages && ! empty($item->number) && !$containsNumberDesignation) {
                             // else if no pages have been found and a number has been set, assume the previously assigned number
                             // is in fact a single page
@@ -1239,15 +1259,16 @@ class Converter
             case 'unpublished':
                 $remainder = trim($remainder, '.,} ');
                 if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
-                    $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . substr($remainder, $length), 'setField 24');
+                    $this->addToField($item, 'note', substr($remainder, $length), 'addToField 8a');
                 } else {
-                    $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $remainder, 'setField 25');
+                    $this->addToField($item, 'note', $remainder, 'addToField 8b');
                 }
                 $remainder = '';
 
-                if (! $item->note && ! empty($item->url)) {
+                // Somehow strlen of $item->note can be 1 even though dd says it is "".
+                    if (strlen($item->note) <= 1 && ! empty($item->url)) {
                     $this->verbose('Moving content of url field to note');
-                    $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . trim($item->url, '{}'), 'setField 26');
+                    $this->addToField($item, 'note', trim($item->url, '{}'), 'addToField 9');
                     unset($item->url);
                 }
 
@@ -1355,7 +1376,7 @@ class Converter
                             $match = trim($matches[0], '() ');
                             $match = Str::replaceEnd(' in', '', $match);
                             $match = Str::replaceEnd(' at', '', $match);
-                            $this->setField($item, 'note', isset($item->note) ? $item->note . ' ' . trim($match) : trim($match), 'setField 33');
+                            $this->addToField($item, 'note', ' ' . trim($match), 'addToField 10');
                             $possibleEditors = strlen($matches[0]) - strlen($string1) ? substr($string1, strlen($matches[0])) : null;
                         } else {
                             // Assume <string1> is editors
@@ -1525,12 +1546,12 @@ class Converter
                             }
                             $this->setField($item, 'booktitle', $booktitle);
                             if ($note) {
-                                $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $note);
+                                $this->addToField($item, 'note', $note, 'addToField 11');
                             }
                             $isEditor = true;
                             $result = $this->convertToAuthors(explode(' ', $tempRemainder), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
                         }
-                        $this->setField($item, 'editor', trim($result['authorstring']));
+                        $this->setField($item, 'editor', trim($result['authorstring']), 'setField 119');
                         $remainderContainsEds = true;
                         $updateRemainder = false;
                     } elseif ($containsEditors && preg_match('/' . $this->editorRegExp . '/i', $remainder, $matches)) {
@@ -1552,7 +1573,7 @@ class Converter
                         $rest = trim($matches[3]);
                         $isEditor = true;
                         $result = $this->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
-                        $this->setField($item, 'editor', trim($result['authorstring']));
+                        $this->setField($item, 'editor', trim($result['authorstring'], ', '), 'setField 120');
                         $updateRemainder = false;
                     }
 
@@ -2017,11 +2038,7 @@ class Converter
                 // If $remainder contains 'forthcoming' string, remove it and put it in $item->note.
                 $result = $this->findRemoveAndReturn($remainder, '^(Forthcoming|In press|Accepted)');
                 if ($result) {
-                    if (isset($item->note)) {
-                        $item->note .= ' ' . $result[0];
-                    } else {
-                        $item->note = $result[0];
-                    }
+                    $this->addToField($item, 'note', ' ' . $result[0], 'addToField 12');
                     $this->verbose('"Forthcoming" string removed and put in note field');
                     $this->verbose('Remainder: ' . $remainder);
                     $this->verbose(['fieldName' => 'Note', 'content' => $item->note]);
@@ -2320,7 +2337,7 @@ class Converter
                 ||
                 preg_match('/^' . $this->startForthcomingRegExp . '/i', $remainder)
                 ) {
-                $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $remainder);
+                $this->addToField($item, 'note', $remainder, 'addToField 14');
             } else {
                 $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
             }
@@ -2436,6 +2453,12 @@ class Converter
         $this->verbose(['fieldName' => ($id ? '('. $id . ') ' : '') . ucfirst($fieldName), 'content' => $item->$fieldName]);
     }
 
+    private function addToField(stdClass &$item, string $fieldName, string $string, string $id = ''): void
+    {
+        $this->setField($item, $fieldName, (isset($item->$fieldName) ? $item->$fieldName . ' ' : '') . $string) . 
+        $this->verbose(['fieldName' => ($id ? '('. $id . ') ' : '') . ucfirst($fieldName), 'content' => $item->$fieldName]);
+    }
+
     private function addToAuthorString(int $i, string &$string, string $addition): void
     {
         $string .= $addition;
@@ -2459,6 +2482,7 @@ class Converter
         $title = null;
         $originalRemainder = $remainder;
 
+        $remainder = str_replace('  ', ' ', $remainder);
         $words = explode(' ', $remainder);
         $initialWords = [];
         $remainingWords = $words;
@@ -2496,6 +2520,9 @@ class Converter
         }
 
         $containsPages = preg_match('/(\()?' . $this->pagesRegExp . '(\))?/', $remainder);
+
+        $volumeRegExp = '/(^\(v(ol)?\.?|volume) (\d)\.?\)?[.,]?$/i';
+        $editionRegExp = '/(^\(' . $this->editionRegExp . '\)|^' . $this->editionRegExp . ')[.,]?$/i';
 
         // Go through the words in $remainder one at a time.
         foreach ($words as $key => $word) {
@@ -2561,7 +2588,6 @@ class Converter
                 }
 
                 // Upcoming volume specification
-                $volumeRegExp = '/(^\(v(ol)?\.?|volume) (\d)\.?\)?[.,]?$/i';
                 if ($nextWord && $nextButOneWord && preg_match($volumeRegExp, $nextWord . ' ' . $nextButOneWord, $matches)) {
                     $volume = $matches[2];
                     $this->verbose("Ending title, case 3a");
@@ -2572,7 +2598,6 @@ class Converter
                 }
 
                 // Upcoming edition specification
-                $editionRegExp = '/(^\(' . $this->editionRegExp . '\)|^' . $this->editionRegExp . ')[.,]?$/i';
                 if ($nextWord && $nextButOneWord && preg_match($editionRegExp, $nextWord . ' ' . $nextButOneWord, $matches)) {
                     $edition = $matches[5] ?? $matches[2];
                     $fullEdition = $matches[1];
@@ -2761,7 +2786,7 @@ class Converter
     /*
      * Find first match for $regExp (regular expression without delimiters), case insensitive, in $string,
      * return group number $groupNumber (defined by parentheses in $regExp)
-     * and remove entire match for $regExp from $string after triming ',. ' from substring preceding match.
+     * and remove entire match for $regExp from $string after trimming ',. ' from substring preceding match.
      * If no match, return false (and do not alter $string).
      */
     private function findRemoveAndReturn(string &$string, string $regExp): false|string|array
@@ -3137,7 +3162,7 @@ class Converter
                 $this->verbose(['text' => 'Word ' . $i . ": ", 'words' => [$word], 'content' => " - authorIndex: " . $authorIndex . ", namePart: " . $namePart]);
                 $this->verbose("fullName: " . $fullName);
             }
-            
+
             if (isset($itemYear)) {
                 $year = $itemYear;
             }
@@ -3228,14 +3253,14 @@ class Converter
             } elseif ($determineEnd && substr($word, -1) == ':') {
                 if ($namePart >= 2 && isset($words[$i-1]) && in_array(substr($words[$i-1], -1), ['.', ','])) {
                     $this->verbose('Word ends in colon, \$namePart is at least 2, and previous word ends in comma or period, so assuming word is first word of title.');
-                    $this->addToAuthorString(15, $authorstring, $this->formatAuthor($fullName));
+                    $this->addToAuthorString(16, $authorstring, $this->formatAuthor($fullName));
                     $remainder = $word . ' ' . implode(" ", $remainingWords);
                     $done = true;
                 } else {
                     $this->verbose('[convertToAuthors 5]');
                     $nameComponent = $word;
                     $fullName .= ' '. trim($nameComponent, '.');
-                    $this->addToAuthorString(15, $authorstring, $fullName);
+                    $this->addToAuthorString(17, $authorstring, $fullName);
                     $remainder = implode(" ", $remainingWords);
                     $reason = 'Word ends in colon';
                     $done = true;
@@ -3256,15 +3281,19 @@ class Converter
                         // something like autdiogames.net, in which case don't want to put space before period.
                         $nameComponent = $word;
                         $fullName .= trim($nameComponent, '.');
+                        if (isset($fullName[0]) && $fullName[0] != ' ') {
+                            $fullName = ' ' . $fullName;
+                        }
                         $this->addToAuthorString(4, $authorstring, $fullName);
                         $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, namePart is 0, and remaining string starts with year';
                         $oneWordAuthor = true;
                         $itemYear = $year; // because $year is recalculated below
+                        $done = true;
                     } elseif ($this->getQuotedOrItalic($remainder, true, false, $before, $after)) {
                         $this->verbose('[convertToAuthors 7]');
                         $nameComponent = $word;
                         $fullName .= ' and ' . trim($nameComponent, '.');
-                        $this->addToAuthorString(4, $authorstring, $fullName);
+                        $this->addToAuthorString(18, $authorstring, $fullName);
                         $reason = 'Word ends in period, namePart is 0, and remaining string starts with quoted or italic';
                         $done = true;
                         $oneWordAuthor = true;
@@ -3291,10 +3320,12 @@ class Converter
                 $this->verbose("Remainder: " . $remainder);
                 $this->verbose('[c2a getYear 4]');
                 $this->verbose('[convertToAuthors 10]');
-                if ($year = $this->getYear($remainder, $remains, $month, $day, $trash3, true, true, $language)) {
-                    $remainder = $remains;
+                if (! isset($year) || ! $year) {
+                    if ($year = $this->getYear($remainder, $remains, $month, $day, $trash3, true, true, $language)) {
+                        $remainder = $remains;
+                        $this->verbose("Remains: " . $remains);
+                    }
                 }
-                $this->verbose("Remains: " . $remains);
                 $done = true;
             } elseif ($namePart == 0) {
                 namePart0:
@@ -4083,7 +4114,7 @@ class Converter
             $string = Str::replaceStart($code, '', $string);
         }
 
-        if (! Str::startsWith($string, $this->proceedingsExceptions) 
+        if (! preg_match('/' . $this->proceedingsExceptions . '/i', $string) 
                 && preg_match('/' . $this->proceedingsRegExp . '/i', $string)) {
             $isProceedings = true;
         }
@@ -4409,7 +4440,7 @@ class Converter
     {
         $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
         // First check for some common patterns
-        $number = '[1-9][0-9]{0,3}[A-Za-z]?';
+        $number = '[1-9][0-9]{0,5}[A-Za-z]?';
         $numberWithRoman = '([1-9][0-9]{0,3}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
         $numberRange = $number . '((--?-?|_)' . $number . ')?';

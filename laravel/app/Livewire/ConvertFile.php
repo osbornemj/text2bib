@@ -197,7 +197,7 @@ class ConvertFile extends Component
         // Remove this string from file --- BOM (byte order mark) if at start of file, otherwise zero width no-break space
         $filestring = str_replace("\xEF\xBB\xBF", " ", $filestring);
 
-        $this->isBibtex = Str::contains($filestring, ['@article', '@book', '@incollection', '@inproceedings', '@unpublished', '@online', '@techreport', '@phdthesis', '@mastersthesis']);
+        $this->isBibtex = Str::contains($filestring, ['@article', '@book', '@incollection', '@inproceedings', '@unpublished', '@online', '@techreport', '@phdthesis', '@mastersthesis', '@misc']);
 
         if ($this->isBibtex) {
             $conversion->update(['is_bibtex' => true]);

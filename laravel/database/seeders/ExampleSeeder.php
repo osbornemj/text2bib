@@ -3982,13 +3982,13 @@ class ExampleSeeder extends Seeder
                             'type' => 'incollection',
                             'bibtex' => [
                                 'author' => 'Gilbert, Maurice',
-                                'title' => 'God, Sin and Mercy: Sirach 15:11–18:14',
+                                'title' => 'God, Sin and Mercy: Sirach 15:11--18:14',
                                 'year' => '2002',
-                                'pages' => '118–135',
+                                'pages' => '118-135',
                                 'editor' => 'R. Egger Wenzel',
                                 'address' => 'Berlin',
                                 'publisher' => 'de Gruyter',
-                                'booktitle' => 'Ben Sira\'s God: Proceedings of the International Ben Sira Conference: Durham – Ushaw College 2001',
+                                'booktitle' => 'Ben Sira\'s God: Proceedings of the International Ben Sira Conference: Durham -- Ushaw College 2001',
                                 ]
                         ],
                         [
@@ -3998,7 +3998,7 @@ class ExampleSeeder extends Seeder
                                 'author' => 'Ish Shalom, Benjamin',
                                 'title' => 'Rabbi Avraham Itzhak Ha-Cohen Kook: Between Rationalism and Mysticism',
                                 'year' => '1993',
-                                'note' => 'Translated by Ora Wiskind-Elper',
+                                'note' => 'Translated by Ora Wiskind-Elper.',
                                 'address' => 'Albany',
                                 'publisher' => 'State University of New York Press',
                                 ]
@@ -4118,7 +4118,7 @@ class ExampleSeeder extends Seeder
                             'type' => 'article',
                             'bibtex' => [
                                 'author' => 'Piri, R. and others',
-                                'title' => '"Global" cardiac atherosclerotic burden assessed by artificial intelligence-based versus manual segmentation in (18)F-sodium fluoride PET/CT scans: He ad-to-head comparison',
+                                'title' => '"Global" cardiac atherosclerotic burden assessed by artificial intelligence-based versus manual segmentation in (18)F-sodium fluoride PET/CT scans: Head-to-head comparison',
                                 'year' => '2022',
                                 'journal' => 'J Nucl Cardiol',
                                 'pages' => '2531-2539',
@@ -4135,7 +4135,7 @@ class ExampleSeeder extends Seeder
                                 'author' => 'Peduzzi, P. and Concato, J. and Kemper, E. and Holford, T. R. and Feinstein, A. R.',
                                 'year' => '1996',
                                 'title' => 'A simulation study of the number of events per variable in logistic regression analysis',
-                                'journal' => 'Journal of Clinical Epidemiology',
+                                'journal' => 'Journal of Clinical Epidemiology.',
                                 'pages' => '12',
                                 'month' => 'December',
                                 'volume' => '49',
@@ -4192,6 +4192,46 @@ class ExampleSeeder extends Seeder
                                 'number' => '5',
                                 'pages' => '221-223',
                                 'journal' => 'Proceedings of the Malacological Society of London',
+                                ]
+                        ],
+                        [
+                            'source' => ' Ben Shlomo, Yoseph. 1990. Poetry of Being. Translated by Shmuel Himelstein. Tel Aviv: MOD Books. ',
+                            'type' => 'book',
+                            'bibtex' => [
+                                'author' => 'Ben Shlomo, Yoseph',
+                                'title' => 'Poetry of Being',
+                                'year' => '1990',
+                                'note' => 'Translated by Shmuel Himelstein.',
+                                'address' => 'Tel Aviv',
+                                'publisher' => 'MOD Books',
+                                ]
+                        ],
+                        [
+                            'source' => ' Gruenwald, Itamar. 1991. ‘The Concept of Teshuvah in the Teachings of Maimonides and Rav Kook’. In The World of Rav Kook’s Thought, edited by Benjamin Ish Shalom and Shalom Rosenberg, translated by Shalom Carmy. Jerusalem: Avi Chai, 282–304.  ',
+                            'type' => 'incollection',
+                            'bibtex' => [
+                                'author' => 'Gruenwald, Itamar',
+                                'title' => 'The Concept of Teshuvah in the Teachings of Maimonides and Rav Kook',
+                                'year' => '1991',
+                                'pages' => '282-304',
+                                'note' => 'translated by Shalom Carmy.',
+                                'editor' => 'Benjamin Ish Shalom and Shalom Rosenberg',
+                                'address' => 'Jerusalem',
+                                'publisher' => 'Avi Chai',
+                                'booktitle' => 'The World of Rav Kook\'s Thought',
+                                ]
+                        ],
+                        [
+                            'source' => ' Maimonides, Moses. 2012. Moses Maimonides on Teshuvah: The Ways of Repentance. A New Translation and Commentary. Translated by Henry Abramson. 2nd ed. Middletown, DE: Smashwords. ',
+                            'type' => 'book',
+                            'bibtex' => [
+                                'author' => 'Maimonides, Moses',
+                                'year' => '2012',
+                                'edition' => '2nd',
+                                'title' => 'Moses Maimonides on Teshuvah: The Ways of Repentance. A New Translation and Commentary',
+                                'note' => 'Translated by Henry Abramson.',
+                                'publisher' => 'Smashwords',
+                                'address' => 'Middletown, DE',
                                 ]
                         ],
                         
