@@ -46,7 +46,7 @@ trait AddLabels
                 $authorLetters = $this->onlyLetters(Str::ascii($author));
                 if ($pos = strpos($author, ',')) {
                     if ($conversion->label_style == 'short') {
-                        $label .= $authorLetters[0];
+                        $label .= $authorLetters[0] ?? '';
                     } else {
                         $label .= substr($authorLetters, 0, $pos);
                     }
