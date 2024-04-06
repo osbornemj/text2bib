@@ -4234,6 +4234,93 @@ class ExampleSeeder extends Seeder
                                 'address' => 'Middletown, DE',
                                 ]
                         ],
+                        [
+                            'source' => 'Lehmberg, T. & Wörner, K. (2008). Annotation standards. In A. Lüdeling & M. Kytö (Eds.), Corpus linguistics – An international handbook (volume 1) (pp. 484-501). Walter de Gruyter. ',
+                            'type' => 'incollection',
+                            'bibtex' => [
+                                'author' => 'Lehmberg, T. and W{\"o}rner, K.',
+                                'year' => '2008',
+                                'title' => 'Annotation standards',
+                                'pages' => '484-501',
+                                'editor' => 'L{\"u}deling and M. Kyt{\"o}',
+                                'booktitle' => 'Corpus linguistics -- An international handbook (volume 1)',
+                                'publisher' => 'Walter de Gruyter',
+                                ]
+                        ],
+                        [
+                            'source' => 'Schoepf, I. C., Esteban-Cantos, A., Thorball, C. W., Rodés, B., Reiss, P., Rodríguez-Centeno, J., ... & Tarr, P. E. (2023). Epigenetic ageing accelerates before antiretroviral therapy and decelerates after viral suppression in people with HIV in Switzerland: a longitudinal study over 17 years. The Lancet Healthy Longevity, 4(5), e211-e218. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Schoepf, I. C. and Esteban-Cantos, A. and Thorball, C. W. and Rod{\\\'e}s, B. and Reiss, P. and Rodr{\\\'\i}guez-Centeno, J. and others and Tarr, P. E.',
+                                'title' => 'Epigenetic ageing accelerates before antiretroviral therapy and decelerates after viral suppression in people with HIV in Switzerland: a longitudinal study over 17 years',
+                                'journal' => 'The Lancet Healthy Longevity',
+                                'year' => '2023',
+                                'volume' => '4',
+                                'pages' => '5',
+                                ]
+                        ],
+                        [
+                            'source' => 'Gehle, S. C., Kleissler, D., Heiling, H., Deal, A., Xu, Z., Ayer Miller, V. L., ... & Smitherman, A. B. (2023). Accelerated epigenetic aging and myopenia in young adult cancer survivors. Cancer Medicine. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Gehle, S. C. and Kleissler, D. and Heiling, H. and Deal, A. and Xu, Z. and Ayer Miller V. L .& Smitherman',
+                                'title' => 'Accelerated epigenetic aging and myopenia in young adult cancer survivors',
+                                'journal' => ' Cancer Medicine',
+                                'year' => '2023',
+                                ]
+                        ],
+                        [
+                            'source' => 'Burnard, L. (2004). Developing linguistic corpora: a guide to good practice. Metadata for corpus work. https://users.ox.ac.uk/~martinw/dlc/chapter3.htm (last accessed, 7 March 2024) ',
+                            'type' => 'online',
+                            'bibtex' => [
+                                'author' => 'Burnard, L.',
+                                'title' => 'Developing linguistic corpora: a guide to good practice. Metadata for corpus work.',
+                                'year' => '2004',
+                                'url' => 'https://users.ox.ac.uk/~martinw/dlc/chapter3.htm',
+                                'urldate' => '7 March 2024',
+                                ]
+                        ],
+                        [
+                            'source' => 'Carlsen, C. (2012). Proficiency level—A fuzzy variable in computer learner corpora. Applied Linguistics, 33(2), 161‑183. https://doi.org/10.1093/applin/amr047 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Carlsen, C.',
+                                'title' => 'Proficiency level---A fuzzy variable in computer learner corpora',
+                                'journal' => 'Applied Linguistics',
+                                'year' => '2012',
+                                'volume' => '33',
+                                'number' => '2',
+                                'pages' => '161-183',
+                                'doi' => '10.1093/applin/amr047',
+                                ]
+                        ],
+                        [
+                            'source' => 'Lehmberg, T. & Wörner, K. (2008). Annotation standards. In A. Lüdeling & M. Kytö (Eds.), Corpus linguistics – An international handbook (volume 1) (pp. 484-501). Walter de Gruyter. ',
+                            'type' => 'incollection',
+                            'bibtex' => [
+                                'author' => 'Lehmberg, T. and W{\"o}rner, K.',
+                                'title' => 'Annotation standards',
+                                'year' => '2008',
+                                'pages' => '484-501',
+                                'editor' => 'A. L{\"u}deling and M. Kyt{\"o}',
+                                'publisher' => 'Walter de Gruyter',
+                                'booktitle' => 'Corpus linguistics -- An international handbook (volume 1)',
+                                ]
+                        ],
+                        [
+                            'source' => 'Ortega, L. (2019). SLA and the study of equitable multilingualism. The Modern Language Journal, 103, 23‑38. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Ortega, L.',
+                                'title' => 'SLA and the study of equitable multilingualism',
+                                'journal' => 'The Modern Language Journal',
+                                'year' => '2019',
+                                'volume' => '103',
+                                'pages' => '23-38',
+                                ]
+                        ],
+                       
+                        
                         
                         
                         

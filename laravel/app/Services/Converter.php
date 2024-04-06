@@ -1282,7 +1282,7 @@ class Converter
                 if (empty($item->month)) {
                     unset($item->month);
                 }
-                if (empty($item->urldate) && $itemYear && $itemMonth && $itemDay) {
+                if (empty($item->urldate) && $itemYear && $itemMonth && $itemDay && $itemDate) {
                     $this->setField($item, 'urldate', $itemDate, 'setField 116');
                 }
                 break;
