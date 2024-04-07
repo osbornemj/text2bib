@@ -2618,7 +2618,7 @@ class ExampleSeeder extends Seeder
                         'source' => 'Allen, D.E., Singh, B.P. and Dalal, R.C. 2011. Soil health indicators under climate change: a review of current knowledge. p. 25-45. In: Soil Health and Climate Change (B. Singh, A. Cowie, K. Chan, eds). Berlin: Springer. https://doi.org/10.1007/978-3-642-20256-8_2  ',
                         'type' => 'incollection',
                         'bibtex' => [
-                            'doi' => '10.1007/978-3-642-20256-8_2',
+                            'doi' => '10.1007/978-3-642-20256-8\_2',
                             'author' => 'Allen, D. E. and Singh, B. P. and Dalal, R. C.',
                             'year' => '2011',
                             'title' => 'Soil health indicators under climate change: a review of current knowledge',
@@ -2875,7 +2875,7 @@ class ExampleSeeder extends Seeder
                             'year' => '2019',
                             'journal' => 'Symmetry, Integrability and Geometry: Methods and Applications (SIGMA)',
                             'volume' => '15',
-                            'pages' => '051',
+                            'number' => '051',
                             ]
                     ],
                     [
@@ -3545,7 +3545,9 @@ class ExampleSeeder extends Seeder
                             'year' => '2023',
                             'url' => 'https://www.cdc.gov/vhf/ebola/history/chronology.html?CDC_AA_refVal=https',
                             'note' => 'Estados Unidoes: CDC',
-                            ]
+                        ],
+                        'language' => 'pt',
+                        'char_encoding' => 'utfleave',
                     ],
                     [
                         'source' => 'FRIEDEN, Thomas R. et al. Ebola 2014—new challenges, new global response and responsibility. New England Journal of Medicine, v. 371, n. 13, p. 1177-1180, 2014. ',
@@ -3762,7 +3764,7 @@ class ExampleSeeder extends Seeder
                                 'year' => '2018',
                                 'title' => 'Minimal information for studies of extracellular vesicles 2018 (MISEV2018): a position statement of the International Society for Extracellular Vesicles and update of the MISEV2014 guidelines',
                                 'journal' => 'Journal of Extracellular Vesicles',
-                                'pages' => '1',
+                                'number' => '1',
                                 'volume' => '7',
                                 ]
                         ],
@@ -3794,7 +3796,7 @@ class ExampleSeeder extends Seeder
                                 ]
                         ],
                         [
-                            'source' => '﻿Abenavoli, L., Larussa, T., Corea, A., Procopio, A., Boccuto, L., Dallio, M., . . . Luzza, F. (3 de Feb. de 2021). Polyphenols and Non-Alcoholic Fatty Liver Disease. Nutrients. doi:10.3390/nu13020494. ',
+                            'source' => 'Abenavoli, L., Larussa, T., Corea, A., Procopio, A., Boccuto, L., Dallio, M., . . . Luzza, F. (3 de Feb. de 2021). Polyphenols and Non-Alcoholic Fatty Liver Disease. Nutrients. doi:10.3390/nu13020494. ',
                             'type' => 'unpublished',
                             'bibtex' => [
                                 'doi' => '10.3390/nu13020494',
@@ -3813,7 +3815,8 @@ class ExampleSeeder extends Seeder
                                 'year' => '2009',
                                 'title' => 'O vinho e sua história - Do Império Romano, pela Idade Média, até os nossos dias, o vinho acompanhou os principais momentos da história da humanidade e se transformou',
                                 'author' => 'Aguiar, J. E. and Miwa, M.',
-                                ]
+                            ],
+                            'char_encoding' => 'utfleave',
                         ],
                         [
                             'source' => 'M.V. Moreno-Arribas & Polo, M. (12 de 01 de 2007). Winemaking biochemistry and microbiology: current knowledge and future trends. Food Science and Nutrition , 45(4), pp. 265-286. doi:https://doi.org/10.1080/10408690490478118 ',
@@ -3831,7 +3834,7 @@ class ExampleSeeder extends Seeder
                                 ]
                         ],
                         [
-                            'source' => '\bibitem[Bekta\c{s} {\em et~al.}, 2022]{bektas22} Bekta\c{s} AB {\em et~al}. Fast and interpretable genomic data analysis using multiple approximate kernel learning. {\em Bioinformatics} 2022;\textbf{38}:Issue Supplement\_1, i77--i83. ',
+                            'source' => '\bibitem[Bekta\c{s} {\em et~al.}, 2022]{bektas22} Bekta\c{s} AB {\em et~al}. Fast and interpretable genomic data analysis using multiple approximate kernel learning. {\em Bioinformatics} 2022;\textbf{38}, i77--i83. ',
                             'type' => 'article',
                             'bibtex' => [
                                 'author' => 'Bekta\c{s}, A. B. and others',
@@ -3840,7 +3843,6 @@ class ExampleSeeder extends Seeder
                                 'journal' => 'Bioinformatics',
                                 'volume' => '38',
                                 'pages' => 'i77-i83',
-                                'number' => 'Supplement 1',
                                 ]
                         ],
                         [
@@ -3862,7 +3864,7 @@ class ExampleSeeder extends Seeder
                                 'author' => 'J. Daily and J. Peterson ',
                                 'title' => 'Predictive Maintenance: How Big Data Analysis Can Improve Maintenance',
                                 'year' => '2017',
-                                'doi' => '10.1007/978-3-319-46155-7_18',
+                                'doi' => '10.1007/978-3-319-46155-7\_18',
                                 'editor' => 'Richter, K. and Walther, J',
                                 'address' => 'Cham',
                                 'publisher' => 'Springer',
@@ -3908,7 +3910,7 @@ class ExampleSeeder extends Seeder
                             'source' => '\bibitem[Garlan and Shaw 1993]{GARLAN_SHAW:1993}Garlan, D. \& Shaw, M.: ``An Introduction to Software Architecture\'\'; {\em Advances In Software Engineering And Knowledge Engineering}. pp. 1-39 (1993), doi: 10.1142/9789812798039\_0001 ',
                             'type' => 'article',
                             'bibtex' => [
-                                'doi' => '10.1142/9789812798039_0001',
+                                'doi' => '10.1142/9789812798039\_0001',
                                 'author' => 'Garlan, D. and Shaw, M.',
                                 'title' => 'An Introduction to Software Architecture',
                                 'year' => '1993',
@@ -3920,7 +3922,7 @@ class ExampleSeeder extends Seeder
                             'source' => '\bibitem[Hasselbring 2018]{HASSELBRING:2018}Hasselbring, W.: ``Software Architecture: Past, Present, Future\'\'; {\em The Essence Of Software Engineering}. pp. 169-184 (2018), doi: 10.1007/978-3-319-73897-0\_10 ',
                             'type' => 'article',
                             'bibtex' => [
-                                'doi' => '10.1007/978-3-319-73897-0_10',
+                                'doi' => '10.1007/978-3-319-73897-0\_10',
                                 'author' => 'Hasselbring, W.',
                                 'title' => 'Software Architecture: Past, Present, Future',
                                 'year' => '2018',
@@ -3939,7 +3941,7 @@ class ExampleSeeder extends Seeder
                                 'volume' => '4',
                                 'number' => '4',
                                 'pages' => '7-24',
-                                'doi' => '10.1300/J154v04n04_02',
+                                'doi' => '10.1300/J154v04n04\_02',
                                 ]
                         ],
                         [
@@ -4256,7 +4258,8 @@ class ExampleSeeder extends Seeder
                                 'journal' => 'The Lancet Healthy Longevity',
                                 'year' => '2023',
                                 'volume' => '4',
-                                'pages' => '5',
+                                'number' => '5',
+                                'pages' => 'e211-e218',
                                 ]
                         ],
                         [
@@ -4274,7 +4277,7 @@ class ExampleSeeder extends Seeder
                             'type' => 'online',
                             'bibtex' => [
                                 'author' => 'Burnard, L.',
-                                'title' => 'Developing linguistic corpora: a guide to good practice. Metadata for corpus work.',
+                                'title' => 'Developing linguistic corpora: a guide to good practice. Metadata for corpus work',
                                 'year' => '2004',
                                 'url' => 'https://users.ox.ac.uk/~martinw/dlc/chapter3.htm',
                                 'urldate' => '7 March 2024',
@@ -4333,7 +4336,18 @@ class ExampleSeeder extends Seeder
                                 'pages' => '117-23',
                                 ]
                         ],
-                       
+                        [
+                            'source' => 'Chalofsky, N. (2007). The seminal foundation of the discipline of HRD: people, learning, and organizations. Human Resource Development Quarterly, 18(3). ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Chalofsky, N.',
+                                'title' => 'The seminal foundation of the discipline of HRD: people, learning, and organizations',
+                                'journal' => 'Human Resource Development Quarterly',
+                                'year' => '2007',
+                                'volume' => '18',
+                                'number' => '3',
+                                ]
+                        ],                       
                         
                         
                         

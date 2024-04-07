@@ -1,5 +1,8 @@
 import './bootstrap';
 
+import Chart from 'chart.js/auto';
+window.Chart = Chart;
+
 // Following lines commented out 2023.10.29 after error
 // Uncaught TypeError: window.Alpine.cloneNode is not a function
 // reported in Console by developer tools, in response to
