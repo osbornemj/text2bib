@@ -3276,13 +3276,15 @@ class Converter
                 if (in_array($nextWord, ['al..', 'al.', 'al'])) {
                     $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
                     array_shift($remainingWords);
-                    $remainder = implode(" ", $remainingWords);
-                    $this->verbose('[c2a getYear 2]');
-                    if (preg_match('/^(18|19|20)[0-9]{2}$/', $remainingWords[0])) {
-                        // If first remaining word is a year **with no punctuation**, assume it starts title
-                    } else {
-                        $year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, true, $language);
-                        $remainder = trim($remains);
+                    if (count($remainingWords)) {
+                        $remainder = implode(" ", $remainingWords);
+                        $this->verbose('[c2a getYear 2]');
+                        if (preg_match('/^(18|19|20)[0-9]{2}$/', $remainingWords[0])) {
+                            // If first remaining word is a year **with no punctuation**, assume it starts title
+                        } else {
+                            $year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, true, $language);
+                            $remainder = trim($remains);
+                        }
                     }
                     $done = true;
                     $case = 14;
