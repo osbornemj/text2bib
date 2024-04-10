@@ -270,16 +270,18 @@ class ConvertFile extends Component
             // is not needed except to check how entries were created from it.
             $convertedItems = [];
             foreach ($convertedEntries as $i => $convItem) {
-                $output = Output::create([
-                    'source' => $convItem['source'],
-                    'detected_encoding' => $encodings[$i],
-                    'conversion_id' => $conversion->id,
-                    'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
-                    'label' => $convItem['label'],
-                    'item' => $convItem['item'],
-                    'seq' => $i,
-                ]);
-                $convertedItems[$output->id] = $convItem;
+                if (isset($convItem['source'])) {
+                    $output = Output::create([
+                        'source' => $convItem['source'],
+                        'detected_encoding' => $encodings[$i],
+                        'conversion_id' => $conversion->id,
+                        'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
+                        'label' => $convItem['label'],
+                        'item' => $convItem['item'],
+                        'seq' => $i,
+                    ]);
+                    $convertedItems[$output->id] = $convItem;
+                }
             }
 
             $this->conversionExists = true;

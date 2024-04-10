@@ -11,21 +11,25 @@ trait AddLabels
     {
         $baseLabels = [];
         foreach ($convertedItems as $key => $convertedItem) {
-            if (isset($convertedItem['label']) && $convertedItem['label'] && !$conversion->override_labels) {
-                $baseLabel = $convertedItem['label'];
+            if (isset($convertedItem['item'])) {
+                if (isset($convertedItem['label']) && $convertedItem['label'] && !$conversion->override_labels) {
+                    $baseLabel = $convertedItem['label'];
+                } else {
+                    $baseLabel = $this->makeLabel($convertedItem['item'], $conversion);
+                }
+
+                $label = $baseLabel;
+                // if $baseLabel already used, add a suffix to it
+                if (in_array($baseLabel, $baseLabels)) {
+                    $values = array_count_values($baseLabels);
+                    $label .= chr(96 + $values[$baseLabel]);
+                }
+
+                $baseLabels[] = $baseLabel;
+                $convertedItems[$key]['label'] = $label;
             } else {
-                $baseLabel = $this->makeLabel($convertedItem['item'], $conversion);
+                $convertedItems[$key]['label'] = '';
             }
-
-            $label = $baseLabel;
-            // if $baseLabel already used, add a suffix to it
-            if (in_array($baseLabel, $baseLabels)) {
-                $values = array_count_values($baseLabels);
-                $label .= chr(96 + $values[$baseLabel]);
-            }
-
-            $baseLabels[] = $baseLabel;
-            $convertedItems[$key]['label'] = $label;
         }
 
         return $convertedItems;
