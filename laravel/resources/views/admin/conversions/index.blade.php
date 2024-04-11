@@ -24,13 +24,17 @@
                     @foreach ($conversion->adminCorrectnessCounts() as $key => $value)
                         <span class="@if ($key == -1) bg-red-300 dark:bg-red-500 @elseif ($key == 1) bg-emerald-300 dark:bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-300 dark:bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
                     @endforeach
+                    @if ($conversion->language != 'en')
+                        &nbsp;&bull;&nbsp;
+                        <span class="text-emerald-500">language: {{ $conversion->language }}</span>
+                    @endif
                     @if ($conversion->non_utf8_detected)
                         &nbsp;&bull;&nbsp;
                         <span class="text-red-600 dark:text-red-400">Not UTF-8</span>
                     @endif
                     @if ($conversion->file_error)
                         &nbsp;&bull;&nbsp;
-                        <span class="text-red-600 dark:text-red-400">{{ $conversion->file_error }}</span>
+                        <span class="text-red-600 dark:text-red-400">{{ $conversion->file_error }} file</span>
                     @endif
                     &nbsp;&bull;&nbsp;
                     convert:
