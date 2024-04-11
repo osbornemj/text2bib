@@ -19,9 +19,9 @@
 
         @include('livewire.partials.item-separator-error')
 
-    @elseif ($this->isBibtex)
+    @elseif ($this->fileError)
 
-        @include('livewire.partials.is-bibtex')
+        @include('livewire.partials.file-error')
 
     @elseif (count($this->unknownEncodingEntries))
 

@@ -49,7 +49,7 @@ class ConvertFile extends Component
     public $entry = null;
     public $itemSeparatorError = false;
     public $unknownEncodingEntries = [];
-    public $isBibtex;
+    public $fileError = null;
     public $notUtf8;
     public $convertedEncodingCount;
 
@@ -197,10 +197,14 @@ class ConvertFile extends Component
         // Remove this string from file --- BOM (byte order mark) if at start of file, otherwise zero width no-break space
         $filestring = str_replace("\xEF\xBB\xBF", " ", $filestring);
 
-        $this->isBibtex = Str::contains($filestring, ['@article', '@book', '@incollection', '@inproceedings', '@unpublished', '@online', '@techreport', '@phdthesis', '@mastersthesis', '@misc']);
+        if (Str::contains($filestring, ['@article', '@book', '@incollection', '@inproceedings', '@unpublished', '@online', '@techreport', '@phdthesis', '@mastersthesis', '@misc'])) {
+            $this->fileError = 'bibtex';
+        } elseif (substr_count($filestring, '\bibinfo{') > 2) {
+            $this->fileError = 'bbl-natbib';
+        }
 
-        if ($this->isBibtex) {
-            $conversion->update(['is_bibtex' => true]);
+        if ($this->fileError) {
+            $conversion->update(['file_error' => $this->fileError]);
         } else {
             $entrySeparator = Str::startsWith($filestring, '<li>') ? '<li>' : ($conversion->item_separator == 'line' ? "\n\n" : "\n");
 
@@ -244,7 +248,7 @@ class ConvertFile extends Component
         }
 
         // If file is not already a BibTeX file and item_separator and encoding seem correct, perform the conversion
-        if (! $this->isBibtex && $this->itemSeparatorError == false && count($this->unknownEncodingEntries) == 0) {
+        if (! $this->fileError && $this->itemSeparatorError == false && count($this->unknownEncodingEntries) == 0) {
             $convertedEntries = [];
             foreach ($entries as $j => $entry) {
                 // Some files start with \u{FEFF}, but this character is now converted to space earlier in this method

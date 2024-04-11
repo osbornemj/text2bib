@@ -4347,7 +4347,28 @@ class ExampleSeeder extends Seeder
                                 'volume' => '18',
                                 'number' => '3',
                                 ]
-                        ],                       
+                        ], [
+                            'source' => 'Boero, P., Garuti, R., Lemut, E. y Mariotti, A. (1996). Challenging the traditional school approach to theorems: A hypothesis about the cognitive unity of theorems. En L. Puig y A. Gutiérrez (Eds.), Proceedings of the 20th PME international conference (pp. 113–120).  ',
+                            'type' => 'incollection',
+                            'bibtex' => [
+                                'author' => 'Boero, P. and Garuti, R. and Lemut, E. and Mariotti, A.',
+                                'title' => 'Challenging the traditional school approach to theorems: A hypothesis about the cognitive unity of theorems',
+                                'year' => '1996',
+                                'pages' => '113-120',
+                                'editor' => 'L. Puig and A. Gutiérrez',
+                                'publisher' => 'Proceedings of the 20th PME international conference',
+                                ]
+                        ],
+                        [
+                            'source' => 'Lemmetty, S., 1999. Review of speech synthesis technology (Master\'s thesis). HELSINKI UNIVERSITY OF TECHNOLOGY ',
+                            'type' => 'mastersthesis',
+                            'bibtex' => [
+                                'author' => 'Lemmetty, S.',
+                                'year' => '1999',
+                                'title' => 'Review of speech synthesis technology',
+                                'school' => 'HELSINKI UNIVERSITY OF TECHNOLOGY',
+                                ]
+                        ],                      
                         
                         
                         
