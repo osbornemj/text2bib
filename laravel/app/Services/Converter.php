@@ -220,7 +220,7 @@ class Converter
         $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on |^.* meeting |^.* conference proceedings|^.* proceedings of the (.*) conference|^proc\..*(conf\.|conference)?|^.* workshop |^actas del )';
         $this->proceedingsExceptions = '^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.';
 
-        $this->thesisRegExp = '( [Tt]hesis| [Dd]issertation)';
+        $this->thesisRegExp = '[ \(\[]?([Tt]hesis|[Tt]esis|[Dd]issertation)';
         $this->fullThesisRegExp = '(PhD|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral|[Mm]aster\\\'?s?|MA|M\.A\.)( [Tt]hesis| [Dd]issertation)';
         $this->masterRegExp = '[Mm]aster|MA|M\.A\.';
         $this->phdRegExp = 'PhD|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral';

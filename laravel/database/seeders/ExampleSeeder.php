@@ -4368,7 +4368,32 @@ class ExampleSeeder extends Seeder
                                 'title' => 'Review of speech synthesis technology',
                                 'school' => 'HELSINKI UNIVERSITY OF TECHNOLOGY',
                                 ]
-                        ],                      
+                        ],
+                        [
+                            'source' => 'Duarte, B (2010). Cuestiones didácticas a propósito de la enseñanza de la fundamentación en matemática. [Tesis doctoral]. Universidad de San Andrés.  ',
+                            'type' => 'phdthesis',
+                            'bibtex' => [
+                                'author' => 'Duarte, B.',
+                                'year' => '2010',
+                                'title' => 'Cuestiones didácticas a propósito de la enseñanza de la fundamentación en matemática',
+                                'school' => 'Universidad de San Andrés',
+                            ],
+                            'language' => 'es',
+                            'char_encoding' => 'utf8leave'
+                        ], 
+                        [
+                            'source' => 'Brown Jr, William O. (2001). Faculty participation in university governance and the effects on university performance. Journal of Economic Behavior & Organization, 44, (2), 129-143 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Brown Jr, William O.',
+                                'year' => '2001',
+                                'title' => 'Faculty participation in university governance and the effects on university performance',
+                                'journal' => 'Journal of Economic Behavior & Organization',
+                                'pages' => '129-143',
+                                'volume' => '44',
+                                'number' => '2',
+                                ]
+                        ],                     
                         
                         
                         

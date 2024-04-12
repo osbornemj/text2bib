@@ -103,6 +103,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/addVersion', 'addVersion')->name('admin.addVersion');
     });
 
+    Route::controller(JournalsController::class)->group(function () {
+        Route::get('/admin/uncheckedJournals', 'unchecked')->name('admin.journals.unchecked');
+    });
+
     Route::controller(ConversionAdminController::class)->group(function () {
         Route::get('/admin/showConversion/{conversionId}/{page}', 'showConversion')->name('admin.showConversion');
         Route::get('/admin/convert/{fileId}/{itemSeparator?}', 'convert')->name('admin.convert');

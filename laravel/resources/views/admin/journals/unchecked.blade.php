@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl leading-tight">
-            Checked journals
+            Unchecked journals
         </h2>
-        {{ $checkedJournals->total()}} found
+        {{ $uncheckedJournals->total()}} found
     </x-slot>
 
     <div class="px-4 mb-4 sm:px-4 sm:rounded-lg">
@@ -12,24 +12,22 @@
 
     <div class="px-4 sm:px-4 sm:rounded-lg">
         <div class="mb-4">
-            <x-link href="/admin/journals/create">Add journal</x-link>
-            &nbsp;&bull;&nbsp;
-            <x-link href="/admin/uncheckedJournals">Unchecked</x-link>
+            <x-link href="/admin/journals">Checked</x-link>
         </div>
 
-        @if ($checkedJournals->count())
+        @if ($uncheckedJournals->count())
             <ul>
-                @foreach ($checkedJournals as $journal)
+                @foreach ($uncheckedJournals as $journal)
                 <li>
                     <div>
-                        <livewire:journal-check :journal="$journal" />
-                        </div>
-                    </li>
+                    <livewire:journal-check :journal="$journal" />
+                    </div>
+                </li>
                 @endforeach
             </ul>
         @endif
 
-        {{ $checkedJournals->links() }}
+        {{ $uncheckedJournals->links() }}
     </div>
 
 </x-app-layout>

@@ -55,6 +55,9 @@
                 </x-link>
                 @if ($uncheckedJournalCount)
                     <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedJournalCount }}</span>
+                    <x-link :href="route('admin.journals.unchecked')" :active="request()->routeIs('admin.journals.unchecked')">
+                        unchecked
+                    </x-link>
                 @endif
                 (journal names, based on conversions marked as correct by users and approved by administrator)
             </p>

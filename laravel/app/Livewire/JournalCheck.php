@@ -7,13 +7,19 @@ use Livewire\Component;
 class JournalCheck extends Component
 {
     public $journal;
+    public $checked;
 
     public function check($value)
     {
+        $checked = $this->journal->checked;
         $this->journal->checked = $value;
         $this->journal->save();
 
-        return redirect()->to('/admin/journals');
+        if ($checked == 1) {
+            return redirect()->to('/admin/journals');
+        } else {
+            return redirect()->to('/admin/uncheckedJournals');
+        }
     }
 
     public function distinctive($value)
@@ -24,8 +30,14 @@ class JournalCheck extends Component
 
     public function delete()
     {
+        $checked = $this->journal->checked;
         $this->journal->delete();
-        return redirect()->to('/admin/journals');
+
+        if ($checked == 1) {
+            return redirect()->to('/admin/journals');
+        } else {
+            return redirect()->to('/admin/uncheckedJournals');
+        }
     }
 
 }

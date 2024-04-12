@@ -19,13 +19,22 @@ class JournalsController extends Controller
     {
         $checkedJournals = Journal::where('checked', 1)
             ->orderBy('name')
-            ->get();
+            ->paginate(50);
 
+        $checked = 1;
+
+        return view('admin.journals.index', compact('checkedJournals', 'checked'));
+    }
+
+    public function unchecked(): View
+    {
         $uncheckedJournals = Journal::where('checked', 0)
             ->orderBy('name')
-            ->get();
+            ->paginate(50);
 
-        return view('admin.journals.index', compact('checkedJournals', 'uncheckedJournals'));
+        $checked = 0;
+
+        return view('admin.journals.unchecked', compact('uncheckedJournals', 'checked'));
     }
 
     /**
@@ -72,7 +81,11 @@ class JournalsController extends Controller
         $journal->name = $request->name;
         $journal->save();
 
-        return redirect()->route('journals.index');
+        if ($request->checked == 1) {
+            return redirect()->route('journals.index');
+        } else {
+            return redirect()->route('admin.journals.unchecked');
+        }
     }
 
     /**

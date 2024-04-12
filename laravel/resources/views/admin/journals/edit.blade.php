@@ -11,6 +11,7 @@
                 @method('PUT')
                 @csrf
 
+                <input type="hidden" name="checked" value="{{ $journal->checked }}"/>
                 <div>
                     <x-input-label for="name" :value="__('Name')" />
                     <x-text-input id="name" class="block mt-1 w-3/4" name="name" :value="old('name', $journal->name)" required autofocus />
@@ -25,7 +26,9 @@
             </form>
 
             <div class="flex items-center mt-4">
-                <x-link href="{{ url('/admin/journals') }}">All journals</x-link>
+                <x-link href="{{ url('/admin/journals') }}">Checked journals</x-link>
+                &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+                <x-link href="{{ url('/admin/uncheckedJournals') }}">Unchecked journals</x-link>
             </div>
 
         </div>

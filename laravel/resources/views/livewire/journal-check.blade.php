@@ -1,5 +1,5 @@
 <div>
-    <x-link href="{{ url('admin/journals/' . $journal->id . '/edit') }}">{{ $journal->name }}</x-link>
+    <x-link href="{{ url('admin/journals/' . $journal->id . '/edit/' . $checked) }}">{{ $journal->name }}</x-link>
 
     <x-small-button class="ml-1 bg-red-400 dark:bg-red-800" wire:click="delete">
         X
