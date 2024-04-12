@@ -20,7 +20,7 @@
                 @foreach ($uncheckedJournals as $journal)
                 <li>
                     <div>
-                    <livewire:journal-check :journal="$journal" />
+                    <livewire:journal-check :journal="$journal" :currentPage="$uncheckedJournals->currentPage()" />
                     </div>
                 </li>
                 @endforeach
