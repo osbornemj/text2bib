@@ -18,4 +18,12 @@ class UsersController extends Controller
 
         return view('admin.users.index')->with('users', $users);
     }
+
+    public function destroy(int $id)
+    {
+        $user = User::find($id);
+        $user->delete();
+
+        return back();
+    }
 }

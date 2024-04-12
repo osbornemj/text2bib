@@ -131,7 +131,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/admin/runExampleCheck/{reportType?}/{language?}/{detailsIfCorrect?}/{id?}/{charEncoding?}', [ExampleCheckController::class, 'runExampleCheck'])->name('admin.examples.runCheck');
     Route::post('/admin/runExampleCheck', [ExampleCheckController::class, 'runExampleCheck'])->name('admin.examples.runCheck');
 
-    Route::get('/admin/users', [UsersController::class, 'index'])->name('admin.users');
+    Route::controller(UsersController::class)->group(function () {
+        Route::get('/admin/users', 'index')->name('admin.users');
+        Route::delete('/admin/users/{id}', 'destroy')->name('admin.user.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';
