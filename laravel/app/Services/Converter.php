@@ -263,7 +263,7 @@ class Converter
             'fr' => '(Récupéré sur |Disponible( à)?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
             'pt' => '(Disponível( em)?:? |Obtido de:? )',
-            'nl' => '(Opgehaald van |Verkrijgbaar( bij)?:? )',
+            'nl' => '(Opgehaald van |Verkrijgbaar( bij)?:? |Available( at)?:? )',
         ];
 
         // Dates are between 8 and 18 characters long
@@ -277,9 +277,9 @@ class Converter
         ];
 
         $this->accessedRegExp1 = [
-            'en' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed),? (?P<date2>' . $dateRegExp . ')',
+            'en' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)[,:]? (?P<date2>' . $dateRegExp . ')',
             'fr' => '([Rr]écupéré |[Cc]onsulté (le )?)(?P<date2>' . $dateRegExp . ')',
-            'es' => '([Oo]btenido |[Aa]ccedido )(?P<date2>' . $dateRegExp . ')',
+            'es' => '([Oo]btenido|[Aa]ccedido)[,:]? (?P<date2>' . $dateRegExp . ')',
             'pt' => '([Oo]btido |[Aa]cesso (em:?)? )(?P<date2>' . $dateRegExp . ')',
             'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken),? (?P<date2>' . $dateRegExp . ')',
         ];
@@ -514,6 +514,15 @@ class Converter
         if (! count($matches)) {
             preg_match(
                 '%(url: ?)?' . $urlRegExp . ',? ?\(?' . $accessedRegExp1 . '\)?$%i',
+                $remainder,
+                $matches,
+            );
+        }
+
+        // accessed <date> <url>
+        if (! count($matches)) {
+            preg_match(
+                '%' . $accessedRegExp1 . '\.? ' . $urlRegExp . '$%i',
                 $remainder,
                 $matches,
             );
@@ -797,7 +806,7 @@ class Converter
 
         $containsMonth = false;
         if (! isset($item->year)) {
-            if (!$year) {
+            if (! $year) {
                 // Space prepended to $remainder in case it starts with year, because getYear requires space 
                 // (but perhaps could be rewritten to avoid it).
                 $year = $this->getYear(' '. $remainder, $newRemainder, $month, $day, $date, false, true, $language);
@@ -812,6 +821,9 @@ class Converter
             if (isset($month)) {
                 $containsMonth = true;
                 $this->setField($item, 'month', $this->fixMonth($month, $language), 'setField 15');
+            }
+            if (isset($item->url) && ! isset($item->urldate) && $day) {
+                $this->setField($item, 'urldate', $date, 'setField 14a');
             }
         }
 
@@ -3917,23 +3929,26 @@ class Converter
         $remains = $string;
         $months = $this->monthsRegExp[$language];
 
-        if ($start) {
-            if (Str::startsWith($remains, ['(n.d.)', '[n.d.]'])) {
-                $remains = substr($remains, 6);
-                $year = 'n.d.';
-                return $year;
-            }
+        if (Str::startsWith($remains, ['(n.d.)', '[n.d.]'])) {
+            $remains = substr($remains, 6);
+            $year = 'n.d.';
+            return $year;
+        }
 
-            if ($allowMonth) {
-                // (year month) or [year month] or (year month day) or [year month day]
-                if (preg_match('/^[\(\[](?P<date>(?P<year>(18|19|20)[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]/i', $string, $matches1)) {
-                    $year = $matches1['year'] ?? null;
-                    $month = $matches1['month'] ?? null;
-                    $day = $matches1['day'] ?? null;
-                    $date = $matches1['date'] ?? null;
-                    $remains = substr($remains, strlen($matches1[0]));
-                    return $year;
-                }
+        if ($allowMonth) {
+            if (
+                // (year month) or (year month day) (or without parens or with brackets)
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(18|19|20)[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]?/i', $string, $matches1)
+                ||
+                // (day month year) or (month year) (or without parens or with brackets)
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(?P<month>' . $months . ') (?P<year>(18|19|20)[0-9]{2})[.,]? ?)[\)\]]?/i', $string, $matches1)
+                ) {
+                $year = $matches1['year'] ?? null;
+                $month = $matches1['month'] ?? null;
+                $day = $matches1['day'] ?? null;
+                $date = $matches1['date'] ?? null;
+                $remains = substr($remains, strlen($matches1[0]));
+                return $year;
             }
         }
 
@@ -4295,9 +4310,11 @@ class Converter
                 $this->verbose(['text' => 'Name component ', 'words' => [$words[$i]], 'content' => ' starts with accented uppercase character']);
             } elseif (
                 // Not a name if doesn't start with an accented uppercase letter and it starts with l.c. and is not
-                // "d'" and is not a von name
+                // "d'" and is not a von name and is not a single (possibly lowercase) letter followed by a period
+                // [e.g. as in E. v. d. Boom]
                 isset($words[$i][0]) 
                     && mb_strtolower($words[$i][0]) == $words[$i][0]
+                    && ! (strlen($words[$i]) == 2 && in_array($words[$i][0], range('a', 'z')) && $words[$i][1] == '.')
                     && substr($words[$i], 0, 2) != "d'" 
                     && ! in_array($words[$i], $this->vonNames)
                 ) {
@@ -4938,8 +4955,8 @@ class Converter
         $string = str_replace("\\textbf{\\ }", " ", $string);
         $string = str_replace("\\textit{ }", " ", $string);
         $string = str_replace("\\textit{\\ }", " ", $string);
-        // Replace ~ with space if not preceded by \ or / (as it will be in a URL)
-        $string = preg_replace('/([^\/\\\])~/', '$1 ', $string);
+        // Replace ~ with space if not preceded by \ or / or : (as it will be in a URL; actualy #:~: in URL)
+        $string = preg_replace('/([^\/\\\:])~/', '$1 ', $string);
         $string = str_replace("\\/", "", $string);
         // Remove copyright symbol
         $string = str_replace("©", "", $string);

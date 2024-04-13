@@ -4510,6 +4510,7 @@ class ExampleSeeder extends Seeder
                                 'author' => 'Defensie',
                                 'title' => 'F-16',
                                 'year' => '2023',
+                                'month' => 'januari',
                                 'urldate' => '2023 januari 18',
                             ],
                             'language' => 'nl',
@@ -4518,11 +4519,12 @@ class ExampleSeeder extends Seeder
                             'source' => 'E. v. d. Boom, „Lockheed F-16,” vliegles.nl, 18 juli 2022. Available: https://www.vliegles.nl/vliegtuig/lockheedf16#:~:text=Hoeveeln',
                             'type' => 'online',
                             'bibtex' => [
-                                'url' => 'https://www.vliegles.nl/vliegtuig/lockheedf16#:',
+                                'url' => 'https://www.vliegles.nl/vliegtuig/lockheedf16#:~:text=Hoeveeln',
                                 'author' => 'E. v. d. Boom',
                                 'title' => 'Lockheed F-16',
                                 'urldate' => '18 juli 2022',
                                 'year' => '2022',
+                                'month' => 'juli',
                                 'note' => 'vliegles.nl',
                             ],
                             'language' => 'nl',
@@ -4540,6 +4542,46 @@ class ExampleSeeder extends Seeder
                                 'doi' => '10.1177/20503121221075125',
                                 ]
                         ],
+                        [
+                            'source' => 'Fekene, D. B., Woldeyes, B. S., Erena, M. M., & Demisse, G. A. (2020). Knowledge, uptake of preconception care and associated factors among reproductive age group women in West Shewa zone, Ethiopia, 2018. BMC Women’s Health, 20(1), 30. https://doi.org/10.1186/s12905-020-00900-2 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Fekene, D. B. and Woldeyes, B. S. and Erena, M. M. and Demisse, G. A.',
+                                'title' => 'Knowledge, uptake of preconception care and associated factors among reproductive age group women in West Shewa zone, Ethiopia, 2018.',
+                                'journal' => 'BMC Women\'s Health',
+                                'year' => '2020',
+                                'volume' => '20',
+                                'number' => '1',
+                                'pages' => '30',
+                                'doi' => '10.1186/s12905-020-00900-2',
+                                ]
+                        ],
+                        [
+                            'source' => 'Anderson, Stanford. 2001. "The Profession and Discipline of Architecture: Practice and Education." In The Discipline of Architecture, by Andrzej Piotrowski and Julia Williams Robinson, 292-305. Minneapolis; London: University of Minnesota Press. ',
+                            'type' => 'incollection',
+                            'bibtex' => [
+                                'author' => 'Anderson, Stanford',
+                                'year' => '2001',
+                                'title' => 'The Profession and Discipline of Architecture: Practice and Education',
+                                'pages' => '292-305',
+                                'booktitle' => 'The Discipline of Architecture',
+                                'publisher' => 'University of Minnesota Press',
+                                'address' => 'Minneapolis; London',
+                                'editor' => 'Andrzej Piotrowski and Julia Williams Robinson',
+                                ]
+                        ],
+                        [
+                            'source' => 'CIA. (2024). The 20 countries with the highest unemployment rate in 2023. Statista. Accessed: April 09, 2024. https://www-statista-com.ezproxy.herts.ac.uk/statistics/264656/countries-with-the-highest-unemployment-rate/ ',
+                            'type' => 'online',
+                            'bibtex' => [
+                                'url' => 'https://www-statista-com.ezproxy.herts.ac.uk/statistics/264656/countries-with-the-highest-unemployment-rate/',
+                                'author' => 'CIA.',
+                                'year' => '2024',
+                                'title' => 'The 20 countries with the highest unemployment rate in 2023. Statista',
+                                'urldate' => 'April 09, 2024',
+                                ]
+                        ],
+                        
                         
                         
 
