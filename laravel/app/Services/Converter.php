@@ -220,7 +220,7 @@ class Converter
 
         $this->startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
         $this->forthcomingRegExp = 'forthcoming( at| in)?|in press|accepted( at)?|to appear in';
-        $this->endForthcomingRegExp = '(forthcoming|in press|accepted|to appear)\.?\)?$';
+        $this->endForthcomingRegExp = ' (forthcoming|in press|accepted|to appear)\.?\)?$';
         $this->forthcomingRegExp1 = '/^[Ff]orthcoming/';
         $this->forthcomingRegExp2 = '/^[Ii]n [Pp]ress/';
         $this->forthcomingRegExp3 = '/^[Aa]ccepted/';
@@ -681,9 +681,11 @@ class Converter
         // after periods, converting U.S.A. into U. S. A., for example
         $journal = null;
         $containsJournalName = false;
+        $wordString = ' ' . implode(' ', $words);
         foreach ($this->journalNames as $name) {
-            // Ignore periods
-            if (Str::contains(implode(' ', $words), $name)) {
+            // Precede jounnal name by space or {, so that subsets of journal names are not matched (e.g. JASA and EJASA).
+            // { allowed because journal name might be preceded by \textit{.
+            if (Str::contains($wordString, [' ' . $name, '{' . $name])) {
                 $journal = $name;
                 $containsJournalName = true;
                 $this->verbose("Entry contains the name of a journal (" . $journal . ").");
@@ -2618,7 +2620,26 @@ class Converter
                     break;
                 }
 
-                $stringToNextPeriod = strtok($remainder, '.?!');
+                //$stringToNextPeriod = strtok($remainder, '.?!');
+                // String up to next ?, !, or . not preceded by ' J'.
+                $chars = mb_str_split($remainder, 1, 'UTF-8');
+                $stringToNextPeriod = '';
+                foreach ($chars as $i => $char) {
+                    $stringToNextPeriod .= $char;
+                    if (
+                            in_array($char, ['?', '!'])
+                            ||
+                            (
+                                $char == '.' &&
+                                    (
+                                        ($i == 1 && $chars[0] != 'J') 
+                                            || ($i >= 2 && ! ($chars[$i-1] == 'J' && $chars[$i-2] == ' '))
+                                    )
+                            )
+                        ) {
+                        break;
+                    }
+                }
 
                 // When a word ending in punctuation or preceding a word starting with ( is encountered, check whether
                 // it is followed by
