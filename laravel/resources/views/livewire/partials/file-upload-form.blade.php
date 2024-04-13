@@ -77,14 +77,17 @@
         <x-radio-input wire:model="uploadForm.language" value="en" class="peer/en" /> 
         <x-value-label for="en" class="peer-checked/en:text-blue-600 ml-1" :value="__('English')" />
 
+        <x-radio-input wire:model="uploadForm.language" value="nl" class="peer/nl ml-4" />
+        <x-value-label for="nl" class="peer-checked/nl:text-blue-600 ml-1" :value="__('Dutch')" />
+
         <x-radio-input wire:model="uploadForm.language" value="fr" class="peer/fr ml-4" />
         <x-value-label for="fr" class="peer-checked/fr:text-blue-600 ml-1" :value="__('French')" />
 
-        <x-radio-input wire:model="uploadForm.language" value="es" class="peer/es ml-4" />
-        <x-value-label for="es" class="peer-checked/es:text-blue-600 ml-1" :value="__('Spanish')" />
-
         <x-radio-input wire:model="uploadForm.language" value="pt" class="peer/pt ml-4" />
         <x-value-label for="pt" class="peer-checked/pt:text-blue-600 ml-1" :value="__('Portuguese')" />
+
+        <x-radio-input wire:model="uploadForm.language" value="es" class="peer/es ml-4" />
+        <x-value-label for="es" class="peer-checked/es:text-blue-600 ml-1" :value="__('Spanish')" />
 
         <x-input-error :messages="$errors->get('uploadForm.language')" class="mt-2" />
 
@@ -152,11 +155,11 @@
     <div>
         <x-input-label for="char_encoding" :value="__('Convert accented characters to TeX?')" class="mt-4" />
     
-        <x-radio-input wire:model="uploadForm.char_encoding" value="utf8" class="peer/utf8" /> 
-        <x-value-label for="utf8" class="peer-checked/utf8:text-blue-600 ml-1" :value="__('Yes')" />
-
-        <x-radio-input wire:model="uploadForm.char_encoding" value="utf8leave" class="peer/utf8leave ml-4" />
+        <x-radio-input wire:model="uploadForm.char_encoding" value="utf8leave" class="peer/utf8leave" />
         <x-value-label for="l" class="peer-checked/utf8leave:text-blue-600 ml-1" :value="__('No')" />
+
+        <x-radio-input wire:model="uploadForm.char_encoding" value="utf8" class="peer/utf8 ml-4" /> 
+        <x-value-label for="utf8" class="peer-checked/utf8:text-blue-600 ml-1" :value="__('Yes')" />
 
         <x-input-error :messages="$errors->get('uploadForm.char_encoding')" class="mt-2" />
 

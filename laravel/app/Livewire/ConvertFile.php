@@ -68,7 +68,7 @@ class ConvertFile extends Component
             'label_style' => 'short',
             'override_labels' => '1',
             'line_endings' => 'w',
-            'char_encoding' => 'utf8',
+            'char_encoding' => 'utf8leave',
             'percent_comment' => '1',
             'include_source' => '1',
             'report_type' => 'standard',

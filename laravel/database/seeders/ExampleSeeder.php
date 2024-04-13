@@ -4393,7 +4393,157 @@ class ExampleSeeder extends Seeder
                                 'volume' => '44',
                                 'number' => '2',
                                 ]
-                        ],                     
+                        ],
+                        [
+                            'source' => 'Abid, M., 2017. Does economic, financial and institutional developments matter for environmental quality? A comparative analysis of EU and MEA countries. J. Environ. Manage. 188, 183–194. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Abid, M.',
+                                'year' => '2017',
+                                'title' => 'Does economic, financial and institutional developments matter for environmental quality? A comparative analysis of EU and MEA countries',
+                                'journal' => 'J. Environ. Manage.',
+                                'volume' => '188',
+                                'pages' => '183-194',
+                                ]
+                        ],
+                        [
+                            'source' => 'Acheampong, A.O., Amponsah, M., Boateng, E., 2020. Does financial development mitigate carbon emissions? Evidence from heterogeneous financial economies. Energy Econ. 88, 104768. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'note' => 'Article 104768',
+                                'author' => 'Acheampong, A. O. and Amponsah, M. and Boateng, E.',
+                                'year' => '2020',
+                                'title' => 'Does financial development mitigate carbon emissions? Evidence from heterogeneous financial economies',
+                                'journal' => 'Energy Econ.',
+                                'volume' => '88',
+                                ]
+                        ],
+                        [
+                            'source' => 'Bion, R. A. H., Borovsky, A., & Fernald, A. (2013). Fast mapping, slow learning: Disambiguation of novel word–object mappings in relation to vocabulary learning at 18, 24, and 30 months. Cognition, 126(1), 39–53. https://doi.org/10.1016/j.cognition.2012.08.008 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Bion, R. A. H. and Borovsky, A. and Fernald, A.',
+                                'title' => 'Fast mapping, slow learning: Disambiguation of novel word--object mappings in relation to vocabulary learning at 18, 24, and 30 months',
+                                'journal' => 'Cognition',
+                                'year' => '2013',
+                                'volume' => '125',
+                                'number' => '1',
+                                'pages' => '39-53',
+                                'doi' => '10.1016/j.cognition.2012.08.008',
+                                ]
+                        ],
+                        [
+                            'source' => 'DeLoache, J. S. (1984). What’s This? Maternal Questions in Joint Picture Book Reading with Toddlers. https://eric.ed.gov/?id=ED251176 ',
+                            'type' => 'online',
+                            'bibtex' => [
+                                'author' => 'DeLoache, J. S.',
+                                'title' => 'What\'s This? Maternal Questions in Joint Picture Book Reading with Toddlers',
+                                'year' => '1984',
+                                'url' => 'https://eric.ed.gov/?id=ED251176',
+                                ]
+                        ],
+                        [
+                            'source' => 'Horst, J. S., Parsons, K. L., & Bryan, N. M. (2011). Get the Story Straight: Contextual Repetition Promotes Word Learning from Storybooks. Frontiers in Psychology, 2. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2011.00017 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Horst, J. S. and Parsons, K. L. and Bryan, N. M.',
+                                'title' => 'Get the Story Straight: Contextual Repetition Promotes Word Learning from Storybooks',
+                                'journal' => 'Frontiers in Psychology',
+                                'year' => '2011',
+                                'volume' => '2',
+                                'url' => 'https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2011.00017',
+                                ]
+                        ],
+                        [
+                            'source' => 'Ahenkan, A., & Boon, E. (2011). Non-timber forest products (NTFPs): Clearing the confusion in semantics. Journal of Human Ecology, 33(1), 1-9. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Ahenkan, A. and Boon, E.',
+                                'year' => '2011',
+                                'title' => 'Non-timber forest products (NTFPs): Clearing the confusion in semantics',
+                                'journal' => 'Journal of Human Ecology',
+                                'volume' => '33',
+                                'number' => '1',
+                                'pages' => '1-9',
+                                ]
+                        ],
+                        [
+                            'source' => 'Fleischman, F. D. (2014). Why do foresters plant trees? Testing theories of bureaucratic decision-making in central India. World Development, 62, 62-74. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Fleischman, F. D.',
+                                'year' => '2014',
+                                'title' => 'Why do foresters plant trees? Testing theories of bureaucratic decision-making in central India',
+                                'journal' => 'World Development',
+                                'volume' => '62',
+                                'pages' => '62-74',
+                                ]
+                        ],
+                        [
+                            'source' => 'Adams, J. L. (1993). Flying Buttresses, Entropy, and O-Rings: The World of an Engineer. Harvard University Press. ',
+                            'type' => 'book',
+                            'bibtex' => [
+                                'author' => 'Adams, J. L.',
+                                'year' => '1993',
+                                'title' => 'Flying Buttresses, Entropy, and O-Rings: The World of an Engineer',
+                                'publisher' => 'Harvard University Press',
+                                ]
+                        ],
+                        [
+                            'source' => 'M. Campbell, A. J. Hoane Jr, and F.-h. Hsu. Deep blue. Artificial intelligence, 134(1-2):57–83, 2002.',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'M. Campbell and A. J. Hoane Jr and F.-h. Hsu',
+                                'title' => 'Deep blue',
+                                'journal' => 'Artificial intelligence',
+                                'year' => '2002',
+                                'volume' => '134',
+                                'number' => '1-2',
+                                'pages' => '57-83',
+                                ]
+                        ],
+                        [
+                            'source' => ' Defensie, „F-16,” 2023 januari 18. Available: https://www.defensie.nl/onderwerpen/materieel/vliegtuigen-en-helikopters/f-16. ',
+                            'type' => 'online',
+                            'bibtex' => [
+                                'url' => 'https://www.defensie.nl/onderwerpen/materieel/vliegtuigen-en-helikopters/f-16',
+                                'author' => 'Defensie',
+                                'title' => 'F-16',
+                                'year' => '2023',
+                                'urldate' => '2023 januari 18',
+                            ],
+                            'language' => 'nl',
+                        ],
+                        [
+                            'source' => 'E. v. d. Boom, „Lockheed F-16,” vliegles.nl, 18 juli 2022. Available: https://www.vliegles.nl/vliegtuig/lockheedf16#:~:text=Hoeveeln',
+                            'type' => 'online',
+                            'bibtex' => [
+                                'url' => 'https://www.vliegles.nl/vliegtuig/lockheedf16#:',
+                                'author' => 'E. v. d. Boom',
+                                'title' => 'Lockheed F-16',
+                                'urldate' => '18 juli 2022',
+                                'year' => '2022',
+                                'note' => 'vliegles.nl',
+                            ],
+                            'language' => 'nl',
+                        ],
+                        [
+                            'source' => 'Getachew, D., Getachew, T., Debella, A., Eyeberu, A., Atnafe, G., & Assefa, N. (2022). Magnitude and determinants of knowledge towards pregnancy danger signs among pregnant women attending antenatal care at Chiro town health institutions, Ethiopia. SAGE Open Medicine, 10, 20503121221075124. https://doi.org/10.1177/20503121221075125 ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Getachew, D. and Getachew, T. and Debella, A. and Eyeberu, A. and Atnafe, G. and Assefa, N.',
+                                'title' => 'Magnitude and determinants of knowledge towards pregnancy danger signs among pregnant women attending antenatal care at Chiro town health institutions, Ethiopia',
+                                'journal' => 'SAGE Open Medicine',
+                                'year' => '2022',
+                                'volume' => '10',
+                                'note' => 'Article 20503121221075124',
+                                'doi' => '10.1177/20503121221075125',
+                                ]
+                        ],
+                        
+                        
+
+                                             
                         
                         
                         

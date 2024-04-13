@@ -166,6 +166,17 @@ class Converter
                 'eds.' => 'eds.',
                 'edited by' => 'edited by'
                 ],
+            'nl' =>
+                [
+                'and' => 'en',
+                'in' => 'in',
+                'editor' => 'editor',
+                'editors' => 'editors',
+                'ed.' => 'ed.',
+                'eds.' => 'eds.',
+                'edited by' => 'bewerkt door'
+                ],
+
         ];
 
         $this->ordinals = [
@@ -177,6 +188,8 @@ class Converter
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
             'pt' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
+            'nl' =>
+                ['1e', '2e', '3e', '4e', '5e', '6e', '7e'],
         ];
 
         $this->articleRegExp = 'article [0-9]*';
@@ -249,7 +262,8 @@ class Converter
             'en' => '(Retrieved from |Available( at)?:? )',
             'fr' => '(Récupéré sur |Disponible( à)?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
-            'pt' => '(Disponível( em)?:? |Obtido de:? )'
+            'pt' => '(Disponível( em)?:? |Obtido de:? )',
+            'nl' => '(Opgehaald van |Verkrijgbaar( bij)?:? )',
         ];
 
         // Dates are between 8 and 18 characters long
@@ -259,6 +273,7 @@ class Converter
             'fr' => '[Rr]écupéré (?P<date1>' . $dateRegExp . ' )?sur |[Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?(à|sur) ',
             'es' => '[Oo]btenido (?P<date1>' . $dateRegExp . ' )?de |[Aa]ccedido (?P<date2>' . $dateRegExp . ' )?en ',
             'pt' => '[Oo]btido (?P<date1>' . $dateRegExp . ' )?de |[Aa]cesso (?P<date2>' . $dateRegExp . ' )?em ',
+            'nl' => '[Oo]pgehaald (?P<date1>' . $dateRegExp . ' )?(, )?van |[Gg]eraadpleegd op (?P<date2>' . $dateRegExp . ' )?om ',
         ];
 
         $this->accessedRegExp1 = [
@@ -266,6 +281,7 @@ class Converter
             'fr' => '([Rr]écupéré |[Cc]onsulté (le )?)(?P<date2>' . $dateRegExp . ')',
             'es' => '([Oo]btenido |[Aa]ccedido )(?P<date2>' . $dateRegExp . ')',
             'pt' => '([Oo]btido |[Aa]cesso (em:?)? )(?P<date2>' . $dateRegExp . ')',
+            'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken),? (?P<date2>' . $dateRegExp . ')',
         ];
 
         $this->monthsRegExp = [
@@ -277,6 +293,8 @@ class Converter
                 . 'agosto|septiembre|sept?[.,; ]|octubre|oct[.,; ]|noviembre|nov[.,; ]|deciembre|dec[.,; ]',
             'pt' => 'janeiro|jan[.,; ]|fevereiro|fev[.,; ]|março|mar[.,; ]|abril|abr[.,; ]|maio|mai[.,; ]|junho|jun[.,; ]|julho|jul[.,; ]|'
                 . 'agosto|ago[.,; ]setembro|set[.,; ]|outubro|oct[.,; ]|novembro|nov[.,; ]|dezembro|dez[.,; ]',
+            'nl' => 'januari|jan[.,; ]|februari|febr[.,; ]|maart|mrt[.,; ]|april|apr[.,; ]|mei|juni|juli|'
+                . 'augustus|aug[.,; ]|september|sep[.,; ]|oktober|okt[.,; ]|november|nov[.,; ]|december|dec[.,; ]',
         ];
 
         $this->vonNames = VonName::all()->pluck('name')->toArray();
@@ -338,6 +356,7 @@ class Converter
         $entry = strip_tags($entry);
         $originalEntry = $entry;
 
+        // Note that cleanText translates « and », and „ and ”, to `` and ''.
         $entry = $this->cleanText($entry, $charEncoding);
 
         $firstComponent = 'authors';
@@ -2977,7 +2996,7 @@ class Converter
      */
     private function isDate(string $string, string $language = 'en', string $type = 'is'): bool|array
     {
-        $ofs = ['en' => '', 'fr' => '', 'es' => '', 'pt' => 'de'];
+        $ofs = ['en' => '', 'nl' => '', 'fr' => '', 'es' => '', 'pt' => 'de'];
 
         $year = '(?P<year>(19|20)[0-9]{2})';
         $monthName = $this->monthsRegExp[$language];
@@ -3014,8 +3033,8 @@ class Converter
     private function isAnd(string $string, $language = 'en'): bool
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
-        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French
-        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', 'y', 'e', 'et']) || $string == 'with';
+        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch
+        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', 'y', 'e', 'et', 'en']) || $string == 'with';
     }
 
     /*
@@ -3311,7 +3330,7 @@ class Converter
                 // is lowercase (hence not string of initials without spaces):
                 if ($namePart == 0) {
                     // If $namePart == 0, something is wrong (need to choose an earlier end for name string) UNLESS author has
-                    // a single name.  If string is followed by year or quotedOrItalics, that seems right,
+                    // a single name.  If string is followed by year or quotedOrItalic, that seems right,
                     // in which case we may have an entry like "Economist. 2005. ..."
                     $remainder = implode(" ", $remainingWords);
                     $this->verbose('[c2a getYear 3]');
@@ -3700,6 +3719,7 @@ class Converter
          * Rather than using the following loop, could use regular expressions.  Versions of expressions
          * are given in a comment after the loop.  However, these expressions are incomplete, and are complex
          * because of the need to exclude escaped quotes.  I find the loop easier to understand and maintain.
+         * NOTE: cleanText replaces French guillemets and other quotation marks with `` and ''.
         */
         if (!$italicsOnly) {
             $skip = false;
@@ -3726,17 +3746,17 @@ class Converter
                     }
                 } elseif ($begin == '`' || $begin == "'") {
                     if ($char == "'" && $chars[$i-1] != '\\' 
-                                && (!isset($chars[$i+1]) || !in_array(strtolower($chars[$i+1]), range('a', 'z')))) {
+                                && (! isset($chars[$i+1]) || ! in_array(strtolower($chars[$i+1]), range('a', 'z')))) {
                         $end = true;
                     } else {
                         $quotedText .= $char;
                     }
                 // before match has begun
                 } elseif ($char == '`') {
-                    if ((!isset($chars[$i-1]) || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "`") {
+                    if ((! isset($chars[$i-1]) || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "`") {
                         $begin = '``';
                         $skip = true;
-                    } elseif (!isset($chars[$i-1]) || $chars[$i-1] != '\\') {
+                    } elseif (! isset($chars[$i-1]) || $chars[$i-1] != '\\') {
                         $begin = '`';
                     } else {
                         $beforeQuote .= $char;
@@ -4609,7 +4629,7 @@ class Converter
                 $this->verbose('No number assigned');
             } else {
                 // A letter or sequence of letters is permitted after an issue number
-                $numberOfMatches = preg_match('/(' . $this->volumeRegExp . ')?(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,7}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                $numberOfMatches = preg_match('/(' . $this->volumeRegExp . ')?(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
                 $numberInParens = isset($matches['punc1']) && in_array($matches['punc1'][0], ['(', ' (']);
                 if ($numberOfMatches) {
                     $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : '') . (isset($matches[8][0]) ? ', 8: ' . $matches[8][0] : ''));
@@ -4721,8 +4741,14 @@ class Converter
             // French guillemets
             $string = str_replace("\xC2\xAB", "``", $string);
             $string = str_replace("\xC2\xBB", "''", $string);
+            // „ and ”
+            $string = str_replace("\xE2\x80\x9E", "``", $string);
+            $string = str_replace("\xE2\x80\x9D", "''", $string);
+            // ‘ and ’
+            $string = str_replace("\xE2\x80\x98", "``", $string);
+            $string = str_replace("\xE2\x80\x99", "''", $string);
         }
-       
+
         if ($charEncoding == 'utf8') {
             $string = str_replace("\xC3\x80", "{\`A}", $string);
             $string = str_replace("\xC3\x81", "{\\'A}", $string);
@@ -4860,7 +4886,7 @@ class Converter
             $string = str_replace("\xC5\xA0", "\\v{S}", $string);
             $string = str_replace("\xC5\xA1", "\\v{s}", $string);
         }
-        
+
         /*
         if($charEncoding == 'windows1252') {
             // Following two are windows encoding of opening and closing quotes(?) [might conflict with other encodings?---
