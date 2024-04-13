@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\ErrorReport;
 use App\Models\ErrorReportComment;
+use App\Models\User;
 use App\Notifications\ErrorReportCommentPosted;
 use Livewire\Component;
 use Livewire\Attributes\Rule;
@@ -43,7 +44,14 @@ class ErrorFeedback extends Component
         $errorReport = ErrorReport::find($errorReportId);
         $reportUser = $errorReport->output->conversion->user;
         if ($reportUser->id != $user->id) {
-            $reportUser->notify(new ErrorReportCommentPosted($errorReport));
+            $reportUser->notify(new ErrorReportCommentPosted($errorReport, $reportUser));
+        }
+
+        $admins = User::where('is_admin', true)->get();
+        foreach ($admins as $admin) {
+            if ($admin->id != $user->id) {
+                $admin->notify(new ErrorReportCommentPosted($errorReport, $admin));
+            }
         }
     }
 }

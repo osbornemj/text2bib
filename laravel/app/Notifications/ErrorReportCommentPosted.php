@@ -8,6 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 use App\Models\ErrorReport;
+use App\Models\User;
 
 class ErrorReportCommentPosted extends Notification
 {
@@ -16,9 +17,10 @@ class ErrorReportCommentPosted extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(public ErrorReport $errorReport)
+    public function __construct(public ErrorReport $errorReport, public User $user)
     {
         $this->errorReport = $errorReport;
+        $this->user = $user;
     }
 
     /**
@@ -36,8 +38,14 @@ class ErrorReportCommentPosted extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        if ($this->user->id == $this->errorReport->output->conversion->user->id) {
+            $message = 'A comment has been posted on an error report you submitted.  Please respond to the comment.';
+        } else {
+            $message = 'A comment has been posted on an error report.';
+        }
+
         return (new MailMessage)
-                    ->line('A comment has been posted on an error report you submitted.  Please respond to the comment.')
+                    ->line($message)
                     ->action('View comment', url('/errorReport/' . $this->errorReport->id));
     }
 

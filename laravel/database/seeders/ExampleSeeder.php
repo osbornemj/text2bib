@@ -4581,6 +4581,93 @@ class ExampleSeeder extends Seeder
                                 'urldate' => 'April 09, 2024',
                                 ]
                         ],
+                        [
+                            'source' => 'Abidemi, A.K. and Abiodun, A.A. (2023). Exponentially generated modified Chen distribution with applications to lifetime dataset. J. of Probability and Statistics, Article ID \ 4458562, 25 pages. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Abidemi, A. K. and Abiodun, A. A.',
+                                'title' => 'Exponentially generated modified Chen distribution with applications to lifetime dataset',
+                                'journal' => 'J. of Probability and Statistics',
+                                'year' => '2023',
+                                'note' => 'Article ID 4458562, 25 pages',
+                                ]
+                        ],
+                        [
+                            'source' => 'Abiodun, A.A. and Ishaq, A.I. (2022). On Maxwell-Lomax distribution: properties and applications. Arab J. of Basic and Applied Sciences, 29:1, 221-232. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Abiodun, A. A. and Ishaq, A. I.',
+                                'title' => 'On Maxwell-Lomax distribution: properties and applications',
+                                'journal' => 'Arab J. of Basic and Applied Sciences',
+                                'year' => '2022',
+                                'volume' => '29',
+                                'number' => '1',
+                                'pages' => '221-232',
+                                ]
+                        ],
+                        [
+                            'source' => 'Abonongo, A.I.L. and Abonongo, J. (2023). Exponentiated generalized Weibull exponential distribution: properties, estimation and applications. Computational J. of Mathematical and Statistical Sciences, 3(1), 57-84. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Abonongo, A. I. L. and Abonongo, J.',
+                                'title' => 'Exponentiated generalized Weibull exponential distribution: properties, estimation and applications',
+                                'journal' => 'Computational J. of Mathematical and Statistical Sciences',
+                                'year' => '2023',
+                                'volume' => '3',
+                                'number' => '1',
+                                'pages' => '57-84',
+                                ]
+                        ],
+                        [
+                            'source' => 'Alqawba, M., Altayab, Y., Zaidi, S.M., and Afify, A.Z. (2023). The extended Kumaraswamy generated family: properties, inference and applications in applied fields. EJASA, 16(3), 740-763. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Alqawba, M. and Altayab, Y. and Zaidi, S. M. and Afify, A. Z.',
+                                'title' => 'The extended Kumaraswamy generated family: properties, inference and applications in applied fields',
+                                'journal' => 'EJASA',
+                                'year' => '2023',
+                                'volume' => '16',
+                                'number' => '3',
+                                'pages' => '740-763',
+                                ]
+                        ],
+                        [
+                            'source' => 'Zeenalabiden, N.A. and Saracoglu, B. (2023). A new family of distributions: exponential power-X family of distributions and its some properties. Iraqi J. of Statistical Sciences, 20(3), 235-248.  ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Zeenalabiden, N. A. and Saracoglu, B.',
+                                'year' => '2023',
+                                'title' => 'A new family of distributions: exponential power-X family of distributions and its some properties',
+                                'journal' => 'Iraqi J. of Statistical Sciences',
+                                'volume' => '20',
+                                'number' => '3',
+                                'pages' => '235-248',
+                                ]
+                        ],
+                        [
+                            'source' => 'Ainsworth, L., & Viegut, D. (2006). Common formative assessments: How to Connect Standards-Based Instruction and Assessment. Thousand Oaks, CA: Corwin Press. ',
+                            'type' => 'book',
+                            'bibtex' => [
+                                'author' => 'Ainsworth, L. and Viegut, D.',
+                                'year' => '2006',
+                                'title' => 'Common formative assessments: How to Connect Standards-Based Instruction and Assessment',
+                                'address' => 'Thousand Oaks, CA',
+                                'publisher' => 'Corwin Press',
+                                ]
+                        ],
+                        [
+                            'source' => 'Angoff, W. W. (1971). Scales, norms, and equivalent scores. In R. L Thorndike (Ed.). Educational Measurement 2nd Ed. Washington, D.C.: American Council on Education. ',
+                            'type' => 'incollection',
+                            'bibtex' => [
+                                'author' => 'Angoff, W. W.',
+                                'year' => '1971',
+                                'title' => 'Scales, norms, and equivalent scores',
+                                'editor' => 'R. L. Thorndike',
+                                'booktitle' => 'Educational Measurement 2nd Ed.',
+                                'publisher' => 'American Council on Education',
+                                'address' => 'Washington, D.C.',
+                                ]
+                        ],
                         
                         
                         
