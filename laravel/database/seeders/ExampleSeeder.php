@@ -4682,7 +4682,87 @@ class ExampleSeeder extends Seeder
                                 'booktitle' => 'Microbial Biodegradation and Bioremediation (Second Edition)',
                                 ]
                         ],
-                        
+                        [
+                            'source' => 'Anak Kemarau, R. & Eboy, O.V. (2022) Statistical Modeling of Impacts El Niño Southern Oscillations (ENSO) on Land Surface Temperature in Small Medium Size City: Case Study Kuching Sarawak. Journal of Sustainable Natural Resources. 3 (1). doi:10.30880/jsunr.2022.03.01.002. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.30880/jsunr.2022.03.01.002',
+                                'author' => 'Anak Kemarau, R. and Eboy, O. V.',
+                                'title' => 'Statistical Modeling of Impacts El Niño Southern Oscillations (ENSO) on Land Surface Temperature in Small Medium Size City: Case Study Kuching Sarawak',
+                                'year' => '2022',
+                                'journal' => 'Journal of Sustainable Natural Resources',
+                                'volume' => '3',
+                                'number' => '1',
+                            ],
+                            'char_encoding' => 'utfleave',
+                        ],
+                        [
+                            'source' => 'Balas, D.B., Tiwari, M.K., Trivedi, M. & Patel, G.R. (2023) Impact of Land Surface Temperature (LST) and Ground Air Temperature (Tair) on Land Use and Land Cover (LULC): An Investigative Study. International Journal of Environment and Climate Change. https://api.semanticscholar.org/CorpusID:261847328. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'url' => 'https://api.semanticscholar.org/CorpusID:261847328',
+                                'author' => 'Balas, D. B. and Tiwari, M. K. and Trivedi, M. and Patel, G. R.',
+                                'year' => '2023',
+                                'title' => 'Impact of Land Surface Temperature (LST) and Ground Air Temperature (Tair) on Land Use and Land Cover (LULC): An Investigative Study',
+                                'journal' => 'International Journal of Environment and Climate Change',
+                                ]
+                        ],
+                        [
+                            'source' => 'Dikbaş, F. (2017) A novel two‐dimensional correlation coefficient for assessing associations in time series data. International Journal of Climatology. 37. https://api.semanticscholar.org/CorpusID:126412072. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'url' => 'https://api.semanticscholar.org/CorpusID:126412072',
+                                'author' => 'Dikbaş, F.',
+                                'year' => '2017',
+                                'title' => 'A novel two-dimensional correlation coefficient for assessing associations in time series data',
+                                'journal' => 'International Journal of Climatology',
+                                'volume' => '37',
+                            ],
+                            'char_encoding' => 'utfleave',
+                        ], 
+                        [
+                            'source' => 'França, F.M., Ferreira, J., Vaz-de-Mello, F.Z., Maia, L.F., Berenguer, E., Ferraz Palmeira, A., Fadini, R., Louzada, J., Braga, R., Hugo Oliveira, V. & Barlow, J. (2020) El Niño impacts on human-modified tropical forests: Consequences for dung beetle diversity and associated ecological processes. Biotropica. 52 (2). doi:10.1111/btp.12756. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'doi' => '10.1111/btp.12756',
+                                'author' => 'França, F. M. and Ferreira, J. and Vaz-de-Mello, F. Z. and Maia, L. F. and Berenguer, E. and Ferraz Palmeira, A. and Fadini, R. and Louzada, J. and Braga, R. and Hugo Oliveira, V. and Barlow, J.',
+                                'title' => 'El Niño impacts on human-modified tropical forests: Consequences for dung beetle diversity and associated ecological processes',
+                                'year' => '2020',
+                                'journal' => 'Biotropica',
+                                'volume' => '52',
+                                'number' => '2',
+                            ],
+                            'char_encoding' => 'utfleave',
+                        ],
+                        [
+                            'source' => 'Acuña, A. M., Caso, L., Aliphat, M. M., and Vergara, C. H. (2011). Edible insects as part of the traditional food system of the Popoloca town of Los Reyes Metzontla, Mexico. Journal of Ethnobiology, 31(1), 150-169. ',
+                            'type' => 'article',
+                            'bibtex' => [
+                                'author' => 'Acuña, A. M. and Caso, L. and Aliphat, M. M. and Vergara, C. H.',
+                                'year' => '2011',
+                                'title' => 'Edible insects as part of the traditional food system of the Popoloca town of Los Reyes Metzontla, Mexico',
+                                'journal' => 'Journal of Ethnobiology',
+                                'volume' => '31',
+                                'number' => '1',
+                                'pages' => '150-169',
+                            ],
+                            'char_encoding' => 'utfleave',
+                            ],
+                            [
+                                'source' => 'Marcantonio ER, Ngo LH, O\'Connor M, Jones RN, Crane PK, Metzger ED, Inouye SK. 3D-CAM: derivation and validation of a 3-minute diagnostic interview for CAM-defined delirium: a cross-sectional diagnostic test study. Ann Intern Med. 2014 Oct 21;161(8):554-61.  ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Marcantonio, E. R. and Ngo, L. H. and O\'Connor, M. and Jones, R. N. and Crane, P. K. and Metzger, E. D. and Inouye, S. K.',
+                                    'title' => '3D-CAM: derivation and validation of a 3-minute diagnostic interview for CAM-defined delirium: a cross-sectional diagnostic test study',
+                                    'year' => '2014',
+                                    'month' => 'October',
+                                    'pages' => '554-61',
+                                    'journal' => 'Ann Intern Med',
+                                    'volume' => '161',
+                                    'number' => '8',
+                                    ]
+                            ],
+                                                   
                         
                         
                         

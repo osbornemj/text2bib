@@ -94,6 +94,8 @@ trait AddLabels
             $label .= isset($item->year) ? $item->year : '';
         }
 
+        $label = trim($label);
+
         return $label;
     }
 
