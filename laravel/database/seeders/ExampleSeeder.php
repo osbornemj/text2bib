@@ -4668,6 +4668,21 @@ class ExampleSeeder extends Seeder
                                 'address' => 'Washington, D.C.',
                                 ]
                         ],
+                        [
+                            'source' => '[8]	Chatterjee S, Kumari S, Rath S, Das S. Chapter 1 - Prospects and scope of microbial bioremediation for the restoration of the contaminated sites. In: Das S, Dash HR, editors. Microbial Biodegradation and Bioremediation (Second Edition), Elsevier; 2022, p. 3–31. https://doi.org/https://doi.org/10.1016/B978-0-323-85455-9.00011-4. ',
+                            'type' => 'incollection',
+                            'bibtex' => [
+                                'doi' => '10.1016/B978-0-323-85455-9.00011-4',
+                                'author' => 'Chatterjee, S. and Kumari, S. and Rath, S. and Das, S.',
+                                'title' => 'Chapter 1 - Prospects and scope of microbial bioremediation for the restoration of the contaminated sites',
+                                'year' => '2022',
+                                'pages' => '3-31',
+                                'editor' => 'Das, S. and Dash, H. R.',
+                                'publisher' => 'Elsevier',
+                                'booktitle' => 'Microbial Biodegradation and Bioremediation (Second Edition)',
+                                ]
+                        ],
+                        
                         
                         
                         
