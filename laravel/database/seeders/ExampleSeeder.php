@@ -3076,6 +3076,7 @@ class ExampleSeeder extends Seeder
                             'title' => 'How Network Rail Buys Utlities',
                             'year' => '2023',
                             'urldate' => '13 12 2023',
+                            'note' => '[Online]',
                             ]
                     ],
                     [   
@@ -3801,11 +3802,11 @@ class ExampleSeeder extends Seeder
                             'bibtex' => [
                                 'doi' => '10.3390/nu13020494',
                                 'year' => '2021',
-                                'month' => 'Feb',
+                                'month' => 'febrero',
                                 'title' => 'Polyphenols and Non-Alcoholic Fatty Liver Disease. Nutrients',
                                 'author' => 'Abenavoli, L. and Larussa, T. and Corea, A. and Procopio, A. and Boccuto, L. and Dallio, M. and others and Luzza, F.',
                             ],
-                            'language' =>'pt',
+                            'language' =>'es',
                         ],
                         [
                             'source' => 'Aguiar, J. E., & Miwa, M. (2009). O vinho e sua história - Do Império Romano, pela Idade Média, até os nossos dias, o vinho acompanhou os principais momentos da história da humanidade e se transformou. Obtido de https://revistaadega.uol.com.br/artigo/o-vinho-e-sua-historia_1064.html ',
@@ -3817,6 +3818,7 @@ class ExampleSeeder extends Seeder
                                 'author' => 'Aguiar, J. E. and Miwa, M.',
                             ],
                             'char_encoding' => 'utfleave',
+                            'language' => 'pt',
                         ],
                         [
                             'source' => 'M.V. Moreno-Arribas & Polo, M. (12 de 01 de 2007). Winemaking biochemistry and microbiology: current knowledge and future trends. Food Science and Nutrition , 45(4), pp. 265-286. doi:https://doi.org/10.1080/10408690490478118 ',
@@ -3825,7 +3827,7 @@ class ExampleSeeder extends Seeder
                                 'doi' => '10.1080/10408690490478118',
                                 'pages' => '265-286',
                                 'title' => 'Winemaking biochemistry and microbiology: current knowledge and future trends',
-                                'author' => 'M. V. Moreno-Aribas and Polo, M.',
+                                'author' => 'M. V. Moreno-Arribas and Polo, M.',
                                 'year' => '2007',
                                 'month' => '01',
                                 'number' => '4',
@@ -4266,9 +4268,9 @@ class ExampleSeeder extends Seeder
                             'source' => 'Gehle, S. C., Kleissler, D., Heiling, H., Deal, A., Xu, Z., Ayer Miller, V. L., ... & Smitherman, A. B. (2023). Accelerated epigenetic aging and myopenia in young adult cancer survivors. Cancer Medicine. ',
                             'type' => 'article',
                             'bibtex' => [
-                                'author' => 'Gehle, S. C. and Kleissler, D. and Heiling, H. and Deal, A. and Xu, Z. and Ayer Miller V. L .& Smitherman',
+                                'author' => 'Gehle, S. C. and Kleissler, D. and Heiling, H. and Deal, A. and Xu, Z. and Ayer Miller V. L and others and Smitherman, A. B.',
                                 'title' => 'Accelerated epigenetic aging and myopenia in young adult cancer survivors',
-                                'journal' => ' Cancer Medicine',
+                                'journal' => 'Cancer Medicine',
                                 'year' => '2023',
                                 ]
                         ],
@@ -4511,6 +4513,7 @@ class ExampleSeeder extends Seeder
                                 'title' => 'F-16',
                                 'year' => '2023',
                                 'month' => 'januari',
+                                'date' => '2023-01-18',
                                 'urldate' => '2023 januari 18',
                             ],
                             'language' => 'nl',
@@ -4525,6 +4528,7 @@ class ExampleSeeder extends Seeder
                                 'urldate' => '18 juli 2022',
                                 'year' => '2022',
                                 'month' => 'juli',
+                                'date' => '2022-07-18',
                                 'note' => 'vliegles.nl',
                             ],
                             'language' => 'nl',
@@ -4756,12 +4760,27 @@ class ExampleSeeder extends Seeder
                                     'title' => '3D-CAM: derivation and validation of a 3-minute diagnostic interview for CAM-defined delirium: a cross-sectional diagnostic test study',
                                     'year' => '2014',
                                     'month' => 'October',
+                                    'date' => '2014-10-21',
                                     'pages' => '554-61',
-                                    'journal' => 'Ann Intern Med',
+                                    'journal' => 'Ann Intern Med.',
                                     'volume' => '161',
                                     'number' => '8',
                                     ]
                             ],
+                            [
+                                'source' => 'Berkowitz, Jacob F., Lindsey Green, Christine M. VanZomeren, and John R. White. 2016. Evaluating Soil Properties and Potential Nitrate Removal in Wetlands Created Using an Engineering With Nature Based Dredged Material Placement Technique. Ecological Engineering 97: 381-88. http://dx.doi.org/10.1016/j.ecoleng.2016.10.022. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'doi' => '10.1016/j.ecoleng.2016.10.022',
+                                    'author' => 'Berkowitz, Jacob F. and Lindsey Green and Christine M. VanZomeren and John R. White',
+                                    'title' => 'Evaluating Soil Properties and Potential Nitrate Removal in Wetlands Created Using an Engineering With Nature Based Dredged Material Placement Technique',
+                                    'year' => '2016',
+                                    'journal' => 'Ecological Engineering',
+                                    'pages' => '381-88',
+                                    'volume' => '97',
+                                    ]
+                            ],
+                            
                                                    
                         
                         

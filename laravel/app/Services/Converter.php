@@ -36,7 +36,6 @@ class Converter
     var $editorRegExp;
     var $edsRegExp1;
     var $edsRegExp2;
-    var $edsRegExp3;
     var $edsRegExp4;
     var $endForthcomingRegExp;
     var $excludedWords;
@@ -194,9 +193,8 @@ class Converter
 
         $this->articleRegExp = 'article (id )?[0-9]*';
 
-        $this->edsRegExp1 = '/[\(\[][Ee]ds?\.?[\)\]]|[\(\[][Ee]ditors?[\)\]]/';
+        $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|[Ee]ditors?)[\)\]]/';
         $this->edsRegExp2 = '/ed(\.|ited) by/i';
-        $this->edsRegExp3 = '/[Ee]ds?\.|^[Ee]ds?\.| [Ee]ditors?/';
         $this->edsRegExp4 = '/( [Ee]ds?[\. ]|[\(\[][Ee]ds?\.?[\)\]]| [Ee]ditors?| [\(\[][Ee]ditors?[\)\]])/';
         $this->editorStartRegExp = '/^[\(\[]?[Ee]dited by|^[\(\[]?[Ee]ds?\.?|^[\(\[][Ee]ditors?/';
         $this->editorEndRegExp = '[\(\[]?eds?\.?[\)\]]?$|[\(\[]?editors?[\)\]]?$';
@@ -721,8 +719,8 @@ class Converter
         }
 
         if ($month) {
-            // Using fixMonth here yields a Carbon error for $month = 'Avril' and $language = 'fr'
-            $this->setField($item, 'month', $this->fixMonth($month, $language), 'setField 112');
+            $monthResult = $this->fixMonth($month, $language);
+            $this->setField($item, 'month', $monthResult['months'], 'setField 112');
         }
 
         //////////////////////////
@@ -820,10 +818,17 @@ class Converter
                 $this->setField($item, 'year', '', 'setField 14');
                 $warnings[] = "No year found.";
             }
+
             if (isset($month)) {
                 $containsMonth = true;
-                $this->setField($item, 'month', $this->fixMonth($month, $language), 'setField 15');
+                $monthResult = $this->fixMonth($month, $language);
+                $this->setField($item, 'month', $monthResult['months'], 'setField 15');
             }
+
+            if ($year && isset($month) && ! empty($day)) {
+                $this->setField($item, 'date', $year . '-' . $monthResult['month1number'] . '-' . $day, 'setField 15a');
+            }
+
             if (isset($item->url) && ! isset($item->urldate) && $day) {
                 $this->setField($item, 'urldate', $date, 'setField 14a');
             }
@@ -836,7 +841,7 @@ class Converter
         ///////////////////////////////////////////////////////////////////////////////
 
         // $remainder is item minus authors, year, and title
-        $remainder = ltrim($remainder, '., ');
+        $remainder = ltrim($remainder, '.,; ');
         $this->verbose("[type] Remainder: " . $remainder);
         
         $inStart = $containsIn = $italicStart = $containsEditors = $containsThesis = false;
@@ -890,14 +895,16 @@ class Converter
             }
         }
 
+        $regExp = '/^eds?\.|(?<!';
+        foreach ($this->ordinals[$language] as $i => $ordinal) {
+            $regExp .= ($i ? '|' : '') . $ordinal;
+        }
+        $regExp .= '|rev\.)[ \(](eds?\.|editors?)/i';
+
         // Test for 1st, 2nd etc. in third preg_match is to exclude a string like '1st ed.' (see Exner et al. in examples)
         if (preg_match($this->edsRegExp1, $remainder)
                 || preg_match($this->edsRegExp2, $remainder)
-                || (
-                    preg_match($this->edsRegExp3, $remainder, $matches, PREG_OFFSET_CAPTURE)
-                    && ! in_array(substr($remainder, $matches[0][1] - 4, 3), $this->ordinals[$language])
-                    && ! in_array(substr($remainder, $matches[0][1] - 5, 4), ['rev.', 'Rev.'])
-                )
+                || preg_match($regExp, $remainder, $matches)
         ) {
             $containsEditors = true;
             $this->verbose("Contains editors.");
@@ -1169,7 +1176,7 @@ class Converter
 
             case 'article':
                 // Get journal
-                $remainder = ltrim($remainder, '., ');
+                $remainder = ltrim($remainder, '.,; ');
                 // If there are any commas not preceded by digits and not followed by digits or spaces, add spaces after them
                 $remainder = preg_replace('/([^0-9]),([^ 0-9])/', '$1, $2', $remainder);
 
@@ -1252,7 +1259,8 @@ class Converter
 
                         if (! empty($matches[0][0][0])) {
                             $month = trim($matches[0][0][0], '();');
-                            $this->setField($item, 'month', $this->fixMonth($month, $language), 'setField 21');
+                            $monthResult = $this->fixMonth($month, $language);
+                            $this->setField($item, 'month', $monthResult['months'], 'setField 21');
                             $remainder = substr($remainder, 0, $matches[0][0][1]) . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
                             $this->verbose('Remainder: ' . $remainder);
                         }
@@ -2418,6 +2426,8 @@ class Converter
                 preg_match('/^' . $this->startForthcomingRegExp . '/i', $remainder)
                 ) {
                 $this->addToField($item, 'note', $remainder, 'addToField 14');
+            } elseif ($itemKind == 'online') {
+                $this->addToField($item, 'note', $remainder, 'addToField 15');
             } else {
                 $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
             }
@@ -2502,13 +2512,16 @@ class Converter
      * If month (or month range) is parsable, parse it: 
      * translate 'Jan' or 'Jan.' or 'January' or 'JANUARY', for example, to 'January'.
     */
-    private function fixMonth(string $month, string $language = 'en'): string
+    private function fixMonth(string $month, string $language = 'en'): array
     {
         Carbon::setLocale($language);
+
+        $month1number = $month2number = null;
 
         $month1 = trim(Str::before($month, '-'), ', ');
         if (preg_match('/^[a-zA-Z.]*$/', $month1)) {
             $fullMonth1 = Carbon::parseFromLocale('1 ' . $month1, $language)->monthName;
+            $month1number = Carbon::parseFromLocale('1 ' . $month1, $language)->format('m');
         } else {
             $fullMonth1 = $month1;
         }
@@ -2516,6 +2529,7 @@ class Converter
         $month2 = Str::contains($month, '-') ? Str::after($month, '-') : null;
         if ($month2 && preg_match('/^[a-zA-Z.]*$/', $month2)) {
             $fullMonth2 = Carbon::parseFromLocale('1 ' . $month2, $language)->monthName;
+            $month2number = Carbon::parseFromLocale('1 ' . $month2, $language)->format('m');
         } elseif ($month2) {
             $fullMonth2 = $month2;
         } else {
@@ -2524,7 +2538,7 @@ class Converter
 
         $months = $fullMonth1 . ($fullMonth2 ? '-' . $fullMonth2 : '');
 
-        return $months;
+        return ['months' => $months, 'month1number' => $month1number, 'month2number' => $month2number];
     }
 
     private function setField(stdClass &$item, string $fieldName, string $string, string $id = ''): void
@@ -3331,7 +3345,6 @@ class Converter
             } elseif ($determineEnd && $done) {
                 break;  // exit from foreach
             } elseif ($this->isAnd($word, $language) && ($word != 'et' || ! in_array($nextWord, ['al..', 'al.', 'al']))) {
-                //dump($word);
                 $this->verbose('[convertToAuthors 3]');
                 // Word is 'and' or equivalent, and if it is "et" it is not followed by "al".
                 $hasAnd = $prevWordAnd = true;
@@ -3614,7 +3627,7 @@ class Converter
                         $case = 7;
                     }
                 } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), $remainder, $month, $day, $date, true, true, $language)) {
-                    $this->verbose('[convertToAuthors 14] Ending author string: word is "'. $word . '", year is next.');
+                    $this->verbose('[convertToAuthors 14a] Ending author string: word is "'. $word . '", year is next.');
                     $done = true;
                     $fullName = ($fullName[0] != ' ' ? ' ' : '') . $fullName;
                     $this->addToAuthorString(10, $authorstring, $this->formatAuthor($fullName));
@@ -3697,6 +3710,7 @@ class Converter
                         } else {
                             // Low name score relative to number of bareWords (e.g. less than 25% of words not in dictionary)
                             if ($nameScore['count'] > 2 && $nameScore['score'] / $nameScore['count'] < 0.25) {
+                                //dump($nameScore);
                                 $this->verbose('[convertToAuthors 32]');
                                 $this->addToAuthorString(14, $authorstring, $this->formatAuthor($fullName));
                                 $done = true;
@@ -3980,7 +3994,12 @@ class Converter
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(18|19|20)[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]?/i', $string, $matches1)
                 ||
                 // (day month year) or (month year) (or without parens or with brackets)
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(?P<month>' . $months . ') (?P<year>(18|19|20)[0-9]{2})[.,]? ?)[\)\]]?/i', $string, $matches1)
+                // The optional "de" between day and month and between month and year is for Spanish
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(18|19|20)[0-9]{2}))[\)\]]?/i', $string, $matches1)
+                ||
+                // (day monthNumber year) or (monthNumber year) (or without parens or with brackets)
+                // The optional "de" between day and month and between month and year is for Spanish
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>[0-9]{1,2}) ?(de )?(?P<year>(18|19|20)[0-9]{2}))[\)\]]?/i', $string, $matches1)
                 ) {
                 $year = $matches1['year'] ?? null;
                 $month = $matches1['month'] ?? null;
@@ -3992,10 +4011,22 @@ class Converter
         }
 
         if (!$start && $allowMonth) {
-            if (preg_match('/(?P<year>(18|19|20)[0-9]{2}) (?P<month>' . $months . ')/', $string, $matches2, PREG_OFFSET_CAPTURE)) {
-                $year = $matches2['year'][0];
-                $month = rtrim($matches2['month'][0], '.,; ');
-                $remains = substr($string, 0, $matches2[0][1]) . substr($string, $matches2[0][1] + strlen($matches2[0][0]));
+            if (
+                // <year> <month> <day>?
+                preg_match('/[ \(](?P<date>(?P<year>(18|19|20)[0-9]{2}) (?P<month>' . $months . ')( ?(?P<day>[0-3][0-9]))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                ||
+                // <day>? <month> <year>
+                // The optional "de" between day and month and between month and year is for Spanish
+                preg_match('/[ \(](?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(18|19|20)[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                ) {
+                $year = $matches2['year'][0] ?? null;
+                $month = $matches2['month'][0] ?? null;
+                if ($month) {
+                    $month = rtrim($month, '.,; ');
+                }
+                $day = $matches2['day'][0] ?? null;
+                $date = $matches2['date'][0] ?? null;
+                $remains = substr($string, 0, $matches2['date'][1]) . substr($string, $matches2['date'][1] + strlen($matches2['date'][0]));
                 return $year;
             }
         }
@@ -4295,7 +4326,10 @@ class Converter
         foreach ($words as $word) {
             // Names are in dictionary with initial u.c. letter, so convert word to l.c. to exclude them as regular words
             $lcword = mb_strtolower($word);
-            if (
+
+            if (($this->isAnd($word) && ! $ignoreAnd) || $this->isInitials(($word))) {
+                $score++;
+            } elseif (
                     ($lcword != 'and' || ! $ignoreAnd) &&
                     ((isset($word[0]) && mb_strtoupper($word[0]) == $word[0]) || in_array($word, $this->vonNames)) &&
                     ! $this->isInitials($word) &&
@@ -4338,7 +4372,6 @@ class Converter
     private function isNotName(string $word1, string $word2): bool
     {
         $words = [$word1, $word2];
-        //dd($words);
         $this->verbose(['text' => 'Arguments of isNotName: ', 'words' => [$words[0], $words[1]]]);
         $result = false;
         // Following reg exp allows {\'A} and \'{A} and \'A (but also allows {\'{A}, which it shouldn't)
@@ -4750,7 +4783,6 @@ class Converter
             $remainder = substr($remainder, 0, $take) . substr($remainder, $drop);
             $remainder = trim($remainder, ',. )(');
 
-            //dd($remainder);
             $this->verbose('remainder: ' . ($remainder ? $remainder : '[empty]'));
             if ($remainder && ctype_digit($remainder)) {
                 $this->setField($item, 'pages', $remainder, 'getVolumeAndNumberForArticle 24'); // could be a single page
