@@ -63,6 +63,7 @@ class Converter
     var $masterRegExp;
     var $monthsRegExp;
     var $names;
+    var $nameSuffixes;
     var $numberRegExp;
     var $oclcRegExp1;
     var $oclcRegExp2;
@@ -121,7 +122,9 @@ class Converter
             ->toArray();
         
         $this->names = Name::all()->pluck('name')->toArray();
-        
+
+        $this->nameSuffixes = ['Jr.', 'Sr.', 'III'];
+
         // Introduced to facilitate a variety of languages, but the assumption that the language of the 
         // citation --- though not necessarily of the reference itself --- is English pervades the code.
         $this->phrases = [
@@ -754,7 +757,6 @@ class Converter
         unset($this->italicTitle);
 
         $remainder = ltrim($remainder, ': ');
-        // (string) on next line to stop VSCode complaining
         $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after);
         $newRemainder = $before . ltrim($after, "., ");
 
@@ -772,7 +774,7 @@ class Converter
             $newRemainder = '';
         }
 
-        if (!$title) {
+        if (! $title) {
             $title = $this->getTitle($remainder, $edition, $volume, $isArticle, $year, $note, $journal, $containsUrlAccessInfo);
             if ($edition) {
                 $this->setField($item, 'edition', $edition, 'setField 10');
@@ -895,13 +897,13 @@ class Converter
             }
         }
 
+        // Test for 1st, 2nd etc. in third preg_match is to exclude a string like '1st ed.' (see Exner et al. in examples)
         $regExp = '/^eds?\.|(?<!';
         foreach ($this->ordinals[$language] as $i => $ordinal) {
             $regExp .= ($i ? '|' : '') . $ordinal;
         }
-        $regExp .= '|rev\.)[ \(](eds?\.|editors?)/i';
+        $regExp .= '|rev\.)[ \(}](eds?\.|editors?)/i';
 
-        // Test for 1st, 2nd etc. in third preg_match is to exclude a string like '1st ed.' (see Exner et al. in examples)
         if (preg_match($this->edsRegExp1, $remainder)
                 || preg_match($this->edsRegExp2, $remainder)
                 || preg_match($regExp, $remainder, $matches)
@@ -1008,6 +1010,7 @@ class Converter
                 break;
             }
         }
+        $city = null;
 
         // if (preg_match('/' . $this->isbnRegExp1 . $this->isbnRegExp2 . '/', $remainder)) {
         //     $containsIsbn = true;
@@ -1989,7 +1992,7 @@ class Converter
                         $remainder = ltrim($newRemainder, ' ,');
                         $this->verbose("[in10] Remainder: " . $remainder);
                     }
-                } elseif (!$booktitle) {
+                } elseif (! $booktitle) {
                     // CASES 1, 3, and 4
                     // Case in which $booktitle is not defined: remainder presumably starts with booktitle
                     $remainder = trim($remainder, '., ');
@@ -2013,6 +2016,17 @@ class Converter
                         $remainder = trim($result['after'], ',. ');
                         $this->verbose('Volume found, so book is part of a series');
                         $this->verbose('Remainder (publisher and address): ' . $remainder);
+                    } elseif (! empty($cityString) && ! empty($publisher)) {
+                        $remainder = Str::remove([$publisher, $cityString], $remainder);
+                        $remainder = rtrim($remainder, ' :)(');
+                        $booktitle = $remainder;
+                        $remainder = '';
+                    } elseif (preg_match('/(?P<booktitle>[^\(]{5,50})\((?P<address>[^:]{4,20}):(?P<publisher>[^\.]{4,40})/i', $remainder, $matches)) {
+                        // common pattern: <booktitle> (<address>: <publisher>).
+                        $booktitle = $matches['booktitle'];
+                        $address = $matches['address'];
+                        $publisher = $matches['publisher'];
+                        $remainder = '';
                     } else {
                         // if remainder contains a single period, take that as end of booktitle
                         if (substr_count($remainder, '.') == 1) {
@@ -2613,8 +2627,15 @@ class Converter
             }
         }
 
-        $containsPages = preg_match('/(\()?' . $this->pagesRegExp . '(\))?/', $remainder);
+        // Common pattern for journal article
+        if (preg_match('/^(?P<title>[^\.]+)\. (?P<remainder>[a-zA-Z\., ]{5,30} [0-9;():\-.,\. ]*)$/', $remainder, $matches)) {
+            $title = $matches['title'];
+            $remainder = $matches['remainder'];
+            $this->verbose('Taking title to be string preceding period.');
+            return $title;
+        }
 
+        $containsPages = preg_match('/(\()?' . $this->pagesRegExp . '(\))?/', $remainder);
         $volumeRegExp = '/(^\(v(ol)?\.?|volume) (\d)\.?\)?[.,]?$/i';
         $editionRegExp = '/(^\(' . $this->editionRegExp . '\)|^' . $this->editionRegExp . ')[.,]?$/i';
 
@@ -3549,7 +3570,7 @@ class Converter
                 // 2023.8.2: trimRightBrace removed to deal with conversion of example containing name Oblo{\v z}insk{\' y}
                 // However, it must have been included here for a reason, so probably it should be included under
                 // some conditions.
-                if (Str::startsWith($word, ['Jr.', 'Sr.', 'III'])) {
+                if (Str::startsWith($word, $this->nameSuffixes)) {
                     $this->verbose('[convertToAuthors 20]');
                     $nWords = explode(' ', trim($fullName, ' '));
                     $nameWords = [];
@@ -3589,7 +3610,7 @@ class Converter
                     $this->verbose('[convertToAuthors 23]');
                     // Don't rtrim '}' because it could be part of the name: e.g. Oblo{\v z}insk{\' y}.
                     // Don't trim comma from word before Jr. etc, because that is valuable info
-                    $trimmedWord = (isset($words[$i+1]) && Str::startsWith($words[$i+1], ['Jr.', 'Sr.', 'III'])) ? $word : rtrim($word, ',;');
+                    $trimmedWord = (isset($words[$i+1]) && Str::startsWith($words[$i+1], $this->nameSuffixes)) ? $word : rtrim($word, ',;');
                     $nameComponent = $this->spaceOutInitials($trimmedWord);
                     $fullName .= " " . $nameComponent;
                 }
@@ -3606,6 +3627,26 @@ class Converter
                     $this->verbose('[convertToAuthors 24]');
                     $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                 }
+
+                // if (isset($bareWords[0]) && $bareWords[0] == 'Layer') {
+                //     dd($determineEnd, $remainingWords, $bareWords, 
+                //     $this->inDict(trim($remainingWords[0], ',')), 
+                //     ! $this->isInitials(trim($remainingWords[0], ',')),
+                //     ! in_array(trim($remainingWords[0], ','), $this->nameSuffixes),
+                //     ! preg_match('/[0-9]/', $remainingWords[0]),
+                //     ! empty($remainingWords[1]),
+                //     $this->inDict($remainingWords[1]),
+                //     ! $this->isInitials(trim($remainingWords[1], ',')),
+                //     ! in_array(trim($remainingWords[1], ','), $this->nameSuffixes),
+                //     ! preg_match('/[0-9]/', $remainingWords[1]),
+                //     $remainingWords[1] != '...', 
+                //     ! in_array($remainingWords[1][0], ["'", "`"]),
+                //     ! empty($remainingWords[2]), 
+                //     $this->inDict($remainingWords[2]),
+                //     ! $this->isInitials(trim($remainingWords[2], ',')),
+                //     ! in_array(trim($remainingWords[2], ','), $this->nameSuffixes),
+                //     ! preg_match('/[0-9]/', $remainingWords[2]));
+                // }
 
                 if ($determineEnd && $text = $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after)) {
                     if (in_array($text, ['et al', 'et al.', 'et. al.'])) {
@@ -3632,15 +3673,34 @@ class Converter
                     $fullName = ($fullName[0] != ' ' ? ' ' : '') . $fullName;
                     $this->addToAuthorString(10, $authorstring, $this->formatAuthor($fullName));
                 } elseif (
-                        $determineEnd &&
-                        isset($remainingWords[0]) &&
-                        ! $this->isAnd($remainingWords[0], $language) && 
-                        (count($bareWords) > 3
+                        $determineEnd
+                        &&
+                        isset($remainingWords[0])
+                        &&
+                        ! $this->isAnd($remainingWords[0], $language)
+                        && 
+                        (
+                            count($bareWords) > 3
                             ||
                             (
-                                ($this->inDict(trim($remainingWords[0], ',')) && ! $this->isInitials(trim($remainingWords[0], ',')))
-                                && ! empty($remainingWords[1]) && $this->inDict($remainingWords[1]) && strtolower($remainingWords[1][0]) == $remainingWords[1][0] && $remainingWords[1] != '...' && ! in_array($remainingWords[1][0], ["'", "`"])
-                                && ! empty($remainingWords[2]) && $this->inDict($remainingWords[2]) && strtolower($remainingWords[2][0]) == $remainingWords[2][0]
+                                $this->inDict(trim($remainingWords[0], ',')) 
+                                && ! $this->isInitials(trim($remainingWords[0], ','))
+                                && ! in_array(trim($remainingWords[0], ','), $this->nameSuffixes)
+                                && ! preg_match('/[0-9]/', $remainingWords[0])
+                                && ! empty($remainingWords[1]) 
+                                && $this->inDict($remainingWords[1]) 
+                                && ! $this->isInitials(trim($remainingWords[1], ','))
+                                && ! in_array(trim($remainingWords[1], ','), $this->nameSuffixes)
+                                && ! preg_match('/[0-9]/', $remainingWords[1])
+//                                && strtolower($remainingWords[1][0]) == $remainingWords[1][0] 
+                                && $remainingWords[1] != '...' 
+                                && ! in_array($remainingWords[1][0], ["'", "`"])
+                                && ! empty($remainingWords[2]) 
+                                && $this->inDict($remainingWords[2])
+                                && ! $this->isInitials(trim($remainingWords[2], ','))
+                                && ! in_array(trim($remainingWords[2], ','), $this->nameSuffixes)
+                                && ! preg_match('/[0-9]/', $remainingWords[2])
+//                                && strtolower($remainingWords[2][0]) == $remainingWords[2][0]
                             )
                         )
                         &&
@@ -4281,12 +4341,15 @@ class Converter
         foreach ($words as $j => $word) {
             $stop = false;
             $endsWithPunc = false;
+            $include = true;
+
             if (Str::endsWith($word, ['.', ',', ')', ':', '}'])) {
                 $stop = true;
                 $endsWithPunc = true;
             }
-            if (preg_match('/(\(|\[)(18|19|20)([0-9][0-9])(\)|\])/', $word)) {
+            if (preg_match('/(\(|\[)?(18|19|20)([0-9][0-9])(\)|\])?/', $word)) {
                 $stop = true;
+                $include = false;
             }
             if (Str::startsWith($word, ['`', '"', "'"])) {
                 $stop = true;
@@ -4302,7 +4365,9 @@ class Converter
             }
 
             if ($stop) {
-                $barewords[] = $endsWithPunc ? substr($word, 0, -1) : $word;
+                if ($include) {
+                    $barewords[] = $endsWithPunc ? substr($word, 0, -1) : $word;
+                }
                 break;
             } else {
                 $barewords[] = $word;
@@ -4366,7 +4431,8 @@ class Converter
     }
 
     /**
-     * isNotName: determine if array of words starts with a name
+     * isNotName: determine if $word1 and $word2 might be names: start with u.c. letter or is a von name
+     * or "d'" and is not an initial
      * @param $words array
      */
     private function isNotName(string $word1, string $word2): bool

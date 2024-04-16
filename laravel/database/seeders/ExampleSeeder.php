@@ -3541,7 +3541,7 @@ class ExampleSeeder extends Seeder
                         'source' => 'Center for Disease Control and Prevention. History of Ebola Disease Outbreaks. Cases and Outbreaks of Ebola Disease by Year. Estados Unidos: CDC, 2023. Disponível em: https://www.cdc.gov/vhf/ebola/history/chronology.html?CDC_AA_refVal=https',
                         'type' => 'online',
                         'bibtex' => [
-                            'author' => 'Center For Desease Control and Prevention',
+                            'author' => 'Center for Disease Control and Prevention',
                             'title' => 'History of Ebola Disease Outbreaks. Cases and Outbreaks of Ebola Disease by Year',
                             'year' => '2023',
                             'url' => 'https://www.cdc.gov/vhf/ebola/history/chronology.html?CDC_AA_refVal=https',
@@ -3863,11 +3863,11 @@ class ExampleSeeder extends Seeder
                             'source' => ' \bibitem{daily17} J. Daily, J. Peterson, Predictive Maintenance: How Big Data Analysis Can Improve Maintenance. In: Richter, K., Walther, J. (eds) Supply Chain Integration Challenges in Commercial Aerospace. Springer, Cham. 2017 doi:/10.1007/978-3-319-46155-7\_18 ',
                             'type' => 'incollection',
                             'bibtex' => [
-                                'author' => 'J. Daily and J. Peterson ',
+                                'author' => 'J. Daily and J. Peterson',
                                 'title' => 'Predictive Maintenance: How Big Data Analysis Can Improve Maintenance',
                                 'year' => '2017',
                                 'doi' => '10.1007/978-3-319-46155-7\_18',
-                                'editor' => 'Richter, K. and Walther, J',
+                                'editor' => 'Richter, K. and Walther, J.',
                                 'address' => 'Cham',
                                 'publisher' => 'Springer',
                                 'booktitle' => 'Supply Chain Integration Challenges in Commercial Aerospace',
