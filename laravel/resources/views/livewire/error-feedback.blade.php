@@ -3,7 +3,7 @@
     <dl class="mb-6">
         @foreach ($comments as $comment)
         <x-dt>{{ $comment->user->fullName() }} posted {{ $comment->created_at }}</x-dt>
-        <x-dd>{{ $comment->comment_text }}</x-dd>
+        <x-dd><p style="white-space: pre-line;">{{ $comment->comment_text }}</p></x-dd>
         @endforeach        
     </dl>
 

@@ -5,7 +5,7 @@
         <dl class="mb-6">
             @foreach ($comments as $comment)
                 <x-dt>{{ $comment->user->fullName() }} posted {{ $comment->created_at }}</x-dt>
-                <x-dd>{{ $comment->content }}</x-dd>
+                <x-dd><p style="white-space: pre-line;">{{ $comment->content }}</p></x-dd>
             @endforeach        
         </dl>
 
