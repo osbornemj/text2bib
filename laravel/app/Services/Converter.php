@@ -3707,7 +3707,7 @@ class Converter
                         (
                             $nameScore['count'] == 0 ||
                             $nameScore['score'] / $nameScore['count'] < 0.25 ||
-                            (mb_strtolower($bareWords[1]) == $bareWords[1] && ! $this->isAnd($bareWords[1], $language) && ! in_array($bareWords[1], $this->vonNames))
+                            (isset($bareWords[1]) && mb_strtolower($bareWords[1]) == $bareWords[1] && ! $this->isAnd($bareWords[1], $language) && ! in_array($bareWords[1], $this->vonNames))
                         )
                         &&
                         (
