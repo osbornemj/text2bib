@@ -4351,15 +4351,16 @@ class ExampleSeeder extends Seeder
                                 ]
                         ], [
                             'source' => 'Boero, P., Garuti, R., Lemut, E. y Mariotti, A. (1996). Challenging the traditional school approach to theorems: A hypothesis about the cognitive unity of theorems. En L. Puig y A. Gutiérrez (Eds.), Proceedings of the 20th PME international conference (pp. 113–120).  ',
-                            'type' => 'incollection',
+                            'type' => 'inproceedings',
                             'bibtex' => [
                                 'author' => 'Boero, P. and Garuti, R. and Lemut, E. and Mariotti, A.',
                                 'title' => 'Challenging the traditional school approach to theorems: A hypothesis about the cognitive unity of theorems',
                                 'year' => '1996',
                                 'pages' => '113-120',
                                 'editor' => 'L. Puig and A. Gutiérrez',
-                                'publisher' => 'Proceedings of the 20th PME international conference',
-                                ]
+                                'booktitle' => 'Proceedings of the 20th PME international conference',
+                            ],
+                            'char_encoding' => 'utf8leave',
                         ],
                         [
                             'source' => 'Lemmetty, S., 1999. Review of speech synthesis technology (Master\'s thesis). HELSINKI UNIVERSITY OF TECHNOLOGY ',
@@ -4428,7 +4429,7 @@ class ExampleSeeder extends Seeder
                                 'title' => 'Fast mapping, slow learning: Disambiguation of novel word--object mappings in relation to vocabulary learning at 18, 24, and 30 months',
                                 'journal' => 'Cognition',
                                 'year' => '2013',
-                                'volume' => '125',
+                                'volume' => '126',
                                 'number' => '1',
                                 'pages' => '39-53',
                                 'doi' => '10.1016/j.cognition.2012.08.008',
@@ -4694,7 +4695,7 @@ class ExampleSeeder extends Seeder
                                 'author' => 'Anak Kemarau, R. and Eboy, O. V.',
                                 'title' => 'Statistical Modeling of Impacts El Niño Southern Oscillations (ENSO) on Land Surface Temperature in Small Medium Size City: Case Study Kuching Sarawak',
                                 'year' => '2022',
-                                'journal' => 'Journal of Sustainable Natural Resources',
+                                'journal' => 'Journal of Sustainable Natural Resources.',
                                 'volume' => '3',
                                 'number' => '1',
                             ],
@@ -4719,7 +4720,7 @@ class ExampleSeeder extends Seeder
                                 'author' => 'Dikbaş, F.',
                                 'year' => '2017',
                                 'title' => 'A novel two-dimensional correlation coefficient for assessing associations in time series data',
-                                'journal' => 'International Journal of Climatology',
+                                'journal' => 'International Journal of Climatology.',
                                 'volume' => '37',
                             ],
                             'char_encoding' => 'utfleave',
@@ -4732,7 +4733,7 @@ class ExampleSeeder extends Seeder
                                 'author' => 'França, F. M. and Ferreira, J. and Vaz-de-Mello, F. Z. and Maia, L. F. and Berenguer, E. and Ferraz Palmeira, A. and Fadini, R. and Louzada, J. and Braga, R. and Hugo Oliveira, V. and Barlow, J.',
                                 'title' => 'El Niño impacts on human-modified tropical forests: Consequences for dung beetle diversity and associated ecological processes',
                                 'year' => '2020',
-                                'journal' => 'Biotropica',
+                                'journal' => 'Biotropica.',
                                 'volume' => '52',
                                 'number' => '2',
                             ],
@@ -4780,16 +4781,18 @@ class ExampleSeeder extends Seeder
                                     'volume' => '97',
                                     ]
                             ],
-                            
-                                                   
-                        
-                        
-                        
-
-                                             
-                        
-                        
-                        
+                            [
+                                'source' => '\bibitem{Crowderetal} Harlan P.~Crowder, Ron S.~Dembo und John M.~Mulvey: \newblock Reporting computational experiments in Mathematical Programming. \newblock {\em Mathematical Programming}, {\bf 15}:316--329, 1978. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Harlan P. Crowder and Ron S. Dembo and John M. Mulvey',
+                                    'title' => 'Reporting computational experiments in Mathematical Programming',
+                                    'journal' => 'Mathematical Programming',
+                                    'year' => '1978',
+                                    'volume' => '15',
+                                    'pages' => '316-329',
+                                    ]
+                            ],                       
                         
                 ];
 
