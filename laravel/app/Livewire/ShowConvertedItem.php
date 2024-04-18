@@ -124,8 +124,8 @@ class ShowConvertedItem extends Component
             }
         } else {
             if (in_array($output->itemType->name, ['book', 'incollection'])) {
-                $publisherName = ($output->item)['publisher'];
                 if (isset(($output->item)['publisher'])) {
+                    $publisherName = ($output->item)['publisher'];
                     if (!Publisher::where('name', $publisherName)->exists()) {
                         $publisher = new Publisher();
                         $publisher->name = $publisherName;
