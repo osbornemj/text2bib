@@ -3885,13 +3885,13 @@ class ExampleSeeder extends Seeder
                                 ]
                         ],
                         [
-                            'source' => '_______. Transformations of the Confucian Way. Boulder, Co.: Westview Press, 1998. ',
+                            'source' => '_______. Transformations of the Confucian Way. Boulder, CO: Westview Press, 1998. ',
                             'type' => 'book',
                             'bibtex' => [
                                 'author' => 'Berthrong, John H.',
                                 'title' => 'Transformations of the Confucian Way',
                                 'year' => '1998',
-                                'address' => 'Boulder, Co',
+                                'address' => 'Boulder, CO',
                                 'publisher' => 'Westview Press',
                                 ]
                         ],
@@ -3964,7 +3964,7 @@ class ExampleSeeder extends Seeder
                             'type' => 'article',
                             'bibtex' => [
                                 'author' => 'Amati, Ghila',
-                                'title' => 'Freedom, Creativity, the Self, and God: Between Rabbi Kook and Bergson’s Lebensphilosophie',
+                                'title' => 'Freedom, Creativity, the Self, and God: Between Rabbi Kook and Bergson\'s Lebensphilosophie',
                                 'journal' => 'Harvard Theological Review',
                                 'year' => 'Forthcoming',
                                 ]
@@ -4552,7 +4552,7 @@ class ExampleSeeder extends Seeder
                             'type' => 'article',
                             'bibtex' => [
                                 'author' => 'Fekene, D. B. and Woldeyes, B. S. and Erena, M. M. and Demisse, G. A.',
-                                'title' => 'Knowledge, uptake of preconception care and associated factors among reproductive age group women in West Shewa zone, Ethiopia, 2018.',
+                                'title' => 'Knowledge, uptake of preconception care and associated factors among reproductive age group women in West Shewa zone, Ethiopia, 2018',
                                 'journal' => 'BMC Women\'s Health',
                                 'year' => '2020',
                                 'volume' => '20',
@@ -4719,7 +4719,7 @@ class ExampleSeeder extends Seeder
                                 'url' => 'https://api.semanticscholar.org/CorpusID:126412072',
                                 'author' => 'Dikbaş, F.',
                                 'year' => '2017',
-                                'title' => 'A novel two-dimensional correlation coefficient for assessing associations in time series data',
+                                'title' => 'A novel two‐dimensional correlation coefficient for assessing associations in time series data',
                                 'journal' => 'International Journal of Climatology.',
                                 'volume' => '37',
                             ],

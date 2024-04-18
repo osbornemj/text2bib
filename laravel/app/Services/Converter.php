@@ -320,7 +320,7 @@ class Converter
     //   'notices'
     //   'details': array of text lines
     // $language, $charEncoding: if set, overrides values in $conversion (used when admin converts examples)
-    public function convertEntry(string $rawEntry, Conversion $conversion, string|null $language = null, string|null $charEncoding = null): array|null
+    public function convertEntry(string $rawEntry, Conversion $conversion, string|null $language = null, string|null $charEncoding = null, $previousAuthor = null): array|null
     {
         $warnings = $notices = [];
         $this->detailLines = [];
@@ -722,7 +722,21 @@ class Converter
 
         $isEditor = false;
 
-        $authorConversion = $this->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, true, 'authors', $language);
+        if (isset($words[0]) && preg_match('/^_+\.?$/', $words[0])) {
+            $authorConversion = ['authorstring' => $previousAuthor, 'warnings' => [], 'oneWordAuthor' => false];
+            $month = $day = $date = null;
+            $isEditor = false;
+            array_shift($words);
+            if (isset($words[0]) && preg_match('/^[\(\[]?(?P<year>(19|20)[0-9]{2})[\)\]]?$/', rtrim($words[0], '.,'), $matches)) {
+                $year = $matches['year'];
+                array_shift($words);
+            } else {
+                $year = null;
+            }
+            $remainder = implode(' ', $words);
+        } else {
+            $authorConversion = $this->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, true, 'authors', $language);
+        }
 
         // restore rest of $completeRemainder
         $remainder = $remainder . ' '. substr($completeRemainder, $mismatchPosition);
@@ -780,7 +794,9 @@ class Converter
         unset($this->italicTitle);
 
         $remainder = ltrim($remainder, ': ');
-        $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after);
+        $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
+        $titleStyle = $style;
+
         $newRemainder = $before . ltrim($after, "., ");
 
         // If title has been found and ends in edition specification, take that out and put it in edition field
@@ -1147,8 +1163,11 @@ class Converter
             } elseif ($pubInfoEndsWithForthcoming || $pubInfoStartsWithForthcoming) {
                 $this->verbose("Item type case 16");
                 $itemKind = 'article';
+            } elseif ($titleStyle == 'quoted') {
+                $this->verbose("Item type case 17a");
+                $itemKind = 'article';
             } else {
-                $this->verbose("Item type case 17");
+                $this->verbose("Item type case 17b");
                 $itemKind = 'book';
             }
         } elseif ($containsEdition) {
@@ -1446,7 +1465,7 @@ class Converter
                 
                 // If a string in $remainder is quoted or italicized, take that to be book title
                 // (string) on next line to stop VSCode complaining
-                $booktitle = (string) $this->getQuotedOrItalic($remainder, false, false, $before, $after);
+                $booktitle = (string) $this->getQuotedOrItalic($remainder, false, false, $before, $after, $style);
                 $newRemainder = $remainder = $before . ltrim($after, ".,' ");
                 $booktitle = rtrim($booktitle, ', ');
 
@@ -2096,10 +2115,19 @@ class Converter
                                     $remainder = '';
                                 }
                             // $remainder ends with pattern like 'city: publisher'; take booktitle to be preceding string
-                            } elseif (preg_match('/( ([^ ]*): ([^:.,]*)$)/', $remainder, $matches)) {
+                            } elseif (! empty($cityString) && preg_match('/( ' . $cityString . ': (?P<publisher>[^:.,]*)\.?$)/', $remainder, $matches)) {
                                 $booktitle = Str::before($remainder, $matches[0]);
                                 $this->setField($item, 'booktitle', trim($booktitle, ', '), 'setField 123');
-                                $this->verbose('booktitle case 14');
+                                // Eliminate space between letters in US state abbreviation containing periods.
+                                $cityString = preg_replace('/ ([A-Z]\.) ([A-Z]\.)/', ' $1' . '$2', $cityString);
+                                $this->setField($item, 'address', $cityString, 'setField 124');
+                                $this->setField($item, 'publisher', trim($matches['publisher'], ' .'), 'setField 125');
+                                $this->verbose('booktitle case 14a');
+                                $remainder = '';
+                            } elseif (preg_match('/( ([^ ]*): ([^:.,]*)$)/', $remainder, $matches)) {
+                                $booktitle = Str::before($remainder, $matches[0]);
+                                $this->setField($item, 'booktitle', trim($booktitle, ', '), 'setField 126');
+                                $this->verbose('booktitle case 14b');
                                 $remainder = $matches[0];
                             } else {
                                 $words = explode(" ", $remainder);
@@ -2653,8 +2681,9 @@ class Converter
             }
         }
 
-        // Common pattern for journal article
-        if (preg_match('/^(?P<title>[^\.]+ (?P<lastWord>[a-zA-Z]+))\. (?P<remainder>[a-zA-Z\., ]{5,30} [0-9;():\-.,\. ]*)$/', $remainder, $matches)) {
+        // Common pattern for journal article.  (Allow year at end of title, but no other pattern with digits, otherwise whole string,
+        // including journal name and volume, number, and page info may be included.)
+        if (preg_match('/^(?P<title>[^\.]+ (?P<lastWord>([a-zA-Z]+|(19|20)[0-9]{2})))\. (?P<remainder>[a-zA-Z\.,\\\' ]{5,30} [0-9;():\-.,\. ]*)$/', $remainder, $matches)) {
             $lastWord = $matches['lastWord'];
             // Last word has to be in the dictionary (proper nouns allowed) and not an excluded word, OR start with a lowercase letter
             // That excludes cases in which the period ends an abbreviation in a journal name (like "A theory of something, Bull. Amer.").
@@ -3469,7 +3498,7 @@ class Converter
                         $oneWordAuthor = true;
                         $itemYear = $year; // because $year is recalculated below
                         $done = true;
-                    } elseif ($this->getQuotedOrItalic($remainder, true, false, $before, $after)) {
+                    } elseif ($this->getQuotedOrItalic($remainder, true, false, $before, $after, $style)) {
                         $this->verbose('[convertToAuthors 7]');
                         $nameComponent = $word;
                         $fullName .= ' and ' . trim($nameComponent, '.');
@@ -3684,7 +3713,7 @@ class Converter
                 //     ! preg_match('/[0-9]/', $remainingWords[2]));
                 // }
 
-                if ($determineEnd && $text = $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after)) {
+                if ($determineEnd && $text = $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after, $style)) {
                     if (in_array($text, ['et al', 'et al.', 'et. al.'])) {
                         $this->verbose('[convertToAuthors 25]');
                         $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
@@ -3803,7 +3832,7 @@ class Converter
                                 && (
                                     $this->getYear($words[$i + 2], $trash, $trash1, $trash2, $trash3, true, true, $language)
                                     ||
-                                    $this->getQuotedOrItalic($words[$i + 2], true, false, $before, $after)
+                                    $this->getQuotedOrItalic($words[$i + 2], true, false, $before, $after, $style)
                                 )) {
                             $this->verbose('[convertToAuthors 31]');
                             $fullName .= ',';
@@ -3874,11 +3903,13 @@ class Converter
       * @param $italicsOnly boolean (if true, get only italic string, not quoted string)
       * @param $before part of $string preceding left delimiter and matched text
       * @param $after part of $string following matched text and right delimiter
+      * @param $style style detected: 'none', 'italic', or 'quoted'
       * @return $matchedText: quoted or italic substring
       */
-    private function getQuotedOrItalic(string $string, bool $start, bool $italicsOnly, string|null &$before, string|null &$after): string|bool
+    private function getQuotedOrItalic(string $string, bool $start, bool $italicsOnly, string|null &$before, string|null &$after, string|null &$style): string|bool
     {
         $matchedText = $quotedText = $beforeQuote = $afterQuote = '';
+        $style = 'none';
 
         /* 
          * Rather than using the following loop, could use regular expressions.  Versions of expressions
@@ -4003,21 +4034,24 @@ class Converter
             }
         } elseif ($quotedText && $italicText) {
             $quoteFirst = strlen($beforeQuote) < strlen($beforeItalics);
+            $style = $quoteFirst ? 'quoted' : 'italic';
             $before =  $quoteFirst ? $beforeQuote : $beforeItalics;
-            $after= $quoteFirst ? $afterQuote : $afterItalics;
-            if (!$start || strlen($before) == 0) {
+            $after = $quoteFirst ? $afterQuote : $afterItalics;
+            if (! $start || strlen($before) == 0) {
                 $matchedText = $quoteFirst ? $quotedText : $italicText;
             }
         } elseif ($quotedText) {
+            $style = 'quoted';
             $before = $beforeQuote;
             $after = $afterQuote;
-            if (!$start || strlen($before) == 0) {
+            if (! $start || strlen($before) == 0) {
                 $matchedText = $quotedText;
             }
         } elseif ($italicText) {
+            $style = 'italic';
             $before = $beforeItalics;
             $after = $afterItalics;
-            if (!$start || strlen($before) == 0) {
+            if (! $start || strlen($before) == 0) {
                 $matchedText = $italicText;
             }
         }
@@ -4082,9 +4116,9 @@ class Converter
         $remains = $string;
         $months = $this->monthsRegExp[$language];
 
-        if (Str::startsWith($remains, ['(n.d.)', '[n.d.]'])) {
-            $remains = substr($remains, 6);
-            $year = 'n.d.';
+        if (preg_match('/^(?P<year>[\(\[]n\. ?d\.[\)\]]|[\(\[]s\. ?f\.[\)\]]|forthcoming)(?P<remains>.*)$/i', $remains, $matches0)) {
+            $remains = $matches0['remains'];
+            $year = trim($matches0['year'], '[]()');
             return $year;
         }
 
@@ -4627,7 +4661,7 @@ class Converter
     {
         if ($italicStart) {
             // (string) on next line to stop VSCode complaining
-            $italicText = (string) $this->getQuotedOrItalic($remainder, true, false, $before, $after);
+            $italicText = (string) $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
             if (preg_match('/ [0-9]/', $italicText)) {
                 // Seems that more than just the journal name is included in the italics/quotes, so forget the quotes/italics
                 // and continue
@@ -4643,7 +4677,7 @@ class Converter
         if ($pubInfoStartsWithForthcoming && !$containsDigit) {
             // forthcoming at start
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
-            $journal = $this->getQuotedOrItalic($result['content'], true, false, $before, $after);
+            $journal = $this->getQuotedOrItalic($result['content'], true, false, $before, $after, $style);
             if (!$journal) {
                 $journal = $result['content'];
             }

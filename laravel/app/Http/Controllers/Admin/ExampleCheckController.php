@@ -47,6 +47,8 @@ class ExampleCheckController extends Controller
         $results = [];
         $allCorrect = true;
 
+        $previousAuthor = null;
+
         foreach ($examples as $example) {
 
             $correctType = $correctContent = true;
@@ -58,7 +60,8 @@ class ExampleCheckController extends Controller
                 $conversion->char_encoding = 'utf8leave';
             }
 
-            $output = $this->converter->convertEntry($example->source, $conversion, $example->language, $example->char_encoding);
+            $output = $this->converter->convertEntry($example->source, $conversion, $example->language, $example->char_encoding, $previousAuthor);
+            $previousAuthor = $output['item']->author ?? null;
             
             $unidentified = '';
             if (isset($output['item']->unidentified)) {

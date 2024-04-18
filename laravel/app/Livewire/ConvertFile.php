@@ -250,13 +250,15 @@ class ConvertFile extends Component
         // If file is not already a BibTeX file and item_separator and encoding seem correct, perform the conversion
         if (! $this->fileError && $this->itemSeparatorError == false && count($this->unknownEncodingEntries) == 0) {
             $convertedEntries = [];
+            $previousAuthor = null;
             foreach ($entries as $j => $entry) {
                 // Some files start with \u{FEFF}, but this character is now converted to space earlier in this method
                 if ($entry) {
                     // $convertedEntries is array with components 
                     // 'source', 'item', 'itemType', 'label', 'warnings', 'notices', 'details', 'scholarTitle'.
                     // 'label' (which depends on whole set of converted items) is updated later
-                    $convertedEntry = $this->converter->convertEntry($entry, $conversion);
+                    $convertedEntry = $this->converter->convertEntry($entry, $conversion, null, null, $previousAuthor);
+                    $previousAuthor = $convertedEntry['item']->author ?? null;
                     $convertedEntry['detected_encoding'] = $encodings[$j];
                     if ($convertedEntry) {
                         $convertedEntries[$j] = $convertedEntry;
