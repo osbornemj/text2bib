@@ -37,7 +37,7 @@ class ConvertFileForm extends Form
 
     #[Rule('required', message: 'Please choose an option')]    
     #[Rule('string', message: 'The value of this field must be a string')]    
-    #[Rule('in:utf8,utf8leave', message: 'The value of this field must be "utf8" or "utf8leave"')]    
+    #[Rule('in:utf8,utf8leave,utf8force', message: 'The value of this field must be "utf8", "utf8leave", or "utf8force"')]    
     public $char_encoding;
 
     #[Rule('required', message: 'Please choose an option')]    

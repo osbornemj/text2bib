@@ -156,16 +156,26 @@
         <x-input-label for="char_encoding" :value="__('Convert accented characters to TeX?')" class="mt-4" />
     
         <x-radio-input wire:model="uploadForm.char_encoding" value="utf8leave" class="peer/utf8leave" />
-        <x-value-label for="l" class="peer-checked/utf8leave:text-blue-600 ml-1" :value="__('No')" />
+        <x-value-label for="utf8leave" class="peer-checked/utf8leave:text-blue-600 ml-1" :value="__('No')" />
 
         <x-radio-input wire:model="uploadForm.char_encoding" value="utf8" class="peer/utf8 ml-4" /> 
         <x-value-label for="utf8" class="peer-checked/utf8:text-blue-600 ml-1" :value="__('Yes')" />
 
+        <x-radio-input wire:model="uploadForm.char_encoding" value="utf8force" class="peer/utf8force ml-4" /> 
+        <x-value-label for="utf8force" class="peer-checked/utf8force:text-blue-600 ml-1" :value="__('Force UTF-8')" />
+
         <x-input-error :messages="$errors->get('uploadForm.char_encoding')" class="mt-2" />
 
-        <div class="mt-2 dark:text-gray-300">
-            If you are using biblatex to process your BibTeX file, you can safely choose "No". 
-        </div>
+        <x-option-info class="peer-checked/utf8leave:block">
+            In many modern TeX systems, you can safely choose this setting.
+        </x-option-info>
+        <x-option-info class="peer-checked/utf8:block">
+            Many, though not all, accented letters will be translated to TeX.  For example, é will be translated to {\'e}.  Use this setting if your TeX system does not handle UTF-8.  (If you want me to make additions to the list of characters that are translated, post a comment.)
+        </x-option-info>
+        <x-option-info class="peer-checked/utf8force:block">
+            The conversion will be performed under the assumption that the character encoding is UTF-8 even if PHP says it is not.  This setting may be useful in rare cases in which PHP misclassifies the encoding.
+        </x-option-info>
+
     </div>
 
     <div>

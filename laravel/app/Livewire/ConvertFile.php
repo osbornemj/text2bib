@@ -149,7 +149,7 @@ class ConvertFile extends Component
         if ($redo) {
             $conversion->item_separator = 'cr';
         }
-        if ($conversion->language != 'en') {
+        if ($conversion->language != 'en' && $conversion->char_encoding == 'utf8') {
             $conversion->char_encoding = 'utf8leave';
         }
         $conversion->version = $this->version;
@@ -223,15 +223,19 @@ class ConvertFile extends Component
             $this->notUtf8 = false;
             $this->convertedEncodingCount = 0;
             foreach ($entries as $i => $entry) {
-                $encodings[$i] = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
-                if (in_array($encodings[$i], ['ISO-8859-1', 'Windows-1252'])) {
-                    $entries[$i] = mb_convert_encoding($entry, 'UTF-8', $encodings[$i]);
-                    $this->convertedEncodingCount++;
-                    $this->notUtf8 = true;
-                } elseif ($encodings[$i] != 'UTF-8') {
-                    // Need to convert to UTF-8 because Livewire uses json encoding
-                    // (and will crash if non-utf-8 string is passed to it)
-                    $this->unknownEncodingEntries[] = mb_convert_encoding($entry, "UTF-8");
+                if ($conversion->char_encoding == 'utf8force') {
+                    $encodings[$i] = 'UTF-8';
+                } else {
+                    $encodings[$i] = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+                    if (in_array($encodings[$i], ['ISO-8859-1', 'Windows-1252'])) {
+                        $entries[$i] = mb_convert_encoding($entry, 'UTF-8', $encodings[$i]);
+                        $this->convertedEncodingCount++;
+                        $this->notUtf8 = true;
+                    } elseif ($encodings[$i] != 'UTF-8') {
+                        // Need to convert to UTF-8 because Livewire uses json encoding
+                        // (and will crash if non-utf-8 string is passed to it)
+                        $this->unknownEncodingEntries[] = mb_convert_encoding($entry, "UTF-8");
+                    }
                 }
             }
 
