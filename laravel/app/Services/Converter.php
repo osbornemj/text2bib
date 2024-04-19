@@ -4968,7 +4968,7 @@ class Converter
         $string = str_replace("\\textquotedblright ", "''", $string);
         $string = str_replace("\\textquotedblright", "''", $string);
 
-        if ($charEncoding == 'utf8' || $charEncoding == 'utf8leave') {
+        if ($charEncoding == 'utf8' || $charEncoding == 'utf8leave' || $charEncoding == 'utf8force') {
             // Replace non-breaking space with regular space
             $string = str_replace("\xC2\xA0", " ", $string);
             // Replace zero-width non-breaking space with regular space
