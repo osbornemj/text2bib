@@ -4999,6 +4999,17 @@ class Converter
             // ‘ and ’
             $string = str_replace("\xE2\x80\x98", "``", $string);
             $string = str_replace("\xE2\x80\x99", "''", $string);
+
+            $string = str_replace("\xE1\x81\x80", "0", $string);
+            $string = str_replace("\xE1\x81\x81", "1", $string);
+            $string = str_replace("\xE1\x81\x82", "2", $string);
+            $string = str_replace("\xE1\x81\x83", "3", $string);
+            $string = str_replace("\xE1\x81\x84", "4", $string);
+            $string = str_replace("\xE1\x81\x85", "5", $string);
+            $string = str_replace("\xE1\x81\x86", "6", $string);
+            $string = str_replace("\xE1\x81\x87", "7", $string);
+            $string = str_replace("\xE1\x81\x88", "8", $string);
+            $string = str_replace("\xE1\x81\x89", "9", $string);
         }
 
         if ($charEncoding == 'utf8') {

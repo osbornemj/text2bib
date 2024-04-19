@@ -8,8 +8,10 @@ line endings = {{ $conversion->line_endings }}
 <br/>
 @if ($conversion->char_encoding == 'utf8')
     convert accents to TeX
-@else
+@elseif ($conversion->char_encoding == 'utf8leave')
     do not convert accents to TeX
+@elseif ($conversion->char_encoding == 'utf8force')
+    assume UTF-8 even if PHP says encoding is not UTF-8
 @endif
 &nbsp;&bull;&nbsp;
 {{ $conversion->percent_comment ? '% = comment' : '% != comment' }}
