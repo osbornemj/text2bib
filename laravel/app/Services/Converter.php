@@ -123,7 +123,7 @@ class Converter
         
         $this->names = Name::all()->pluck('name')->toArray();
 
-        $this->nameSuffixes = ['Jr.', 'Sr.', 'III'];
+        $this->nameSuffixes = ['Jr', 'Sr', 'III'];
 
         // Introduced to facilitate a variety of languages, but the assumption that the language of the 
         // citation --- though not necessarily of the reference itself --- is English pervades the code.
@@ -1077,7 +1077,8 @@ class Converter
             ! $italicStart &&
             ! $containsInteriorVolume &&
             ! $containsPageRange &&
-            ! $containsJournalName
+            ! $containsJournalName &&
+            ! Str::contains($item->url, ['journal'])
              // && $itemYear && $itemMonth && $itemDay))
         ) {
             $this->verbose("Item type case 0");
@@ -1108,7 +1109,7 @@ class Converter
         } elseif ($containsWorkingPaper || ! $remainder) {
             $this->verbose("Item type case 3");
             $itemKind = 'unpublished';
-        } elseif ($containsEditors && ( $inStart || $containsPageRange) && ! $containsProceedings) {
+        } elseif ($containsEditors && ($inStart || $containsPageRange) && ! $containsProceedings) {
             $this->verbose("Item type case 4");
             $itemKind = 'incollection';
         } elseif ($containsEditors && ! $containsProceedings) {
@@ -1129,7 +1130,7 @@ class Converter
         } elseif ($containsIsbn || (isset($this->italicTitle) && (($containsCity || $containsPublisher) || isset($item->editor)))) {
             $this->verbose("Item type case 8");
             $itemKind = 'book';
-        } elseif (!$containsIn && ($pubInfoStartsWithForthcoming || $pubInfoEndsWithForthcoming)) {
+        } elseif (! $containsIn && ($pubInfoStartsWithForthcoming || $pubInfoEndsWithForthcoming)) {
             $this->verbose("Item type case 9");
             $itemKind = 'article';
         } elseif ($endsWithInReview) {
@@ -1138,7 +1139,7 @@ class Converter
         } elseif ($inStart) {
             $this->verbose("Item type case 11");
             $itemKind = 'incollection';
-            if (!$this->itemType && !$itemKind) {
+            if (! $this->itemType && !$itemKind) {
                 $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [3]";
             }
         } elseif ($containsPublisher) {
@@ -3635,8 +3636,9 @@ class Converter
                 // 2023.8.2: trimRightBrace removed to deal with conversion of example containing name Oblo{\v z}insk{\' y}
                 // However, it must have been included here for a reason, so probably it should be included under
                 // some conditions.
-                if (Str::startsWith($word, $this->nameSuffixes)) {
+                if (in_array(rtrim($word, '.,'), $this->nameSuffixes)) {
                     $this->verbose('[convertToAuthors 20]');
+                    $fullName = $this->formatAuthor($fullName);
                     $nWords = explode(' ', trim($fullName, ' '));
                     $nameWords = [];
                     foreach ($nWords as $nWord) {
@@ -3653,7 +3655,7 @@ class Converter
                         $this->verbose('[convertToAuthors 22]');
                         $fullName = ' ';
                         // Put Jr. after the last name
-                        $k = 0;
+                        $k = -1;
                         foreach ($nameWords as $j => $nameWord) {
                             if (substr($nameWord, -1) == ',') {
                                 $fullName .= $nameWord . ' ' . rtrim($word, ',') . ',';
@@ -3661,12 +3663,26 @@ class Converter
                                 break;
                             }
                         }
-                        // Put the rest of the names after Jr.
-                        foreach ($nameWords as $m => $nameWord) {
-                            if ($m != $k) {
-                                $fullName .= ' ' . $nameWord;
+                        if ($k >= 0) {
+                            // Put the rest of the names after Jr.
+                            foreach ($nameWords as $m => $nameWord) {
+                                if ($m != $k) {
+                                    $fullName .= ' ' . $nameWord;
+                                }
                             }
                         }
+
+                        // No comma at end of any of $nameWords
+                        if ($k == -1) {
+                            $n = count($nameWords);
+                            $fullName .= $nameWords[$n-1] . ' '. rtrim($word, ',') . ',';
+                            foreach ($nameWords as $i => $nameWord) {
+                                if ($i < $n - 1) {
+                                    $fullName .= ' ' . $nameWord;
+                                }
+                            }
+                        }
+
                         $namePart = 0;
                         $authorIndex++;
                     }
@@ -3675,8 +3691,9 @@ class Converter
                     $this->verbose('[convertToAuthors 23]');
                     // Don't rtrim '}' because it could be part of the name: e.g. Oblo{\v z}insk{\' y}.
                     // Don't trim comma from word before Jr. etc, because that is valuable info
-                    $trimmedWord = (isset($words[$i+1]) && Str::startsWith($words[$i+1], $this->nameSuffixes)) ? $word : rtrim($word, ',;');
+                    $trimmedWord = (isset($words[$i+1]) && in_array(rtrim($words[$i+1], '.,)'), $this->nameSuffixes)) ? $word : rtrim($word, ',;');
                     $nameComponent = $this->spaceOutInitials($trimmedWord);
+                    $nameComponent = preg_replace('/([a-z]{2})\.$/', '$1', $nameComponent);
                     $fullName .= " " . $nameComponent;
                 }
 
@@ -3751,12 +3768,12 @@ class Converter
                             (
                                 $this->inDict(trim($remainingWords[0], ',')) 
                                 && ! $this->isInitials(trim($remainingWords[0], ','))
-                                && ! in_array(trim($remainingWords[0], ','), $this->nameSuffixes)
+                                && ! in_array(trim($remainingWords[0], '.,'), $this->nameSuffixes)
                                 && ! preg_match('/[0-9]/', $remainingWords[0])
                                 && ! empty($remainingWords[1]) 
                                 && $this->inDict($remainingWords[1]) 
                                 && ! $this->isInitials(trim($remainingWords[1], ','))
-                                && ! in_array(trim($remainingWords[1], ','), $this->nameSuffixes)
+                                && ! in_array(trim($remainingWords[1], '.,'), $this->nameSuffixes)
                                 && ! preg_match('/[0-9]/', $remainingWords[1])
 //                                && strtolower($remainingWords[1][0]) == $remainingWords[1][0] 
                                 && $remainingWords[1] != '...' 
@@ -3765,7 +3782,7 @@ class Converter
                                     ||
                                     ($this->inDict($remainingWords[2])
                                     && ! $this->isInitials(trim($remainingWords[2], ','))
-                                    && ! in_array(trim($remainingWords[2], ','), $this->nameSuffixes)
+                                    && ! in_array(trim($remainingWords[2], '.,'), $this->nameSuffixes)
                                     && ! preg_match('/[0-9]/', $remainingWords[2])
                                     )
                                 )
@@ -3791,6 +3808,8 @@ class Converter
                     // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
                     // at comma.
                     //dd($remainingWords[0], $this->inDict($remainingWords[0]), in_array($remainingWords[0], $this->dictionaryNames));
+                    //$nameComponent = $this->trimRightBrace($this->spaceOutInitials(rtrim($word, '.')));
+
                     $this->verbose('[convertToAuthors 28]');
                     $done = true;
                     $this->addToAuthorString(11, $authorstring, $this->formatAuthor($fullName));
@@ -3917,7 +3936,7 @@ class Converter
          * because of the need to exclude escaped quotes.  I find the loop easier to understand and maintain.
          * NOTE: cleanText replaces French guillemets and other quotation marks with `` and ''.
         */
-        if (!$italicsOnly) {
+        if (! $italicsOnly) {
             $skip = false;
             $begin = '';
             $end = false;
@@ -3941,9 +3960,15 @@ class Converter
                         $quotedText .= $char;
                     }
                 } elseif ($begin == '`' || $begin == "'") {
-                    if ($char == "'" && $chars[$i-1] != '\\' 
-                                && (! isset($chars[$i+1]) || ! in_array(strtolower($chars[$i+1]), range('a', 'z')))) {
-                        $end = true;
+                    if ($char == "'" && $chars[$i-1] != '\\') {
+                        if (
+                            ! isset($chars[$i+1]) || ($chars[$i+1] != "'" && ! in_array(strtolower($chars[$i+1]), range('a', 'z')))
+                           ) {
+                            $end = true;
+                        } else {
+                            $quotedText .= $char . $chars[$i+1];
+                            $skip = true;
+                        }
                     } else {
                         $quotedText .= $char;
                     }
@@ -4560,7 +4585,7 @@ class Converter
         $nameString = str_replace('..', '.', $nameString);
 
         $namesRaw = explode(' ', $nameString);
-        
+
         // $initialsStart is index of component (a) that is initials and (b) after which all components are initials
         // initials are any string for which all letters are u.c. and at most two characters that are
         // letter or period
@@ -4746,7 +4771,7 @@ class Converter
         $volumeWordLetterRx = '('. $this->volumeRegExp . ')(?P<vol>' . $letterNumber . ')';
         $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRange . ')';
         $pagesRx = '('. $pages . ')?(?P<pp>' . $numberRange . ')';
-        $punc1 = '(}? |, ?| ?: ?| ?\(\(?)';
+        $punc1 = '(}? |, ?| ?: ?|,? ?\(\(?)';
         $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
 
         // e.g. Volume 6, No. 3, pp. 41-75 OR 6(3) 41-75

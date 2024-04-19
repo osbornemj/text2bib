@@ -3652,7 +3652,7 @@ class ExampleSeeder extends Seeder
                             'source' => 'HOSTER HA, ZANES RP Jr, VON HAAM E. Studies in Hodgkin\'s syndrome; the association of viral hepatitis and Hodgkin\'s disease; a preliminary report. Cancer Res. 1949 Aug;9(8):473-80. PMID: 18134519. ',
                             'type' => 'article',
                             'bibtex' => [
-                                'author' => 'Hoster, H. A. and Zanes R. P. Jr and Von Haam, E.',
+                                'author' => 'Hoster, H. A. and Zanes, Jr, R. P. and Von Haam, E.',
                                 'title' => 'Studies in Hodgkin\'s syndrome; the association of viral hepatitis and Hodgkin\'s disease; a preliminary report',
                                 'year' => '1949',
                                 'month' => 'August',
@@ -3978,12 +3978,13 @@ class ExampleSeeder extends Seeder
                                 'year' => '2011',
                                 'pages' => '216-239',
                                 'address' => 'Ramat Gan',
-                                'publisher' => 'Bar Ilan University Press',
+                                'publisher' => 'Bar-Ilan University Press',
+                                'booktitle' => 'Sages of the Mishnah and the Talmud: Teachings, Activities and Leadership',
                                 ]
                         ],
                         [
                             'source' => ' Gilbert, Maurice. 2002. ‘God, Sin and Mercy: Sirach 15:11–18:14’ In Ben Sira’s God: Proceedings of the International Ben Sira Conference: Durham – Ushaw College 2001, edited by R. Egger Wenzel, 118–135. Berlin: de Gruyter. ',
-                            'type' => 'incollection',
+                            'type' => 'inproceedings',
                             'bibtex' => [
                                 'author' => 'Gilbert, Maurice',
                                 'title' => 'God, Sin and Mercy: Sirach 15:11--18:14',
@@ -4024,7 +4025,7 @@ class ExampleSeeder extends Seeder
                             'type' => 'article',
                             'bibtex' => [
                                 'author' => 'Petuchowski, Jakob J.',
-                                'title' => 'The Concept of “Teshuvah” in the Bible and the Talmud',
+                                'title' => 'The Concept of ``Teshuvah\'\' in the Bible and the Talmud',
                                 'journal' => 'Judaism',
                                 'year' => '1968',
                                 'volume' => '17',
@@ -4496,7 +4497,7 @@ class ExampleSeeder extends Seeder
                             'source' => 'M. Campbell, A. J. Hoane Jr, and F.-h. Hsu. Deep blue. Artificial intelligence, 134(1-2):57–83, 2002.',
                             'type' => 'article',
                             'bibtex' => [
-                                'author' => 'M. Campbell and A. J. Hoane Jr and F.-h. Hsu',
+                                'author' => 'M. Campbell and Hoane Jr, A. J. and F.-h. Hsu',
                                 'title' => 'Deep blue',
                                 'journal' => 'Artificial intelligence',
                                 'year' => '2002',
@@ -4792,7 +4793,19 @@ class ExampleSeeder extends Seeder
                                     'volume' => '15',
                                     'pages' => '316-329',
                                     ]
-                            ],                       
+                            ],
+                            [
+                                'source' => 'Anderson, E., Oliver, R.L., 1987. Perspectives on Behavior-BasedVersus Outcome-Based Salesforce Control Systems. J. Market. 51, 76–88. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Anderson, E. and Oliver, R. L.',
+                                    'title' => 'Perspectives on Behavior-BasedVersus Outcome-Based Salesforce Control Systems',
+                                    'journal' => 'J. Market.',
+                                    'year' => '1987',
+                                    'volume' => '51',
+                                    'pages' => '76-88',
+                                    ]
+                            ],                                                   
                         
                 ];
 
