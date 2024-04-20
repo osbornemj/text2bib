@@ -867,7 +867,7 @@ class Converter
             if (! $year) {
                 // Space prepended to $remainder in case it starts with year, because getYear requires space 
                 // (but perhaps could be rewritten to avoid it).
-                $year = $this->getYear(' '. $remainder, $newRemainder, $month, $day, $date, false, true, $language);
+                $year = $this->getYear(' '. $remainder, $newRemainder, $month, $day, $date, false, true, false, $language);
             }
 
             if ($year) {
@@ -3454,7 +3454,7 @@ class Converter
                     $warnings[] = "String for editors detected after only one part of name.";
                 }
                 // Check for year following editors
-                if ($year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, false, $language)) {
+                if ($year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, false, true, $language)) {
                     $remainder = $remains;
                     $this->verbose("Year detected, so ending name string (word: " . $word .")");
                 } else {
@@ -3488,7 +3488,7 @@ class Converter
                         if (preg_match('/^(18|19|20)[0-9]{2}$/', $remainingWords[0])) {
                             // If first remaining word is a year **with no punctuation**, assume it starts title
                         } else {
-                            $year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, true, $language);
+                            $year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, true, true, $language);
                             $remainder = trim($remains);
                         }
                     }
@@ -3526,7 +3526,7 @@ class Converter
                     // in which case we may have an entry like "Economist. 2005. ..."
                     $remainder = implode(" ", $remainingWords);
                     $this->verbose('[c2a getYear 3]');
-                    if ($year = $this->getYear($remainder, $remainder, $trash1, $trash2, $trash3, true, false, $language)) {
+                    if ($year = $this->getYear($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language)) {
                         $this->verbose('[convertToAuthors 6]');
                         // Don't use spaceOutInitials in this case, because string is not initials.  Could be
                         // something like autdiogames.net, in which case don't want to put space before period.
@@ -3572,7 +3572,7 @@ class Converter
                 $this->verbose('[c2a getYear 4]');
                 $this->verbose('[convertToAuthors 10]');
                 if (! isset($year) || ! $year) {
-                    if ($year = $this->getYear($remainder, $remains, $month, $day, $trash3, true, true, $language)) {
+                    if ($year = $this->getYear($remainder, $remains, $month, $day, $trash3, true, true, true, $language)) {
                         $remainder = $remains;
                         $this->verbose("Remains: " . $remains);
                     }
@@ -3599,7 +3599,7 @@ class Converter
                     $fullName .= ' ' . $word;
                     $remainder = implode(" ", $remainingWords);
                     $this->addToAuthorString(6, $authorstring, ' ' . ltrim($this->formatAuthor($fullName)));
-                    if ($year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, true, $language)) {
+                    if ($year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, true, true, $language)) {
                         $remainder = $remains;
                         $this->verbose("Year detected");
                     }
@@ -3661,7 +3661,7 @@ class Converter
                             $namePart++;
                         }
                         // Following occurs in case of name that is a single string, like "IMF"
-                        if ($year = $this->getYear(implode(" ", $remainingWords), $remains, $trash1, $trash2, $trash3, true, true, $language)) {
+                        if ($year = $this->getYear(implode(" ", $remainingWords), $remains, $trash1, $trash2, $trash3, true, true, true, $language)) {
                             $this->verbose('[c2a getYear 6]');
                             $this->verbose('[convertToAuthors 19]');
                             $remainder = $remains;
@@ -3790,7 +3790,7 @@ class Converter
                         $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
                         $case = 7;
                     }
-                } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), $remainder, $month, $day, $date, true, true, $language)) {
+                } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), $remainder, $month, $day, $date, true, true, true, $language)) {
                     $this->verbose('[convertToAuthors 14a] Ending author string: word is "'. $word . '", year is next.');
                     $done = true;
                     $fullName = ($fullName[0] != ' ' ? ' ' : '') . $fullName;
@@ -3865,8 +3865,8 @@ class Converter
                             &&
                             (
                                 ($this->isInitials($words[$i + 1]) && $namePart == 0)
-                                || $this->getYear($words[$i + 2], $trash, $trash1, $trash2, $trash3, true, true, $language)
-                                || ($this->isInitials($words[$i + 2]) && $this->getYear($words[$i + 3], $trash, $trash1, $trash2, $trash3, true, true, $language))
+                                || $this->getYear($words[$i + 2], $trash, $trash1, $trash2, $trash3, true, true, true, $language)
+                                || ($this->isInitials($words[$i + 2]) && $this->getYear($words[$i + 3], $trash, $trash1, $trash2, $trash3, true, true, true, $language))
                             )
                         ) {
                             $fullName .= ',';
@@ -3890,7 +3890,7 @@ class Converter
                         $this->verbose('[c2a getYear 9]');
                         if (!$prevWordHasComma && $i + 2 < count($words)
                                 && (
-                                    $this->getYear($words[$i + 2], $trash, $trash1, $trash2, $trash3, true, true, $language)
+                                    $this->getYear($words[$i + 2], $trash, $trash1, $trash2, $trash3, true, true, true, $language)
                                     ||
                                     $this->getQuotedOrItalic($words[$i + 2], true, false, $before, $after, $style)
                                 )) {
@@ -4189,11 +4189,13 @@ class Converter
      * @param boolean $allowMonth = false (allow string like "(April 1998)" or "(April-May 1998)" or "April 1998:"
      * @return string year
      */
-    private function getYear(string $string, string|null &$remains, string|null &$month, string|null &$day, string|null &$date, bool $start = true, bool $allowMonth = false, string $language = 'en'): string
+    private function getYear(string $string, string|null &$remains, string|null &$month, string|null &$day, string|null &$date, bool $start = true, bool $allowMonth = false, bool $allowEarlyYears = false, string $language = 'en'): string
     {
         $year = '';
         $remains = $string;
         $months = $this->monthsRegExp[$language];
+
+        $centuries = $allowEarlyYears ? '13|14|15|16|17|18|19|20' : '18|19|20';
 
         if (preg_match('/^(?P<year>[\(\[]n\. ?d\.[\)\]]|[\(\[]s\. ?f\.[\)\]]|forthcoming)(?P<remains>.*)$/i', $remains, $matches0)) {
             $remains = $matches0['remains'];
@@ -4204,15 +4206,15 @@ class Converter
         if ($allowMonth) {
             if (
                 // (year month) or (year month day) (or without parens or with brackets)
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(18|19|20)[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]?/i', $string, $matches1)
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]?/i', $string, $matches1)
                 ||
                 // (day month year) or (month year) (or without parens or with brackets)
                 // The optional "de" between day and month and between month and year is for Spanish
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(18|19|20)[0-9]{2}))[\)\]]?/i', $string, $matches1)
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
                 ||
                 // (day monthNumber year) or (monthNumber year) (or without parens or with brackets)
                 // The optional "de" between day and month and between month and year is for Spanish
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>[0-9]{1,2}) ?(de )?(?P<year>(18|19|20)[0-9]{2}))[\)\]]?/i', $string, $matches1)
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>[0-9]{1,2}) ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
                 ) {
                 $year = $matches1['year'] ?? null;
                 $month = $matches1['month'] ?? null;
@@ -4226,11 +4228,11 @@ class Converter
         if (!$start && $allowMonth) {
             if (
                 // <year> <month> <day>?
-                preg_match('/[ \(](?P<date>(?P<year>(18|19|20)[0-9]{2}) (?P<month>' . $months . ')( ?(?P<day>[0-3][0-9]))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>' . $months . ')( ?(?P<day>[0-3][0-9]))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
                 ||
                 // <day>? <month> <year>
                 // The optional "de" between day and month and between month and year is for Spanish
-                preg_match('/[ \(](?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(18|19|20)[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                preg_match('/[ \(](?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
                 ) {
                 $year = $matches2['year'][0] ?? null;
                 $month = $matches2['month'][0] ?? null;
@@ -4251,7 +4253,7 @@ class Converter
         $monthRegExp = '((' . $months . ')([-\/](' . $months . '))?)?';
         // In following line, [1-2]?[0-9]? added to allow second year to have four digits.  Should be (18|19|20), but that
         // would mean adding a group, which would require the recalculation of all the indices ...
-        $yearRegExp = '((18|19|20)([0-9]{2})(-[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
+        $yearRegExp = '((' . $centuries . ')([0-9]{2})(-[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
         $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
 
         // Require space or ',' in front of year if search is not restricted to start or in parens or brackets,
