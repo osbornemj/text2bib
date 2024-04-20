@@ -138,6 +138,16 @@ class Converter
                 'eds.' => 'eds.',
                 'edited by' => 'edited by'
                 ],
+            'my' =>
+                [
+                'and' => 'နှင့်',
+                'in' => 'in',
+                'editor' => 'editor',
+                'editors' => 'editors',
+                'ed.' => 'ed.',
+                'eds.' => 'eds.',
+                'edited by' => 'edited by'
+                ],
             'fr' =>
                 [
                 'and' => 'et',
@@ -183,6 +193,8 @@ class Converter
 
         $this->ordinals = [
             'en' =>
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
+            'my' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
             'fr' =>
                 ['1er', '2e', '3e', '4e', '5e', '6e', '7e'],
@@ -234,9 +246,9 @@ class Converter
         $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on |^.* meeting |^.* conference proceedings|^.* proceedings of the (.*) conference|^proc\..*(conf\.|conference)?|^.* workshop |^actas del )';
         $this->proceedingsExceptions = '^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.';
 
-        $this->thesisRegExp = '[ \(\[]?([Tt]hesis|[Tt]esis|[Dd]issertation)';
+        $this->thesisRegExp = '[ \(\[]?([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse)';
         $this->masterRegExp = '[Mm]aster(\'s)?|MA|M\.A\.';
-        $this->phdRegExp = 'PhD|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral';
+        $this->phdRegExp = 'Ph[Dd]|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral';
         $this->fullThesisRegExp = '((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]issertation)|Thèse de doctorat|Tesis doctoral)';
 
         $this->inReviewRegExp1 = '/[Ii]n [Rr]eview\.?\)?$/';
@@ -261,6 +273,7 @@ class Converter
 
         $this->retrievedFromRegExp1 = [
             'en' => '(Retrieved from |Available( at)?:? )',
+            'my' => '(Retrieved from |Available( at)?:? )',
             'fr' => '(Récupéré sur |Disponible( à)?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
             'pt' => '(Disponível( em)?:? |Obtido de:? )',
@@ -271,6 +284,7 @@ class Converter
         $dateRegExp = '[a-zA-Z0-9,/\-\. ]{8,18}';
         $this->retrievedFromRegExp2 = [
             'en' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
+            'my' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
             'fr' => '[Rr]écupéré (?P<date1>' . $dateRegExp . ' )?sur |[Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?(à|sur) ',
             'es' => '[Oo]btenido (?P<date1>' . $dateRegExp . ' )?de |[Aa]ccedido (?P<date2>' . $dateRegExp . ' )?en ',
             'pt' => '[Oo]btido (?P<date1>' . $dateRegExp . ' )?de |[Aa]cesso (?P<date2>' . $dateRegExp . ' )?em ',
@@ -279,6 +293,7 @@ class Converter
 
         $this->accessedRegExp1 = [
             'en' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
+            'my' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'fr' => '([Rr]écupéré |[Cc]onsulté (le )?)(?P<date2>' . $dateRegExp . ')',
             'es' => '([Oo]btenido|[Aa]ccedido)[,:]? (?P<date2>' . $dateRegExp . ')',
             'pt' => '([Oo]btido |[Aa]cesso (em:?)? )(?P<date2>' . $dateRegExp . ')',
@@ -288,6 +303,7 @@ class Converter
         $this->monthsRegExp = [
             'en' => 'January|Jan[.,; ]|February|Feb[.,; ]|March|Mar[.,; ]|April|Apr[.,; ]|May|June|Jun[.,; ]|July|Jul[.,; ]|'
                 . 'August|Aug[.,; ]|September|Sept?[.,; ]|October|Oct[.,; ]|November|Nov[.,; ]|December|Dec[.,; ]',
+            'my' => 'ဇန်နဝါရီလ|ဖေဖော်ဝါရီ|မတ်လ|ဧပြီလ|မေ|ဇွန်လ|ဇူလိုင်လ|သြဂုတ်လ|စက်တင်ဘာ|အောက်တိုဘာလ|နိုဝင်ဘာလ|ဒီဇင်ဘာ',
             'fr' => 'janvier|janv[.,; ]|février|févr[.,; ]|mars|avril|avr[., ]|mai|juin|juillet|juill?[.,; ]|'
                 . 'aout|août|septembre|sept?[.,; ]|octobre|oct[.,; ]|novembre|nov[.,; ]|décembre|déc[.,; ]',
             'es' => 'enero|febrero|feb[.,; ]|marzo|mar[.,; ]|abril|abr[.,; ]|mayo|junio|jun[.,; ]|julio|jul[.,; ]|'
@@ -358,7 +374,7 @@ class Converter
         $originalEntry = $entry;
 
         // Note that cleanText translates « and », and „ and ”, to `` and ''.
-        $entry = $this->cleanText($entry, $charEncoding);
+        $entry = $this->cleanText($entry, $charEncoding, $language);
 
         $firstComponent = 'authors';
         // If entry starts with year, extract it.
@@ -2564,6 +2580,12 @@ class Converter
 
         $scholarTitle = $this->makeScholarTitle($item->title);
 
+        if ($language == 'my') {
+            foreach ($item as $name => $field) {
+                $item->$name = $this->translate($field, 'my');
+            }
+        }
+
         $returner = [
             'source' => $originalEntry,
             'item' => $item,
@@ -3152,7 +3174,7 @@ class Converter
      */
     private function isDate(string $string, string $language = 'en', string $type = 'is'): bool|array
     {
-        $ofs = ['en' => '', 'nl' => '', 'fr' => '', 'es' => '', 'pt' => 'de'];
+        $ofs = ['en' => '', 'my' => '', 'nl' => '', 'fr' => '', 'es' => '', 'pt' => 'de'];
 
         $year = '(?P<year>(19|20)[0-9]{2})';
         $monthName = $this->monthsRegExp[$language];
@@ -4990,7 +5012,24 @@ class Converter
         }
     }
 
-    private function cleanText(string $string, string|null $charEncoding): string
+    private function translate(string $string, string $language) {
+        if ($language == 'my') {
+            $string = str_replace("0", "\xE1\x81\x80", $string);
+            $string = str_replace("1", "\xE1\x81\x81", $string);
+            $string = str_replace("2", "\xE1\x81\x82", $string);
+            $string = str_replace("3", "\xE1\x81\x83", $string);
+            $string = str_replace("4", "\xE1\x81\x84", $string);
+            $string = str_replace("5", "\xE1\x81\x85", $string);
+            $string = str_replace("6", "\xE1\x81\x86", $string);
+            $string = str_replace("7", "\xE1\x81\x87", $string);
+            $string = str_replace("8", "\xE1\x81\x88", $string);
+            $string = str_replace("9", "\xE1\x81\x89", $string);
+        }
+
+        return $string;
+    }
+
+    private function cleanText(string $string, string|null $charEncoding, string|null $language): string
     {
         $string = str_replace("\\newblock", "", $string);
         $string = str_replace("\\newpage", "", $string);
@@ -5001,7 +5040,7 @@ class Converter
         $string = str_replace("\\textquotedblright ", "''", $string);
         $string = str_replace("\\textquotedblright", "''", $string);
 
-        if ($charEncoding == 'utf8' || $charEncoding == 'utf8leave' || $charEncoding == 'utf8force') {
+        if ($charEncoding == 'utf8' || $charEncoding == 'utf8leave') {
             // Replace non-breaking space with regular space
             $string = str_replace("\xC2\xA0", " ", $string);
             // Replace zero-width non-breaking space with regular space
@@ -5032,17 +5071,20 @@ class Converter
             // ‘ and ’
             $string = str_replace("\xE2\x80\x98", "``", $string);
             $string = str_replace("\xE2\x80\x99", "''", $string);
-            // Burmese numerals
-            $string = str_replace("\xE1\x81\x80", "0", $string);
-            $string = str_replace("\xE1\x81\x81", "1", $string);
-            $string = str_replace("\xE1\x81\x82", "2", $string);
-            $string = str_replace("\xE1\x81\x83", "3", $string);
-            $string = str_replace("\xE1\x81\x84", "4", $string);
-            $string = str_replace("\xE1\x81\x85", "5", $string);
-            $string = str_replace("\xE1\x81\x86", "6", $string);
-            $string = str_replace("\xE1\x81\x87", "7", $string);
-            $string = str_replace("\xE1\x81\x88", "8", $string);
-            $string = str_replace("\xE1\x81\x89", "9", $string);
+
+            if ($language == 'my') {
+                // Burmese numerals
+                $string = str_replace("\xE1\x81\x80", "0", $string);
+                $string = str_replace("\xE1\x81\x81", "1", $string);
+                $string = str_replace("\xE1\x81\x82", "2", $string);
+                $string = str_replace("\xE1\x81\x83", "3", $string);
+                $string = str_replace("\xE1\x81\x84", "4", $string);
+                $string = str_replace("\xE1\x81\x85", "5", $string);
+                $string = str_replace("\xE1\x81\x86", "6", $string);
+                $string = str_replace("\xE1\x81\x87", "7", $string);
+                $string = str_replace("\xE1\x81\x88", "8", $string);
+                $string = str_replace("\xE1\x81\x89", "9", $string);
+            }
         }
 
         if ($charEncoding == 'utf8') {

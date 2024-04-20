@@ -77,6 +77,9 @@
         <x-radio-input wire:model="uploadForm.language" value="en" class="peer/en" /> 
         <x-value-label for="en" class="peer-checked/en:text-blue-600 ml-1" :value="__('English')" />
 
+        <x-radio-input wire:model="uploadForm.language" value="my" class="peer/my ml-4" /> 
+        <x-value-label for="en" class="peer-checked/my:text-blue-600 ml-1" :value="__('Burmese')" />
+
         <x-radio-input wire:model="uploadForm.language" value="nl" class="peer/nl ml-4" />
         <x-value-label for="nl" class="peer-checked/nl:text-blue-600 ml-1" :value="__('Dutch')" />
 
@@ -161,9 +164,6 @@
         <x-radio-input wire:model="uploadForm.char_encoding" value="utf8" class="peer/utf8 ml-4" /> 
         <x-value-label for="utf8" class="peer-checked/utf8:text-blue-600 ml-1" :value="__('Yes')" />
 
-        <x-radio-input wire:model="uploadForm.char_encoding" value="utf8force" class="peer/utf8force ml-4" /> 
-        <x-value-label for="utf8force" class="peer-checked/utf8force:text-blue-600 ml-1" :value="__('Force UTF-8')" />
-
         <x-input-error :messages="$errors->get('uploadForm.char_encoding')" class="mt-2" />
 
         <x-option-info class="peer-checked/utf8leave:block">
@@ -172,10 +172,6 @@
         <x-option-info class="peer-checked/utf8:block">
             Many, though not all, accented letters will be translated to TeX.  For example, é will be translated to {\'e}.  Use this setting if your TeX system does not handle UTF-8.  (If you want me to make additions to the list of characters that are translated, post a comment.)
         </x-option-info>
-        <x-option-info class="peer-checked/utf8force:block">
-            The conversion will be performed under the assumption that the character encoding is UTF-8 even if PHP says it is not.  This setting may be useful in rare cases in which PHP misclassifies the encoding.
-        </x-option-info>
-
     </div>
 
     <div>

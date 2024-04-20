@@ -47,25 +47,29 @@ trait AddLabels
         }
         if (isset($authors) && $authors) {
             foreach ($authors as $author) {
-                $authorLetters = $this->onlyLetters(Str::ascii($author));
-                if ($pos = strpos($author, ',')) {
+                if ($conversion->language == 'my') {
+                    $authorLetters = $author;
+                } else {
+                    $authorLetters = $this->onlyLetters(Str::ascii($author));
+                }
+                if ($pos = mb_strpos($authorLetters, ',')) {
                     if ($conversion->label_style == 'short') {
-                        $label .= $authorLetters[0] ?? '';
+                        $label .= mb_substr($authorLetters, 0, 1) ?? '';
                     } else {
-                        $label .= substr($authorLetters, 0, $pos);
+                        $label .= mb_substr($authorLetters, 0, $pos);
                     }
                 } else {
                     if ($conversion->label_style == 'short') {
-                        $label .= substr(trim(strrchr($authorLetters, ' '), ' '), 0, 1);
+                        $label .= mb_substr(trim(mb_strrchr($authorLetters, ' '), ' '), 0, 1);
                     } else {
-                        $label .= trim(strrchr($authorLetters, ' '), ' ');
+                        $label .= trim(mb_strrchr($authorLetters, ' '), ' ');
                     }
                 }
             }
         }
 
         if ($conversion->label_style == 'short') {
-            $label = mb_strtolower($label) . (isset($item->year) ? substr($item->year, 2) : '');
+            $label = mb_strtolower($label) . (isset($item->year) ? mb_substr($item->year, 2) : '');
         } elseif ($conversion->label_style == 'gs') {
             $firstAuthor = count($authors) ? $authors[0] : 'none';
 
@@ -99,9 +103,9 @@ trait AddLabels
         return $label;
     }
 
-    // Returns string consisting only of letters and spaces in $string
+    // Returns string consisting only of letters and spaces and commas in $string
     public function onlyLetters(string $string): string
     {
-        return preg_replace("/[^a-z\s]+/i", "", $string);
+        return preg_replace("/[^a-z,\s]+/i", "", $string);
     }
 }

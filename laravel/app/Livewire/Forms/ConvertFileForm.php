@@ -19,7 +19,7 @@ class ConvertFileForm extends Form
 
     #[Rule('required', message: 'Please choose an option')]    
     #[Rule('string', message: 'The value of this field must be a string')]    
-    #[Rule('in:en,nl,fr,es,pt', message: 'The value of this field must be "English", "Dutch", "French", "Portuguese", or "Spanish"')]    
+    #[Rule('in:en,my,nl,fr,es,pt', message: 'The value of this field must be "English", "Burmese", "Dutch", "French", "Portuguese", or "Spanish"')]    
     public $language;
 
     #[Rule('required', message: 'Please choose an option')]    
@@ -37,7 +37,7 @@ class ConvertFileForm extends Form
 
     #[Rule('required', message: 'Please choose an option')]    
     #[Rule('string', message: 'The value of this field must be a string')]    
-    #[Rule('in:utf8,utf8leave,utf8force', message: 'The value of this field must be "utf8", "utf8leave", or "utf8force"')]    
+    #[Rule('in:utf8,utf8leave', message: 'The value of this field must be "utf8" or "utf8leave"')]    
     public $char_encoding;
 
     #[Rule('required', message: 'Please choose an option')]    

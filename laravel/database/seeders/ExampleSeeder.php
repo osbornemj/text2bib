@@ -4805,7 +4805,18 @@ class ExampleSeeder extends Seeder
                                     'pages' => '603-606',
                                     ]
                             ],
-                                                                               
+                            [
+                                'source' => ' \bibitem{MM} Machina, M. (1982),  ```Expected Utility\' Analysis Without the Independence Axiom,\'\'  {\it Econometrica}, 50, 277-324. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'year' => '1982',
+                                    'pages' => '277-324',
+                                    'title' => '`Expected Utility\' Analysis Without the Independence Axiom',
+                                    'author' => 'Machina, M.',
+                                    'volume' => '50',
+                                    'journal' => 'Econometrica',
+                                    ]
+                            ],                                                                               
                         
                 ];
 

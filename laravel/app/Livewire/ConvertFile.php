@@ -168,7 +168,7 @@ class ConvertFile extends Component
                 ->latest()
                 ->first();
 
-        if ($previousUserFile) {
+        if ($previousUserFile && ! Auth::user()->is_admin) {
             $previousConversion = Conversion::where('user_file_id', $previousUserFile->id)->first();
             if (
                 $previousConversion &&
@@ -223,7 +223,7 @@ class ConvertFile extends Component
             $this->notUtf8 = false;
             $this->convertedEncodingCount = 0;
             foreach ($entries as $i => $entry) {
-                if ($conversion->char_encoding == 'utf8force') {
+                if ($conversion->language == 'my') {
                     $encodings[$i] = 'UTF-8';
                 } else {
                     $encodings[$i] = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
