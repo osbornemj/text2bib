@@ -13,7 +13,7 @@
             @csrf
 
             <x-input-label for="comment" value="Comment" />
-            <x-textarea-input rows="5" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="comment"/>
+            <x-textarea-input rows="10" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="comment"/>
             <div role="alert" class="mt-4 mb-4">
                 @error('comment') <span class="text-red-500">{{ $message }}</span> @enderror 
             </div>
