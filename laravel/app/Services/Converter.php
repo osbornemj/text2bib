@@ -235,9 +235,9 @@ class Converter
         $this->proceedingsExceptions = '^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.';
 
         $this->thesisRegExp = '[ \(\[]?([Tt]hesis|[Tt]esis|[Dd]issertation)';
-        $this->fullThesisRegExp = '(PhD|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral|[Mm]aster\\\'?s?|MA|M\.A\.)( [Tt]hesis| [Dd]issertation)';
-        $this->masterRegExp = '[Mm]aster|MA|M\.A\.';
+        $this->masterRegExp = '[Mm]aster(\'s)?|MA|M\.A\.';
         $this->phdRegExp = 'PhD|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral';
+        $this->fullThesisRegExp = '((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]issertation)|Thèse de doctorat|Tesis doctoral)';
 
         $this->inReviewRegExp1 = '/[Ii]n [Rr]eview\.?\)?$/';
         $this->inReviewRegExp2 = '/^[Ii]n [Rr]eview/';
@@ -288,7 +288,7 @@ class Converter
         $this->monthsRegExp = [
             'en' => 'January|Jan[.,; ]|February|Feb[.,; ]|March|Mar[.,; ]|April|Apr[.,; ]|May|June|Jun[.,; ]|July|Jul[.,; ]|'
                 . 'August|Aug[.,; ]|September|Sept?[.,; ]|October|Oct[.,; ]|November|Nov[.,; ]|December|Dec[.,; ]',
-            'fr' => 'janvier|janv[.,; ]|février|févr[.,; ]|mars|avril|mai|juin|juillet|juil[.,; ]|'
+            'fr' => 'janvier|janv[.,; ]|février|févr[.,; ]|mars|avril|avr[., ]|mai|juin|juillet|juill?[.,; ]|'
                 . 'aout|août|septembre|sept?[.,; ]|octobre|oct[.,; ]|novembre|nov[.,; ]|décembre|déc[.,; ]',
             'es' => 'enero|febrero|feb[.,; ]|marzo|mar[.,; ]|abril|abr[.,; ]|mayo|junio|jun[.,; ]|julio|jul[.,; ]|'
                 . 'agosto|septiembre|sept?[.,; ]|octubre|oct[.,; ]|noviembre|nov[.,; ]|deciembre|dec[.,; ]',
@@ -794,6 +794,7 @@ class Converter
         unset($this->italicTitle);
 
         $remainder = ltrim($remainder, ': ');
+
         $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
         $titleStyle = $style;
 
@@ -2400,7 +2401,7 @@ class Converter
                     // contains more than one city, for example.
 
                     // If item is a book, $cityString and $publisherString are set, and existing title is followed by comma
-                    // in $entyr, string preceding $cityString
+                    // in $entry, string preceding $cityString
                     // and $publisherString must be part of title (which must have been ended prematurely). 
                     if ($itemKind == 'book' && ! empty($cityString) && !empty($publisherString)) {
                         $afterTitle = Str::after($entry, $item->title);
@@ -2467,7 +2468,7 @@ class Converter
 
                 $remainder = $this->findAndRemove($remainder, $this->fullThesisRegExp);
 
-                $remainder = trim($remainder, ' .,)');
+                $remainder = trim($remainder, ' .,)[]');
                 if (strpos($remainder, ':') === false) {
                     $this->setField($item, 'school', $remainder, 'setField 87');
                 } else {
@@ -2844,19 +2845,27 @@ class Converter
                         $this->verbose("Ending title, case 4");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
-                    // elseif next sentence contains word 'series', terminate title
-                    } elseif (preg_match('/ series/i', $stringToNextPeriod)) {
+                    // elseif next sentence starts with a thesis designation, terminate title
+                    } elseif (preg_match('/^[\(\[]' . $this->fullThesisRegExp . '[\)\]]/', $stringToNextPeriod)) {
                         $this->verbose("Ending title, case 4a");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
-                    } elseif (preg_match('/edited by/i', $nextWord . ' ' . $nextButOneWord)) {
+                    // elseif next sentence contains word 'series', terminate title
+                    } elseif (preg_match('/ series/i', $stringToNextPeriod)) {
                         $this->verbose("Ending title, case 4b");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
-                    // else if following string up to next period contains only letters, spaces, and hyphens and doesn't start with "in"
+                    } elseif (preg_match('/edited by/i', $nextWord . ' ' . $nextButOneWord)) {
+                        $this->verbose("Ending title, case 4c");
+                        $title = rtrim(implode(' ', $initialWords), ' ,');
+                        break;
+                    // else if following string up to next period contains only letters, spaces, hyphens, (, ), \, ,, :, and
+                    // quotation marks and doesn't start with "in"
                     // (which is unlikely to be within a title following punctuation)
                     // and is followed by at least 30 characters (for the publication info), assume it is part of the title,
-                    } elseif (preg_match('/[a-zA-Z -]+/', $stringToNextPeriod)
+                    } elseif (
+                            preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriod,0,-1))
+                            //preg_match('/[a-zA-Z -]+/', substr($stringToNextPeriod,0,-1))
                             && !preg_match($this->inRegExp1, $remainder)
                             && strlen($remainder) > strlen($stringToNextPeriod) + ($containsPages ? 40 : 30)) {
                         $this->verbose("Not ending title, case 2 (next word is " . $nextWord . ")");
@@ -3186,6 +3195,7 @@ class Converter
 
     /*
      * Determine whether $word is component of a name: all letters and either all u.c. or first letter u.c. and rest l.c.
+     * (and may be TeX accents)
      * If $finalPunc != '', then allow word to end in any character in $finalPunc.
      */
     private function isName(string $word, string $finalPunc = ''): bool
@@ -3194,7 +3204,8 @@ class Converter
         if (in_array(substr($word, -1), str_split($finalPunc))) {
             $word = substr($word, 0, -1);
         }
-        if (ctype_alpha($word) && (ucfirst($word) == $word || strtoupper($word) == $word)) {
+//        if (ctype_alpha($word) && (ucfirst($word) == $word || strtoupper($word) == $word)) {
+        if (preg_match('/^[a-z{}\\\"\']+$/i', $word) && (ucfirst($word) == $word || strtoupper($word) == $word)) {
             $result = true;
         }
 
@@ -3312,9 +3323,11 @@ class Converter
 
         $this->verbose('convertToAuthors: Looking at each word in turn');
         foreach ($words as $i => $word) {
+            $word = substr($word, -1) == ';' ? substr($word, 0, -1) . ',' : $word;
+
             $nameComplete = true;
             $prevWordHasComma = $wordHasComma;
-            $wordHasComma = substr($word,-1) == ',';
+            $wordHasComma = substr($word, -1) == ',';
             // Get letters in word, eliminating accents & other non-letters, to get accurate length
             $lettersOnlyWord = preg_replace("/[^A-Za-z]/", '', $word);
             $wordIsVon = in_array($word, $this->vonNames);
@@ -3383,17 +3396,23 @@ class Converter
 
             $edResult = $this->isEd($word);
 
-            $nextWord = isset($words[$i+1]) ? rtrim($words[$i+1], ',') : null;
+            $nextWord = isset($words[$i+1]) ? rtrim($words[$i+1], ',;') : null;
 
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
             } elseif (in_array($word, ['...', '…'])) {
                 $this->verbose('[convertToAuthors 1]');
-                if (isset($words[$i+1]) && $this->isAnd($words[$i+1], $language)) {
+                $formattedAuthor = $this->formatAuthor(($fullName));
+                if (Str::endsWith($authorstring, $formattedAuthor)) {
                     $this->addToAuthorString(3, $authorstring, ' and others');
                 } else {
                     $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
                 }
+                // if (isset($words[$i+1]) && $this->isAnd($words[$i+1], $language)) {
+                //     $this->addToAuthorString(3, $authorstring, ' and others');
+                // } else {
+                //     $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
+                // }
                 //array_shift($remainingWords);
                 $fullName = '';
                 $namePart = 0;
@@ -3459,8 +3478,8 @@ class Converter
                 if (
                         $namePart >= 2 
                         && isset($words[$i-1]) 
-                        && in_array(substr($words[$i-1], -1), ['.', ',']) 
-                        && (! $this->isInitials($words[$i-1]) || (isset($words[$i-2]) && substr($words[$i-2], -1) == ','))
+                        && in_array(substr($words[$i-1], -1), ['.', ',', ';']) 
+                        && (! $this->isInitials($words[$i-1]) || (isset($words[$i-2]) && in_array(substr($words[$i-2], -1), [',', ';'])))
                     ) {
                     $this->verbose('Word ends in colon, $namePart is at least 2, and previous word ends in comma or period, and either previous word is not initials or word before it ends in comma, so assuming word is first word of title.');
                     $this->addToAuthorString(16, $authorstring, $this->formatAuthor($fullName));
@@ -3567,7 +3586,7 @@ class Converter
                         (
                             ($this->isInitials($words[$i+1]) && isset($words[$i+2]) && $this->isAnd($words[$i+2], $language))
                             ||
-                            (substr($words[$i+1],-1) == ',' && $this->isInitials(substr($words[$i+1],0,-1)))
+                            (in_array(substr($words[$i+1],-1), [',', ';']) && $this->isInitials(substr($words[$i+1],0,-1)))
                         )
                     ) {
                     $this->verbose('[convertToAuthors 13]');
@@ -3602,10 +3621,10 @@ class Converter
                         $prevWordVon = false;
                         if (!Str::endsWith($words[$i], ',') 
                                 && isset($words[$i+1]) 
-                                && Str::endsWith($words[$i+1], ',') 
+                                && Str::endsWith($words[$i+1], [',', ';']) 
                                 && ! $this->isInitials(substr($words[$i+1], 0, -1)) 
                                 && isset($words[$i+2]) 
-                                && Str::endsWith($words[$i+2], ',') 
+                                && Str::endsWith($words[$i+2], [',', ';']) 
                                 && ! $this->isYear(trim($words[$i+2], ',()[]'))
                                 //&& ! $this->isYearRange(trim($words[$i+2], ',()[]'))
                             ) {
@@ -3766,13 +3785,13 @@ class Converter
                             count($bareWords) > 3
                             ||
                             (
-                                $this->inDict(trim($remainingWords[0], ',')) 
-                                && ! $this->isInitials(trim($remainingWords[0], ','))
+                                $this->inDict(trim($remainingWords[0], ',;')) 
+                                && ! $this->isInitials(trim($remainingWords[0], ',;'))
                                 && ! in_array(trim($remainingWords[0], '.,'), $this->nameSuffixes)
                                 && ! preg_match('/[0-9]/', $remainingWords[0])
                                 && ! empty($remainingWords[1]) 
                                 && $this->inDict($remainingWords[1]) 
-                                && ! $this->isInitials(trim($remainingWords[1], ','))
+                                && ! $this->isInitials(trim($remainingWords[1], ',;'))
                                 && ! in_array(trim($remainingWords[1], '.,'), $this->nameSuffixes)
                                 && ! preg_match('/[0-9]/', $remainingWords[1])
 //                                && strtolower($remainingWords[1][0]) == $remainingWords[1][0] 
@@ -3781,7 +3800,7 @@ class Converter
                                 && (! isset($remainingWords[2]) 
                                     ||
                                     ($this->inDict($remainingWords[2])
-                                    && ! $this->isInitials(trim($remainingWords[2], ','))
+                                    && ! $this->isInitials(trim($remainingWords[2], ',;'))
                                     && ! in_array(trim($remainingWords[2], '.,'), $this->nameSuffixes)
                                     && ! preg_match('/[0-9]/', $remainingWords[2])
                                     )
@@ -3834,7 +3853,7 @@ class Converter
                             $this->addToAuthorString(12, $authorstring, $this->formatAuthor($fullName));
                             $case = 11;
                         }
-                    } elseif (substr($words[$i+1],-1) != ',' && ! $this->isInitials($words[$i+1]) && isset($words[$i+2]) && $this->isAnd($words[$i+2], $language)) {
+                    } elseif (! in_array(substr($words[$i+1],-1), [',', ';']) && ! $this->isInitials($words[$i+1]) && isset($words[$i+2]) && $this->isAnd($words[$i+2], $language)) {
                         // $nameComplete and next word does not end in a comma and following work is 'and'
                         $this->verbose('[convertToAuthors 30]');
                         $this->addToAuthorString(13, $authorstring, $this->formatAuthor($fullName));
@@ -4003,8 +4022,21 @@ class Converter
             }
         }
 
-        $before = $beforeQuote;
-        $after = $afterQuote;
+        // If quoted text ends in a lowercase letter, not punctuation for example, and is followed by a space and then a lowercase letter,
+        // and is not followed by " in" or by " forthcoming", it is the first word of the title that is in 
+        // quotes --- it is not the entire title.  E.g. "Global" cardiac ...
+        if (
+            $quotedText 
+            && preg_match('/[a-z]$/', $quotedText)
+            && preg_match('/^ [a-z]/', $afterQuote) 
+            && ! preg_match('/^ (in|en|em)[ :,]/', $afterQuote) 
+            && ! preg_match('/^ (forthcoming|to appear|accepted|submitted)/', $afterQuote)
+            ) {
+            $quotedText = '';
+        } else {
+            $before = $beforeQuote;
+            $after = $afterQuote;
+        }
 
         /*
         $matchedText = false;
@@ -4442,7 +4474,7 @@ class Converter
             $endsWithPunc = false;
             $include = true;
 
-            if (Str::endsWith($word, ['.', ',', ')', ':', '}'])) {
+            if (Str::endsWith($word, ['.', ',', ')', ':', ';', '}'])) {
                 $stop = true;
                 $endsWithPunc = true;
             }
@@ -4553,6 +4585,7 @@ class Converter
                     && mb_strtolower($words[$i][0]) == $words[$i][0]
                     && ! (strlen($words[$i]) == 2 && in_array($words[$i][0], range('a', 'z')) && $words[$i][1] == '.')
                     && substr($words[$i], 0, 2) != "d'" 
+                    && ! in_array($words[$i], ['...', '…']) 
                     && ! in_array($words[$i], $this->vonNames)
                 ) {
                 $this->verbose(['text' => 'isNotName: ', 'words' => [$words[$i]], 'content' => ' appears not to be a name']);
@@ -4770,7 +4803,7 @@ class Converter
         // Letter in front of volume is allowed only if preceded by "vol(ume)" and is single number
         $volumeWordLetterRx = '('. $this->volumeRegExp . ')(?P<vol>' . $letterNumber . ')';
         $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRange . ')';
-        $pagesRx = '('. $pages . ')?(?P<pp>' . $numberRange . ')';
+        $pagesRx = '(?P<pageWord>'. $pages . ')?(?P<pp>' . $numberRange . ')';
         $punc1 = '(}? |, ?| ?: ?|,? ?\(\(?)';
         $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
 
@@ -4783,7 +4816,7 @@ class Converter
         // e.g. Volume 6, 41-75$ OR 6 41-75$
        } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
-            if (str_contains($matches['pp'], '-') || str_contains($matches['pp'], '_') || strlen($matches['pp']) < 6) {
+            if (str_contains($matches['pp'], '-') || str_contains($matches['pp'], '_') || strlen($matches['pp']) < 6 || (isset($matches['pageWord']) && $matches['pageWord'])) {
                 $this->setField($item, 'pages', str_replace(['---', '--', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5a');
             } else {
                 $this->addToField($item, 'note', 'Article ' . $matches['pp'], 'getVolumeNumberPagesForArticle 5b');
@@ -4999,7 +5032,7 @@ class Converter
             // ‘ and ’
             $string = str_replace("\xE2\x80\x98", "``", $string);
             $string = str_replace("\xE2\x80\x99", "''", $string);
-
+            // Burmese numerals
             $string = str_replace("\xE1\x81\x80", "0", $string);
             $string = str_replace("\xE1\x81\x81", "1", $string);
             $string = str_replace("\xE1\x81\x82", "2", $string);

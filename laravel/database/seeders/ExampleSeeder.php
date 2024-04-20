@@ -4037,7 +4037,7 @@ class ExampleSeeder extends Seeder
                             'source' => ' Strauss, Leo. 2013. Leo Strauss on Maimonides: The Complete Writings. Edited by Kenneth Green Hart. Chicago: University of Chicago Press. ',
                             'type' => 'book',
                             'bibtex' => [
-                                'author' => 'Strauss, Leo.',
+                                'author' => 'Strauss, Leo',
                                 'title' => 'Leo Strauss on Maimonides: The Complete Writings',
                                 'year' => '2013',
                                 'editor' => 'Kenneth Green Hart',
@@ -4123,7 +4123,7 @@ class ExampleSeeder extends Seeder
                             'type' => 'article',
                             'bibtex' => [
                                 'author' => 'Piri, R. and others',
-                                'title' => '"Global" cardiac atherosclerotic burden assessed by artificial intelligence-based versus manual segmentation in (18)F-sodium fluoride PET/CT scans: Head-to-head comparison',
+                                'title' => '``Global\'\' cardiac atherosclerotic burden assessed by artificial intelligence-based versus manual segmentation in (18)F-sodium fluoride PET/CT scans: Head-to-head comparison',
                                 'year' => '2022',
                                 'journal' => 'J Nucl Cardiol',
                                 'pages' => '2531-2539',
@@ -4247,7 +4247,7 @@ class ExampleSeeder extends Seeder
                                 'year' => '2008',
                                 'title' => 'Annotation standards',
                                 'pages' => '484-501',
-                                'editor' => 'L{\"u}deling and M. Kyt{\"o}',
+                                'editor' => 'A. L{\"u}deling and M. Kyt{\"o}',
                                 'booktitle' => 'Corpus linguistics -- An international handbook (volume 1)',
                                 'publisher' => 'Walter de Gruyter',
                                 ]
@@ -4269,7 +4269,7 @@ class ExampleSeeder extends Seeder
                             'source' => 'Gehle, S. C., Kleissler, D., Heiling, H., Deal, A., Xu, Z., Ayer Miller, V. L., ... & Smitherman, A. B. (2023). Accelerated epigenetic aging and myopenia in young adult cancer survivors. Cancer Medicine. ',
                             'type' => 'article',
                             'bibtex' => [
-                                'author' => 'Gehle, S. C. and Kleissler, D. and Heiling, H. and Deal, A. and Xu, Z. and Ayer Miller V. L and others and Smitherman, A. B.',
+                                'author' => 'Gehle, S. C. and Kleissler, D. and Heiling, H. and Deal, A. and Xu, Z. and Ayer Miller, V. L. and others and Smitherman, A. B.',
                                 'title' => 'Accelerated epigenetic aging and myopenia in young adult cancer survivors',
                                 'journal' => 'Cancer Medicine',
                                 'year' => '2023',
@@ -4298,19 +4298,6 @@ class ExampleSeeder extends Seeder
                                 'number' => '2',
                                 'pages' => '161-183',
                                 'doi' => '10.1093/applin/amr047',
-                                ]
-                        ],
-                        [
-                            'source' => 'Lehmberg, T. & Wörner, K. (2008). Annotation standards. In A. Lüdeling & M. Kytö (Eds.), Corpus linguistics – An international handbook (volume 1) (pp. 484-501). Walter de Gruyter. ',
-                            'type' => 'incollection',
-                            'bibtex' => [
-                                'author' => 'Lehmberg, T. and W{\"o}rner, K.',
-                                'title' => 'Annotation standards',
-                                'year' => '2008',
-                                'pages' => '484-501',
-                                'editor' => 'A. L{\"u}deling and M. Kyt{\"o}',
-                                'publisher' => 'Walter de Gruyter',
-                                'booktitle' => 'Corpus linguistics -- An international handbook (volume 1)',
                                 ]
                         ],
                         [
@@ -4805,7 +4792,20 @@ class ExampleSeeder extends Seeder
                                     'volume' => '51',
                                     'pages' => '76-88',
                                     ]
-                            ],                                                   
+                            ],
+                            [
+                                'source' => '5.	Billingham, R. E., Brent, L. & Medawar, P. B. ‘Activity Acquired Tolerance’ of Foreign Cells. Nature 172, 603–606 (1953). ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Billingham, R. E. and Brent, L. and Medawar, P. B.',
+                                    'title' => '`Activity Acquired Tolerance\' of Foreign Cells',
+                                    'year' => '1953',
+                                    'journal' => 'Nature',
+                                    'volume' => '172',
+                                    'pages' => '603-606',
+                                    ]
+                            ],
+                                                                               
                         
                 ];
 
