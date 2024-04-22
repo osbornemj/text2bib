@@ -225,7 +225,8 @@ class Converter
         $this->numberRegExp = '[Nn][Oo]s?\.?:? ?|[Nn]umbers? ?|[Nn]\. |[Ii]ssues? ?';
 
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})';
-        $this->startPagesRegExp = '/^pages |^pp\.?|^p\.|^p /i';
+        // hlm.: Indonesian
+        $this->startPagesRegExp = '/^pages |^pp\.?|^p\.|^p |^стр\. |hlm\. /i';
 
         // en for Spanish (and French?), em for Portuguese
         $this->inRegExp1 = '/^[iIeE]n:? /';
@@ -243,7 +244,7 @@ class Converter
         $this->forthcomingRegExp7 = '/^[Tt]o appear in/';
 
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
-        $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on |^.* meeting |^.* conference proceedings|^.* proceedings of the (.*) conference|^proc\..*(conf\.|conference)?|^.* workshop |^actas del )';
+        $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on | meeting | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop |^actas del )';
         $this->proceedingsExceptions = '^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.';
 
         $this->thesisRegExp = '[ \(\[]?([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse)';
@@ -447,7 +448,7 @@ class Converter
 
         $doi = $this->extractLabeledContent(
             $remainder,
-            ' \[?doi:? | \[?doi: ?|https?://dx.doi.org/|https?://doi.org/|doi.org/',
+            ' [\[\)]?doi:? | [\[\(]?doi: ?|https?://dx.doi.org/|https?://doi.org/|doi.org',
             '[^ ]+'
         );
 
@@ -500,6 +501,9 @@ class Converter
         ////////////////////////////////////
         // Get url and access date if any //
         ////////////////////////////////////
+
+        $remainder = preg_replace('/[\(\[](online|en ligne|internet)[\)\]]/i', '', $remainder, 1, $replacementCount);
+        $onlineFlag = $replacementCount > 0;
 
         $retrievedFromRegExp1 = $this->retrievedFromRegExp1[$language];
         $retrievedFromRegExp2 = $this->retrievedFromRegExp2[$language];
@@ -832,8 +836,12 @@ class Converter
 
         if (! $title) {
             $title = $this->getTitle($remainder, $edition, $volume, $isArticle, $year, $note, $journal, $containsUrlAccessInfo);
+            if (! isset($item->year) && $year) {
+                $this->setField($item, 'year', $year, 'setField 10a');
+                $remainder = str_replace($year, '', $remainder);
+            }
             if ($edition) {
-                $this->setField($item, 'edition', $edition, 'setField 10');
+                $this->setField($item, 'edition', $edition, 'setField 10b');
             }
             if ($volume) {
                 $this->setField($item, 'volume', $volume, 'setField 11');
@@ -1087,16 +1095,21 @@ class Converter
         if ($itemKind) {
             // $itemKind is already set
         } elseif (
-            isset($item->url) &&
-            ! $containsWorkingPaper &&
-            ($oneWordAuthor || ! $urlHasPdf || $containsUrlAccessInfo) &&
-            ! $inStart &&
-            ! $italicStart &&
-            ! $containsInteriorVolume &&
-            ! $containsPageRange &&
-            ! $containsJournalName &&
-            ! Str::contains($item->url, ['journal'])
-             // && $itemYear && $itemMonth && $itemDay))
+            $onlineFlag
+            ||
+            (
+                isset($item->url) &&
+                ! $containsWorkingPaper &&
+                ($oneWordAuthor || ! $urlHasPdf || $containsUrlAccessInfo) &&
+                ! $inStart &&
+                ! $italicStart &&
+                ! $containsInteriorVolume &&
+                ! $containsPageRange &&
+                ! $containsJournalName &&
+                ! $containsThesis &&
+                ! Str::contains($item->url, ['journal'])
+                // && $itemYear && $itemMonth && $itemDay))
+            )
         ) {
             $this->verbose("Item type case 0");
             $itemKind = 'online';
@@ -1403,9 +1416,21 @@ class Converter
                 if (empty($item->month)) {
                     unset($item->month);
                 }
+
                 if (empty($item->urldate) && $itemYear && $itemMonth && $itemDay && $itemDate) {
                     $this->setField($item, 'urldate', $itemDate, 'setField 116');
                 }
+
+                $result = $this->getYear($remainder, $remains, $month, $day, $date, true, true, false, $language);
+                if ($result) {
+                    // $remainder is date, so set it to be date of item (even if date was set earlier on basis
+                    // of urldate).
+                    $this->setField($item, 'year', $result, 'setField 127');
+                    $this->setField($item, 'month', $month, 'setField 128');
+                    $this->addToField($item, 'note', $date, 'addToField 13');
+                    $remainder = $remains;
+                }
+
                 break;
 
             ////////////////////////////////////////////////
@@ -2410,6 +2435,7 @@ class Converter
                     if ($periodPos !== false && strtolower($remainderMinusPubInfo[$periodPos-1]) == $remainderMinusPubInfo[$periodPos-1]) {
                         $series = trim(Str::before($remainderMinusPubInfo, '.'));
                         $this->setField($item, 'series', $series, 'setField 110');
+                        //$this->setField($item, 'title', $item->title . $series, 'setField 110');
                         $remainder = trim(Str::remove($series, $remainder));
                     }
 
@@ -2513,7 +2539,13 @@ class Converter
                 ) {
                 $this->addToField($item, 'note', $remainder, 'addToField 14');
             } elseif ($itemKind == 'online') {
-                $this->addToField($item, 'note', $remainder, 'addToField 15');
+                if (preg_match('/^[a-zA-Z ]*$/', $remainder)) {
+                    // If remainder is all letters and spaces, assume it is part of title,
+                    // which must have been ended prematurely.
+                    $this->addToField($item, 'title', $remainder, 'addToField 16');
+                } else {
+                    $this->addToField($item, 'note', $remainder, 'addToField 15');
+                }
             } else {
                 $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
             }
@@ -2711,7 +2743,7 @@ class Converter
             $lastWord = $matches['lastWord'];
             // Last word has to be in the dictionary (proper nouns allowed) and not an excluded word, OR start with a lowercase letter
             // That excludes cases in which the period ends an abbreviation in a journal name (like "A theory of something, Bull. Amer.").
-            if (($this->inDict($lastWord, false) && ! in_array($lastWord, $this->excludedWords)) || mb_strtolower($lastWord[0]) == $lastWord[0]) {
+            if (! in_array($lastWord, ['J']) && (($this->inDict($lastWord, false) && ! in_array($lastWord, $this->excludedWords)) || mb_strtolower($lastWord[0]) == $lastWord[0])) {
                 $title = $matches['title'];
                 $remainder = $matches['remainder'];
                 $this->verbose('Taking title to be string preceding period.');
@@ -2785,6 +2817,7 @@ class Converter
                 // OR a pages string
                 // OR "in" OR "Journal"
                 // OR a volume designation
+                // OR the remainder consists of a string of letters followed by a comma (journal name?), then numbers (volume, pages etc)
                 // OR words like 'forthcoming' or 'to appear in'
                 // OR a year 
                 // OR the name of a publisher.
@@ -2795,7 +2828,9 @@ class Converter
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
-                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. /', $remainder)
+                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^Bull. |^J\. |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^[a-aA-Z]+ J\./', $remainder) // e.g. SIAM J. ...
+                        || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9]\./', $remainder)
                         || preg_match('/^' . $this->fullThesisRegExp . '/', $remainder)
@@ -2837,7 +2872,7 @@ class Converter
                     ||
                     ($nextWord && $nextWord[0] == '(' && substr($nextWord, -1) != ')')
                     ) {
-                    // if first character  of next word is lowercase letter and does not end in period
+                    // if first character of next word is lowercase letter and does not end in period
                     // OR $word and $nextWord are A. and D. or B. and C.
                     // OR following string starts with a part designation, continue, skipping next word,
                     if (
@@ -2939,9 +2974,16 @@ class Converter
                             }
                             $remainder = '';
                             break;
+                        } elseif (Str::endsWith($word, [',']) && preg_match('/[A-Z][a-z]+, [A-Z]\. /', $remainder)) {
+                            // otherwise assume the punctuation ends the title.
+                            $this->verbose("Ending title, case 6a (word '" . $word ."')");
+                            $title = rtrim(implode(' ', $initialWords), '.,');
+                            break;
+                        } elseif (Str::endsWith($word, [','])) {
+                            $this->verbose("Not ending title, case 7 (word '" . $word ."')");
                         } else {
                             // otherwise assume the punctuation ends the title.
-                            $this->verbose("Ending title, case 6 (word '" . $word ."')");
+                            $this->verbose("Ending title, case 6b (word '" . $word ."')");
                             $title = rtrim(implode(' ', $initialWords), '.,');
                             break;
                         }
@@ -3211,8 +3253,8 @@ class Converter
     private function isAnd(string $string, $language = 'en'): bool
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
-        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German
-        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', 'y', 'e', 'et', 'en', 'und']) || $string == 'with';
+        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian
+        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', 'y', 'e', 'et', 'en', 'und', 'и']) || $string == 'with';
     }
 
     /*
@@ -4819,7 +4861,7 @@ class Converter
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
         $numberRange = $number . '((--?-?|_)' . $number . ')?';
         $numberRangeWithRoman = $numberWithRoman . '((--?-?|_)' . $numberWithRoman . ')?';
-        $pages = '[Pp]p?( |\. )|[Pp]ages |s.\ ?';
+        $pages = '[Pp]p?( |\. )|[Pp]ages |s.\ ?|стр\. |Hlm\. ';
         $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')';
         $volumeWithRomanRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')';
         $numberRx = '('. $this->numberRegExp . ')?(?P<num>' . $numberRange . ')';
@@ -5041,6 +5083,7 @@ class Converter
         $string = str_replace("\\textquotedblleft{}", "``", $string);
         $string = str_replace("\\textquotedblright ", "''", $string);
         $string = str_replace("\\textquotedblright", "''", $string);
+        $string = str_replace("•", "", $string);
 
         if ($charEncoding == 'utf8' || $charEncoding == 'utf8leave') {
             // Replace non-breaking space with regular space

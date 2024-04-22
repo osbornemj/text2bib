@@ -3076,7 +3076,6 @@ class ExampleSeeder extends Seeder
                             'title' => 'How Network Rail Buys Utlities',
                             'year' => '2023',
                             'urldate' => '13 12 2023',
-                            'note' => '[Online]',
                             ]
                     ],
                     [   
@@ -4055,6 +4054,7 @@ class ExampleSeeder extends Seeder
                                 'month' => 'October',
                                 'author' => 'YardLink',
                                 'title' => 'What Is BIM and Why Is It Important in Construction?',
+                                'note' => '12 October 2021'
                                 ]
                         ],
                         [
@@ -4816,7 +4816,56 @@ class ExampleSeeder extends Seeder
                                     'volume' => '50',
                                     'journal' => 'Econometrica',
                                     ]
-                            ],                                                                               
+                            ],
+                            [
+                                'source' => '• Johnson, M., & Crews, T. (2023). Enhancement of MR fluids through nanoparticle integration. Journal of Material Science and Engineering, 67(8), 1129-1143. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Johnson, M. and Crews, T.',
+                                    'year' => '2023',
+                                    'title' => 'Enhancement of MR fluids through nanoparticle integration',
+                                    'journal' => 'Journal of Material Science and Engineering',
+                                    'volume' => '67',
+                                    'number' => '8',
+                                    'pages' => '1129-1143',
+                                    ]
+                            ],
+                            [
+                                'source' => 'Akhilesh, K. V. (2014) Fishery and biology of deep-sea chondrichthyans off the southwest coast of India. Phd Thesis. Cochin University of Science & Technology. http://dyuthi.cusat.ac.in/purl/4951 ',
+                                'type' => 'phdthesis',
+                                'bibtex' => [
+                                    'school' => 'Cochin University of Science & Technology',
+                                    'url' => 'http://dyuthi.cusat.ac.in/purl/4951',
+                                    'author' => 'Akhilesh, K. V.',
+                                    'year' => '2014',
+                                    'title' => 'Fishery and biology of deep-sea chondrichthyans off the southwest coast of India',
+                                    ]
+                            ],
+                            [
+                                'source' => '	\bibitem{Jimenez20} {Jimenez J.C., de la Cruz H., De Maio P., Efficient computation of phi-functions in exponential integrators, J. Comput. Appl. Math., 374 (2020) 112758.} ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Jimenez, J. C. and de la Cruz, H. and De Maio, P.',
+                                    'title' => 'Efficient computation of phi-functions in exponential integrators',
+                                    'journal' => 'J. Comput. Appl. Math.',
+                                    'year' => '2020',
+                                    'volume' => '374',
+                                    'note' => 'Article 112758',
+                                    ]
+                            ],
+                            [
+                                'source' => '	\bibitem{Jimenez06 SIAM} {Jimenez J.C., Pedroso L., Carbonell F., 		Hernadez V., Local linearization method for numerical integration of delay differential equations, SIAM J. Numer. Analysis, 44 (2006) 2584-2609.} ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Jimenez, J. C. and Pedroso, L. and Carbonell, F. and Hernadez, V.',
+                                    'title' => 'Local linearization method for numerical integration of delay differential equations',
+                                    'journal' => 'SIAM J. Numer. Analysis',
+                                    'year' => '2006',
+                                    'volume' => '44',
+                                    'pages' => '2584-2609',
+                                    ]
+                            ],
+                                                                                               
                         
                 ];
 
