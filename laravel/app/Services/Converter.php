@@ -4048,7 +4048,7 @@ class Converter
                     $afterQuote .= $char;
                 // inside match
                 } elseif ($begin == '``' || $begin == "''" || $begin == '"') {
-                    if ($char == "'" && $chars[$i-1] != '\\' && $chars[$i+1] && $chars[$i+1] == "'") {
+                    if ($char == "'" && $chars[$i-1] != '\\' && isset($chars[$i+1]) && $chars[$i+1] == "'") {
                         $end = true;
                         $skip = true;
                     } elseif ($char == '"' && $chars[$i-1] != '\\') {
