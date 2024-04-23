@@ -1313,6 +1313,9 @@ class Converter
 
                 $volumeNumberPages = $remainder;
 
+                // No space after \bf => add one
+                $remainder = preg_replace('/\\\bf([0-9])/', '\bf $1', $remainder);
+
                 // If $remainder ends with 'forthcoming' phrase and contains no digits (which might be volume & number,
                 // for example, even if paper is forthcoming), put that in note.  Else look for pages & volume etc.
                 if (preg_match('/' . $this->endForthcomingRegExp . '/', $remainder) && !preg_match('/[0-9]/', $remainder)) {
@@ -2828,7 +2831,7 @@ class Converter
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
-                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^Bull. |^J\. |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^Bull. |^J\. |^Am\. |^Phys\. |^Stud\. |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || preg_match('/^[a-aA-Z]+ J\./', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
@@ -3382,11 +3385,17 @@ class Converter
         $authorstring = $fullName = '';
         $remainingWords = $words;
         $warnings = [];
+        $skip = false;
 
         $wordHasComma = $prevWordHasComma = $oneWordAuthor = false;
 
         $this->verbose('convertToAuthors: Looking at each word in turn');
         foreach ($words as $i => $word) {
+            // if ($skip) {
+            //     $skip = false;
+            //     continue;
+            // }
+
             $word = substr($word, -1) == ';' ? substr($word, 0, -1) . ',' : $word;
 
             $nameComplete = true;
@@ -3461,6 +3470,11 @@ class Converter
             $edResult = $this->isEd($word);
 
             $nextWord = isset($words[$i+1]) ? rtrim($words[$i+1], ',;') : null;
+
+            // if ($nextWord && preg_match('/^[A-Z]\./', $word) && preg_match('/^-[A-Z]\./', $nextWord)) {
+            //     $word = $word . $nextWord;
+            //     $skip = true;
+            // }
 
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
@@ -4066,7 +4080,7 @@ class Converter
                         $beforeQuote .= $char;
                     }
                 } elseif ($char == "'") {
-                    if (($i == 0 || $chars[$i-1] != '\\') && $chars[$i+1] == "'") {
+                    if (($i == 0 || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "'") {
                         $begin = "''";
                         $skip = true;
                     } elseif ($i == 0 || $chars[$i-1] == ' ') {

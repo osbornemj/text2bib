@@ -4865,6 +4865,68 @@ class ExampleSeeder extends Seeder
                                     'pages' => '2584-2609',
                                     ]
                             ],
+                            [
+                                'source' => 'LIU H L，MA J，ZHANG G X. Review of studies on deep learning-based content recommendation algorithms［J］. Computer Engineering，2021，47（7）：1-12. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Liu H. L and Ma, J. and Zhang, G. X.',
+                                    'title' => 'Review of studies on deep learning-based content recommendation algorithms',
+                                    'journal' => 'Computer Engineering',
+                                    'pages' => '1-12',
+                                    'volume' => '47',
+                                    'year' => '2021',
+                                    'number' => '7',
+                                    ]
+                            ],
+                            [
+                                'source' => '\bibitem{PantaleoneAJP2002} J. Pantaleone, Synchronization of metronomes, Am. J. Phys. {\bf70}, 992 (2002). ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'J. Pantaleone',
+                                    'title' => 'Synchronization of metronomes',
+                                    'year' => '2002',
+                                    'journal' => 'Am. J. Phys.',
+                                    'volume' => '70',
+                                    'pages' => '992',
+                                    ]
+                            ],
+                            [
+                                'source' => '\bibitem{RauPR1963} J. Rau, Relaxation Phenomena in Spin and Harmonic Oscillator Systems, Phys. Rev. {\bf129}, 1880 (1963). ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'J. Rau',
+                                    'title' => 'Relaxation Phenomena in Spin and Harmonic Oscillator Systems',
+                                    'year' => '1963',
+                                    'journal' => 'Phys. Rev.',
+                                    'volume' => '129',
+                                    'pages' => '1880',
+                                    ]
+                            ],
+                            [
+                                'source' => '\bibitem{CattaneoPRL2021} M. Cattaneo, G. De Chiara, S. Maniscalco, R. Zambrini, and G. L. Giorgi, Collision Models Can Efficiently Simulate Any Multipartite Markovian Quantum Dynamics, Phys. Rev. Lett. {\bf126}, 130403 (2021). ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'M. Cattaneo and G. De Chiara and S. Maniscalco and R. Zambrini and G. L. Giorgi',
+                                    'title' => 'Collision Models Can Efficiently Simulate Any Multipartite {M}arkovian Quantum Dynamics',
+                                    'year' => '2021',
+                                    'journal' => 'Phys. Rev. Lett.',
+                                    'volume' => '126',
+                                    'pages' => '130403',
+                                    ]
+                            ],
+                            [
+                                'source' => ' \bibitem{LiPRA2023} W. Li, J. Cheng, W. -J. Gong, and J. Li, Nonlinear self-sustaining dynamics in cavity magnomechanics, Phys. Rev. A {\bf108}, 033518 (2023). ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'W. Li and J. Cheng and W.-J. Gong and J. Li',
+                                    'title' => 'Nonlinear self-sustaining dynamics in cavity magnomechanics',
+                                    'year' => '2023',
+                                    'journal' => 'Phys. Rev. A',
+                                    'volume' => '108',
+                                    'pages' => '033518',
+                                    ]
+                            ],
+                            
                                                                                                
                         
                 ];
