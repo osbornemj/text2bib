@@ -285,6 +285,7 @@ class Converter
         $dateRegExp = '[a-zA-Z0-9,/\-\. ]{8,18}';
         $this->retrievedFromRegExp2 = [
             'en' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
+//            'cz' => 'Dostupné z',
             'my' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
             'fr' => '[Rr]écupéré (?P<date1>' . $dateRegExp . ' )?sur |[Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?(à|sur) ',
             'es' => '[Oo]btenido (?P<date1>' . $dateRegExp . ' )?de |[Aa]ccedido (?P<date2>' . $dateRegExp . ' )?en ',
@@ -861,7 +862,13 @@ class Converter
             $title = substr($title, 0, -2); 
         }
 
-        $this->setField($item, 'title', rtrim($title, ' .,'), 'setField 12');
+        $title = rtrim($title, ' .,');
+        // Remove '[J]' at end of title (why does it appear?)
+        if (preg_match('/\[J\]$/', $title)) {
+            $title = substr($title, 0, -3);
+        }
+
+        $this->setField($item, 'title', trim($title), 'setField 12');
 
         $this->verbose("Remainder: " . $remainder);
 
@@ -3192,16 +3199,18 @@ class Converter
     {
         $case = 0;
         // Allow two periods after letter, in case of typo or initial at end of name string.
-        if (preg_match('/^[A-Z]\.?\.?$/', $word)) {
+        if (preg_match('/^[A-Z]\.?\.?$/', $word)) { // A..
             $case = 1;
-        } elseif (preg_match('/^[A-Z]\.[A-Z]\.$/', $word)) {
+        } elseif (preg_match('/^[A-Z]\.[A-Z]\.$/', $word)) { // A.B.
             $case = 2;
-        } elseif (preg_match('/^[A-Z][A-Z]$/', $word)) {
+        } elseif (preg_match('/^[A-Z][A-Z]$/', $word)) { // AB
             $case = 3;
-        } elseif (preg_match('/^[A-Z]\.[A-Z]\.[A-Z]\.$/', $word)) {
+        } elseif (preg_match('/^[A-Z]\.[A-Z]\.[A-Z]\.$/', $word)) { // A.B.C.
             $case = 4;
-        } elseif (preg_match('/^[A-Z][A-Z][A-Z]$/', $word)) {
+        } elseif (preg_match('/^[A-Z][A-Z][A-Z]$/', $word)) { // ABC
             $case = 5;
+        } elseif (preg_match('/^[A-Z]\.-[A-Z]\.$/', $word)) { // A.-B.
+            $case = 6;
         }
 
         if ($case) {
@@ -3391,10 +3400,10 @@ class Converter
 
         $this->verbose('convertToAuthors: Looking at each word in turn');
         foreach ($words as $i => $word) {
-            // if ($skip) {
-            //     $skip = false;
-            //     continue;
-            // }
+            if ($skip) {
+                $skip = false;
+                continue;
+            }
 
             $word = substr($word, -1) == ';' ? substr($word, 0, -1) . ',' : $word;
 
@@ -3471,10 +3480,12 @@ class Converter
 
             $nextWord = isset($words[$i+1]) ? rtrim($words[$i+1], ',;') : null;
 
-            // if ($nextWord && preg_match('/^[A-Z]\./', $word) && preg_match('/^-[A-Z]\./', $nextWord)) {
-            //     $word = $word . $nextWord;
-            //     $skip = true;
-            // }
+            // Case of initials A. -B. (with space).
+            if ($nextWord && preg_match('/^[A-Z]\./', $word) && preg_match('/^-[A-Z]\./', $nextWord)) {
+                $word = $word . $nextWord;
+                array_shift($remainingWords);
+                $skip = true;
+            }
 
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
@@ -5130,6 +5141,31 @@ class Converter
             // ‘ and ’
             $string = str_replace("\xE2\x80\x98", "``", $string);
             $string = str_replace("\xE2\x80\x99", "''", $string);
+
+            $string = str_replace("\xEF\xBC\x81", "!", $string);
+            $string = str_replace("\xEF\xBC\x82", '"', $string);
+            $string = str_replace("\xEF\xBC\x83", '#', $string);
+            $string = str_replace("\xEF\xBC\x84", '$', $string);
+            $string = str_replace("\xEF\xBC\x85", '%', $string);
+            $string = str_replace("\xEF\xBC\x86", '&', $string);
+            $string = str_replace("\xEF\xBC\x87", "'", $string);
+            $string = str_replace("\xEF\xBC\x88", "(", $string);
+            $string = str_replace("\xEF\xBC\x89", ")", $string);
+            $string = str_replace("\xEF\xBC\x8A", "*", $string);
+            $string = str_replace("\xEF\xBC\x8B", "+", $string);
+            $string = str_replace("\xEF\xBC\x8C", ", ", $string);
+            $string = str_replace("\xEF\xBC\x8D", "-", $string);
+            $string = str_replace("\xEF\xBC\x8E", ".", $string);
+            $string = str_replace("\xEF\xBC\x8F", "/", $string);
+            $string = str_replace("\xEF\xBC\x9A", ":", $string);
+            $string = str_replace("\xEF\xBC\x9B", ";", $string);
+            $string = str_replace("\xEF\xBC\x9F", "?", $string);
+            $string = str_replace("\xEF\xBC\x3B", "[", $string);
+            $string = str_replace("\xEF\xBC\x3D", "]", $string);
+            $string = str_replace("\xEF\xBD\x80", "`", $string);
+            $string = str_replace("\xEF\xBC\xBB", "[", $string);
+            $string = str_replace("\xEF\xBC\xBD", "]", $string);
+            $string = str_replace("\xEF\xBC\xBE", "^", $string);
 
             if ($language == 'my') {
                 // Burmese numerals

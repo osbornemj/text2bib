@@ -4866,10 +4866,10 @@ class ExampleSeeder extends Seeder
                                     ]
                             ],
                             [
-                                'source' => 'LIU H L，MA J，ZHANG G X. Review of studies on deep learning-based content recommendation algorithms［J］. Computer Engineering，2021，47（7）：1-12. ',
+                                'source' => 'LIU H L，Ma J，ZHANG G X. Review of studies on deep learning-based content recommendation algorithms［J］. Computer Engineering，2021，47（7）：1-12. ',
                                 'type' => 'article',
                                 'bibtex' => [
-                                    'author' => 'Liu H. L and Ma, J. and Zhang, G. X.',
+                                    'author' => 'Liu, H. L. and Ma, J. and Zhang, G. X.',
                                     'title' => 'Review of studies on deep learning-based content recommendation algorithms',
                                     'journal' => 'Computer Engineering',
                                     'pages' => '1-12',
@@ -4926,6 +4926,55 @@ class ExampleSeeder extends Seeder
                                     'pages' => '033518',
                                     ]
                             ],
+                            [
+                                'source' => '\bibitem {b22} K. Plis, R. Bunescu and C. Marling, "A machine learning approach to predicting blood glucose levels for diabetes management," in AAAI-14: 2014 Association for the Advancement of Artificial Intelligence Workshop, Ohio, 2014.  ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'K. Plis and R. Bunescu and C. Marling',
+                                    'title' => 'A machine learning approach to predicting blood glucose levels for diabetes management',
+                                    'journal' => 'AAAI-14: 2014 Association for the Advancement of Artificial Intelligence Workshop, Ohio',
+                                    'year' => '2014',
+                                    ]
+                            ],
+                            [
+                                // conversion 2061, 525-2059-source.txt
+                                'source' => 'Young, L., & Dungan, J. (2012). Where in the brain is morality? Everywhere and maybe nowhere. Social Neuroscience, 7(February), 1-10. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Young, L. and Dungan, J.',
+                                    'year' => '2012',
+                                    'title' => 'Where in the brain is morality? Everywhere and maybe nowhere',
+                                    'journal' => 'Social Neuroscience',
+                                    'month' => 'February',
+                                    'volume' => '7',
+                                    'pages' => '1-10',
+                                    ]
+                            ],
+                            [
+                                'source' => 'Yoo, H., Feng, X., & Day, R. (2013). Adolescents? empathy and prosocial behavior in the family context: a longitudinal study. Journal of Youth and Adolescence, 42(12), 1858-72. doi:10.1007/s10964-012-9900-6 ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'doi' => '10.1007/s10964-012-9900-6',
+                                    'author' => 'Yoo, H. and Feng, X. and Day, R.',
+                                    'year' => '2013',
+                                    'title' => 'Adolescents? empathy and prosocial behavior in the family context: a longitudinal study',
+                                    'journal' => 'Journal of Youth and Adolescence',
+                                    'volume' => '42',
+                                    'number' => '12',
+                                    'pages' => '1858-72',
+                                    ]
+                            ],
+                            [
+                                'source' => 'BOAG Paul. Why whitespace matters [online]. Dostupné z: https://boagworld.com/design/why-whitespace-matters/ ',
+                                'type' => 'online',
+                                'bibtex' => [
+                                    'note' => 'Dostupn{\\\'e} z',
+                                    'url' => 'https://boagworld.com/design/why-whitespace-matters/',
+                                    'author' => 'Boag, Paul',
+                                    'title' => 'Why whitespace matters',
+                                    ]
+                            ],
+                            
                             
                                                                                                
                         
