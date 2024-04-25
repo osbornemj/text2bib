@@ -247,10 +247,16 @@ class Converter
         $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on | meeting | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop |^actas del )';
         $this->proceedingsExceptions = '^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.';
 
-        $this->thesisRegExp = '[ \(\[]?([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse)';
-        $this->masterRegExp = '[Mm]aster(\'s)?|MA|M\.A\.';
-        $this->phdRegExp = 'Ph[Dd]|Ph\.D\.|Ph\. D\.|Ph\.D|[Dd]octoral';
-        $this->fullThesisRegExp = '((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]issertation)|Thèse de doctorat|Tesis doctoral)';
+        $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
+        $this->masterRegExp = '[Mm]aster(\'s)?|M\.?A\.?';
+        $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral';
+        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]issertation))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de maestría|Tese de doutorado|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce)';
+        // pt: Dissertação de Mestrado | Tese de mestrado
+        // es: Tesis de maestría
+        // nl: Masterproef | Doctoraal proefschrift
+        // fr: thèse de master
+        // my: မဟာဘွဲ့စာတမ်း | ပါရဂူစာတမ်း
+        // cz: Doktorská práce | Diplomová práce
 
         $this->inReviewRegExp1 = '/[Ii]n [Rr]eview\.?\)?$/';
         $this->inReviewRegExp2 = '/^[Ii]n [Rr]eview/';
@@ -305,7 +311,7 @@ class Converter
         $this->monthsRegExp = [
             'en' => 'January|Jan[.,; ]|February|Feb[.,; ]|March|Mar[.,; ]|April|Apr[.,; ]|May|June|Jun[.,; ]|July|Jul[.,; ]|'
                 . 'August|Aug[.,; ]|September|Sept?[.,; ]|October|Oct[.,; ]|November|Nov[.,; ]|December|Dec[.,; ]',
-            'my' => 'ဇန်နဝါရီလ|ဖေဖော်ဝါရီ|မတ်လ|ဧပြီလ|မေ|ဇွန်လ|ဇူလိုင်လ|သြဂုတ်လ|စက်တင်ဘာ|အောက်တိုဘာလ|နိုဝင်ဘာလ|ဒီဇင်ဘာ',
+            'my' => 'ဇန်နဝါရီလ|ဖေဖော်ဝါရီ|မတ်လ|ဧပြီလ|မေ|ဇွန်လ|ဇူလိုင်လ|ဩဂုတ်လ|စက်တင်ဘာ|အောက်တိုဘာလ|နိုဝင်ဘာလ|ဒီဇင်ဘာ',
             'fr' => 'janvier|janv[.,; ]|février|févr[.,; ]|mars|avril|avr[., ]|mai|juin|juillet|juill?[.,; ]|'
                 . 'aout|août|septembre|sept?[.,; ]|octobre|oct[.,; ]|novembre|nov[.,; ]|décembre|déc[.,; ]',
             'es' => 'enero|febrero|feb[.,; ]|marzo|mar[.,; ]|abril|abr[.,; ]|mayo|junio|jun[.,; ]|julio|jul[.,; ]|'
@@ -743,7 +749,20 @@ class Converter
 
         $isEditor = false;
 
-        if (isset($words[0]) && preg_match('/^_+\.?$/', $words[0])) {
+        if ($language == 'my') {
+            preg_match('/^(?P<author>[^,]*), (?P<authortitle>[^,]*), (?P<remainder>.*)$/', $remainder, $matches);
+            //$this->setField($item, 'author', rtrim($words[0], ',') ?? '', 'setField m1');
+            $authorConversion = ['authorstring' => rtrim($words[0], ','), 'warnings' => [], 'oneWordAuthor' => false];
+            array_shift($words);
+            $this->setField($item, 'author-title', rtrim($words[0], ',') ?? '', 'setField m2');
+            array_shift($words);
+            $year = trim($words[0], '(),');
+            array_shift($words);
+            $isEditor = false;
+            $month = $day = $date = null;
+            $itemKind = 'book';
+            $remainder = implode(' ', $words);
+        } elseif (isset($words[0]) && preg_match('/^_+\.?$/', $words[0])) {
             $authorConversion = ['authorstring' => $previousAuthor, 'warnings' => [], 'oneWordAuthor' => false];
             $month = $day = $date = null;
             $isEditor = false;
@@ -2305,6 +2324,8 @@ class Converter
             case 'book':
                 $remainingWords = explode(" ", $remainder);
 
+//dd($remainingWords);
+
                 // If remainder contains word 'edition', take previous word as the edition number
                 $this->verbose('Looking for edition');
                 foreach ($remainingWords as $key => $word) {
@@ -2934,7 +2955,7 @@ class Converter
                             preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriod,0,-1))
                             //preg_match('/[a-zA-Z -]+/', substr($stringToNextPeriod,0,-1))
                             && !preg_match($this->inRegExp1, $remainder)
-                            && strlen($remainder) > strlen($stringToNextPeriod) + ($containsPages ? 40 : 30)) {
+                            && strlen($remainder) > strlen($stringToNextPeriod) + ($containsPages ? 37 : 30)) {
                         $this->verbose("Not ending title, case 2 (next word is " . $nextWord . ")");
                     // else if working paper string occurs later in remainder,
                     } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/i', $remainder, $matches)) {
@@ -3698,6 +3719,7 @@ class Converter
                     $nameComponent = (strlen($name) > 2 && strtoupper($name) == $name && strpos($name, '.') === false) ? ucfirst(mb_strtolower($name)) : $name;
                     $oldFullName = $fullName;
                     $fullName .= ' ' . $nameComponent;
+                    //dd($name, $fullName, $i);
                     if ($wordIsVon) {
                         $this->verbose('[convertToAuthors 16]');
                         $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name");
@@ -4716,9 +4738,10 @@ class Converter
         $initialsStart = count($namesRaw);
         $allUppercase = true;
         $names = [];
+        $initialsMaxStringLength = 2; // initials could be 'A' or 'AB' or 'A.'
+
         foreach ($namesRaw as $k => $name) {
             $lettersOnlyName = preg_replace("/[^A-Za-z]/", '', $name);
-            $initialsMaxStringLength = 2; // initials could be 'A' or 'AB' or 'A.'
             $initialsStart = (strtoupper($lettersOnlyName) == $lettersOnlyName 
                     && strlen($lettersOnlyName) <= $initialsMaxStringLength) ? min([$k, $initialsStart]) : count($namesRaw);
             // Ignore $name that is '.' or ',' (a typo)

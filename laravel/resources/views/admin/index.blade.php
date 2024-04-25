@@ -62,6 +62,18 @@
                 (journal names, based on conversions marked as correct by users and approved by administrator)
             </p>
             <p>
+                <x-link :href="route('startJournalAbbreviations.index')" :active="request()->routeIs('startJournalAbbreviations.index')">
+                    Start journal abbreviations
+                </x-link>
+                @if ($uncheckedStartJournalAbbreviationCount)
+                    <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedStartJournalAbbreviationCount }}</span>
+                    <x-link :href="route('admin.startJournalAbbreviations.unchecked')" :active="request()->routeIs('admin.startJournalAbbreviations.unchecked')">
+                        unchecked
+                    </x-link>
+                @endif
+                (abbreviations that begin journal names)
+            </p>
+            <p>
                 <x-link :href="route('vonNames.index')" :active="request()->routeIs('vonNames.index')">
                     von Names
                 </x-link>

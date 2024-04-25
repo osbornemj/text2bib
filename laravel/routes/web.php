@@ -18,13 +18,13 @@ use App\Http\Controllers\Admin\ItemTypesController;
 use App\Http\Controllers\Admin\JournalsController;
 use App\Http\Controllers\Admin\NamesController;
 use App\Http\Controllers\Admin\PublishersController;
+use App\Http\Controllers\Admin\StartJournalAbbreviationsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\VonNamesController;
 
 use App\Http\Controllers\Convert\ErrorReportController;
 use App\Http\Controllers\Convert\FileUploadController;
 use App\Http\Controllers\Convert\DownloadBibtexController;
-
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -92,6 +92,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         '/admin/vonNames' => VonNamesController::class,
         '/admin/publishers' => PublishersController::class,
         '/admin/cities' => CitiesController::class,
+        '/admin/startJournalAbbreviations' => StartJournalAbbreviationsController::class,
         '/admin/names' => NamesController::class,
         '/admin/excludedWords' => ExcludedWordsController::class,
         '/admin/dictionaryNames' => DictionaryNamesController::class,
@@ -101,10 +102,15 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::controller(AdminController::class)->group(function () {
         Route::get('/admin/index', 'index')->name('admin.index');
         Route::get('/admin/addVersion', 'addVersion')->name('admin.addVersion');
+        Route::get('/admin/addExistingStarts', 'addExistingStarts')->name('admin.startJournalAbbreviations.addExistingStarts');
     });
 
     Route::controller(JournalsController::class)->group(function () {
         Route::get('/admin/uncheckedJournals', 'unchecked')->name('admin.journals.unchecked');
+    });
+
+    Route::controller(StartJournalAbbreviationsController::class)->group(function () {
+        Route::get('/admin/uncheckedStartJournalAbbreviations', 'unchecked')->name('admin.startJournalAbbreviations.unchecked');
     });
 
     Route::controller(ConversionAdminController::class)->group(function () {
