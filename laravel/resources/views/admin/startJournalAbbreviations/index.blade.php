@@ -9,9 +9,11 @@
         A word is distinctive (purple button) if it cannot plausibly occur as the last word in a title, following a comma.
     </div>
 
+    {{--
     <div class="px-4 my-2 sm:px-4 sm:rounded-lg">
         <x-link href="/admin/addExistingStarts">Add words from existing journals</x-link>
     </div>
+    --}}
 
     <div class="px-4 sm:px-4 sm:rounded-lg">
         <x-link href="/admin/startJournalAbbreviations/create">Add abbreviation used as first word in journal name</x-link>
