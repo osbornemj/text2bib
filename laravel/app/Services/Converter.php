@@ -2355,23 +2355,23 @@ class Converter
                     if (preg_match('/^"(?P<pubinfo>[^"]*)"(?P<pages>.*)$/', $remainder, $matches)) {
                         $pubinfo = $matches['pubinfo'];
                         $pages = $matches['pages'];
-                    }
 
-                    $pubinfoParts = explode('။', $pubinfo);
-                    if (isset($pubinfoParts[0])) {
-                        $this->setField($item, 'publisher-name', trim($pubinfoParts[0] . '။'));
-                    }
-                    if (isset($pubinfoParts[1])) {
-                        $this->setField($item, 'publisher-address', trim($pubinfoParts[1] . '။'));
-                    }
-                    if (isset($pubinfoParts[2])) {
-                        $this->setField($item, 'printer-name', trim($pubinfoParts[2] . '။'));
-                    }
-                    if (isset($pubinfoParts[3])) {
-                        $this->setField($item, 'printer-address', trim($pubinfoParts[3] . '။'));
-                    }
-                    if (isset($pages)) {
-                        $this->setField($item, 'pages', trim($pages, ' ,'));
+                        $pubinfoParts = explode('။', $pubinfo);
+                        if (isset($pubinfoParts[0])) {
+                            $this->setField($item, 'publisher-name', trim($pubinfoParts[0] . '။'));
+                        }
+                        if (isset($pubinfoParts[1])) {
+                            $this->setField($item, 'publisher-address', trim($pubinfoParts[1] . '။'));
+                        }
+                        if (isset($pubinfoParts[2])) {
+                            $this->setField($item, 'printer-name', trim($pubinfoParts[2] . '။'));
+                        }
+                        if (isset($pubinfoParts[3])) {
+                            $this->setField($item, 'printer-address', trim($pubinfoParts[3] . '။'));
+                        }
+                        if (isset($pages)) {
+                            $this->setField($item, 'pages', trim($pages, ' ,'));
+                        }
                     }
 
                     $remainder = '';
