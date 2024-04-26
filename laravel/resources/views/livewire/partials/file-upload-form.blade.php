@@ -80,6 +80,9 @@
         <x-radio-input wire:model="uploadForm.language" value="my" class="peer/my ml-4" /> 
         <x-value-label for="en" class="peer-checked/my:text-blue-600 ml-1" :value="__('Burmese')" />
 
+        <x-radio-input wire:model="uploadForm.language" value="cz" class="peer/cz ml-4" />
+        <x-value-label for="cz" class="peer-checked/cz:text-blue-600 ml-1" :value="__('Czech')" />
+
         <x-radio-input wire:model="uploadForm.language" value="nl" class="peer/nl ml-4" />
         <x-value-label for="nl" class="peer-checked/nl:text-blue-600 ml-1" :value="__('Dutch')" />
 

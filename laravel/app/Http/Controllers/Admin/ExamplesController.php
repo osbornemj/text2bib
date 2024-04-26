@@ -20,7 +20,7 @@ class ExamplesController extends Controller
 
         $typeOptions = ['detailed' => 'details', 'brief' => 'brief'];
         $utf8Options = ['utf8leave' => 'do not convert accents to TeX', 'utf8' => 'convert accents to TeX'];
-        $languageOptions = ['en' => 'en', 'fr' => 'fr', 'es' => 'es', 'my' => 'my', 'pt' => 'pt'];
+        $languageOptions = ['en' => 'en', 'cz' => 'cz', 'es' => 'es', 'fr' => 'fr', 'my' => 'my', 'nl' => 'nl', 'pt' => 'pt'];
         $detailOptions = ['show' => 'show', 'hide' => 'hide'];
 
         return view('admin.examples.index',

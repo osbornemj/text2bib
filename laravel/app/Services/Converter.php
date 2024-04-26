@@ -146,15 +146,15 @@ class Converter
                 'eds.' => 'eds.',
                 'edited by' => 'edited by'
                 ],
-            'my' =>
+            'cz' =>
                 [
-                'and' => 'နှင့်',
-                'in' => 'in',
+                'and' => 'a',
+                'in' => 'v',
                 'editor' => 'editor',
                 'editors' => 'editors',
                 'ed.' => 'ed.',
                 'eds.' => 'eds.',
-                'edited by' => 'edited by'
+                'edited by' => 'upravil'
                 ],
             'fr' =>
                 [
@@ -186,6 +186,16 @@ class Converter
                 'eds.' => 'eds.',
                 'edited by' => 'edited by'
                 ],
+            'my' =>
+                [
+                'and' => 'နှင့်',
+                'in' => 'in',
+                'editor' => 'editor',
+                'editors' => 'editors',
+                'ed.' => 'ed.',
+                'eds.' => 'eds.',
+                'edited by' => 'edited by'
+                ],
             'nl' =>
                 [
                 'and' => 'en',
@@ -202,13 +212,15 @@ class Converter
         $this->ordinals = [
             'en' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
-            'my' =>
+            'cz' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
             'fr' =>
                 ['1er', '2e', '3e', '4e', '5e', '6e', '7e'],
             'es' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
             'pt' =>
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
+            'my' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
             'nl' =>
                 ['1e', '2e', '3e', '4e', '5e', '6e', '7e'],
@@ -288,10 +300,11 @@ class Converter
 
         $this->retrievedFromRegExp1 = [
             'en' => '(Retrieved from |Available( at)?:? )',
-            'my' => '(Retrieved from |Available( at)?:? )',
+            'cz' => '(Dostupné z:? |načteno z:? )',
             'fr' => '(Récupéré sur |Disponible( à)?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
             'pt' => '(Disponível( em)?:? |Obtido de:? )',
+            'my' => '(Retrieved from |Available( at)?:? )',
             'nl' => '(Opgehaald van |Verkrijgbaar( bij)?:? |Available( at)?:? )',
         ];
 
@@ -299,33 +312,37 @@ class Converter
         $dateRegExp = '[a-zA-Z0-9,/\-\. ]{8,18}';
         $this->retrievedFromRegExp2 = [
             'en' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
-//            'cz' => 'Dostupné z',
-            'my' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
+            'cz' => '[Dd]ostupné (?P<date1>' . $dateRegExp . ' )?(, )?z |[Zz]přístupněno (?P<date2>' . $dateRegExp . ' )?na ',
             'fr' => '[Rr]écupéré (?P<date1>' . $dateRegExp . ' )?sur |[Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?(à|sur) ',
             'es' => '[Oo]btenido (?P<date1>' . $dateRegExp . ' )?de |[Aa]ccedido (?P<date2>' . $dateRegExp . ' )?en ',
             'pt' => '[Oo]btido (?P<date1>' . $dateRegExp . ' )?de |[Aa]cesso (?P<date2>' . $dateRegExp . ' )?em ',
+            'my' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
             'nl' => '[Oo]pgehaald (?P<date1>' . $dateRegExp . ' )?(, )?van |[Gg]eraadpleegd op (?P<date2>' . $dateRegExp . ' )?om ',
         ];
 
         $this->accessedRegExp1 = [
             'en' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
-            'my' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
+            'cz' => '([Nn]ačteno|[Zz]přístupněno|[Zz]obrazeno)( dne)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'fr' => '([Rr]écupéré |[Cc]onsulté (le )?)(?P<date2>' . $dateRegExp . ')',
             'es' => '([Oo]btenido|[Aa]ccedido)[,:]? (?P<date2>' . $dateRegExp . ')',
             'pt' => '([Oo]btido |[Aa]cesso (em:?)? )(?P<date2>' . $dateRegExp . ')',
+            'my' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken),? (?P<date2>' . $dateRegExp . ')',
         ];
 
+        // Month abbreviations in many languages: https://web.library.yale.edu/cataloging/months
         $this->monthsRegExp = [
             'en' => 'January|Jan[.,; ]|February|Feb[.,; ]|March|Mar[.,; ]|April|Apr[.,; ]|May|June|Jun[.,; ]|July|Jul[.,; ]|'
                 . 'August|Aug[.,; ]|September|Sept?[.,; ]|October|Oct[.,; ]|November|Nov[.,; ]|December|Dec[.,; ]',
-            'my' => 'ဇန်နဝါရီလ|ဖေဖော်ဝါရီ|မတ်လ|ဧပြီလ|မေ|ဇွန်လ|ဇူလိုင်လ|ဩဂုတ်လ|စက်တင်ဘာ|အောက်တိုဘာလ|နိုဝင်ဘာလ|ဒီဇင်ဘာ',
+            'cz' => 'leden|led[.,; ]|únor|ún[.,; ]|březen|břez[.,; ]|duben|dub[.,; ]|květen|květ[.,; ]|červen|červ[.,; ]|'
+                . 'červenec|červen[.,; ]|srpen|srp[.,; ]|září|zář[.,; ]|říjen|říj[.,; ]|listopad|list[.,; ]|prosinec|pros[.,; ]',
             'fr' => 'janvier|janv[.,; ]|février|févr[.,; ]|mars|avril|avr[., ]|mai|juin|juillet|juill?[.,; ]|'
                 . 'aout|août|septembre|sept?[.,; ]|octobre|oct[.,; ]|novembre|nov[.,; ]|décembre|déc[.,; ]',
             'es' => 'enero|febrero|feb[.,; ]|marzo|mar[.,; ]|abril|abr[.,; ]|mayo|junio|jun[.,; ]|julio|jul[.,; ]|'
                 . 'agosto|septiembre|sept?[.,; ]|octubre|oct[.,; ]|noviembre|nov[.,; ]|deciembre|dec[.,; ]',
             'pt' => 'janeiro|jan[.,; ]|fevereiro|fev[.,; ]|março|mar[.,; ]|abril|abr[.,; ]|maio|mai[.,; ]|junho|jun[.,; ]|julho|jul[.,; ]|'
                 . 'agosto|ago[.,; ]setembro|set[.,; ]|outubro|oct[.,; ]|novembro|nov[.,; ]|dezembro|dez[.,; ]',
+            'my' => 'ဇန်နဝါရီလ|ဖေဖော်ဝါရီ|မတ်လ|ဧပြီလ|မေ|ဇွန်လ|ဇူလိုင်လ|ဩဂုတ်လ|စက်တင်ဘာ|အောက်တိုဘာလ|နိုဝင်ဘာလ|ဒီဇင်ဘာ',
             'nl' => 'januari|jan[.,; ]|februari|febr[.,; ]|maart|mrt[.,; ]|april|apr[.,; ]|mei|juni|juli|'
                 . 'augustus|aug[.,; ]|september|sep[.,; ]|oktober|okt[.,; ]|november|nov[.,; ]|december|dec[.,; ]',
         ];
@@ -3286,7 +3303,7 @@ class Converter
      */
     private function isDate(string $string, string $language = 'en', string $type = 'is'): bool|array
     {
-        $ofs = ['en' => '', 'my' => '', 'nl' => '', 'fr' => '', 'es' => '', 'pt' => 'de'];
+        $ofs = ['en' => '', 'cz' => '', 'fr' => '', 'es' => '', 'my' => '', 'nl' => '', 'pt' => 'de'];
 
         $year = '(?P<year>(19|20)[0-9]{2})';
         $monthName = $this->monthsRegExp[$language];
