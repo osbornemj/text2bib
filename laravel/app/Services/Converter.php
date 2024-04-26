@@ -13,6 +13,7 @@ use App\Models\ExcludedWord;
 use App\Models\Journal;
 use App\Models\Name;
 use App\Models\Publisher;
+use App\Models\StartJournalAbbreviation;
 use App\Models\VonName;
 
 use App\Traits\MakeScholarTitle;
@@ -78,6 +79,7 @@ class Converter
     var $retrievedFromRegExp1;
     var $retrievedFromRegExp2;
     var $startForthcomingRegExp;
+    var $startJournalAbbreviations;
     var $thesisRegExp;
     var $volRegExp0;
     var $volRegExp1;
@@ -105,6 +107,12 @@ class Converter
             ->where('checked', 1)
             ->orderByRaw('CHAR_LENGTH(name) DESC')
             ->pluck('name')
+            ->toArray();
+
+        // Abbreviations used as the first words of journal names (like "J." or "Bull.")
+        $this->startJournalAbbreviations = StartJournalAbbreviation::where('distinctive', 1)
+            ->where('checked', 1)
+            ->pluck('word')
             ->toArray();
 
         // The script will identify strings as cities and publishers even if they are not in these arrays---but the
@@ -2335,19 +2343,15 @@ class Converter
                     $pubinfoParts = explode('။', $pubinfo);
                     if (isset($pubinfoParts[0])) {
                         $this->setField($item, 'publisher-name', trim($pubinfoParts[0] . '။'));
-//                        $this->setField($item, 'publisher-name', trim($pubinfoParts[0]));
                     }
                     if (isset($pubinfoParts[1])) {
                         $this->setField($item, 'publisher-address', trim($pubinfoParts[1] . '။'));
-//                        $this->setField($item, 'publisher-address', trim($pubinfoParts[1]));
                     }
                     if (isset($pubinfoParts[2])) {
                         $this->setField($item, 'printer-name', trim($pubinfoParts[2] . '။'));
-//                        $this->setField($item, 'printer-name', trim($pubinfoParts[2]));
                     }
                     if (isset($pubinfoParts[3])) {
                         $this->setField($item, 'printer-address', trim($pubinfoParts[3] . '။'));
-//                        $this->setField($item, 'printer-address', trim($pubinfoParts[3]));
                     }
                     if (isset($pages)) {
                         $this->setField($item, 'pages', trim($pages, ' ,'));
@@ -2891,7 +2895,8 @@ class Converter
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
-                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^Bull. |^J\. |^Am\. |^Phys\. |^Stud\. |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
                         || preg_match('/^[a-aA-Z]+ J\./', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
