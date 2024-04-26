@@ -16,6 +16,7 @@ use App\Models\Journal;
 use App\Models\Output;
 use App\Models\Publisher;
 use App\Models\RawOutput;
+use App\Models\StartJournalAbbreviation;
 use App\Models\User;
 
 use App\Notifications\ErrorReportPosted;
@@ -131,6 +132,11 @@ class ShowConvertedItem extends Component
                 $journal = new Journal;
                 $journal->name = $journalName;
                 $journal->save();
+            }
+            if (preg_match('/^(?P<firstWord>[A-Z][a-z]+)\. /', $journalName, $matches)) {
+                if (isset($matches['firstWord'])) {
+                    StartJournalAbbreviation::firstOrCreate(['word' => $matches['firstWord']]);
+                }
             }
         } else {
             if (in_array($output->itemType->name, ['book', 'incollection'])) {
