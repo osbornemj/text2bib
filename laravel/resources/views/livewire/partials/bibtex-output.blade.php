@@ -21,9 +21,11 @@
                         The character encoding in {{ $convertedEncodingCount }} {{ Str::plural('item', $convertedEncodingCount) }} in the file you uploaded is ISO-8859-1 or Windows-1252, not UTF-8 (as indicated in red in the following list).  The script has attempted to convert {{ $convertedEncodingCount > 1 ? 'these items' : 'this item' }} to UTF-8, but may not have succeeded.  You may get better results by using <x-link href="https://notepad-plus-plus.org/" target="_blank">Notepad++</x-link> to convert your file to UTF-8 before you upload it. (Within Notepad++, click on "Encoding", and then on "Convert to UTF-8".)
                     </p>
                 @endif
+                {{--
                 <p class="mt-2 text-emerald-700 dark:text-emerald-600">
                     You can help me improve the algorithm by pointing out items that meet the requirements but nevertheless are converted incorrectly.  Submit either an error report or a comment (and please reply to any request for clarification).
                 </p>
+                --}}
                 <p class="mt-2">
                     @include('index.partials.settings')
                 </p>
@@ -51,12 +53,17 @@
                         </ul>
                         @endif
 
+                        @php
+                            $language = $conversion->language;
+                        @endphp
+
                         <div>
                             <livewire:show-converted-item 
                                 :convertedItem="$convertedItem" 
                                 :itemTypes="$itemTypes" 
                                 :outputId="$outputId" 
                                 :itemTypeOptions="$itemTypeOptions"
+                                :language="$language"
                             />
                         </div>
                         

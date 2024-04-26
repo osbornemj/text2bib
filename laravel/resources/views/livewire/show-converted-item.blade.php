@@ -5,7 +5,7 @@
         </p>
     @endif
 
-    @if (count($convertedItem['warnings']))
+    @if (count($convertedItem['warnings']) && $language != 'my')
     <ul>
         @foreach ($convertedItem['warnings'] as $warning)
             <li>

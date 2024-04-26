@@ -30,6 +30,7 @@ class ShowConvertedItem extends Component
     public $itemTypes;
     public $fields;
     public $errorReport;
+    public $language = 'my';
 
     public $itemTypeId;
 
@@ -48,7 +49,16 @@ class ShowConvertedItem extends Component
 
         $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
         $this->itemTypeId = $itemType->id;
-        $this->fields = $itemType->fields;
+
+        // For Burmese items, just show the fields in the item
+        if ($this->language == 'my') {
+            $this->fields = [];
+            foreach ($this->convertedItem['item'] as $f => $c) {
+                $this->fields[] = $f;
+            }
+        } else {
+            $this->fields = $itemType->fields;
+        }
 
         $this->displayState = 'none';
 
@@ -117,7 +127,7 @@ class ShowConvertedItem extends Component
     {
         if ($output->itemType->name == 'article' && isset(($output->item)['journal'])) {
             $journalName = ($output->item)['journal'];
-            if (!Journal::where('name', $journalName)->exists()) {
+            if (! Journal::where('name', $journalName)->exists()) {
                 $journal = new Journal;
                 $journal->name = $journalName;
                 $journal->save();

@@ -245,7 +245,7 @@ class Converter
 
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
         $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on | meeting | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop |^actas del )';
-        $this->proceedingsExceptions = '^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.';
+        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'s)?|M\.?A\.?';
@@ -749,12 +749,13 @@ class Converter
 
         $isEditor = false;
 
+        $authorTitle = null;
         if ($language == 'my') {
             preg_match('/^(?P<author>[^,]*), (?P<authortitle>[^,]*), (?P<remainder>.*)$/', $remainder, $matches);
             //$this->setField($item, 'author', rtrim($words[0], ',') ?? '', 'setField m1');
             $authorConversion = ['authorstring' => rtrim($words[0], ','), 'warnings' => [], 'oneWordAuthor' => false];
             array_shift($words);
-            $this->setField($item, 'author-title', rtrim($words[0], ',') ?? '', 'setField m2');
+            $authorTitle = rtrim($words[0], ',') ?? '';
             array_shift($words);
             $year = trim($words[0], '(),');
             array_shift($words);
@@ -814,8 +815,11 @@ class Converter
             '(' . $phrases['eds.'] . ')'
         ];
 
-        if ($isEditor === false && !Str::contains($authorstring, $editorPhrases)) {
+        if ($isEditor === false && ! Str::contains($authorstring, $editorPhrases)) {
             $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 7');
+            if ($language == 'my') {
+                $this->setField($item, 'author-title', $authorTitle, 'setField m2');
+            }
         } else {
             $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' .,'), 'setField 8');
         }
@@ -2322,9 +2326,37 @@ class Converter
             //////////////////////////////////////////
 
             case 'book':
-                $remainingWords = explode(" ", $remainder);
+                if ($language == 'my') {
+                    if (preg_match('/^"(?P<pubinfo>[^"]*)"(?P<pages>.*)$/', $remainder, $matches)) {
+                        $pubinfo = $matches['pubinfo'];
+                        $pages = $matches['pages'];
+                    }
 
-//dd($remainingWords);
+                    $pubinfoParts = explode('။', $pubinfo);
+                    if (isset($pubinfoParts[0])) {
+                        $this->setField($item, 'publisher-name', trim($pubinfoParts[0] . '။'));
+//                        $this->setField($item, 'publisher-name', trim($pubinfoParts[0]));
+                    }
+                    if (isset($pubinfoParts[1])) {
+                        $this->setField($item, 'publisher-address', trim($pubinfoParts[1] . '။'));
+//                        $this->setField($item, 'publisher-address', trim($pubinfoParts[1]));
+                    }
+                    if (isset($pubinfoParts[2])) {
+                        $this->setField($item, 'printer-name', trim($pubinfoParts[2] . '။'));
+//                        $this->setField($item, 'printer-name', trim($pubinfoParts[2]));
+                    }
+                    if (isset($pubinfoParts[3])) {
+                        $this->setField($item, 'printer-address', trim($pubinfoParts[3] . '။'));
+//                        $this->setField($item, 'printer-address', trim($pubinfoParts[3]));
+                    }
+                    if (isset($pages)) {
+                        $this->setField($item, 'pages', trim($pages, ' ,'));
+                    }
+
+                    $remainder = '';
+                }
+
+                $remainingWords = explode(" ", $remainder);
 
                 // If remainder contains word 'edition', take previous word as the edition number
                 $this->verbose('Looking for edition');
@@ -3287,7 +3319,7 @@ class Converter
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
         // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian
-        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', 'y', 'e', 'et', 'en', 'und', 'и']) || $string == 'with';
+        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и']) || $string == 'with';
     }
 
     /*
@@ -4286,7 +4318,8 @@ class Converter
 
         $centuries = $allowEarlyYears ? '13|14|15|16|17|18|19|20' : '18|19|20';
 
-        if (preg_match('/^(?P<year>[\(\[]n\. ?d\.[\)\]]|[\(\[]s\. ?f\.[\)\]]|forthcoming)(?P<remains>.*)$/i', $remains, $matches0)) {
+        // en => n.d., es => 's.f.', pt => 's.d.'?
+        if (preg_match('/^(?P<year>[\(\[]n\. ?d\.[\)\]]|[\(\[]s\. ?[df]\.[\)\]]|forthcoming)(?P<remains>.*)$/i', $remains, $matches0)) {
             $remains = $matches0['remains'];
             $year = trim($matches0['year'], '[]()');
             return $year;
