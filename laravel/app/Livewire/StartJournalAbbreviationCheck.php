@@ -7,6 +7,7 @@ use Livewire\Component;
 class StartJournalAbbreviationCheck extends Component
 {
     public $startJournalAbbreviation;
+    public $type;
 
     public function check($value)
     {

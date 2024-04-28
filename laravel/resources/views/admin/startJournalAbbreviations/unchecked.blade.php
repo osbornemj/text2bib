@@ -20,7 +20,7 @@
                 @foreach ($uncheckedStartJournalAbbreviations as $startJournalAbbreviation)
                 <li>
                     <div>
-                    <livewire:start-journal-abbreviation-check :startJournalAbbreviation="$startJournalAbbreviation" :currentPage="$uncheckedStartJournalAbbreviations->currentPage()" />
+                    <livewire:start-journal-abbreviation-check :startJournalAbbreviation="$startJournalAbbreviation" :currentPage="$uncheckedStartJournalAbbreviations->currentPage()" type="unchecked"/>
                     </div>
                 </li>
                 @endforeach

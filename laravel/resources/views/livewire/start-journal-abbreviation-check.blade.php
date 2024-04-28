@@ -25,8 +25,11 @@
         </x-small-button>
     @endif
 
-    <span class="ml-2">
-        {{ $startJournalAbbreviation->output->item['journal'] ?? '' }}
-    </span>
+    @if ($type == 'unchecked')
+        <span class="ml-2">
+            {{ $startJournalAbbreviation->output->source }}
+            {{-- $startJournalAbbreviation->output->item['journal'] ?? '' --}}
+        </span>
+    @endif
 
 </div>

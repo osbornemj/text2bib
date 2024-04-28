@@ -23,7 +23,7 @@
                 @foreach ($uncheckedStartJournalAbbreviations as $startJournalAbbreviation)
                 <li>
                     <div>
-                    <livewire:start-journal-abbreviation-check :startJournalAbbreviation="$startJournalAbbreviation" />
+                    <livewire:start-journal-abbreviation-check :startJournalAbbreviation="$startJournalAbbreviation" type="unchecked" />
                     </div>
                 </li>
                 @endforeach
@@ -34,9 +34,9 @@
             <h3 class="mt-4 font-semibold text-lg leading-tight">Checked</h3>
             <ul>
                 @foreach ($checkedStartJournalAbbreviations as $startJournalAbbreviation)
-                <li>
-                    <div>
-                        <livewire:start-journal-abbreviation-check :startJournalAbbreviation="$startJournalAbbreviation" />
+                    <li>
+                        <div>
+                            <livewire:start-journal-abbreviation-check :startJournalAbbreviation="$startJournalAbbreviation" type="checked" />
                         </div>
                     </li>
                 @endforeach
