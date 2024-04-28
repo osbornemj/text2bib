@@ -18,10 +18,12 @@ class StartJournalAbbreviationsController extends Controller
     public function index(): View
     {
         $checkedStartJournalAbbreviations = StartJournalAbbreviation::where('checked', 1)
+            ->with('output')
             ->orderBy('word')
             ->get();
 
         $uncheckedStartJournalAbbreviations = StartJournalAbbreviation::where('checked', 0)
+            ->with('output')
             ->orderBy('word')
             ->get();
 
@@ -31,6 +33,7 @@ class StartJournalAbbreviationsController extends Controller
     public function unchecked(): View
     {
         $uncheckedStartJournalAbbreviations = StartJournalAbbreviation::where('checked', 0)
+            ->with('output')
             ->orderBy('word')
             ->paginate(50);
 

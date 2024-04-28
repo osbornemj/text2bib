@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Http\Requests\StoreStartJournalAbbreviationRequest;
 use Livewire\Component;
 
 use App\Livewire\Forms\ShowConvertedItemForm;
@@ -135,7 +136,10 @@ class ShowConvertedItem extends Component
             }
             if (preg_match('/^(?P<firstWord>[A-Z][a-z]+)\. /', $journalName, $matches)) {
                 if (isset($matches['firstWord'])) {
-                    StartJournalAbbreviation::firstOrCreate(['word' => $matches['firstWord']]);
+                    StartJournalAbbreviation::firstOrCreate(
+                        ['word' => $matches['firstWord']],
+                        ['output_id' => $output->id]
+                    );
                 }
             }
         } else {

@@ -245,8 +245,8 @@ class Converter
         $this->numberRegExp = '[Nn][Oo]s?\.?:? ?|[Nn]umbers? ?|[Nn]\. |[Ii]ssues? ?';
 
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})';
-        // hlm.: Indonesian
-        $this->startPagesRegExp = '/^pages |^pp\.?|^p\.|^p |^стр\. |hlm\. /i';
+        // hlm.: Indonesian, ss: Turkish
+        $this->startPagesRegExp = '/^pages |^pp\.?|^p\.|^p |^стр\. |hlm\. |ss?\. /i';
 
         // en for Spanish (and French?), em for Portuguese
         $this->inRegExp1 = '/^[iIeE]n:? /';
@@ -264,8 +264,9 @@ class Converter
         $this->forthcomingRegExp7 = '/^[Tt]o appear in/';
 
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
+        // Could add "symposium" to list of words
         $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on | meeting | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop |^actas del )';
-        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.';
+        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.|^Proc. Roy. Soc. A|^Proc. Roy. Soc.|^Proceedings of the International Association of Hydrological Sciences';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'s)?|M\.?A\.?';
@@ -3340,8 +3341,8 @@ class Converter
     private function isAnd(string $string, $language = 'en'): bool
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
-        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian
-        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и']) || $string == 'with';
+        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian, 'v' for Turkish
+        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и', 've']) || $string == 'with';
     }
 
     /*

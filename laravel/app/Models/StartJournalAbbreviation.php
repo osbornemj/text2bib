@@ -9,5 +9,11 @@ class StartJournalAbbreviation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['word', 'checked', 'distinctive'];
+    protected $fillable = ['word', 'output_id', 'checked', 'distinctive'];
+
+    public function output()
+    {
+        return $this->belongsTo(Output::class);
+    }
+
 }

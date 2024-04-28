@@ -12,7 +12,7 @@
 
     <div class="px-4 sm:px-4 sm:rounded-lg">
         <div class="mb-4">
-            <x-link href="/admin/journals">Checked</x-link>
+            <x-link href="/admin/startJournalAbbreviations">Checked</x-link>
         </div>
 
         @if ($uncheckedStartJournalAbbreviations->count())
