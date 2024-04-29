@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Comment;
+use App\Models\RequiredResponse;
 use App\Models\Thread;
 use App\Models\User;
 
@@ -20,11 +21,13 @@ class Comments extends Component
     public $comment;
 
     public $comments;
-    public $threadId;
+    public $thread;
+    public $opUser;
+    public $type;
 
     public function mount()
     {
-        $this->comments = Comment::where('thread_id', $this->threadId)
+        $this->comments = Comment::where('thread_id', $this->thread->id)
             ->orderBy('created_at')
             ->get();
     }
@@ -33,12 +36,17 @@ class Comments extends Component
     {
         $this->validate();
 
+        $commentIds = Thread::find($this->thread->id)->comments->pluck('id');
+
         $user = Auth::user();
         $comment = Comment::create([
-            'thread_id' => $this->threadId,
+            'thread_id' => $this->thread->id,
             'user_id' => $user->id,
             'content' => $this->comment,
         ]);
+
+        // Delete required response, if there is one
+        RequiredResponse::where('user_id', $user->id)->whereIn('comment_id', $commentIds)->first()?->delete();
 
         // Notify admins
         $admins = User::where('is_admin', true)->get();
@@ -49,10 +57,10 @@ class Comments extends Component
         }
 
         // Notify OP
-        $firstComment = Comment::where('thread_id', $this->threadId)->oldest()->first();
+        $firstComment = Comment::where('thread_id', $this->thread->id)->oldest()->first();
         $opUser = $firstComment->user;
         if ($user->id != $opUser->id) {
-            $opUser->notify(new CommentResponsePosted($this->threadId));
+            $opUser->notify(new CommentResponsePosted($this->thread->id));
         }
 
         $this->comment = '';

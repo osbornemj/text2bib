@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Convert;
 use App\Http\Controllers\Controller;
 use App\Models\Conversion;
 use App\Models\ErrorReport;
+use App\Models\ErrorReportComment;
 use Illuminate\View\View;
 
 use App\Services\Converter;
@@ -36,7 +37,10 @@ class ErrorReportController extends Controller
             ->with('output.rawOutput.itemType')
             ->first();
 
-        return view('errorReport', compact('errorReport'));
+        $opUser = $errorReport->output->conversion->user;
+        //$opUser = ErrorReportComment::where('error_report_id', $id)->oldest()->first()?->user;
+
+        return view('errorReport', compact('errorReport', 'opUser'));
     }
 
     public function convertSource(int $id)

@@ -46,7 +46,7 @@ Route::controller(StatisticsController::class)->group(function () {
     Route::get('/statistics', 'index')->name('statistics');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', 'noRequiredResponses')->group(function () {
     Route::controller(ProfileController::class)->group(function () {
         Route::get('/profile', 'edit')->name('profile.edit');
         Route::patch('/profile', 'update')->name('profile.update');
@@ -54,7 +54,22 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::controller(ErrorReportController::class)->group(function () {
+    Route::get('/errorReport/{id}', 'show')->name('errorReport');
+    });
+
+    Route::controller(CommentController::class)->group(function () {
+        Route::get('/comment/{id}', 'show')->name('comment');
+    });
+
+    Route::controller(IndexController::class)->group(function () {
+        Route::get('/requiredResponses', 'requiredResponses')->name('requiredResponses');
+    });
+});
+
+Route::middleware(['auth', 'verified', 'noRequiredResponses'])->group(function () {
     Route::controller(IndexController::class)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
         Route::get('/convertFile', 'convertFile')->name('convertFile');
@@ -66,8 +81,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::controller(ErrorReportController::class)->group(function () {
         Route::get('/errorReports', 'index')->name('errorReports');
-        Route::get('/errorReport/{id}', 'show')->name('errorReport');
-        Route::get('/convertErrorSource/{id}', 'convertSource')->name('convertErrorSource');
     });
 
     Route::resources([
@@ -76,7 +89,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::controller(CommentController::class)->group(function () {
         Route::get('/comments', 'index')->name('comments');
-        Route::get('/comment/{id}', 'show')->name('comment');
     });
 
     Route::get('/downloadBibtex/{conversionId}', DownloadBibtexController::class)->name('conversion.downloadBibtex');
@@ -103,6 +115,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/index', 'index')->name('admin.index');
         Route::get('/admin/addVersion', 'addVersion')->name('admin.addVersion');
         Route::get('/admin/addExistingStarts', 'addExistingStarts')->name('admin.startJournalAbbreviations.addExistingStarts');
+    });
+
+    Route::controller(ErrorReportController::class)->group(function () {
+        Route::get('/convertErrorSource/{id}', 'convertSource')->name('convertErrorSource');
     });
 
     Route::controller(JournalsController::class)->group(function () {

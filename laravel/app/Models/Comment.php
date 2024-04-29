@@ -13,13 +13,18 @@ class Comment extends Model
 
     protected $guarded = [];
 
-    public function thread(): HasOne
+    public function thread(): BelongsTo
     {
-        return $this->hasOne(Thread:: class);
+        return $this->belongsTo(Thread:: class);
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User:: class);
+    }
+
+    public function requiredResponse(): HasOne
+    {
+        return $this->hasOne(RequiredResponse::class);
     }
 }

@@ -6,6 +6,7 @@ use App\Enums\ReportStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ErrorReport extends Model
 {
@@ -18,6 +19,11 @@ class ErrorReport extends Model
     public function output(): BelongsTo
     {
         return $this->belongsTo(Output:: class);
+    }
+
+    public function errorReportComments(): HasMany
+    {
+        return $this->hasMany(ErrorReportComment::class);
     }
 
     public function getIsOpenAttribute(): bool

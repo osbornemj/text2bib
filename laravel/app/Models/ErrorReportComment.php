@@ -13,9 +13,9 @@ class ErrorReportComment extends Model
 
     protected $guarded = [];
 
-    public function errorReport(): HasOne
+    public function errorReport(): BelongsTo
     {
-        return $this->hasOne(ErrorReport:: class);
+        return $this->belongsTo(ErrorReport:: class);
     }
 
     public function user(): BelongsTo
@@ -23,4 +23,8 @@ class ErrorReportComment extends Model
         return $this->belongsTo(User:: class);
     }
 
+    public function requiredResponse(): HasOne
+    {
+        return $this->hasOne(RequiredResponse::class);
+    }
 }

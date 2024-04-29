@@ -30,7 +30,10 @@ class CommentController extends Controller
             ->with('comments')
             ->first();
 
-        return view('threads.show', compact('thread'));
+        $opUser = Comment::where('thread_id', $id)->oldest()->first()->user;
+        $type = 'comment';
+        
+        return view('threads.show', compact('thread', 'opUser', 'type'));
     }
 
     public function create(): View

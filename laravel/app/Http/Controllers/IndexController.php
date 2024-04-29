@@ -36,6 +36,14 @@ class IndexController extends Controller
         return view('about');
     }
 
+    public function requiredResponses(): View
+    {
+        $user = Auth::user();
+        $requiredResponses = $user->requiredResponses;
+
+        return view('requiredResponses', compact('requiredResponses'));
+    }
+
     public function conversions(): View
     {
         $user = Auth::user();

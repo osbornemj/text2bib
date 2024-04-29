@@ -96,7 +96,7 @@
         </div>
 
         <div>
-            <livewire:error-feedback :errorReportId="$errorReport->id" />
+            <livewire:error-feedback :errorReportId="$errorReport->id" :opUser="$opUser" type="errorReport" />
         </div>
 
 

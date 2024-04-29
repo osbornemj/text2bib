@@ -10,7 +10,7 @@
     </h2>
 
     <div>
-        <livewire:comments :threadId="$thread->id" />
+        <livewire:comments :thread="$thread" :opUser="$opUser" :type="$type" />
     </div>
 
     <div class="sm:px-0 lg:px-0 space-y-6">
