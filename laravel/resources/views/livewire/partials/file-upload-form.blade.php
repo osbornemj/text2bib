@@ -15,6 +15,10 @@
         </div>
     @endif
 
+    <div class="bg-emerald-100 dark:bg-emerald-600 mt-2">
+        2024.4.30: A coding error introduced three days ago has generated many conversion errors in items whose titles contain punctuation.  I have now fixed the error.
+    </div>
+
     <div class="space-y-6 my-4">
         <div class="sm:pt-0">
             <h3 class="font-semibold text-lg leading-tight">
@@ -71,7 +75,7 @@
         <x-input-error :messages="$errors->get('uploadForm.otherUse')" class="mt-2" />
     </div>
     --}}
-    
+
     <div>
         <x-input-label for="item_separator" :value="__('Item separator')" class="mt-4 mb-1"/>
     
