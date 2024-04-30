@@ -246,7 +246,7 @@ class Converter
 
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})';
         // hlm.: Indonesian, ss: Turkish
-        $this->startPagesRegExp = '/^pages |^pp\.?|^p\.|^p |^стр\. |hlm\. |ss?\. /i';
+        $this->startPagesRegExp = '/^pages |^pp\.?|^p\.|^p |^стр\. |^hlm\. |^ss?\. /i';
 
         // en for Spanish (and French?), em for Portuguese
         $this->inRegExp1 = '/^[iIeE]n:? /';
@@ -2697,9 +2697,12 @@ class Converter
             $item->journal = trim($item->journal, '}; ');
         }
 
-        $item->title = $this->requireUc($item->title);
-
-        $scholarTitle = $this->makeScholarTitle($item->title);
+        if (isset($item->title)) {
+            $item->title = $this->requireUc($item->title);
+            $scholarTitle = $this->makeScholarTitle($item->title);
+        } else {
+            $scholarTitle = '';
+        }
 
         if ($language == 'my') {
             foreach ($item as $name => $field) {

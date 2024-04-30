@@ -12,6 +12,13 @@ class ConvertFileForm extends Form
     #[Rule('mimes:txt', message: 'Your file is not plain text')]    
     public $file;
 
+    // #[Rule('required', message: 'Please choose one of the options')]    
+    // #[Rule('in:latex,biblatex,zotero,other', message: 'The value of this field must be "latex", "biblatex", "zotero", or "other"')]    
+    // public $use;
+
+    // #[Rule('required_if:use,other', message: 'Please describe how you will use the BibTeX file')]    
+    // public $otherUse;
+
     #[Rule('required', message: 'Please choose an option')]    
     #[Rule('string', message: 'The value of this field must be a string')]    
     #[Rule('in:line,cr', message: 'The value of this field must be "line" or "cr"')]    

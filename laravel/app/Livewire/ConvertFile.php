@@ -52,6 +52,11 @@ class ConvertFile extends Component
     public $fileError = null;
     public $notUtf8;
     public $convertedEncodingCount;
+    public $useOptions;
+
+//    public $use;
+//    public $showOtherInput = false;
+//    public $otherUse;
 
     public function boot()
     {
@@ -63,6 +68,7 @@ class ConvertFile extends Component
         $userSettings = UserSetting::where('user_id', Auth::id())->first();
 
         $defaults = [
+            'use' => '',
             'item_separator' => 'line',
             'language' => 'en',
             'label_style' => 'short',
@@ -79,10 +85,25 @@ class ConvertFile extends Component
             $this->uploadForm->$setting = $userSettings ? $userSettings->$setting : $default;
         }
 
+        $this->useOptions = [
+            'latex' => 'In a LaTeX file, using a traditional BibTeX style file (your document specifies a \bibliographystyle)',
+            'biblatex' => 'In a LaTeX file, using biblatex (your document says \usepackage{biblatex} in the preamble)',
+            'zotero' => 'To import references into Zotero',
+            'other' => 'Other (enter in text box)',
+        ];
+
         $user = Auth::user();
         $this->conversionCount = $user->conversions->count();
         $this->version = Version::latest()->first()->created_at;
     }
+
+    // public function updatedUse($value)
+    // {
+    //     dd('here');
+    //     if ($value == 'other') {
+    //         $this->showOtherInput = true;
+    //     }
+    // }
 
     /*
     protected function queryString()

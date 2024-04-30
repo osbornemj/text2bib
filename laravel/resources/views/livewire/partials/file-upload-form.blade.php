@@ -53,7 +53,42 @@
     </div>
 
     <div>
-        <x-input-label for="item_separator" :value="__('Item separator')" class="mt-4"/>
+        <x-input-label for="use" :value="__('How do you plan to use the BibTeX file that is created?')" class="mt-4 mb-1"/>
+
+        {{--
+        <x-radio-input wire:model="uploadForm.use" value="latex" class="peer/latex" /> 
+        <x-value-label for="latex" class="peer-checked/latex:text-blue-600 ml-1" :value="__('LaTeX')" />
+        <br/>
+        <x-radio-input wire:model="uploadForm.use" value="biblatex" class="peer/biblatex" /> 
+        <x-value-label for="biblatex" class="peer-checked/biblatex:text-blue-600 ml-1" :value="__('biblatex')" />
+        <br/>
+        <x-radio-input wire:model="uploadForm.use" value="zotero" class="peer/zotero" /> 
+        <x-value-label for="zotero" class="peer-checked/zotero:text-blue-600 ml-1" :value="__('Zotero')" />
+        <br/>
+        <x-radio-input wire:model="uploadForm.use" value="other" class="peer/other" /> 
+        <x-value-label for="other" class="peer-checked/other:text-blue-600 ml-1" :value="__('Other')" />
+        <br/>
+        --}}
+
+        {{--
+        @foreach ($useOptions as $key => $option)
+            <x-radio-input wire:model="uploadForm.use" value="{{ $key }}" class="peer/{{ $key }}" /> 
+            <x-value-label for="{{ $key }}" class="peer-checked/{{ $key }}:text-blue-600 ml-1" :value="$option" />
+            <br/>
+        @endforeach
+
+        <x-input-error :messages="$errors->get('uploadForm.use')" class="mt-2" />
+            
+        <div class="hidden peer-checked/other:block">
+            <x-text-input class="w-full" wire:model="uploadForm.otherUse" />
+        </div>
+
+        <x-input-error :messages="$errors->get('uploadForm.otherUse')" class="mt-2" />
+            --}}
+    </div>
+
+    <div>
+        <x-input-label for="item_separator" :value="__('Item separator')" class="mt-4 mb-1"/>
     
         <x-radio-input wire:model="uploadForm.item_separator" value="line" class="peer/line" /> 
         <x-value-label for="line" class="peer-checked/line:text-blue-600 ml-1" :value="__('Blank line')" />
@@ -72,7 +107,7 @@
     </div>
 
     <div>
-        <x-input-label for="language" :value="__('Language of auxiliary words in references')" class="mt-4"/>
+        <x-input-label for="language" :value="__('Language of auxiliary words in references')" class="mt-4 mb-1"/>
     
         <x-radio-input wire:model="uploadForm.language" value="en" class="peer/en" /> 
         <x-value-label for="en" class="peer-checked/en:text-blue-600 ml-1" :value="__('English')" />
@@ -103,7 +138,7 @@
     </div>
 
     <div>
-        <x-input-label for="label_style" :value="__('Label style')" class="mt-4" />
+        <x-input-label for="label_style" :value="__('Label style')" class="mt-4 mb-1" />
     
         <x-radio-input name="label_style" wire:model="uploadForm.label_style" value="short" class="peer/short" /> 
         <x-value-label for="short" class="peer-checked/short:text-blue-600 ml-1" :value="__('Short')" />
@@ -128,7 +163,7 @@
     </div>
 
     <div>
-        <x-input-label for="override_labels" :value="__('Override labels in file (if any)?')" class="mt-4" />
+        <x-input-label for="override_labels" :value="__('Override labels in file (if any)?')" class="mt-4 mb-1" />
     
         <x-radio-input wire:model="uploadForm.override_labels" value="1" class="peer/1" /> 
         <x-value-label for="1" class="peer-checked/1:text-blue-600 ml-1" :value="__('Yes')" />
@@ -147,7 +182,7 @@
     </div>
 
     <div>
-        <x-input-label for="line_endings" :value="__('Line-ending style for generated bibtex.bib file')" class="mt-4" />
+        <x-input-label for="line_endings" :value="__('Line-ending style for generated bibtex.bib file')" class="mt-4 mb-1" />
     
         <x-radio-input wire:model="uploadForm.line_endings" value="w" class="peer/w" /> 
         <x-value-label for="w" class="peer-checked/w:text-blue-600 ml-1" :value="__('Windows')" />
@@ -159,7 +194,7 @@
     </div>
 
     <div>
-        <x-input-label for="char_encoding" :value="__('Convert accented characters to TeX?')" class="mt-4" />
+        <x-input-label for="char_encoding" :value="__('Convert accented characters to TeX?')" class="mt-4 mb-1" />
     
         <x-radio-input wire:model="uploadForm.char_encoding" value="utf8leave" class="peer/utf8leave" />
         <x-value-label for="utf8leave" class="peer-checked/utf8leave:text-blue-600 ml-1" :value="__('No')" />
@@ -178,7 +213,7 @@
     </div>
 
     <div>
-        <x-input-label for="percent_comment" :value="__('Treat % as starting a comment?')" class="mt-4" />
+        <x-input-label for="percent_comment" :value="__('Treat % as starting a comment?')" class="mt-4 mb-1" />
     
         <x-radio-input wire:model="uploadForm.percent_comment" value="1" class="peer/1" /> 
         <x-value-label for="1" class="peer-checked/1:text-blue-600 ml-1" :value="__('Yes')" />
@@ -197,7 +232,7 @@
     </div>
 
     <div>
-        <x-input-label for="include_source" :value="__('Include each reference as comment above entry in BibTeX file?')" class="mt-4" />
+        <x-input-label for="include_source" :value="__('Include each reference as comment above entry in BibTeX file?')" class="mt-4 mb-1" />
     
         <x-radio-input wire:model="uploadForm.include_source" value="1" class="peer/1" /> 
         <x-value-label for="1" class="peer-checked/1:text-blue-600 ml-1" :value="__('Yes')" />
@@ -216,7 +251,7 @@
     </div>
 
     <div>
-        <x-input-label for="report_type" :value="__('Report type')"  class="mt-4"/>
+        <x-input-label for="report_type" :value="__('Report type')"  class="mt-4 mb-1"/>
     
         <x-radio-input wire:model="uploadForm.report_type" value="standard" class="peer/standard" /> 
         <x-value-label for="standard" class="peer-checked/standard:text-blue-600 ml-1" :value="__('Standard')" />
@@ -235,7 +270,7 @@
     </div>
 
     <div>
-        <x-input-label for="save_settings" :value="__('Save settings as default for future conversions?')" class="mt-4" />
+        <x-input-label for="save_settings" :value="__('Save settings as default for future conversions?')" class="mt-4 mb-1" />
 
         <x-radio-input wire:model="uploadForm.save_settings" value="1" class="peer/1" /> 
         <x-value-label for="1" class="peer-checked/1:text-blue-600 ml-1" :value="__('Yes')" />
