@@ -52,25 +52,10 @@
         <x-input-error :messages="$errors->get('uploadForm.file')" class="mt-2" />
     </div>
 
+    {{--
     <div>
         <x-input-label for="use" :value="__('How do you plan to use the BibTeX file that is created?')" class="mt-4 mb-1"/>
 
-        {{--
-        <x-radio-input wire:model="uploadForm.use" value="latex" class="peer/latex" /> 
-        <x-value-label for="latex" class="peer-checked/latex:text-blue-600 ml-1" :value="__('LaTeX')" />
-        <br/>
-        <x-radio-input wire:model="uploadForm.use" value="biblatex" class="peer/biblatex" /> 
-        <x-value-label for="biblatex" class="peer-checked/biblatex:text-blue-600 ml-1" :value="__('biblatex')" />
-        <br/>
-        <x-radio-input wire:model="uploadForm.use" value="zotero" class="peer/zotero" /> 
-        <x-value-label for="zotero" class="peer-checked/zotero:text-blue-600 ml-1" :value="__('Zotero')" />
-        <br/>
-        <x-radio-input wire:model="uploadForm.use" value="other" class="peer/other" /> 
-        <x-value-label for="other" class="peer-checked/other:text-blue-600 ml-1" :value="__('Other')" />
-        <br/>
-        --}}
-
-        {{--
         @foreach ($useOptions as $key => $option)
             <x-radio-input wire:model="uploadForm.use" value="{{ $key }}" class="peer/{{ $key }}" /> 
             <x-value-label for="{{ $key }}" class="peer-checked/{{ $key }}:text-blue-600 ml-1" :value="$option" />
@@ -84,9 +69,9 @@
         </div>
 
         <x-input-error :messages="$errors->get('uploadForm.otherUse')" class="mt-2" />
-            --}}
     </div>
-
+    --}}
+    
     <div>
         <x-input-label for="item_separator" :value="__('Item separator')" class="mt-4 mb-1"/>
     
