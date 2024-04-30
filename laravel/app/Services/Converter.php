@@ -777,11 +777,11 @@ class Converter
 
         $authorTitle = null;
         if ($language == 'my') {
-            preg_match('/^(?P<author>[^,]*), (?P<authortitle>[^,]*), (?P<remainder>.*)$/', $remainder, $matches);
+            preg_match('/^(?P<author>[^,]*, [^,]*), (?P<remainder>.*)$/', $remainder, $matches);
             //$this->setField($item, 'author', rtrim($words[0], ',') ?? '', 'setField m1');
-            $authorConversion = ['authorstring' => rtrim($words[0], ','), 'warnings' => [], 'oneWordAuthor' => false];
+            $authorConversion = ['authorstring' => $matches['author'], 'warnings' => [], 'oneWordAuthor' => false];
             array_shift($words);
-            $authorTitle = rtrim($words[0], ',') ?? '';
+            //$authorTitle = rtrim($words[0], ',') ?? '';
             array_shift($words);
             $year = trim($words[0], '(),');
             array_shift($words);
@@ -843,9 +843,9 @@ class Converter
 
         if ($isEditor === false && ! Str::contains($authorstring, $editorPhrases)) {
             $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 7');
-            if ($language == 'my') {
-                $this->setField($item, 'author-title', $authorTitle, 'setField m2');
-            }
+            // if ($language == 'my') {
+            //     $this->setField($item, 'author-title', $authorTitle, 'setField m2');
+            // }
         } else {
             $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' .,'), 'setField 8');
         }
@@ -2356,20 +2356,24 @@ class Converter
                     if (preg_match('/^"(?P<pubinfo>[^"]*)"(?P<pages>.*)$/', $remainder, $matches)) {
                         $pubinfo = $matches['pubinfo'];
                         $pages = $matches['pages'];
+                        
+                        if (isset($pubinfo)) {
+                            $this->setField($item, 'publisher', trim($pubinfo));
+                        }
 
-                        $pubinfoParts = explode('။', $pubinfo);
-                        if (isset($pubinfoParts[0])) {
-                            $this->setField($item, 'publisher-name', trim($pubinfoParts[0] . '။'));
-                        }
-                        if (isset($pubinfoParts[1])) {
-                            $this->setField($item, 'publisher-address', trim($pubinfoParts[1] . '။'));
-                        }
-                        if (isset($pubinfoParts[2])) {
-                            $this->setField($item, 'printer-name', trim($pubinfoParts[2] . '။'));
-                        }
-                        if (isset($pubinfoParts[3])) {
-                            $this->setField($item, 'printer-address', trim($pubinfoParts[3] . '။'));
-                        }
+                        // $pubinfoParts = explode('။', $pubinfo);
+                        // if (isset($pubinfoParts[0])) {
+                        //     $this->setField($item, 'publisher-name', trim($pubinfoParts[0] . '။'));
+                        // }
+                        // if (isset($pubinfoParts[1])) {
+                        //     $this->setField($item, 'publisher-address', trim($pubinfoParts[1] . '။'));
+                        // }
+                        // if (isset($pubinfoParts[2])) {
+                        //     $this->setField($item, 'printer-name', trim($pubinfoParts[2] . '။'));
+                        // }
+                        // if (isset($pubinfoParts[3])) {
+                        //     $this->setField($item, 'printer-address', trim($pubinfoParts[3] . '။'));
+                        // }
                         if (isset($pages)) {
                             $this->setField($item, 'pages', trim($pages, ' ,'));
                         }
@@ -2699,7 +2703,9 @@ class Converter
 
         if ($language == 'my') {
             foreach ($item as $name => $field) {
-                $item->$name = $this->translate($field, 'my');
+                if ($name != 'year') {
+                    $item->$name = $this->translate($field, 'my');
+                }
             }
         }
 
@@ -2750,16 +2756,20 @@ class Converter
         return ['months' => $months, 'month1number' => $month1number, 'month2number' => $month2number];
     }
 
-    private function setField(stdClass &$item, string $fieldName, string $string, string $id = ''): void
+    private function setField(stdClass &$item, string $fieldName, string|null $string, string $id = ''): void
     {
-        $item->$fieldName = $string;
-        $this->verbose(['fieldName' => ($id ? '('. $id . ') ' : '') . ucfirst($fieldName), 'content' => $item->$fieldName]);
+        if ($string) {
+            $item->$fieldName = $string;
+            $this->verbose(['fieldName' => ($id ? '('. $id . ') ' : '') . ucfirst($fieldName), 'content' => $item->$fieldName]);
+        }
     }
 
-    private function addToField(stdClass &$item, string $fieldName, string $string, string $id = ''): void
+    private function addToField(stdClass &$item, string $fieldName, string|null $string, string $id = ''): void
     {
-        $this->setField($item, $fieldName, (isset($item->$fieldName) ? $item->$fieldName . ' ' : '') . $string) . 
-        $this->verbose(['fieldName' => ($id ? '('. $id . ') ' : '') . ucfirst($fieldName), 'content' => $item->$fieldName]);
+        if ($string) {
+            $this->setField($item, $fieldName, (isset($item->$fieldName) ? $item->$fieldName . ' ' : '') . $string) . 
+            $this->verbose(['fieldName' => ($id ? '('. $id . ') ' : '') . ucfirst($fieldName), 'content' => $item->$fieldName]);
+        }
     }
 
     private function addToAuthorString(int $i, string &$string, string $addition): void
