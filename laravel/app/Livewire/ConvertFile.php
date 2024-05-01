@@ -86,6 +86,7 @@ class ConvertFile extends Component
             'latex' => 'In a LaTeX document, using a traditional BibTeX style file (your document specifies a \bibliographystyle)',
             'biblatex' => 'In a LaTeX document, using biblatex (your document says \usepackage{biblatex} in the preamble)',
             'zotero-word' => 'To import references into Zotero, to use in Microsoft Word or Libre Office',
+            'mendeley' => 'To import references into Mendeley',
             'other' => 'Other (enter in text box)',
         ];
 
