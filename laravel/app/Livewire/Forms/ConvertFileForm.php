@@ -13,7 +13,7 @@ class ConvertFileForm extends Form
     public $file;
 
     #[Rule('required', message: 'Please choose one of the options')]    
-    #[Rule('in:latex,biblatex,zotero-word,mendeley,other', message: 'The value of this field must be "latex", "biblatex", "zotero-word", "mendeley", or "other"')]    
+    #[Rule('in:latex,biblatex,zotero-word,mendeley,refworks,other', message: 'The value of this field must be "latex", "biblatex", "zotero-word", "mendeley", "refworks", or "other"')]    
     public $use;
 
     #[Rule('required_if:use,other', message: 'Please describe how you will use the BibTeX file')]    
