@@ -871,13 +871,13 @@ class Converter
         $newRemainder = $before . ltrim($after, "., ");
 
         if ($language == 'my') {
+            $title = (string) $title;
+            $this->setField($item, 'title', trim($title, ', '), 'setField m3');
             preg_match('/^"(?P<edition>[^"]+)"(?P<remainder>.*)$/', $newRemainder, $matches);
-            if ($matches['edition']) {
-                $title = (string) $title;
-                $this->setField($item, 'title', trim($title, ', '), 'setField m3');
+            if (isset($matches['edition'])) {
                 $this->setField($item, 'edition', trim($matches['edition'], ', '), 'setField m4');
             }
-            $newRemainder = $remainder = trim($matches['remainder']);
+            $newRemainder = $remainder = isset($matches['remainder']) ? trim($matches['remainder']) : '';
         } else {
             // If title has been found and ends in edition specification, take that out and put it in edition field
             $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . ')[.,]?$/i';
