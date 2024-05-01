@@ -11,10 +11,12 @@
             @foreach ($conversions as $conversion)
                 <li>
                     <a name="{{ $conversion->id }}"></a>
-                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/' . $conversions->currentPage()) }}">Conversion</x-link>
+                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/' . $conversions->currentPage()) }}">{{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}</x-link>
                     &nbsp;&bull;&nbsp;
-                    {{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}
-                    &nbsp;&bull;&nbsp;
+                    @if ($conversion->user)
+                        {{ $conversion->user->fullName() }}
+                        &nbsp;&bull;&nbsp;
+                    @endif
                     user
                     @foreach ($conversion->correctnessCounts() as $key => $value)
                         <span class="@if ($key == -1) bg-red-300 dark:bg-red-500 @elseif ($key == 1) bg-emerald-300 dark:bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-300 dark:bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
@@ -24,6 +26,9 @@
                     @foreach ($conversion->adminCorrectnessCounts() as $key => $value)
                         <span class="@if ($key == -1) bg-red-300 dark:bg-red-500 @elseif ($key == 1) bg-emerald-300 dark:bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-300 dark:bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
                     @endforeach
+                    &nbsp;&bull;&nbsp;
+                    {{ $conversion->created_at }}
+
                     @if ($conversion->language != 'en')
                         &nbsp;&bull;&nbsp;
                         <span class="text-emerald-500">language: {{ $conversion->language }}</span>
@@ -36,11 +41,13 @@
                         &nbsp;&bull;&nbsp;
                         <span class="text-red-600 dark:text-red-400">{{ $conversion->file_error }} file</span>
                     @endif
+                    {{--
                     &nbsp;&bull;&nbsp;
                     convert:
                     <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id) }}">line sep</x-link>
                     &nbsp;&bull;&nbsp;
                     <x-link href="{{ url('/admin/convert/' . $conversion->user_file_id . '/cr') }}">cr sep</x-link>
+                    --}}
                     <form method="post" action="{{ url('/admin/conversion/' . $conversion->id) }}" class="inline-flex">
                         @csrf
                         @method('delete')
@@ -50,14 +57,17 @@
                     </form>
                     <br/>
                     <div class="ml-4">
-                        @if ($conversion->user)
-                            {{ $conversion->user->fullName() }}
-                            &nbsp;&bull;&nbsp;
-                        @endif
-                        {{ $conversion->created_at }}
                         @if ($conversion->version)
+                            v. {{ $conversion->version }}
+                        @endif
+                        @if ($conversion->use)
                             &nbsp;&bull;&nbsp;
-                            {{ $conversion->version }}
+                            use:
+                            @if ($conversion->other_use)
+                                {{ $conversion->other_use}}
+                            @else
+                                {{ $conversion->use }}
+                            @endif
                         @endif
                         @if ($conversion->examined_at)
                             <br/>

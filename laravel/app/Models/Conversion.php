@@ -17,6 +17,8 @@ class Conversion extends Model
     protected $guarded = [];
 
     protected $attributes = [
+        'use' => '',
+        'other_use' => '',
         'item_separator' => 'line',
         'language' => 'en',
         'label_style' => 'short',

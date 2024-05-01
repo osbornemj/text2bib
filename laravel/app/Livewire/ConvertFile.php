@@ -54,10 +54,6 @@ class ConvertFile extends Component
     public $convertedEncodingCount;
     public $useOptions;
 
-//    public $use;
-//    public $showOtherInput = false;
-//    public $otherUse;
-
     public function boot()
     {
         $this->converter = new Converter();
@@ -69,6 +65,7 @@ class ConvertFile extends Component
 
         $defaults = [
             'use' => '',
+            'other_use' => '',
             'item_separator' => 'line',
             'language' => 'en',
             'label_style' => 'short',
@@ -86,9 +83,9 @@ class ConvertFile extends Component
         }
 
         $this->useOptions = [
-            'latex' => 'In a LaTeX file, using a traditional BibTeX style file (your document specifies a \bibliographystyle)',
-            'biblatex' => 'In a LaTeX file, using biblatex (your document says \usepackage{biblatex} in the preamble)',
-            'zotero' => 'To import references into Zotero',
+            'latex' => 'In a LaTeX document, using a traditional BibTeX style file (your document specifies a \bibliographystyle)',
+            'biblatex' => 'In a LaTeX document, using biblatex (your document says \usepackage{biblatex} in the preamble)',
+            'zotero-word' => 'To import references into Zotero, to use in Microsoft Word or Libre Office',
             'other' => 'Other (enter in text box)',
         ];
 
@@ -193,6 +190,8 @@ class ConvertFile extends Component
             $previousConversion = Conversion::where('user_file_id', $previousUserFile->id)->first();
             if (
                 $previousConversion &&
+                $previousConversion->use == $conversion->use &&
+                $previousConversion->other_use == $conversion->other_use &&
                 $previousConversion->item_separator == $conversion->item_separator &&
                 $previousConversion->language == $conversion->language &&
                 $previousConversion->label_style == $conversion->label_style &&

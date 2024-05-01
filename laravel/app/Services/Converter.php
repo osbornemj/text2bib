@@ -870,54 +870,64 @@ class Converter
 
         $newRemainder = $before . ltrim($after, "., ");
 
-        // If title has been found and ends in edition specification, take that out and put it in edition field
-        $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . ')[.,]?$/i';
-        if ($title && preg_match($editionRegExp, (string) $title, $matches)) {
-            $this->setField($item, 'edition', trim(substr($matches[0], 0, strpos($matches[0], ' '))), 'setField 108');
-            $title = trim(Str::replaceLast($matches[0], '', $title));
-        }
-
-        // Website
-        if (isset($item->url) && $oneWordAuthor) {
-            $itemKind = 'online';
-            $title = trim($remainder);
-            $newRemainder = '';
-        }
-
-        if (! $title) {
-            $title = $this->getTitle($remainder, $edition, $volume, $isArticle, $year, $note, $journal, $containsUrlAccessInfo);
-            if (! isset($item->year) && $year) {
-                $this->setField($item, 'year', $year, 'setField 10a');
-                $remainder = str_replace($year, '', $remainder);
+        if ($language == 'my') {
+            preg_match('/^"(?P<edition>[^"]+)"(?P<remainder>.*)$/', $newRemainder, $matches);
+            if ($matches['edition']) {
+                $title = (string) $title;
+                $this->setField($item, 'title', trim($title, ', '), 'setField m3');
+                $this->setField($item, 'edition', trim($matches['edition'], ', '), 'setField m4');
             }
-            if ($edition) {
-                $this->setField($item, 'edition', $edition, 'setField 10b');
+            $newRemainder = $remainder = trim($matches['remainder']);
+        } else {
+            // If title has been found and ends in edition specification, take that out and put it in edition field
+            $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . ')[.,]?$/i';
+            if ($title && preg_match($editionRegExp, (string) $title, $matches)) {
+                $this->setField($item, 'edition', trim(substr($matches[0], 0, strpos($matches[0], ' '))), 'setField 108');
+                $title = trim(Str::replaceLast($matches[0], '', $title));
             }
-            if ($volume) {
-                $this->setField($item, 'volume', $volume, 'setField 11');
+
+            // Website
+            if (isset($item->url) && $oneWordAuthor) {
+                $itemKind = 'online';
+                $title = trim($remainder);
+                $newRemainder = '';
             }
-            if ($note) {
-                $note = ltrim($note, ' (');
-                $note = rtrim($note, ') ');
-                $this->addToField($item, 'note', $note, 'addToField 4');
+
+            if (! $title) {
+                $title = $this->getTitle($remainder, $edition, $volume, $isArticle, $year, $note, $journal, $containsUrlAccessInfo);
+                if (! isset($item->year) && $year) {
+                    $this->setField($item, 'year', $year, 'setField 10a');
+                    $remainder = str_replace($year, '', $remainder);
+                }
+                if ($edition) {
+                    $this->setField($item, 'edition', $edition, 'setField 10b');
+                }
+                if ($volume) {
+                    $this->setField($item, 'volume', $volume, 'setField 11');
+                }
+                if ($note) {
+                    $note = ltrim($note, ' (');
+                    $note = rtrim($note, ') ');
+                    $this->addToField($item, 'note', $note, 'addToField 4');
+                }
+                $newRemainder = $remainder;
             }
-            $newRemainder = $remainder;
+
+            $newRemainder = rtrim($newRemainder, ' .(');
+            $remainder = $newRemainder;
+
+            if (substr($title, -2) == "''" && substr_count($title, '``') == 0) {
+                $title = substr($title, 0, -2); 
+            }
+
+            $title = rtrim($title, ' .,');
+            // Remove '[J]' at end of title (why does it appear?)
+            if (preg_match('/\[J\]$/', $title)) {
+                $title = substr($title, 0, -3);
+            }
+
+            $this->setField($item, 'title', trim($title), 'setField 12');
         }
-
-        $newRemainder = rtrim($newRemainder, ' .(');
-        $remainder = $newRemainder;
-
-        if (substr($title, -2) == "''" && substr_count($title, '``') == 0) {
-            $title = substr($title, 0, -2); 
-        }
-
-        $title = rtrim($title, ' .,');
-        // Remove '[J]' at end of title (why does it appear?)
-        if (preg_match('/\[J\]$/', $title)) {
-            $title = substr($title, 0, -3);
-        }
-
-        $this->setField($item, 'title', trim($title), 'setField 12');
 
         $this->verbose("Remainder: " . $remainder);
 
@@ -2358,7 +2368,7 @@ class Converter
                         $pages = $matches['pages'];
                         
                         if (isset($pubinfo)) {
-                            $this->setField($item, 'publisher', trim($pubinfo));
+                            $this->setField($item, 'publisher', trim($pubinfo, ', '));
                         }
 
                         // $pubinfoParts = explode('။', $pubinfo);
@@ -2706,9 +2716,7 @@ class Converter
 
         if ($language == 'my') {
             foreach ($item as $name => $field) {
-                if ($name != 'year') {
-                    $item->$name = $this->translate($field, 'my');
-                }
+                $item->$name = $this->translate($field, 'my');
             }
         }
 

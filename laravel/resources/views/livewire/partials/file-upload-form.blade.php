@@ -56,9 +56,8 @@
         <x-input-error :messages="$errors->get('uploadForm.file')" class="mt-2" />
     </div>
 
-    {{--
     <div>
-        <x-input-label for="use" :value="__('How do you plan to use the BibTeX file that is created?')" class="mt-4 mb-1"/>
+        <x-input-label for="use" :value="__('How do you plan to use the BibTeX file that the system creates?')" class="mt-4 mb-1"/>
 
         @foreach ($useOptions as $key => $option)
             <x-radio-input wire:model="uploadForm.use" value="{{ $key }}" class="peer/{{ $key }}" /> 
@@ -69,12 +68,11 @@
         <x-input-error :messages="$errors->get('uploadForm.use')" class="mt-2" />
             
         <div class="hidden peer-checked/other:block">
-            <x-text-input class="w-full" wire:model="uploadForm.otherUse" />
+            <x-text-input class="w-full" wire:model="uploadForm.other_use" />
         </div>
 
-        <x-input-error :messages="$errors->get('uploadForm.otherUse')" class="mt-2" />
+        <x-input-error :messages="$errors->get('uploadForm.other_use')" class="mt-2" />
     </div>
-    --}}
 
     <div>
         <x-input-label for="item_separator" :value="__('Item separator')" class="mt-4 mb-1"/>

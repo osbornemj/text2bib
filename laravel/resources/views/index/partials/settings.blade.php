@@ -1,4 +1,4 @@
-<i>Settings</i>: item separator = {{ $conversion->item_separator}}
+item separator = {{ $conversion->item_separator}}
 &nbsp;&bull;&nbsp;
 language = {{ $conversion->language }}
 &nbsp;&bull;&nbsp;
@@ -19,3 +19,12 @@ line endings = {{ $conversion->line_endings }}
 {{ $conversion->include_source ? 'include source' : 'no source' }}
 &nbsp;&bull;&nbsp;
 {{ $conversion->report_type }} report
+@if ($conversion->use)
+  <br/>
+  to be used for = 
+  @if ($conversion->use == "other")
+    {{ $conversion->other_use }}
+  @else
+    {{ $conversion->use }}
+  @endif
+@endif
