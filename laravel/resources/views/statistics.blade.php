@@ -31,7 +31,7 @@
     </div>
 
     <div class="sm:mx-4 mt-4 font-semibold">
-        <h2 class="text-lg">Conversions by intended use</h2>
+        <h2 class="text-xl">Conversions by intended use</h2>
 
         <div style="width:100%;">
             {!! $chartjsUses->render() !!}
