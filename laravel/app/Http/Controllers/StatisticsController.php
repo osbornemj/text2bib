@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Statistic;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StatisticsController extends Controller
 {
@@ -14,6 +15,13 @@ class StatisticsController extends Controller
         $userCounts = $data->pluck('user_count')->toArray();
         $conversionCounts = $data->pluck('conversion_count')->toArray();
         $itemCounts = $data->pluck('item_count')->toArray();
+        // select `use`,count(*) AS number from conversions where `use` is not null group by `use`;
+        $useCounts = DB::table('conversions')
+            ->whereNotNull('use')
+            ->where('use', '!=', '')
+            ->groupBy('use')
+            ->select(DB::raw('`use`, count(*) AS use_count'))
+            ->get();
 
         $colors = [
             "barPercentage" => "1.0",
@@ -82,6 +90,25 @@ class StatisticsController extends Controller
                 ]
          ]);
 
-        return view('statistics', compact('chartjsUsers', 'chartjsConversions', 'chartjsItems'));
+         $chartjsUses = app()->chartjs
+         ->name('useCounts')
+         ->type('bar')
+         ->size(['width' => 400, 'height' => 200])
+         ->labels($useCounts->pluck('use')->toArray())
+         ->datasets([$colors +
+             [
+                 "label" => "Number of conversions for each intended use",
+                 'data' => $useCounts->pluck('use_count')->toArray(),
+             ],
+         ])
+         ->options([
+             "scales" => [
+                 "y" => [
+                     "beginAtZero" => true
+                     ]
+                 ]
+          ]);
+ 
+         return view('statistics', compact('chartjsUsers', 'chartjsConversions', 'chartjsItems', 'chartjsUses'));
     }
 }
