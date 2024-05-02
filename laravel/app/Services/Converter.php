@@ -873,11 +873,14 @@ class Converter
         if ($language == 'my') {
             $title = (string) $title;
             $this->setField($item, 'title', trim($title, ', '), 'setField m3');
-            preg_match('/^"(?P<edition>[^"]+)"(?P<remainder>.*)$/', $newRemainder, $matches);
-            if (isset($matches['edition'])) {
-                $this->setField($item, 'edition', trim($matches['edition'], ', '), 'setField m4');
+            $quoteCount = substr_count($newRemainder, '"');
+            if ($quoteCount == 4) {
+                preg_match('/^"(?P<edition>[^"]+)"(?P<remainder>.*)$/', $newRemainder, $matches);
+                if (isset($matches['edition'])) {
+                    $this->setField($item, 'edition', trim($matches['edition'], ', '), 'setField m4');
+                }
+                $newRemainder = $remainder = isset($matches['remainder']) ? trim($matches['remainder']) : '';
             }
-            $newRemainder = $remainder = isset($matches['remainder']) ? trim($matches['remainder']) : '';
         } else {
             // If title has been found and ends in edition specification, take that out and put it in edition field
             $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . ')[.,]?$/i';
@@ -2364,27 +2367,23 @@ class Converter
             case 'book':
                 if ($language == 'my') {
                     if (preg_match('/^"(?P<pubinfo>[^"]*)"(?P<pages>.*)$/', $remainder, $matches)) {
-                        $pubinfo = $matches['pubinfo'];
-                        $pages = $matches['pages'];
+                        $pubinfo = $matches['pubinfo'] ?? null;
+                        $pages = $matches['pages'] ?? null;
                         
-                        if (isset($pubinfo)) {
-                            $this->setField($item, 'publisher', trim($pubinfo, ', '));
-                        }
+                        // if (isset($pubinfo)) {
+                        //     $this->setField($item, 'publisher', trim($pubinfo, ', '));
+                        // }
 
-                        // $pubinfoParts = explode('။', $pubinfo);
-                        // if (isset($pubinfoParts[0])) {
-                        //     $this->setField($item, 'publisher-name', trim($pubinfoParts[0] . '။'));
-                        // }
-                        // if (isset($pubinfoParts[1])) {
-                        //     $this->setField($item, 'publisher-address', trim($pubinfoParts[1] . '။'));
-                        // }
-                        // if (isset($pubinfoParts[2])) {
-                        //     $this->setField($item, 'printer-name', trim($pubinfoParts[2] . '။'));
-                        // }
-                        // if (isset($pubinfoParts[3])) {
-                        //     $this->setField($item, 'printer-address', trim($pubinfoParts[3] . '။'));
-                        // }
-                        if (isset($pages)) {
+                        if ($pubinfo) {
+                            $pubinfoParts = explode('။', $pubinfo);
+                            if (isset($pubinfoParts[0]) && isset($pubinfoParts[1])) {
+                                $this->setField($item, 'publisher', $pubinfoParts[0] . '။' . $pubinfoParts[1] . '။');
+                            }
+                            if (isset($pubinfoParts[2]) && isset($pubinfoParts[3])) {
+                                $this->setField($item, 'address', trim($pubinfoParts[2]) . '။' . $pubinfoParts[3] . '။');
+                            }
+                        }
+                        if ($pages) {
                             $this->setField($item, 'pages', trim($pages, ' ,'));
                         }
                     }
@@ -2716,8 +2715,11 @@ class Converter
 
         if ($language == 'my') {
             foreach ($item as $name => $field) {
-                $item->$name = $this->translate($field, 'my');
+                if ($name != 'year') {
+                    $item->$name = $this->translate($field, 'my');
+                }
             }
+            $item->language = 'Burmese';
         }
 
         $returner = [
