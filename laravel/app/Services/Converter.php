@@ -481,7 +481,7 @@ class Converter
 
         $doi = $this->extractLabeledContent(
             $remainder,
-            ' [\[\)]?doi:? | [\[\(]?doi: ?|https?://dx.doi.org/|https?://doi.org/|doi.org',
+            ' [\[\)]?doi:? | [\[\(]?doi: ?|(\\\href\{)?https?://dx.doi.org/|(\\\href\{)?https?://doi.org/|doi.org',
             '[^ ]+'
         );
 
@@ -489,11 +489,21 @@ class Converter
             $doi = substr($doi, 0, -1);
         }
 
+        if (substr_count($doi, '}') > substr_count($doi, '{') && substr($doi, -1) == '}') {
+            $doi = substr($doi, 0, -1);
+        }
+
         // In case item says 'doi: https://...'
         $doi = Str::replaceStart('https://doi.org/', '', $doi);
         $doi = rtrim($doi, ']');
         $doi = ltrim($doi, '/');
-        $doi = preg_replace('/([^\\\])_/', '$1\_', $doi);
+        if (in_array($conversion->use, ['latex', 'biblatex'])) {
+            $doi = preg_replace('/([^\\\])_/', '$1\_', $doi);
+        }
+
+        // In case doi is repeated, as in \href{https://doi.org/<doi>}{<doi>}
+        $remainder = str_replace('{\tt ' . $doi . '}', '', $remainder);
+        $remainder = str_replace($doi, '', $remainder);
 
         if ($doi) {
             $this->setField($item, 'doi', $doi, 'setField 1');
@@ -775,7 +785,7 @@ class Converter
 
         $isEditor = false;
 
-        $authorTitle = null;
+        //$authorTitle = null;
         if ($language == 'my') {
             preg_match('/^(?P<author>[^,]*, [^,]*), (?P<remainder>.*)$/', $remainder, $matches);
             //$this->setField($item, 'author', rtrim($words[0], ',') ?? '', 'setField m1');
@@ -932,6 +942,9 @@ class Converter
                 $title = substr($title, 0, -3);
             }
 
+            if (substr($title, 0, 1) == '{' && substr($title, -1) == '}') {
+                $title = trim($title, '{}');
+            }
             $this->setField($item, 'title', trim($title), 'setField 12');
         }
 

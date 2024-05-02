@@ -12,6 +12,8 @@
             </p>
             <p>
                 <x-link href="/admin/runExampleCheck">Check all conversions</x-link>
+                &nbsp;&bull;&nbsp;
+                <x-link href="/admin/seedExamples">Run seeder</x-link>
             </p>
         </div>
     </div>

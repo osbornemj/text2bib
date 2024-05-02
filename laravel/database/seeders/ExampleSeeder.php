@@ -2618,7 +2618,7 @@ class ExampleSeeder extends Seeder
                         'source' => 'Allen, D.E., Singh, B.P. and Dalal, R.C. 2011. Soil health indicators under climate change: a review of current knowledge. p. 25-45. In: Soil Health and Climate Change (B. Singh, A. Cowie, K. Chan, eds). Berlin: Springer. https://doi.org/10.1007/978-3-642-20256-8_2  ',
                         'type' => 'incollection',
                         'bibtex' => [
-                            'doi' => '10.1007/978-3-642-20256-8\_2',
+                            'doi' => '10.1007/978-3-642-20256-8_2',
                             'author' => 'Allen, D. E. and Singh, B. P. and Dalal, R. C.',
                             'year' => '2011',
                             'title' => 'Soil health indicators under climate change: a review of current knowledge',
@@ -3942,7 +3942,7 @@ class ExampleSeeder extends Seeder
                                 'volume' => '4',
                                 'number' => '4',
                                 'pages' => '7-24',
-                                'doi' => '10.1300/J154v04n04\_02',
+                                'doi' => '10.1300/J154v04n04_02',
                                 ]
                         ],
                         [
@@ -4975,31 +4975,19 @@ class ExampleSeeder extends Seeder
                                     ]
                             ],
                             [
-                                'source' => 'ဦးသောဘန, မဟာစည်ဆရာတော်, ၁၉၆၇, "၂၃-ကြိမ်မြောက် နှစ်ပတ်လည်သြဝါဒခံယူပူဇော်ပွဲအကြိုနေ့ သြဝါဒကထာ," "ဦးညီပု၊ ဗုဒ္ဓသာသနာနုဂ္ဂဟအဖွဲ့ချုပ်၊ ဟာမစ်တစ်လမ်း၊ ရန်ကုန်မြို့။ စာပေလောကပုံနှိပ်တိုက်၊ ၁၇၃၊ ၃၃-လမ်း၊ ရန်ကုန်မြို့။", ၁၂၃-၁၄၅. ',
-                                'type' => 'book',
+                                'source' => '\bibitem{Katanaev}  	Katanaev, M.O.,  Volovich, I.V.   	{ Theory of defects in solids and three-dimensional gravity}.  	{\it Annals of Physics} 216, 1-28 (1992). 	\href{https://doi.org/10.1016/0003-4916(52)90040-7}{\tt 10.1016/0003-4916(52)90040-7}. ',
+                                'type' => 'article',
                                 'bibtex' => [
-                                    'year' => '၁၉၆၇',
-                                    'pages' => '၁၂၃-၁၄၅',
-                                    'title' => '၂၃-ကြိမ်မြောက် နှစ်ပတ်လည်သြဝါဒခံယူပူဇော်ပွဲအကြိုနေ့ သြဝါဒကထာ',
-                                    'author' => 'ဦးသောဘန, မဟာစည်ဆရာတော်',
-                                    'publisher' => 'ဦးညီပု၊ ဗုဒ္ဓသာသနာနုဂ္ဂဟအဖွဲ့ချုပ်၊ ဟာမစ်တစ်လမ်း၊ ရန်ကုန်မြို့။ စာပေလောကပုံနှိပ်တိုက်၊ ၁၇၃၊ ၃၃-လမ်း၊ ရန်ကုန်မြို့။',
-                                ],
-                                'language' => 'my',
-                                'char_encoding' => 'utf8leave',
+                                    'doi' => '10.1016/0003-4916(52)90040-7',
+                                    'author' => 'Katanaev, M. O. and Volovich, I. V.',
+                                    'title' => 'Theory of defects in solids and three-dimensional gravity',
+                                    'year' => '1992',
+                                    'journal' => 'Annals of Physics',
+                                    'pages' => '1-28',
+                                    'volume' => '216',
+                                    ]
                             ],
-                            [
-                                'source' => 'ဦးသုဇာတ, မဟာစည်ကမ္မဋ္ဌာနစရိယ, (၁၉၆၂), "ဝိပဿနာအားထုတ်ပါ," "ဦးညိုထူး၊ ဗုဒ္ဓသာသနာနုဂ္ဂဟအဖွဲ့ချုပ်၊ အမှတ် ၁၆-သာသနာ့ရိပ်သာလမ်း၊ ရန်ကုန်မြို့။ ညိုမြင့်ပုံနှိပ်တိုက်၊ ၁၂၂၊ မဟာဗန္ဓုလလမ်း၊ ရန်ကုန်မြို့။," ၂၂-၂၅. ',
-                                'type' => 'book',
-                                'bibtex' => [
-                                    'author' => 'ဦးသုဇာတ, မဟာစည်ကမ္မဋ္ဌာနစရိယ',
-                                    'year' => '၁၉၆၂',
-                                    'title' => 'ဝိပဿနာအားထုတ်ပါ',
-                                    'publisher' => 'ဦးညိုထူး၊ ဗုဒ္ဓသာသနာနုဂ္ဂဟအဖွဲ့ချုပ်၊ အမှတ် ၁၆-သာသနာ့ရိပ်သာလမ်း၊ ရန်ကုန်မြို့။ ညိုမြင့်ပုံနှိပ်တိုက်၊ ၁၂၂၊ မဟာဗန္ဓုလလမ်း၊ ရန်ကုန်မြို့။',
-                                    'pages' => '၂၂-၂၅',
-                                ],
-                                'language' => 'my',
-                                'char_encoding' => 'utf8leave',
-                            ],
+                
                             
                             
                             

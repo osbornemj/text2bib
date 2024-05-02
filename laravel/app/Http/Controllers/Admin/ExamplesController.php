@@ -9,6 +9,7 @@ use Illuminate\View\View;
 
 use App\Models\Example;
 use App\Models\ExampleField;
+use Illuminate\Support\Facades\Artisan;
 
 class ExamplesController extends Controller
 {
@@ -79,6 +80,13 @@ class ExamplesController extends Controller
         $example->source = $request->source;
         $example->save();
 
+        return redirect()->route('examples.index');
+    }
+
+    public function seed()
+    {
+        $exitCode = Artisan::call('db:seed --class=ExampleSeeder');
+        // $exitCode == 0 means success
         return redirect()->route('examples.index');
     }
 }

@@ -150,8 +150,14 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/itemTypeField/remove/{itemField}/{itemTypeId}', 'remove')->name('itemTypeField.remove');
     });
 
-    Route::get('/admin/runExampleCheck/{reportType?}/{language?}/{detailsIfCorrect?}/{id?}/{charEncoding?}', [ExampleCheckController::class, 'runExampleCheck'])->name('admin.examples.runCheck');
-    Route::post('/admin/runExampleCheck', [ExampleCheckController::class, 'runExampleCheck'])->name('admin.examples.runCheck');
+    Route::controller(ExamplesController::class)->group(function () {
+        Route::get('/admin/seedExamples', 'seed')->name('admin.examples.seed');
+    });
+
+    Route::controller(ExampleCheckController::class)->group(function () {
+        Route::get('/admin/runExampleCheck/{reportType?}/{language?}/{detailsIfCorrect?}/{id?}/{charEncoding?}', 'runExampleCheck')->name('admin.examples.runCheck');
+        Route::post('/admin/runExampleCheck', 'runExampleCheck')->name('admin.examples.runCheck');
+    });
 
     Route::controller(UsersController::class)->group(function () {
         Route::get('/admin/users', 'index')->name('admin.users');
