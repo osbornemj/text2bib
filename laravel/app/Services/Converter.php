@@ -852,6 +852,9 @@ class Converter
 
         if ($year) {
             $this->setField($item, 'year', $year, 'setField 9');
+            // if ($language == 'my') {
+            //     $this->setField($item, 'years', $year, 'setField m5');
+            // }
         }
 
         $remainder = trim($remainder, '.},; ');
@@ -2385,6 +2388,7 @@ class Converter
                         }
                         if ($pages) {
                             $this->setField($item, 'pages', trim($pages, ' ,'));
+                            $this->setField($item, 'numPages', trim($pages, ' ,'));
                         }
                     }
 
