@@ -1998,7 +1998,9 @@ class Converter
                                             $warnings[] = $warning;
                                         }
                                         $newRemainder = trim(substr($remainder, $endAuthorPos + $edStrLen), ',:. ');
-                                        $this->verbose("[in8] editors: " . $item->editor);
+                                        if (isset($item->editors)) {
+                                            $this->verbose("[in8] editors: " . $item->editor);
+                                        }
                                     } else {
                                         // CASE 5
                                     }
