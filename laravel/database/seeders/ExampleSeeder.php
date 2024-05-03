@@ -4987,7 +4987,202 @@ class ExampleSeeder extends Seeder
                                     'volume' => '216',
                                     ]
                             ],
-                
+                            // title stopped early
+                            [
+                               'source' => '104.	Kanaujia, R., Biswal, M., Angrup, A., & Ray, P. (2022). Diagnostic accuracy of the metagenomic next-generation sequencing (mNGS) for detection of bacterial meningoencephalitis: a systematic review and meta-analysis. European Journal of Clinical Microbiology & Infectious Diseases, 41(6), 881–891. https://doi.org/10.1007/s10096-022-04445-0 ',
+                               'type' => 'article',
+                               'bibtex' => [
+                                   'doi' => '10.1007/s10096-022-04445-0',
+                                   'author' => 'Kanaujia, R. and Biswal, M. and Angrup, A. and Ray, P.',
+                                   'year' => '2022',
+                                   'title' => 'Diagnostic accuracy of the metagenomic next-generation sequencing (mNGS) for detection of bacterial meningoencephalitis: a systematic review and meta-analysis',
+                                   'journal' => 'European Journal of Clinical Microbiology & Infectious Diseases',
+                                   'pages' => '881-891',
+                                   'volume' => '41',
+                                   'number' => '6',
+                                   ]
+                           ],
+                           // title stopped early
+                            [
+                               'source' => '107.	Ben Amor, K., Breeuwer, P., Verbaarschot, P., Rombouts, F. ., Akkermans, A. D. ., de Vos, W. ., & Abee, T. (2002). Multiparametric Flow Cytometry and Cell Sorting for the Assessment of Viable, Injured, and Dead Bifidobacterium Cells during Bile Salt Stress. Applied and Environmental Microbiology, 68(11), 5209–5216. https://doi.org/10.1128/AEM.68.11.5209-5216.2002 ',
+                               'type' => 'article',
+                               'bibtex' => [
+                                   'doi' => '10.1128/AEM.68.11.5209-5216.2002',
+                                   'author' => 'Ben Amor, K. and Breeuwer, P. and Verbaarschot, P. and Rombouts, F. and Akkermans, A. D. and de Vos, W. and Abee, T.',
+                                   'year' => '2002',
+                                   'title' => 'Multiparametric Flow Cytometry and Cell Sorting for the Assessment of Viable, Injured, and Dead Bifidobacterium Cells during Bile Salt Stress',
+                                   'journal' => 'Applied and Environmental Microbiology',
+                                   'pages' => '5209-5216',
+                                   'volume' => '68',
+                                   'number' => '11',
+                                   ]
+                           ],
+                           // title ended early (end at colon only if next word is journal word??)
+                           [
+                               'source' => 'Palazzo, S., & Levey, J. (2024). Shaping the Future of Nursing Education: Next Generation NCLEX (NGN) Question Writing and the Power of Psychometrics. Nursing Education Perspectives, 45(2). doi:doi.10.1097/01.NEP.0000000000001234 ',
+                               'type' => 'article',
+                               'bibtex' => [
+                                   'author' => 'Palazzo, S. and Levey, J.',
+                                   'title' => 'Shaping the Future of Nursing Education: Next Generation NCLEX (NGN) Question Writing and the Power of Psychometrics',
+                                   'journal' => 'Nursing Education Perspectives',
+                                   'year' => '2024',
+                                   'volume' => '45',
+                                   'number' => '2',
+                                   'doi' => '10.1097/01.NEP.0000000000001234',
+                                   ]
+                           ],
+                           // title ended early
+                           [
+                               'source' => 'Smith, C. R., Palazzo, S. J., Grubb, P. L., & Gillespie, G. L. (2020). Standing up against workplace bullying: Recommendations from newly licensed nurses. Journal of Nursing Education and Practice, 10(7). doi:10.5430/jnep.v10n7p35 ',
+                               'type' => 'article',
+                               'bibtex' => [
+                                   'author' => 'Smith, C. R. and Palazzo, S. J. and Grubb, P. L. and Gillespie, G. L.',
+                                   'title' => 'Standing up against workplace bullying: Recommendations from newly licensed nurses',
+                                   'journal' => 'Journal of Nursing Education and Practice',
+                                   'year' => '2020',
+                                   'volume' => '10',
+                                   'number' => '7',
+                                   'doi' => '10.5430/jnep.v10n7p35',
+                                   ]
+                           ],
+                           // journal name ended early
+                           [
+                               'source' => '[3] D. S. Weile, G. Pisharody, N. W. Chen, B. Shanker, and E. Michielssen, "A novel scheme for the solution of the time-domain integral equations of electromagnetics," IEEE Trans. Antennas Propag., vol. 52, no. 1, pp. 283-295, Jan. 2004. ',
+                               'type' => 'article',
+                               'bibtex' => [
+                                   'author' => 'D. S. Weile and G. Pisharody and N. W. Chen and B. Shanker and E. Michielssen',
+                                   'title' => 'A novel scheme for the solution of the time-domain integral equations of electromagnetics',
+                                   'year' => '2004',
+                                   'month' => 'January',
+                                   'journal' => 'IEEE Trans. Antennas Propag.',
+                                   'pages' => '283-295',
+                                   'volume' => '52',
+                                   'number' => '1',
+                                   ]
+                           ],
+                           // title ended early
+                           [
+                               'source' => '\bibitem{DeSantola 2017} DeSantola, A., \& Gulati, R. (2017). Scaling: Organizing and in entrepreneurial ventures. \textit{Academy of Management Annals}, 11(2), 640--668. ',
+                               'type' => 'article',
+                               'bibtex' => [
+                                   'author' => 'DeSantola, A. and Gulati, R.',
+                                   'year' => '2017',
+                                   'title' => 'Scaling: Organizing and in entrepreneurial ventures',
+                                   'journal' => 'Academy of Management Annals',
+                                   'pages' => '640-668',
+                                   'volume' => '11',
+                                   'number' => '2',
+                                   ]
+                           ],
+                           // title ended early
+                           [
+                               'source' => '\bibitem{DeSantola 2022} DeSantola, A., Gulati, R., \& Zhelyazkov, P. I. (2022). External interfaces or internal processes? Market positioning and divergent professionalization paths in young ventures. \textit{Organization Science}, 16(4). ',
+                               'type' => 'article',
+                               'bibtex' => [
+                                   'author' => 'DeSantola, A. and Gulati, R. and Zhelyazkov, P. I.',
+                                   'year' => '2022',
+                                   'title' => 'External interfaces or internal processes? Market positioning and divergent professionalization paths in young ventures',
+                                   'journal' => 'Organization Science',
+                                   'volume' => '16',
+                                   'number' => '4',
+                                   ]
+                           ],
+                           // title ended early
+                           [
+                               'source' => '\bibitem{Fini 2011} Fini, R., Grimaldi, R., Santoni, S., \& Sobrero, M. (2011). Complements or substitutes? The role of universities and local context in supporting the creation of academic spin-offs. Research Policy, 40(8), 1113-1127. ',
+                               'type' => 'article',
+                               'bibtex' => [
+                                   'author' => 'Fini, R. and Grimaldi, R. and Santoni, S. and Sobrero, M.',
+                                   'title' => 'Complements or substitutes? The role of universities and local context in supporting the creation of academic spin-offs',
+                                   'journal' => 'Research Policy',
+                                   'year' => '2011',
+                                   'volume' => '40',
+                                   'number' => '8',
+                                   'pages' => '1113-1127',
+                                   ]
+                           ],
+                           // Journal name included in title
+                           [
+                              'source' => 'Kaninjing, E., Dickey, S., & Ouma, C. (2022). Communication of Family Health History Among College Students and Their Families. International Journal of Higher Education, 11, 16. Retrieved from https://doi.org/10.5430/ijhe.v11n5p153 doi:10.5430/ijhe.v11n5p153 ',
+                              'type' => 'article',
+                              'bibtex' => [
+                                  'author' => 'Kaninjing, E. and Dickey, S. and Ouma, C.',
+                                  'title' => 'Communication of Family Health History Among College Students and Their Families',
+                                  'journal' => 'International Journal of Higher Education',
+                                  'year' => '2022',
+                                  'volume' => '11',
+                                  'pages' => '16',
+                                  'doi' => '10.5430/ijhe.v11n5p153',
+                                  ]
+                          ],
+                          // doi not correctly identified, because of nonstandard URL
+                          [
+                              'source' => 'Millender, E., Dickey, S. L., Ouma, C., Bruneau, D., & Wisdom-Chambers, K. (2022). Addressing Disparities by Evaluating Depression and Prostate Screenings in a Community Health Clinic. Journal of Community Health, 39(1), 31. Retrieved from https://doi-org.proxy.lib.fsu.edu/10.1080/07370016.2022.2028063 ',
+                              'type' => 'article',
+                              'bibtex' => [
+                                  'author' => 'Millender, E. and Dickey, S. L. and Ouma, C. and Bruneau, D. and Wisdom-Chambers, K.',
+                                  'title' => 'Addressing Disparities by Evaluating Depression and Prostate Screenings in a Community Health Clinic',
+                                  'journal' => 'Journal of Community Health',
+                                  'year' => '2022',
+                                  'volume' => '39',
+                                  'number' => '1',
+                                  'pages' => '31',
+                                  'doi' => '10.1080/07370016.2022.2028063',
+                                  ]
+                          ],
+                          [
+                              'source' => 'GROOTSCHOLTEN, T.I.M.; STEINBUSCH, K.J.J.; HAMELERS, H.V.M.; BUISMAN, C.J.N. (2013) High rate heptanoate production from propionate and ethanol using chain elongation. Bioresource Technology, v. 136, p. 715-718. https://doi.org/10.1016/j.biortech. 2013.02.085 ',
+                              'type' => 'article',
+                              'bibtex' => [
+                                  'author' => 'Grootscholten, T. I. M. and Steinbusch, K. J. J. and Hamelers, H. V. M. and Buisman, C. J. N.',
+                                  'title' => 'High rate heptanoate production from propionate and ethanol using chain elongation',
+                                  'journal' => 'Bioresource Technology',
+                                  'year' => '2013',
+                                  'volume' => '136',
+                                  'pages' => '715-718',
+                                  'doi' => '10.1016/j.biortech',
+                                  'note' => '2013.02.085',
+                                  ]
+                          ],
+                          // words "Masters thesis" included in school field
+                          [
+                              'source' => 'Atherton, C. (2017). An Investigation of Heterogeneity and the Impact of Acidic Regions on Bulk Effluent from a Deconstructed Low Sulfide Waste-Rock Pile. Masters Thesis, University of Waterloo. ',
+                              'type' => 'mastersthesis',
+                              'bibtex' => [
+                                  'author' => 'Atherton, C.',
+                                  'year' => '2017',
+                                  'title' => 'An Investigation of Heterogeneity and the Impact of Acidic Regions on Bulk Effluent from a Deconstructed Low Sulfide Waste-Rock Pile',
+                                  'school' => 'University of Waterloo',
+                                  ]
+                          ], 
+                          // title ended early, after spp.
+                          [
+                              'source' => 'Ziba MW, Bowa B, Romantini R, Di Marzio V, Marfoglia C, Antoci S, Muuka G, Scacchia M, Mattioli M, Pomilio F (2020). Occurrence and antimicrobial resistance of Salmonella spp. in broiler chicken neck skin from slaughterhouses in Zambia. Journal of Veterinary Medicine and Animal Health  12(2):85-90.    24                      ',
+                              'type' => 'article',
+                              'bibtex' => [
+                                  'author' => 'Ziba, M. W. and Bowa, B. and Romantini, R. and Di Marzio, V. and Marfoglia, C. and Antoci, S. and Muuka, G. and Scacchia, M. and Mattioli, M. and Pomilio, F.',
+                                  'year' => '2020',
+                                  'title' => 'Occurrence and antimicrobial resistance of Salmonella spp. in broiler chicken neck skin from slaughterhouses in Zambia',
+                                  'journal' => 'Journal of Veterinary Medicine and Animal Health',
+                                  'volume' => '12',
+                                  'number' => '2',
+                                  'pages' => '85-90',
+                                  ]
+                          ],
+                  			// school not properly identified
+                            [
+                                'source' => 'Shilpakar, A., 2009. Phytochemical screening and analysis of antibacterial and antioxidant activity of Ficus auriculata, Lour. stem bark (Doctoral dissertation, Pokhara University).',
+                                'type' => 'phdthesis',
+                                'bibtex' => [
+                                    'author' => 'Shilpakar, A.',
+                                    'year' => '2009',
+                                    'title' => 'Phytochemical screening and analysis of antibacterial and antioxidant activity of Ficus auriculata, Lour. stem bark',
+                                    'school' => 'Pokhara University',
+                                    ]
+                            ], 
+
+              
+                              
                             
                             
                             

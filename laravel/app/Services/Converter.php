@@ -269,7 +269,7 @@ class Converter
         $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.|^Proc. Roy. Soc. A|^Proc. Roy. Soc.|^Proceedings of the International Association of Hydrological Sciences';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
-        $this->masterRegExp = '[Mm]aster(\'s)?|M\.?A\.?';
+        $this->masterRegExp = '[Mm]aster(\'?s)?|M\.?A\.?';
         $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral';
         $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]issertation))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de maestría|Tese de doutorado|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce)';
         // pt: Dissertação de Mestrado | Tese de mestrado
@@ -481,7 +481,7 @@ class Converter
 
         $doi = $this->extractLabeledContent(
             $remainder,
-            ' [\[\)]?doi:? | [\[\(]?doi: ?|(\\\href\{)?https?://dx.doi.org/|(\\\href\{)?https?://doi.org/|doi.org',
+            ' [\[\)]?doi:? | [\[\(]?doi: ?|(\\\href\{)?https?://dx\.doi\.org/|(\\\href\{)?https?://doi\.org/|doi\.org',
             '[^ ]+'
         );
 
@@ -493,8 +493,9 @@ class Converter
             $doi = substr($doi, 0, -1);
         }
 
-        // In case item says 'doi: https://...'
+        // In case item says 'doi: https://...' or 'doi:doi...'
         $doi = Str::replaceStart('https://doi.org/', '', $doi);
+        $doi = Str::replaceStart('doi.', '', $doi);
         $doi = rtrim($doi, ']');
         $doi = ltrim($doi, '/');
         if (in_array($conversion->use, ['latex', 'biblatex'])) {
@@ -2624,7 +2625,6 @@ class Converter
                 $this->verbose(['fieldName' => 'Item type', 'content' => $itemKind]);
 
                 $remainder = $this->findAndRemove($remainder, $this->fullThesisRegExp);
-
                 $remainder = trim($remainder, ' .,)[]');
                 if (strpos($remainder, ':') === false) {
                     $this->setField($item, 'school', $remainder, 'setField 87');
@@ -2953,7 +2953,7 @@ class Converter
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
-                        || preg_match('/^[Ii]n |^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^[Ii]n ([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
                         || preg_match('/^[a-aA-Z]+ J\./', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
@@ -2962,7 +2962,7 @@ class Converter
                         || preg_match('/^' . $this->fullThesisRegExp . '/', $remainder)
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
                         ) {
-                        $this->verbose("Ending title, case 2");
+                        $this->verbose("Ending title, case 2 (word '" . $word . "')");
                         $title = rtrim(implode(' ', $initialWords), ',:;.');
                         if (preg_match('/^' . $this->journalWord . ' /', $remainder)) {
                             $isArticle = true;
@@ -3016,13 +3016,26 @@ class Converter
                     // is the last one or $nextWord is not
                     // in the dictionary or $nextWord is initials or the following word starts with a lowercase letter,
                     // assume it is the first word of the publication info, which is an abbreviation.
+                    // (Case of lowercase letter stops "... perspectives, rev. ed." at the comma and does not stop
+                    // "... Basin, Turkey.  KSCE Journal ..." at the comma.)
                     } elseif 
                         (
-                            $nextWord && 
-                            strlen($nextWord) < 8 &&
-                            Str::endsWith($nextWord, '.') && 
-                            isset($words[$key+2]) &&
-                            (! Str::endsWith($word, ',') || ! $this->inDict(substr($nextWord,0,-1)) || $this->isInitials($nextWord) || mb_strtolower($words[$key+2][0]) == $words[$key+2][0]) && 
+                            $nextWord 
+                            && 
+                            strlen($nextWord) < 8 
+                            &&
+                            Str::endsWith($nextWord, '.') 
+                            && 
+                            isset($words[$key+2]) 
+                            &&
+                            (! Str::endsWith($word, ',') || 
+                                ! $this->inDict(substr($nextWord,0,-1)) || 
+                                $this->isInitials($nextWord) || 
+                                (mb_strtolower($nextWord[0]) == $nextWord[0]
+                                &&
+                                mb_strtolower($words[$key+2][0]) == $words[$key+2][0])
+                            ) 
+                            && 
                             (! $journal || rtrim($nextWord, '.') == rtrim(strtok($journal, ' '), '.'))
                         ) {
                         $this->verbose("Ending title, case 4");
@@ -3086,7 +3099,7 @@ class Converter
                         }
                         if ((($lcWordCount > 2 && substr_count($modStringToNextPeriod, ' ') > 3) || $containsUrlAccessInfo)
                             // comma added in next line to deal with one case, but it may be dangerous
-                            && Str::endsWith($word, ['.', ',']) 
+                            && Str::endsWith($word, ['.', ',', '?', '!']) 
                             && substr_count($modStringToNextPeriod, ',') == 0
                             && substr_count($modStringToNextPeriod, ':') == 0
                         ) {
