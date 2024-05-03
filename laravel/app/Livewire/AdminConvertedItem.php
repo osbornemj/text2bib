@@ -20,7 +20,17 @@ class AdminConvertedItem extends Component
         // Put fields in uniform order
         $convertedItem = [];
         $originalItem = [];
-        $fields = $this->output->itemType->fields;
+
+        // For Burmese items, just show the fields in the item
+        if ($this->output->conversion->language == 'my') {
+            $fields = [];
+            foreach ($this->output->item as $f => $c) {
+                $fields[] = $f;
+            }
+        } else {
+            $fields = $this->output->itemType->fields;
+        }
+        
         foreach ($fields as $field) {
             if (isset($this->output->item[$field])) {
                 $convertedItem[$field] = $this->output->item[$field];

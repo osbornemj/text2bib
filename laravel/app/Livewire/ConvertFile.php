@@ -97,14 +97,6 @@ class ConvertFile extends Component
         $this->version = Version::latest()->first()->created_at;
     }
 
-    // public function updatedUse($value)
-    // {
-    //     dd('here');
-    //     if ($value == 'other') {
-    //         $this->showOtherInput = true;
-    //     }
-    // }
-
     /*
     protected function queryString()
     {

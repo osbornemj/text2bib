@@ -32,6 +32,7 @@
 
     <div class="sm:mx-4 mt-4 font-semibold">
         <h2 class="text-xl">Conversions by intended use</h2>
+        (since 2024.4.30)
 
         <div style="width:100%;">
             {!! $chartjsUses->render() !!}

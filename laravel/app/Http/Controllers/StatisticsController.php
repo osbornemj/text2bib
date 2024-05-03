@@ -21,6 +21,7 @@ class StatisticsController extends Controller
             ->where('use', '!=', '')
             ->groupBy('use')
             ->select(DB::raw('`use`, count(*) AS use_count'))
+            ->orderByDesc('use_count')
             ->get();
 
         $colors = [
