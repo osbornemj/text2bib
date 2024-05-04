@@ -63,10 +63,8 @@ class CitiesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id): View
+    public function edit(City $city): View
     {
-        $city = City::find($id);
-
         return view('admin.cities.edit')
                         ->with('city', $city);
     }
@@ -74,9 +72,8 @@ class CitiesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCityRequest $request, int $id)
+    public function update(UpdateCityRequest $request, City $city)
     {
-        $city = City::find($id);
         $city->name = $request->name;
         $city->save();
 
@@ -86,9 +83,8 @@ class CitiesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(City $city): RedirectResponse
     {
-        $city = City::find($id);
         $city->delete();
 
         return redirect()->route('cities.index');

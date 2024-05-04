@@ -5141,7 +5141,6 @@ class ExampleSeeder extends Seeder
                                   'volume' => '136',
                                   'pages' => '715-718',
                                   'doi' => '10.1016/j.biortech',
-                                  'note' => '2013.02.085',
                                   ]
                           ],
                           // words "Masters thesis" included in school field
@@ -5179,7 +5178,37 @@ class ExampleSeeder extends Seeder
                                     'title' => 'Phytochemical screening and analysis of antibacterial and antioxidant activity of Ficus auriculata, Lour. stem bark',
                                     'school' => 'Pokhara University',
                                     ]
-                            ], 
+                            ],
+                            // extra chars after volume
+                            [
+                                'source' => 'Mouho, D.G., Oliveira, A.P., Kodjo, C.G., Valentão, P., Gil-Izquierdo, A., Andrade, P.B., Ouattara, Z.A., Bekro, Y.A. and Ferreres, F., 2018. Chemical findings and in vitro biological studies to uphold the use of Ficus exasperata Vahl leaf and stem bark. Food and Chemical Toxicology, 112, pp.134-144.‎ ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Mouho, D. G. and Oliveira, A. P. and Kodjo, C. G. and Valentão, P. and Gil-Izquierdo, A. and Andrade, P. B. and Ouattara, Z. A. and Bekro, Y. A. and Ferreres, F.',
+                                    'year' => '2018',
+                                    'title' => 'Chemical findings and in vitro biological studies to uphold the use of Ficus exasperata Vahl leaf and stem bark',
+                                    'journal' => 'Food and Chemical Toxicology',
+                                    'pages' => '134-144',
+                                    'volume' => '112',
+                                ],
+                               'char_encoding' => 'utfleave',
+                            ],
+                            // volume issue format: 1/2
+                            [
+                                'source' => 'S. Yoon and A. Jameson. (1988) Lower-upper symmetric-Gauss-Seidel method for the Euler and Navier-Stokes equations, AIAA Journal, Vol. 26/9, pp. 1025-1026. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'S. Yoon and A. Jameson',
+                                    'year' => '1988',
+                                    'title' => 'Lower-upper symmetric-Gauss-Seidel method for the {E}uler and Navier-Stokes equations',
+                                    'journal' => 'AIAA Journal',
+                                    'pages' => '1025-1026',
+                                    'volume' => '26',
+                                    'number' => '9',
+                                    ]
+                            ],
+
+                
 
               
                               

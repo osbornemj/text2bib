@@ -485,6 +485,15 @@ class Converter
             '[^ ]+'
         );
 
+        // Every doi starts with '10.'.  URL may be something like https://doi-something.univ.edu.
+        if (empty($doi)) {
+            preg_match('%https?://[a-zA-Z\-\.]*/(?P<doi>10\.[^ ]+)%', $remainder, $matches);
+            if (isset($matches['doi'])) {
+                $doi = $matches['doi'];
+                $remainder = str_replace($matches[0], '', $remainder);
+            } 
+        }
+
         if (substr_count($doi, ')') > substr_count($doi, '(') && substr($doi, -1) == ')') {
             $doi = substr($doi, 0, -1);
         }
@@ -3082,7 +3091,12 @@ class Converter
                     // wait for the italics (journal name?)
                     } elseif ($this->containsFontStyle($remainder, false, 'italics', $startPos, $length)) {
                         $this->verbose("Not ending title, case 4 (italics is coming up)");
-                    // else if word ends with comma and volume info is coming up, wait for it
+                    // else if word ends with comma and remainder doesn't start with "[a-z]+ journal "
+                    // and volume info is coming up, wait for it
+                    } elseif (Str::endsWith($word, [',']) && preg_match('/^[a-z]+ journal/i', $remainder)) {
+                        $this->verbose("Ending title, case 5a (word: \"" . $word . "\"; journal info is next)");
+                        $title = rtrim(implode(' ', $initialWords), ' ,');
+                        break;
                     } elseif (Str::endsWith($word, [',']) && preg_match('/' . $this->volumeRegExp . '/', $remainder)) {
                         $this->verbose("Not ending title, case 5 (word: \"" . $word . "\"; volume info is coming up)");
                     } else {
@@ -5113,6 +5127,7 @@ class Converter
         } else {
             // $item->number can be a range (e.g. '6-7')
             // Look for something like 123:6-19
+            // First consider case in which there is only a volume
             $this->verbose('[v3]');
             $this->verbose('Remainder: ' . $remainder);
             // 'Volume? 123$'
@@ -5139,66 +5154,87 @@ class Converter
                 $this->verbose('take: ' . $take . ', drop: ' . $drop);
                 $this->verbose('No number assigned');
             } else {
-                // A letter or sequence of letters is permitted after an issue number
-                $numberOfMatches = preg_match('/(' . $this->volumeRegExp . '|[^0-9]|^)(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
-                $numberInParens = isset($matches['punc1']) && in_array($matches['punc1'][0], ['(', ' (']);
-                if ($numberOfMatches) {
-                    $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : '') . (isset($matches[8][0]) ? ', 8: ' . $matches[8][0] : ''));
-                    $this->setField($item, 'volume', $matches['volume'][0], 'getVolumeAndNumberForArticle 14');
-                    if (strlen($matches['number'][0]) < 5) {
-                        $this->setField($item, 'number', $matches['number'][0], 'getVolumeAndNumberForArticle 5');
-                        if ($matches['numberDesignation'][0]) {
+                // Starts with volume
+                preg_match('/^(' . $this->volumeRegExp . ')(?P<volume>[1-9][0-9]{0,3})[,\.\/ ]/', $remainder, $matches);
+                if (isset($matches['volume'])) {
+                    $volume = $matches['volume'];
+                    $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 17');
+                    $remainder = trim(str_replace($matches[0], '', $remainder));
+                    // Does a number follow the volume?
+                    // The /? allows a format 125/6 for volume/number
+                    preg_match('%^(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>(/?[0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?%', $remainder, $matches);
+                    if (isset($matches['number'])) {
+                        $number = $matches['number'];
+                        $this->setField($item, 'number', $number, 'getVolumeAndNumberForArticle 18');
+                        $remainder = trim(str_replace($matches[0], '', $remainder));
+                        if (isset($matches['numberDesignation'][0])) {
                             $containsNumberDesignation = true;
                         }
-                    } else {
-                        $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . 'Article ' . $matches['number'][0], 'getVolumeAndNumberForArticle 6');
                     }
-                    // if a match is empty, [][1] component is -1
-                    $take = $matches[1][1] >= 0 ? $matches[1][1] : $matches[2][1];
-                    $drop = $matches['number'][1] + strlen($matches['number'][0]);
-                    $this->verbose('take: ' . $take . ', drop: ' . $drop);
+                    $take = $drop = 0;
                 } else {
-                    // Look for "vol" etc. followed possibly by volume number and then something other than an issue number
-                    // (e.g. some extraneous text after the entry)
-                    $volume = $this->extractLabeledContent($remainder, $this->volumeRegExp, '[1-9][0-9]{0,3}');
-                    if ($volume) {
-                        $this->verbose('[p2c]');
-                        $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 7');
-                        $take = $drop = 0;
-                    } elseif (preg_match('/^article (id )?.*$/i', $remainder)) {
-                        $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $remainder, 'getVolumeAndNumberForArticle 8');
-                        $take = 0;
-                        $drop = strlen($remainder);
-                    } else {
-                        // Look for something like 123:xxx (where xxx is not a page range)
-                        $numberOfMatches = preg_match('/([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:)*(.*)/', $remainder, $matches, PREG_OFFSET_CAPTURE);
-                        if ($numberOfMatches) {
-                            $this->verbose('[p2d]');
-                            if (Str::startsWith($matches[3][0], ['Article', 'article'])) {
-                                $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $matches[3][0], 'getVolumeAndNumberForArticle 9');
-                                $this->setField($item, 'volume', $matches[1][0], 'getVolumeAndNumberForArticle 10');
-                            } elseif (preg_match('/^([0-9]*) *([0-9]*)[ ]*$/', $remainder, $matches)) {
-                                if (empty($item->pages)) {
-                                    $this->setField($item, 'pages', $matches[2], 'getVolumeAndNumberForArticle 11');
-                                }
-                                if (empty($item->volume)) {
-                                    $this->setField($item, 'volume', $matches[1], 'getVolumeAndNumberForArticle 12');
-                                }
-                            } else {
-                                // Assume all of $remainder is volume (might be something like '123 (Suppl. 19)')
-                                if (! Str::contains($remainder, ['('])) {
-                                    $remainder = rtrim($remainder, ')');
-                                }
-                                $this->setField($item, 'volume', trim($remainder, ' ,;:.'), 'getVolumeAndNumberForArticle 13');
+                    // A letter or sequence of letters is permitted after an issue number
+                    $numberOfMatches = preg_match('/(' . $this->volumeRegExp . '|[^0-9]|^)(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                    $numberInParens = isset($matches['punc1']) && in_array($matches['punc1'][0], ['(', ' (']);
+
+                    if ($numberOfMatches) {
+                        $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : '') . (isset($matches[8][0]) ? ', 8: ' . $matches[8][0] : ''));
+                        $this->setField($item, 'volume', $matches['volume'][0], 'getVolumeAndNumberForArticle 14');
+                        if (strlen($matches['number'][0]) < 5) {
+                            $this->setField($item, 'number', $matches['number'][0], 'getVolumeAndNumberForArticle 5');
+                            if ($matches['numberDesignation'][0]) {
+                                $containsNumberDesignation = true;
                             }
-                            unset($item->number);
+                        } else {
+                            $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . 'Article ' . $matches['number'][0], 'getVolumeAndNumberForArticle 6');
+                        }
+                        // if a match is empty, [][1] component is -1
+                        $take = $matches[1][1] >= 0 ? $matches[1][1] : $matches[2][1];
+                        $drop = $matches['number'][1] + strlen($matches['number'][0]);
+                        $this->verbose('take: ' . $take . ', drop: ' . $drop);
+                    } else {
+                        // Look for "vol" etc. followed possibly by volume number and then something other than an issue number
+                        // (e.g. some extraneous text after the entry)
+                        $volume = $this->extractLabeledContent($remainder, $this->volumeRegExp, '[1-9][0-9]{0,3}');
+                        if ($volume) {
+                            $this->verbose('[p2c]');
+                            $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 7');
+                            $take = $drop = 0;
+                        } elseif (preg_match('/^article (id )?.*$/i', $remainder)) {
+                            $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $remainder, 'getVolumeAndNumberForArticle 8');
                             $take = 0;
                             $drop = strlen($remainder);
                         } else {
-                            $this->verbose('[p2e]');
-                            unset($item->volume);
-                            unset($item->number);
-                            $take = $drop = 0;
+                            // Look for something like 123:xxx (where xxx is not a page range)
+                            $numberOfMatches = preg_match('/([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:)*(.*)/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                            if ($numberOfMatches) {
+                                $this->verbose('[p2d]');
+                                if (Str::startsWith($matches[3][0], ['Article', 'article'])) {
+                                    $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $matches[3][0], 'getVolumeAndNumberForArticle 9');
+                                    $this->setField($item, 'volume', $matches[1][0], 'getVolumeAndNumberForArticle 10');
+                                } elseif (preg_match('/^([0-9]*) *([0-9]*)[ ]*$/', $remainder, $matches)) {
+                                    if (empty($item->pages)) {
+                                        $this->setField($item, 'pages', $matches[2], 'getVolumeAndNumberForArticle 11');
+                                    }
+                                    if (empty($item->volume)) {
+                                        $this->setField($item, 'volume', $matches[1], 'getVolumeAndNumberForArticle 12');
+                                    }
+                                } else {
+                                    // Assume all of $remainder is volume (might be something like '123 (Suppl. 19)')
+                                    if (! Str::contains($remainder, ['('])) {
+                                        $remainder = rtrim($remainder, ')');
+                                    }
+                                    $this->setField($item, 'volume', trim($remainder, ' ,;:.'), 'getVolumeAndNumberForArticle 13');
+                                }
+                                unset($item->number);
+                                $take = 0;
+                                $drop = strlen($remainder);
+                            } else {
+                                $this->verbose('[p2e]');
+                                unset($item->volume);
+                                unset($item->number);
+                                $take = $drop = 0;
+                            }
                         }
                     }
                 }
@@ -5247,6 +5283,9 @@ class Converter
         if ($charEncoding == 'utf8' || $charEncoding == 'utf8leave') {
             // Replace non-breaking space with regular space
             $string = str_replace("\xC2\xA0", " ", $string);
+            // Remove left-to-right mark
+            //$string = str_replace("\xE2\x80\x8E", "", $string);
+            $string = str_replace("‎", "", $string);
             // Replace zero-width non-breaking space with regular space
             // Change is now made when file is uploaded
             //$string = str_replace("\xEF\xBB\xBF", " ", $string);

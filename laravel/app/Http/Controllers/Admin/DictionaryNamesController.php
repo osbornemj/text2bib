@@ -58,10 +58,8 @@ class DictionaryNamesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id): View
+    public function edit(DictionaryName $dictionaryName): View
     {
-        $dictionaryName = DictionaryName::find($id);
-
         return view('admin.dictionaryNames.edit')
                         ->with('dictionaryName', $dictionaryName);
     }
@@ -69,9 +67,8 @@ class DictionaryNamesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDictionaryNameRequest $request, int $id)
+    public function update(UpdateDictionaryNameRequest $request, DictionaryName $dictionaryName)
     {
-        $dictionaryName = DictionaryName::find($id);
         $dictionaryName->word = $request->word;
         $dictionaryName->save();
 
@@ -81,9 +78,8 @@ class DictionaryNamesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(DictionaryName $dictionaryName): RedirectResponse
     {
-        $dictionaryName = DictionaryName::find($id);
         $dictionaryName->delete();
 
         return redirect()->route('dictionaryNames.index');
