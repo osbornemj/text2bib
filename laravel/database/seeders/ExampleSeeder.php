@@ -5222,6 +5222,34 @@ class ExampleSeeder extends Seeder
                                 'language' => 'pt',
                                 'char_encoding' => 'utf8leave',
                             ],
+                            // for book (as opposed to incollection), city at end of title should not be part of title
+                            [
+                                'source' => 'Eliade, Mircea. 1964. Traité d’Histoire des Religions, Paris: Payot. ',
+                                'type' => 'book',
+                                'bibtex' => [
+                                    'author' => 'Eliade, Mircea',
+                                    'title' => 'Traité d\'Histoire des Religions',
+                                    'year' => '1964',
+                                    'address' => 'Paris',
+                                    'publisher' => 'Payot',
+                                ],
+                                'char_encoding' => 'utf8leave',
+                            ],
+                   			// secondary date in brackets
+                            [
+                                'source' => 'Abdel Razek, Ali. 2012 [1925]. Islam and the Foundations of Political Power. Translated by Maryam Loutfi. Edited by Abdou Filali-Ansary. Edinburgh: Edinburgh University Press. ',
+                                'type' => 'book',
+                                'bibtex' => [
+                                    'note' => 'Translated by Maryam Loutfi.',
+                                    'author' => 'Abdel Razek, Ali',
+                                    'year' => '2012 [1925]',
+                                    'title' => 'Islam and the Foundations of Political Power',
+                                    'editor' => 'Abdou Filali-Ansary',
+                                    'publisher' => 'Edinburgh University Press',
+                                    'address' => 'Edinburgh',
+                                    ]
+                            ],
+
     
                             
 

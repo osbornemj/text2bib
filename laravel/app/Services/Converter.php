@@ -2976,6 +2976,7 @@ class Converter
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
                         || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
+                        || (preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) && in_array(trim($matches['city']), $this->cities))
                         || preg_match('/^' . $this->fullThesisRegExp . '/', $remainder)
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
                         ) {
@@ -4417,9 +4418,14 @@ class Converter
         $centuries = $allowEarlyYears ? '13|14|15|16|17|18|19|20' : '18|19|20';
 
         // en => n.d., es => 's.f.', pt => 's.d.'?
-        if (preg_match('/^(?P<year>[\(\[]n\. ?d\.[\)\]]|[\(\[]s\. ?[df]\.[\)\]]|forthcoming)(?P<remains>.*)$/i', $remains, $matches0)) {
+        if (preg_match('/^(?P<year>[\(\[](n\. ?d\.|s\. ?f\.|s\. ?d\.)[\)\]]|forthcoming)(?P<remains>.*)$/i', $remains, $matches0)) {
             $remains = $matches0['remains'];
             $year = trim($matches0['year'], '[]()');
+            return $year;
+        // (2020) [1830] OR 2020 [1830]
+        } elseif (preg_match('/^(?P<year>\(?(' . $centuries . ')[0-9]{2}\)? \[(' . $centuries . ')[0-9]{2}\])(?P<remains>.*)$/i', $remains, $matches0)) {
+            $remains = $matches0['remains'];
+            $year = str_replace(['(', ')'], '', $matches0['year']);
             return $year;
         }
 
