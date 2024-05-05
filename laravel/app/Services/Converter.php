@@ -592,7 +592,7 @@ class Converter
         // <url> accessed <date>
         if (! count($matches)) {
             preg_match(
-                '%(url: ?)?' . $urlRegExp . ',? ?\(?' . $accessedRegExp1 . '\)?$%i',
+                '%(url: ?)?' . $urlRegExp . ',? ?\(?' . $accessedRegExp1 . '\)?\.?$%i',
                 $remainder,
                 $matches,
             );
@@ -628,6 +628,7 @@ class Converter
             $note = $matches['note'] ?? null;
 
             $dateResult = $this->isDate(trim($date, ' .,'), $language, 'contains');
+            //d($dateResult, $date, $remainder, $language);
             if ($dateResult) {
                 $accessDate = $dateResult['date'];
                 $year = $dateResult['year'];
@@ -2406,9 +2407,13 @@ class Converter
                             $pubinfoParts = explode('။', $pubinfo);
                             if (isset($pubinfoParts[0]) && isset($pubinfoParts[1])) {
                                 $this->setField($item, 'publisher', $pubinfoParts[0] . '။' . $pubinfoParts[1] . '။');
+                                $this->setField($item, 'publisher-name', $pubinfoParts[0] . '။');
+                                $this->setField($item, 'publisher-address', trim($pubinfoParts[1]) . '။');
                             }
                             if (isset($pubinfoParts[2]) && isset($pubinfoParts[3])) {
                                 $this->setField($item, 'address', trim($pubinfoParts[2]) . '။' . $pubinfoParts[3] . '။');
+                                $this->setField($item, 'printer-name', trim($pubinfoParts[2]) . '။');
+                                $this->setField($item, 'printer-address', trim($pubinfoParts[3]) . '။');
                             }
                         }
                         if ($pages) {
@@ -2969,7 +2974,8 @@ class Converter
                         || preg_match('/^[a-aA-Z]+ J\./', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
-                        || preg_match('/^(19|20)[0-9][0-9]\./', $remainder)
+                        || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
+                        || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
                         || preg_match('/^' . $this->fullThesisRegExp . '/', $remainder)
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
                         ) {
@@ -3373,7 +3379,7 @@ class Converter
      */
     private function isDate(string $string, string $language = 'en', string $type = 'is'): bool|array
     {
-        $ofs = ['en' => '', 'cz' => '', 'fr' => '', 'es' => '', 'my' => '', 'nl' => '', 'pt' => 'de'];
+        $ofs = ['en' => '', 'cz' => '', 'fr' => '', 'es' => '', 'my' => '', 'nl' => '', 'pt' => 'de '];
 
         $year = '(?P<year>(19|20)[0-9]{2})';
         $monthName = $this->monthsRegExp[$language];
@@ -3383,7 +3389,7 @@ class Converter
 
         $starts = $type == 'is' ? '^' : '';
         $ends = $type == 'is' ? '$' : '';
- 
+
         //$str = str_replace([","], "", trim($string, ',. '));
         $matches = [];
         $isDates = [];
@@ -5162,7 +5168,7 @@ class Converter
                     $remainder = trim(str_replace($matches[0], '', $remainder));
                     // Does a number follow the volume?
                     // The /? allows a format 125/6 for volume/number
-                    preg_match('%^(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>(/?[0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?%', $remainder, $matches);
+                    preg_match('%^(?P<numberDesignation>' . $this->numberRegExp . ')?[ /]?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?%', $remainder, $matches);
                     if (isset($matches['number'])) {
                         $number = $matches['number'];
                         $this->setField($item, 'number', $number, 'getVolumeAndNumberForArticle 18');
@@ -5174,7 +5180,7 @@ class Converter
                     $take = $drop = 0;
                 } else {
                     // A letter or sequence of letters is permitted after an issue number
-                    $numberOfMatches = preg_match('/(' . $this->volumeRegExp . '|[^0-9]|^)(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                    $numberOfMatches = preg_match('%(' . $this->volumeRegExp . '|[^0-9]|^)(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;|/)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?%', $remainder, $matches, PREG_OFFSET_CAPTURE);
                     $numberInParens = isset($matches['punc1']) && in_array($matches['punc1'][0], ['(', ' (']);
 
                     if ($numberOfMatches) {
@@ -5284,8 +5290,7 @@ class Converter
             // Replace non-breaking space with regular space
             $string = str_replace("\xC2\xA0", " ", $string);
             // Remove left-to-right mark
-            //$string = str_replace("\xE2\x80\x8E", "", $string);
-            $string = str_replace("‎", "", $string);
+            $string = str_replace("\xE2\x80\x8E", "", $string);
             // Replace zero-width non-breaking space with regular space
             // Change is now made when file is uploaded
             //$string = str_replace("\xEF\xBB\xBF", " ", $string);

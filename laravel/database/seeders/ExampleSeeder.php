@@ -5191,7 +5191,7 @@ class ExampleSeeder extends Seeder
                                     'pages' => '134-144',
                                     'volume' => '112',
                                 ],
-                               'char_encoding' => 'utfleave',
+                               'char_encoding' => 'utf8leave',
                             ],
                             // volume issue format: 1/2
                             [
@@ -5207,6 +5207,23 @@ class ExampleSeeder extends Seeder
                                     'number' => '9',
                                     ]
                             ],
+                            // Portuguese date format
+                            [
+                                'source' => 'Agencia de Sostenibilidad Energética. Ponle energia a tu Pyme. 2023. https://www.agenciase.org/energia-a-tu-pyme/ (acesso em 07 de 03 de 2023). ',
+                                'type' => 'online',
+                                'bibtex' => [
+                                    'url' => 'https://www.agenciase.org/energia-a-tu-pyme/',
+                                    'author' => 'Agencia de Sostenibilidad Energética',
+                                    'year' => '2023',
+                                    'urldate' => '07 de 03 de 2023',
+                                    'title' => 'Ponle energia a tu Pyme',
+                                    'note' => '2023',
+                                ],
+                                'language' => 'pt',
+                                'char_encoding' => 'utf8leave',
+                            ],
+    
+                            
 
                 
 
