@@ -866,7 +866,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Glejser, H. and Heyndels, B.',
                     'volume' => '25',
                     'journal' => 'Journal of Cultural Economics',
-                    ]
+                ],
+                'use' => 'latex',
             ],    
             [
                 'source' => 'Mertens, J.-F., S. Sorin and S. Zamir (1994). Repeated Games: Part A Background Material, CORE Discussion Paper \#9420. ',
@@ -929,7 +930,8 @@ class ExampleSeeder extends Seeder
                     'journal' => 'Games and Economic Behavior',
                     'volume' => '46',
                     'pages' => '282-303',
-                    ]
+                ],
+                'use' => 'latex',
             ],
             [
                 'source' => 'Bruine de Bruin, W., \& Keren, G. (2003). ``Save the last dance for me: Unwanted order effects in jury evaluations.\'\' \textit{Manuscript under review}. ',
@@ -1187,7 +1189,8 @@ class ExampleSeeder extends Seeder
                         'title' => 'Multiproduct {C}ournot Oligopoly',
                         'author' => 'Johnson, Justin and David Myatt',
                         'journal' => 'Rand Journal of Economics',
-                        ]
+                    ],
+                        'use' => 'latex',
                 ],
                 [
                     'source' => '[14] Martimort, David and Lars Stole. ``Communication Spaces, Equilibria Sets and the Revelation Principle Under Common Agency,\'\' 1997, Chicago GSB Working Paper. ',
@@ -1951,7 +1954,8 @@ class ExampleSeeder extends Seeder
                             'publisher' =>  'Wiley',
                             'author' => 'Martin, Jr., R. H.',
                             'title' => 'Nonlinear Operators and Differential Equations in {B}anach Space',
-                            ]
+                        ],
+                        'use' => 'latex',
                     ],
                     [
                         'source' => 'Giavoni, A., & Tamayo, Á. (2003). Spatials analysis: Concept, Method and Applicability/Análise Espacial: Conceito, Método e Aplicabilidade. Psicologia: Reflexão e Critica, 16(2), 303-307.',
@@ -2577,7 +2581,8 @@ class ExampleSeeder extends Seeder
                             'author' => 'Ahlfors, L.',
                             'volume' => '55',
                             'journal' => 'Proc. Nat. Acad. Sci. U. S. A.',
-                            ]
+                        ],
+                        'use' => 'latex',
                     ],
                     [
                         'source' => 'A. V. Knyazev, {\em Toward the optimal preconditioned eigensolver: Locally optimal block preconditioned conjugated gradient method}, SIAM J. Sci. Comput.,{\bf 23} (2001), pp. 517-541. ',
@@ -2627,7 +2632,8 @@ class ExampleSeeder extends Seeder
                             'address' => 'Berlin',
                             'booktitle' => 'Soil Health and Climate Change',
                             'editor' => 'B. Singh and A. Cowie and K. Chan',
-                            ]
+                        ],
+                        'use' => 'zotero-word',
                     ],
                     [
                         'source' => 'Barrile, V., Simonetti, S., Citroni, R., Fotia, A., and Bilotta, G. 2022. Experimenting agriculture 4.0 with sensors: A data fusion approach between remote sensing, UAVs and self-driving tractors. Sensors 22(20): 7910. https://doi.org/10.3390/s22207910  ',
@@ -3383,7 +3389,8 @@ class ExampleSeeder extends Seeder
                             'journal' => 'Ann. Math. Statist.',
                             'pages' => '89-110',
                             'volume' => '28',
-                            ]
+                        ],
+                        'use' => 'latex',
                     ],
                     [
                         'source' => 'Baade, A., Peng, P., and Harwath, D. Mae-ast: Masked autoencoding audio spectrogram transformer. arXiv, abs/2203.16691, 2022. ',
@@ -4912,7 +4919,8 @@ class ExampleSeeder extends Seeder
                                     'journal' => 'Phys. Rev. Lett.',
                                     'volume' => '126',
                                     'pages' => '130403',
-                                    ]
+                                ],
+                                'use' => 'latex',
                             ],
                             [
                                 'source' => ' \bibitem{LiPRA2023} W. Li, J. Cheng, W. -J. Gong, and J. Li, Nonlinear self-sustaining dynamics in cavity magnomechanics, Phys. Rev. A {\bf108}, 033518 (2023). ',
@@ -5205,7 +5213,8 @@ class ExampleSeeder extends Seeder
                                     'pages' => '1025-1026',
                                     'volume' => '26',
                                     'number' => '9',
-                                    ]
+                                ],
+                                'use' => 'latex',
                             ],
                             // Portuguese date format
                             [
@@ -5249,6 +5258,94 @@ class ExampleSeeder extends Seeder
                                     'address' => 'Edinburgh',
                                     ]
                             ],
+                            // Journal included in title
+                            [
+                                'source' => 'Baroni M., Bernardini S., Ferraresi A. & Zanchetta E. (2009), The WaCky wide web: a collection of very large linguistically processed webcrawled corpora, Language Resources and Evaluation, 43, pp. 209–226. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Baroni, M. and Bernardini, S. and Ferraresi, A. and Zanchetta, E.',
+                                    'year' => '2009',
+                                    'title' => 'The WaCky wide web: a collection of very large linguistically processed webcrawled corpora',
+                                    'journal' => 'Language Resources and Evaluation',
+                                    'volume' => '43',
+                                    'pages' => '209-226',
+                                    ]
+                            ],
+                            // Journal included in title, No. symbol
+                            [
+                                'source' => 'Atkins S., Clear J., Ostler N. (1992), Corpus Design Criteria, Literary and Linguistic Computing, Vol. 7, № 1, pp.1–16. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Atkins, S. and Clear, J. and Ostler, N.',
+                                    'year' => '1992',
+                                    'title' => 'Corpus Design Criteria',
+                                    'journal' => 'Literary and Linguistic Computing',
+                                    'pages' => '1-16',
+                                    'volume' => '7',
+                                    'number' =>	'1',
+                                    ]
+                            ],
+                            // journal included in title
+                            [
+                                'source' => 'Benjamin R. G. (2012), Reconstructing readability: recent developments and recommendations in the analysis of text difficulty, Educational Psychology Review, 24(1), pp. 63–88. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Benjamin, R. G.',
+                                    'year' => '2012',
+                                    'title' => 'Reconstructing readability: recent developments and recommendations in the analysis of text difficulty',
+                                    'journal' => 'Educational Psychology Review',
+                                    'volume' => '24',
+                                    'number' => '1',
+                                    'pages' => '63-88',
+                                    ]
+                            ],
+                            // slash between issue numbers
+                            [
+                                'source' => 'Kim, Jaegwon. 1999. ‘Making Sense of Emergence’, Philosophical Studies 95, no.1/2: 3–36.  ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Kim, Jaegwon',
+                                    'title' => 'Making Sense of Emergence',
+                                    'journal' => 'Philosophical Studies',
+                                    'year' => '1999',
+                                    'volume' => '95',
+                                    'number' => '1/2',
+                                    'pages' => '3-36',
+                                    ]
+                            ],
+                            // Journal included in title
+                            [
+                                'source' => 'Stone, Jerome A. 2011. Is a “Christian Naturalism” Possible?: Exploring the Boundaries of a Tradition. American Journal of Theology and Philosophy 32, no. 3: 205–220.    ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Stone, Jerome A.',
+                                    'title' => 'Is a ``Christian Naturalism\'\' Possible?: Exploring the Boundaries of a Tradition',
+                                    'journal' => 'American Journal of Theology and Philosophy',
+                                    'year' => '2011',
+                                    'volume' => '32',
+                                    'number' => '3',
+                                    'pages' => '205-220',
+                                    ]
+                            ],
+                                        // journal appended to end of title
+                            [
+                                'source' => 'ANTONIO JOSÉ SÁNCHEZ-GUARNIDO et al. Analysis of the Consequences of the COVID-19 Pandemic on People with Severe Mental Disorders. International Journal of Environmental Research and Public Health, v. 18, n. 16, p. 8549–8549, 13 ago. 2021.  ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Antonio José Sánchez-Guarnido and others',
+                                    'title' => 'Analysis of the Consequences of the COVID-19 Pandemic on People with Severe Mental Disorders',
+                                    'year' => '2021',
+                                    'month' => 'agosto',
+                                    'date' => '2021-08-13',
+                                    'journal' => 'International Journal of Environmental Research and Public Health',
+                                    'volume' => '18',
+                                    'number' => '16',
+                                    'pages' => '8549-8549',
+                                ],
+                                'char_encoding' => 'utf8leave',
+                            ],
+
+
 
     
                             
@@ -5272,8 +5369,9 @@ class ExampleSeeder extends Seeder
                 $ex = Example::create([
                     'source' => $example['source'],
                     'type' => $example['type'],
-                    'language' => isset($example['language']) ? $example['language'] : 'en',
-                    'char_encoding' => isset($example['char_encoding']) ? $example['char_encoding'] : 'utf8',
+                    'language' => $example['language'] ?? 'en',
+                    'char_encoding' => $example['char_encoding'] ?? 'utf8',
+                    'use' => $example['use'] ?? 'en',
                 ]);
                 foreach ($example['bibtex'] as $key => $value) {
                     ExampleField::create([

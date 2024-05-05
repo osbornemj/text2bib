@@ -242,7 +242,7 @@ class Converter
         $this->volRegExp2 = '/^\(?vol(\.|ume)? ?|^\(?v\. /i';
         $this->volumeRegExp = '[Vv]olume ?|[Vv]ol\.? ?|VOL\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{';
 
-        $this->numberRegExp = '[Nn][Oo]s?\.?:? ?|[Nn]umbers? ?|[Nn]\. |[Ii]ssues? ?';
+        $this->numberRegExp = '[Nn][Oo]s?\.?:? ?|[Nn]umbers? ?|[Nn]\. |№ |[Ii]ssues? ?';
 
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})';
         // hlm.: Indonesian, ss: Turkish
@@ -342,7 +342,7 @@ class Converter
             'es' => 'enero|febrero|feb[.,; ]|marzo|mar[.,; ]|abril|abr[.,; ]|mayo|junio|jun[.,; ]|julio|jul[.,; ]|'
                 . 'agosto|septiembre|sept?[.,; ]|octubre|oct[.,; ]|noviembre|nov[.,; ]|deciembre|dec[.,; ]',
             'pt' => 'janeiro|jan[.,; ]|fevereiro|fev[.,; ]|março|mar[.,; ]|abril|abr[.,; ]|maio|mai[.,; ]|junho|jun[.,; ]|julho|jul[.,; ]|'
-                . 'agosto|ago[.,; ]setembro|set[.,; ]|outubro|oct[.,; ]|novembro|nov[.,; ]|dezembro|dez[.,; ]',
+                . 'agosto|ago[.,; ]|setembro|set[.,; ]|outubro|oct[.,; ]|novembro|nov[.,; ]|dezembro|dez[.,; ]',
             'my' => 'ဇန်နဝါရီလ|ဖေဖော်ဝါရီ|မတ်လ|ဧပြီလ|မေ|ဇွန်လ|ဇူလိုင်လ|ဩဂုတ်လ|စက်တင်ဘာ|အောက်တိုဘာလ|နိုဝင်ဘာလ|ဒီဇင်ဘာ',
             'nl' => 'januari|jan[.,; ]|februari|febr[.,; ]|maart|mrt[.,; ]|april|apr[.,; ]|mei|juni|juli|'
                 . 'augustus|aug[.,; ]|september|sep[.,; ]|oktober|okt[.,; ]|november|nov[.,; ]|december|dec[.,; ]',
@@ -370,7 +370,7 @@ class Converter
     //   'notices'
     //   'details': array of text lines
     // $language, $charEncoding: if set, overrides values in $conversion (used when admin converts examples)
-    public function convertEntry(string $rawEntry, Conversion $conversion, string|null $language = null, string|null $charEncoding = null, $previousAuthor = null): array|null
+    public function convertEntry(string $rawEntry, Conversion $conversion, string|null $language = null, string|null $charEncoding = null, string|null $use = null, $previousAuthor = null): array|null
     {
         $warnings = $notices = [];
         $this->detailLines = [];
@@ -383,6 +383,7 @@ class Converter
 
         $language = $language ?: $conversion->language;
         $charEncoding = $charEncoding ?: $conversion->char_encoding;
+        $use = $use ?: $conversion->use;
 
         $phrases = $this->phrases[$language];
 
@@ -507,7 +508,7 @@ class Converter
         $doi = Str::replaceStart('doi.', '', $doi);
         $doi = rtrim($doi, ']');
         $doi = ltrim($doi, '/');
-        if (in_array($conversion->use, ['latex', 'biblatex'])) {
+        if (in_array($use, ['latex', 'biblatex'])) {
             $doi = preg_replace('/([^\\\])_/', '$1\_', $doi);
         }
 
@@ -2740,7 +2741,9 @@ class Converter
         }
 
         if (isset($item->title)) {
-            $item->title = $this->requireUc($item->title);
+            if (in_array($use, ['latex', 'biblatex'])) {
+                $item->title = $this->requireUc($item->title);
+            }
             $scholarTitle = $this->makeScholarTitle($item->title);
         } else {
             $scholarTitle = '';
@@ -2971,8 +2974,9 @@ class Converter
                         || preg_match($this->startPagesRegExp, $remainder)
                         || preg_match('/^[Ii]n ([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
-                        || preg_match('/^[a-aA-Z]+ J\./', $remainder) // e.g. SIAM J. ...
+                        || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
+                        || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+,? ?(' . $this->numberRegExp . ')?[0-9, \-p\.()]*$/', $remainder)  // journal name, pub info?
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
                         || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
@@ -4451,7 +4455,7 @@ class Converter
             }
         }
 
-        if (!$start && $allowMonth) {
+        if (! $start && $allowMonth) {
             if (
                 // <year> <month> <day>?
                 preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>' . $months . ')( ?(?P<day>[0-3][0-9]))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
@@ -4951,7 +4955,12 @@ class Converter
             // If name is ALL uppercase and contains no period, translate uppercase component to an u.c. first letter and the rest l.c.
             // (Contains no period to deal with name H.-J., which should not be convered to H.-j.)
             } elseif (strtoupper($lettersOnlyName) == $lettersOnlyName && strpos($name, '.') === false && $lettersOnlyName != 'III') {
-                $fName .= ucfirst(mb_strtolower($name));
+                $chars = mb_str_split($name);
+                $lcName = '';
+                foreach ($chars as $i => $char) {
+                    $lcName .= ($i && $chars[$i-1] != '-') ? mb_strtolower($char) : $char;
+                }
+                $fName .= $lcName;
             } else {
                 $fName .= $name;
             }
@@ -5186,7 +5195,7 @@ class Converter
                     $take = $drop = 0;
                 } else {
                     // A letter or sequence of letters is permitted after an issue number
-                    $numberOfMatches = preg_match('%(' . $this->volumeRegExp . '|[^0-9]|^)(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;|/)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?%', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                    $numberOfMatches = preg_match('%(' . $this->volumeRegExp . '|[^0-9]|^)(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;|/)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)([/-][1-9][0-9]{0,6})?)\)?%', $remainder, $matches, PREG_OFFSET_CAPTURE);
                     $numberInParens = isset($matches['punc1']) && in_array($matches['punc1'][0], ['(', ' (']);
 
                     if ($numberOfMatches) {

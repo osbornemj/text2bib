@@ -20,7 +20,7 @@ class ExampleCheckController extends Controller
         $this->converter = new Converter;
     }
 
-    public function runExampleCheck(Request $request, string $reportType = 'brief', string $language = 'en', string $detailsIfCorrect = 'hide', int $id = null, string $charEncoding = 'utf8'): View
+    public function runExampleCheck(Request $request, string $reportType = 'brief', string $language = 'en', string $detailsIfCorrect = 'hide', int $id = null, string $charEncoding = 'utf8', string $use = 'latex'): View
     {
         $conversion = new Conversion;
         $conversion->char_encoding = $request->char_encoding ?: $charEncoding;
@@ -38,7 +38,10 @@ class ExampleCheckController extends Controller
         // (so that when all examples are converted that language is used for this example)
         if ($id) {
             $example = Example::find($id);
-            $example->update(['language' => $conversion->language, 'char_encoding' => $conversion->char_encoding]);
+            $example->update([
+                'language' => $conversion->language,
+                'char_encoding' => $conversion->char_encoding,
+            ]);
             $examples = [$example];
         } else {
             $examples = Example::all();
@@ -60,7 +63,7 @@ class ExampleCheckController extends Controller
                 $conversion->char_encoding = 'utf8leave';
             }
 
-            $output = $this->converter->convertEntry($example->source, $conversion, $example->language, $example->char_encoding, $previousAuthor);
+            $output = $this->converter->convertEntry($example->source, $conversion, $example->language, $example->char_encoding, $example->use, $previousAuthor);
             $previousAuthor = $output['item']->author ?? null;
             
             $unidentified = '';

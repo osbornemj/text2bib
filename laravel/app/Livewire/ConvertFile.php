@@ -276,7 +276,7 @@ class ConvertFile extends Component
                     // $convertedEntries is array with components 
                     // 'source', 'item', 'itemType', 'label', 'warnings', 'notices', 'details', 'scholarTitle'.
                     // 'label' (which depends on whole set of converted items) is updated later
-                    $convertedEntry = $this->converter->convertEntry($entry, $conversion, null, null, $previousAuthor);
+                    $convertedEntry = $this->converter->convertEntry($entry, $conversion, null, null, null, $previousAuthor);
                     $previousAuthor = $convertedEntry['item']->author ?? null;
                     $convertedEntry['detected_encoding'] = $encodings[$j];
                     if ($convertedEntry) {
