@@ -2944,6 +2944,7 @@ class ExampleSeeder extends Seeder
                             'year' => '2022',
                             'month' => 'December',
                             'urldate' => '2022, December 12',
+                            'date' => '2022-12-12',
                             'note' => 'Retrieved from Bloomberg.com Website',
                             ]
                     ],
@@ -3080,7 +3081,6 @@ class ExampleSeeder extends Seeder
                             'url' => 'https://safety.networkrail.co.uk/wp-content/uploads/2017/03/How-Network-Rail-buys-energy-v2-2017-03.docx',
                             'author' => 'Network Rail',
                             'title' => 'How Network Rail Buys Utlities',
-                            'year' => '2023',
                             'urldate' => '13 12 2023',
                             ]
                     ],
@@ -3226,6 +3226,7 @@ class ExampleSeeder extends Seeder
                             'month' => 'July',
                             'url' => 'https://www.solarpowerworldonline.com/2018/07/the-difference-between-n-type-and-p-type-solar-cells/',
                             'urldate' => '2018, July 2',
+                            'date' => '2018-07-02',
                             'note' => 'Retrieved from Solar Power World',
                             ]
                     ],
@@ -3239,6 +3240,7 @@ class ExampleSeeder extends Seeder
                             'month' => 'January',
                             'url' => 'https://www.wired.com/story/energy-vault-gravity-storage/',
                             'urldate' => '2022, January 4',
+                            'date' => '2022-01-04'
                             ]
                     ],
                     [
@@ -3461,6 +3463,7 @@ class ExampleSeeder extends Seeder
                             'year' => '2020',
                             'month' => 'avril',
                             'urldate' => 'Mars 21, 2023',
+                            'date' => '2020-04-06',
                             'note' => 'Consulté le Mars 21, 2023, sur NovelBits',
                         ],
                         'language' => 'fr',
@@ -3476,6 +3479,7 @@ class ExampleSeeder extends Seeder
                             'year' => '2022',
                             'month' => 'novembre',
                             'urldate' => 'Mars 27, 2023',
+                            'date' => '2022-11-14',
                             'note' => 'Consulté le Mars 27, 2023, sur BlueZ',
                         ],
                         'language' => 'fr',
@@ -3487,6 +3491,7 @@ class ExampleSeeder extends Seeder
                         'bibtex' => [
                             'url' => 'https://github.com/keinix/peer_to_peer_ble',
                             'urldate' => '2020, Juin 3',
+                            'date' => '2020-06-03',
                             'author' => 'Osborn, Z.',
                             'title' => 'peer_to_peer_ble',
                             'year' => '2020',
@@ -3625,6 +3630,7 @@ class ExampleSeeder extends Seeder
                             'year' => '2018',
                             'title' => 'State capture',
                             'urldate' => 'November 24, 2023',
+                            'date' => '2018-12-27',
                             'note' => 'Retrieved November 24, 2023, from Encyclopedia Britannica',
                             ]
                     ],
@@ -3809,6 +3815,7 @@ class ExampleSeeder extends Seeder
                                 'doi' => '10.3390/nu13020494',
                                 'year' => '2021',
                                 'month' => 'febrero',
+                                'date' => '2021-02-03',
                                 'title' => 'Polyphenols and Non-Alcoholic Fatty Liver Disease. Nutrients',
                                 'author' => 'Abenavoli, L. and Larussa, T. and Corea, A. and Procopio, A. and Boccuto, L. and Dallio, M. and others and Luzza, F.',
                             ],
@@ -3835,6 +3842,7 @@ class ExampleSeeder extends Seeder
                                 'title' => 'Winemaking biochemistry and microbiology: current knowledge and future trends',
                                 'author' => 'M. V. Moreno-Arribas and Polo, M.',
                                 'year' => '2007',
+                                'date' => '2007-01-12',
                                 'month' => '01',
                                 'number' => '4',
                                 'volume' => '45',
@@ -4059,9 +4067,9 @@ class ExampleSeeder extends Seeder
                                 'urldate' => '12 December 2023',
                                 'year' => '2021',
                                 'month' => 'October',
+                                'date' => '2021-10-12',
                                 'author' => 'YardLink',
                                 'title' => 'What Is BIM and Why Is It Important in Construction?',
-                                'note' => '12 October 2021'
                                 ]
                         ],
                         [
@@ -5226,7 +5234,6 @@ class ExampleSeeder extends Seeder
                                     'year' => '2023',
                                     'urldate' => '07 de 03 de 2023',
                                     'title' => 'Ponle energia a tu Pyme',
-                                    'note' => '2023',
                                 ],
                                 'language' => 'pt',
                                 'char_encoding' => 'utf8leave',
@@ -5249,11 +5256,10 @@ class ExampleSeeder extends Seeder
                                 'source' => 'Abdel Razek, Ali. 2012 [1925]. Islam and the Foundations of Political Power. Translated by Maryam Loutfi. Edited by Abdou Filali-Ansary. Edinburgh: Edinburgh University Press. ',
                                 'type' => 'book',
                                 'bibtex' => [
-                                    'note' => 'Translated by Maryam Loutfi.',
+                                    'note' => 'Translated by Maryam Loutfi. Edited by Abdou Filali-Ansary.',
                                     'author' => 'Abdel Razek, Ali',
                                     'year' => '2012 [1925]',
                                     'title' => 'Islam and the Foundations of Political Power',
-                                    'editor' => 'Abdou Filali-Ansary',
                                     'publisher' => 'Edinburgh University Press',
                                     'address' => 'Edinburgh',
                                     ]
@@ -5341,6 +5347,23 @@ class ExampleSeeder extends Seeder
                                     'volume' => '18',
                                     'number' => '16',
                                     'pages' => '8549-8549',
+                                ],
+                                'char_encoding' => 'utf8leave',
+                                'language' => 'pt',
+                            ],
+                            // y-m-d date
+                            [
+                                'source' => 'Nordås, H., E. Pinali and M. Geloso Grosso (2006-05-30), “Logistics and Time as a Trade Barrier”, OECD Trade Policy Papers, No. 35, OECD Publishing, Paris. http://dx.doi.org/10.1787/664220308873.  ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'doi' => '10.1787/664220308873',
+                                    'author' => 'Nordås, H. and E. Pinali and M. Geloso Grosso',
+                                    'year' => '2006',
+                                    'month' => '05',
+                                    'date' => '2006-05-30',
+                                    'title' => 'Logistics and Time as a Trade Barrier',
+                                    'journal' => 'OECD Trade Policy Papers, No.',
+                                    'volume' => '35, OECD Publishing, Paris',
                                 ],
                                 'char_encoding' => 'utf8leave',
                             ],

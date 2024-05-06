@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 
 use Illuminate\Support\Str;
 
@@ -21,6 +22,8 @@ use App\Traits\Stopwords;
 
 use PhpSpellcheck\Spellchecker\Aspell;
 use stdClass;
+
+use function Safe\strftime;
 
 class Converter
 {
@@ -333,19 +336,27 @@ class Converter
 
         // Month abbreviations in many languages: https://web.library.yale.edu/cataloging/months
         $this->monthsRegExp = [
-            'en' => 'January|Jan[.,; ]|February|Feb[.,; ]|March|Mar[.,; ]|April|Apr[.,; ]|May|June|Jun[.,; ]|July|Jul[.,; ]|'
-                . 'August|Aug[.,; ]|September|Sept?[.,; ]|October|Oct[.,; ]|November|Nov[.,; ]|December|Dec[.,; ]',
-            'cz' => 'leden|led[.,; ]|únor|ún[.,; ]|březen|břez[.,; ]|duben|dub[.,; ]|květen|květ[.,; ]|červen|červ[.,; ]|'
-                . 'červenec|červen[.,; ]|srpen|srp[.,; ]|září|zář[.,; ]|říjen|říj[.,; ]|listopad|list[.,; ]|prosinec|pros[.,; ]',
-            'fr' => 'janvier|janv[.,; ]|février|févr[.,; ]|mars|avril|avr[., ]|mai|juin|juillet|juill?[.,; ]|'
-                . 'aout|août|septembre|sept?[.,; ]|octobre|oct[.,; ]|novembre|nov[.,; ]|décembre|déc[.,; ]',
-            'es' => 'enero|febrero|feb[.,; ]|marzo|mar[.,; ]|abril|abr[.,; ]|mayo|junio|jun[.,; ]|julio|jul[.,; ]|'
-                . 'agosto|septiembre|sept?[.,; ]|octubre|oct[.,; ]|noviembre|nov[.,; ]|deciembre|dec[.,; ]',
-            'pt' => 'janeiro|jan[.,; ]|fevereiro|fev[.,; ]|março|mar[.,; ]|abril|abr[.,; ]|maio|mai[.,; ]|junho|jun[.,; ]|julho|jul[.,; ]|'
-                . 'agosto|ago[.,; ]|setembro|set[.,; ]|outubro|oct[.,; ]|novembro|nov[.,; ]|dezembro|dez[.,; ]',
-            'my' => 'ဇန်နဝါရီလ|ဖေဖော်ဝါရီ|မတ်လ|ဧပြီလ|မေ|ဇွန်လ|ဇူလိုင်လ|ဩဂုတ်လ|စက်တင်ဘာ|အောက်တိုဘာလ|နိုဝင်ဘာလ|ဒီဇင်ဘာ',
-            'nl' => 'januari|jan[.,; ]|februari|febr[.,; ]|maart|mrt[.,; ]|april|apr[.,; ]|mei|juni|juli|'
-                . 'augustus|aug[.,; ]|september|sep[.,; ]|oktober|okt[.,; ]|november|nov[.,; ]|december|dec[.,; ]',
+            'en' => '(?P<m1>January|Jan[.,; ])|(?P<m2>February|Feb[.,; ])|(?P<m3>March|Mar[.,; ])|(?P<m4>April|Apr[.,; ])|'
+                . '(?P<m5>May)|(?P<m6>June|Jun[.,; ])|(?P<m7>July|Jul[.,; ])|(?P<m8>August|Aug[.,; ])|'
+                . '(?P<m9>September|Sept?[.,; ])|(?P<m10>October|Oct[.,; ])|(?P<m11>November|Nov[.,; ])|(?P<m12>December|Dec[.,; ])',
+            'cz' => '(?P<m1>leden|led[.,; ])|(?P<m1>únor|ún[.,; ])|(?P<m3>březen|břez[.,; ])|(?P<m4>duben|dub[.,; ])|'
+                . '(?P<m5>květen|květ[.,; ])|(?P<m6>červen|červ[.,; ])|(?P<m7>červenec|červen[.,; ])|(?P<m8>srpen|srp[.,; ])|'
+                . '(?P<m9>září|zář[.,; ])|(?P<m10>říjen|říj[.,; ])|(?P<m11>listopad|list[.,; ])|(?P<m12>prosinec|pros[.,; ])',
+            'fr' => '(?P<m1>janvier|janv[.,; ])|(?P<m2>février|févr[.,; ])|(?P<m3>mars)|(?P<m4>avril|avr[., ])|'
+                . '(?P<m5>mai)|(?P<m6>juin)|(?P<m7>juillet|juill?[.,; ])|(?P<m8>aout|août)|'
+                . '(?P<m9>septembre|sept?[.,; ])|(?P<m10>octobre|oct[.,; ])|(?P<m11>novembre|nov[.,; ])|(?P<m12>décembre|déc[.,; ])',
+            'es' => '(?P<m1>enero)|(?P<m2>febrero|feb[.,; ])|(?P<m3>marzo|mar[.,; ])|(?P<m4>abril|abr[.,; ])|'
+                . '(?P<m5>mayo)|(?P<m6>junio|jun[.,; ])|(?P<m7>julio|jul[.,; ])|(?P<m8>agosto)|'
+                . '(?P<m9>septiembre|sept?[.,; ])|(?P<m10>octubre|oct[.,; ])|(?P<m11>noviembre|nov[.,; ])|(?P<m12>deciembre|dec[.,; ])',
+            'pt' => '(?P<m1>janeiro|jan[.,; ])|(?P<m2>fevereiro|fev[.,; ])|(?P<m3>março|mar[.,; ])|(?P<m4>abril|abr[.,; ])|'
+                . '(?P<m5>maio|mai[.,; ])|(?P<m6>junho|jun[.,; ])|(?P<m7>julho|jul[.,; ])|(?P<m8>agosto|ago[.,; ])|'
+                . '(?P<m9>setembro|set[.,; ])|(?P<m10>outubro|oct[.,; ])|(?P<m11>novembro|nov[.,; ])|(?P<m12>dezembro|dez[.,; ])',
+            'my' => '(?P<m1>ဇန်နဝါရီလ)|(?P<m2>ဖေဖော်ဝါရီ)|(?P<m3>မတ်လ)|(?P<m4>ဧပြီလ)|'
+                . '(?P<m5>မေ)|(?P<m6>ဇွန်လ)|(?P<m7>ဇူလိုင်လ)|(?P<m8>ဩဂုတ်လ)|'
+                . '(?P<m9>စက်တင်ဘာ)|(?P<m10>အောက်တိုဘာလ)|(?P<m11>နိုဝင်ဘာလ)|(?P<m12>ဒီဇင်ဘာ)',
+            'nl' => '(?P<m1>januari|jan[.,; ])|(?P<m2>februari|febr[.,; ])|(?P<m3>maart|mrt[.,; ])|(?P<m4>april|apr[.,; ])|'
+                . '(?P<m5>mei)|(?P<m6>juni)|(?P<m7>juli)|(?P<m8>augustus|aug[.,; ])|'
+                . '(?P<m9>september|sep[.,; ])|(?P<m10>oktober|okt[.,; ])|(?P<m11>november|nov[.,; ])|(?P<m12>december|dec[.,; ])',
         ];
 
         $this->vonNames = VonName::all()->pluck('name')->toArray();
@@ -629,10 +640,12 @@ class Converter
             $note = $matches['note'] ?? null;
 
             $dateResult = $this->isDate(trim($date, ' .,'), $language, 'contains');
-            //d($dateResult, $date, $remainder, $language);
+
             if ($dateResult) {
                 $accessDate = $dateResult['date'];
-                $year = $dateResult['year'];
+                // $year = $dateResult['year'];
+                // $month = $dateResult['monthName'] ? $dateResult['monthName'] : $dateResult['monthNumber'];
+                // $date = $dateResult['year'] . '-' . $dateResult['monthNumber'] . '-' . $dateResult['day'];
             }
         }
 
@@ -850,6 +863,16 @@ class Converter
         if ($month) {
             $monthResult = $this->fixMonth($month, $language);
             $this->setField($item, 'month', $monthResult['months'], 'setField 112');
+            if ($day) {
+            // try {
+            //     $parsedDate = @Carbon::parse(str_replace(',', '', $date));
+            // } catch (InvalidFormatException $e) {
+            //     $parsedDate = false;
+            // }
+            // if ($parsedDate) {
+//                $this->setField($item, 'date', $parsedDate->format('Y-m-d'), 'setField 112a');
+                $this->setField($item, 'date', $year . '-' . $monthResult['month1number'] . '-' . (strlen($day) == 1 ? '0' : '') . $day, 'setField 112a');
+            }
         }
 
         //////////////////////////
@@ -872,8 +895,12 @@ class Converter
             $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' .,'), 'setField 8');
         }
 
+        $hasSecondaryDate = false;
         if ($year) {
             $this->setField($item, 'year', $year, 'setField 9');
+            if (preg_match('/[\(\[]?[0-9]{4}[\)\]]? \[[0-9]{4}\]/', $year)) {
+                $hasSecondaryDate = true;
+            }
             // if ($language == 'my') {
             //     $this->setField($item, 'years', $year, 'setField m5');
             // }
@@ -1240,10 +1267,15 @@ class Converter
             $this->verbose("Item type case 4");
             $itemKind = 'incollection';
         } elseif ($containsEditors && ! $containsProceedings) {
-            $this->verbose("Item type case 5");
-            $itemKind = 'incollection';
-            if (!$this->itemType && !$itemKind) {
-                $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [1]";
+            if ($hasSecondaryDate) {
+                $this->verbose("Item type case 5a");
+                $itemKind = 'book'; // with editor as well as author
+            } else {
+                $this->verbose("Item type case 5b");
+                $itemKind = 'incollection';
+                if (!$this->itemType && !$itemKind) {
+                    $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [1]";
+                }
             }
         } elseif (($containsPageRange || $containsInteriorVolume) && ! $containsProceedings && ! $containsPublisher && ! $containsCity) {
             $this->verbose("Item type case 6");
@@ -1431,7 +1463,7 @@ class Converter
                     if ($remainder) {
                         // Get month, if any
                         $months = $this->monthsRegExp[$language];
-                        $regExp = '/(\(?(' . $months . '\)?)([-\/](' . $months . ')\)?)?)/i';
+                        $regExp = '/(\(?(' . $months . '\)?)([-\/](' . $months . ')\)?)?)/iJ';
                         preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
 
                         if (! empty($matches[0][0][0])) {
@@ -2552,9 +2584,14 @@ class Converter
                 }
 
                 // Volume has been identified, but publisher and possibly address remain
-                if (!$done) {
+                if (! $done) {
                     $remainder = $newRemainder ?? implode(" ", $remainingWords);
                     $remainder = trim($remainder, ' .');
+
+                    if (preg_match('/(?P<editorString>Edited by [^.]*\.)/', $remainder, $matches)) {
+                        $this->addToField($item, 'note', $matches['editorString'], 'setField 110a');
+                        $remainder = preg_replace('/' . $matches['editorString'] . '/', '', $remainder);
+                    }
 
                     // If string is in italics, get rid of the italics
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
@@ -2778,6 +2815,10 @@ class Converter
     */
     private function fixMonth(string $month, string $language = 'en'): array
     {
+        if (is_numeric($month)) {
+            return ['months' => $month, 'month1number' => $month, 'month2number' => null];
+        }
+
         Carbon::setLocale($language);
 
         $month1number = $month2number = null;
@@ -3387,10 +3428,10 @@ class Converter
         $ofs = ['en' => '', 'cz' => '', 'fr' => '', 'es' => '', 'my' => '', 'nl' => '', 'pt' => 'de '];
 
         $year = '(?P<year>(19|20)[0-9]{2})';
-        $monthName = $this->monthsRegExp[$language];
+        $monthName = '(?P<monthName>' . $this->monthsRegExp[$language] . ')';
         $of = $ofs[$language];
-        $day = '[0-3]?[0-9]';
-        $monthNumber = '[01]?[0-9]';
+        $day = '(?P<day>[0-3]?[0-9])';
+        $monthNumber = '(?P<monthNumber>[01]?[0-9])';
 
         $starts = $type == 'is' ? '^' : '';
         $ends = $type == 'is' ? '$' : '';
@@ -3398,8 +3439,8 @@ class Converter
         //$str = str_replace([","], "", trim($string, ',. '));
         $matches = [];
         $isDates = [];
-        $isDates[1] = preg_match('/(' . $starts . $day . '( ' . $of . ')?' . ' (' . $monthName . '),? ?' . '(' . $of . ')?' . $year . $ends . ')/i' , $string, $matches[1]);
-        $isDates[2] = preg_match('/(' . $starts . '(' . $monthName . ') ?' . $day . ',? '. $year . $ends . ')/i', $string, $matches[2]);
+        $isDates[1] = preg_match('/(' . $starts . $day . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ')?' . $year . $ends . ')/i' , $string, $matches[1]);
+        $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $day . ',? '. $year . $ends . ')/i', $string, $matches[2]);
         $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/ ]' . $of . $monthNumber . '[\-\/ ]'. $of . $year . $ends . ')/i', $string, $matches[3]);
         $isDates[4] = preg_match('/(' . $starts . $monthNumber . '[\-\/ ]' . $day . '[\-\/ ]'. $year . $ends . ')/i', $string, $matches[4]);
         $isDates[5] = preg_match('/(' . $starts . $year . '[\-\/, ]' . $day . '[\-\/ ]' . $monthNumber . $ends . ')/i', $string, $matches[5]);
@@ -3409,9 +3450,24 @@ class Converter
         if ($type == 'is') {
             return max($isDates);
         } elseif ($type == 'contains') {
+            $monthNumber = '';
             foreach ($isDates as $i => $isDate) {
                 if (isset($matches[$i][0]) && $matches[$i][0]) {
-                    return ['date' => $matches[$i][0], 'year' => isset($matches[$i]['year']) ? $matches[$i]['year'] : ''];
+                    if (! isset($matches[$i]['monthNumber'])) {
+                        for ($j = 1; $j <= 12; $j++) {
+                            if ($matches[$i]['m' . $j]) {
+                                $monthNumber = $j;
+                                break;
+                            }
+                        }
+                    }
+                    return [
+                        'date' => $matches[$i][0],
+                        'year' => $matches[$i]['year'] ?? '',
+                        'day' => $matches[$i]['day'] ?? '',
+                        'monthNumber' => $matches[$i]['monthNumber'] ?? $monthNumber,
+                        'monthName' => $matches[$i]['monthName'] ?? '',
+                    ];
                 }
             }
             return false;
@@ -3563,12 +3619,30 @@ class Converter
 
             $word = substr($word, -1) == ';' ? substr($word, 0, -1) . ',' : $word;
 
+            // Word is in vonNames or it is all uppercase and lowercased version of it is a lowercased vonName
+            $wordIsVon = in_array($word, $this->vonNames)
+                 || (preg_match('/^[A-Z]*$/', $word) && in_array(strtolower($word), array_map('strtolower', $this->vonNames)));
+
+            // If word is all uppercase, with no trailing punctuation, and next word is not all uppercase,
+            // and word and is not a von name and is not "and"
+            // then add a comma at the end
+            // The idea is to interpret SMITH John to be SMITH, John.
+            if (
+                strlen($word) > 2 &&
+                ! $wordIsVon &&
+                preg_match('/^[A-Z]*$/', $word) &&
+                isset($words[$i+1]) &&
+                mb_strtoupper($words[$i+1]) != $words[$i+1] &&
+                ! $this->isAnd(strtolower($word), $language)
+                ) {
+                $word = $word . ',';
+            }
+
             $nameComplete = true;
             $prevWordHasComma = $wordHasComma;
             $wordHasComma = substr($word, -1) == ',';
             // Get letters in word, eliminating accents & other non-letters, to get accurate length
             $lettersOnlyWord = preg_replace("/[^A-Za-z]/", '', $word);
-            $wordIsVon = in_array($word, $this->vonNames);
 
             // Deal with specific cases of no space at end of authors.  Note that case Smith~(1980) is
             // already handled.
@@ -4439,12 +4513,16 @@ class Converter
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]?/i', $string, $matches1)
                 ||
                 // (day month year) or (month year) (or without parens or with brackets)
-                // The optional "de" between day and month and between month and year is for Spanish
+                // The optional "de" between day and month and between month and year is for Portuguese
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
                 ||
                 // (day monthNumber year) or (monthNumber year) (or without parens or with brackets)
-                // The optional "de" between day and month and between month and year is for Spanish
+                // The optional "de" between day and month and between month and year is for Portuguese
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>[0-9]{1,2}) ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
+                ||
+                // (year-monthNumber-day) (or without parens or with brackets)
+                // The optional "de" between day and month and between month and year is for Portuguese
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
                 ) {
                 $year = $matches1['year'] ?? null;
                 $month = $matches1['month'] ?? null;
@@ -4476,6 +4554,9 @@ class Converter
             }
         }
 
+        // Remove labels from months (because of hard-coded indexes below)
+        $months = preg_replace('/\(\?P<m[1-9][0-2]?>/', '', $months);
+        $months = preg_replace('/\)|/', '', $months);
         // Year can be (1980), [1980], '1980 ', '1980,', '1980.', '1980)', '1980:' or end with '1980' if not at start and
         // (1980), [1980], ' 1980 ', '1980,', '1980.', or '1980)' if at start; instead of 1980, can be of form
         // 1980/1 or 1980/81 or 1980/1981 or 1980-1 or 1980-81 or 1980-1981
@@ -4499,7 +4580,8 @@ class Converter
             $regExp = '(' . $regExp1 . ')|(' . $regExp2 . ')|(' . $regExp3 . ')|(' . $regExp4 . ')';
         }
 
-        $regExp = '/' . $regExp . '/';
+        // /J: allow duplicate names
+        $regExp = '/' . $regExp . '/J';
 
         if ($start) {
             preg_match($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
