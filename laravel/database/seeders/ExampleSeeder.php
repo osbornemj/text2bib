@@ -5367,7 +5367,33 @@ class ExampleSeeder extends Seeder
                                 ],
                                 'char_encoding' => 'utf8leave',
                             ],
-
+                            // uses braces as quotation marks
+                            [
+                                'source' => '\bibitem{EM2} Edison M. N. Guzmán, Abramo Hefez, {On value sets of fractional ideals} J. Commut. Algebra 14(3): 339-349 ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Edison M. N. Guzmán and Abramo Hefez',
+                                    'title' => 'On value sets of fractional ideals',
+                                    'journal' => 'J. Commut. Algebra',
+                                    'volume' => '14',
+                                    'number' => '3',
+                                    'pages' => '339-349',
+                                ],
+                                'char_encoding' => 'utf8leave',
+                            ],
+                            // question marks as quotes
+                            [
+                                'source' => '[7]	N. S. Abdul Mubarak, N. N. Bahrudin, A. H. Jawad, B. Hameed, and S. Sabar, ?Microwave Enhanced Synthesis of Sulfonated Chitosan-Montmorillonite for Effective Removal of Methylene Blue,? J. Polym. Environ., vol. 29, 2021, doi: 10.1007/s10924-021-02172-9. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'doi' => '10.1007/s10924-021-02172-9',
+                                    'author' => 'N. S. Abdul Mubarak and N. N. Bahrudin and A. H. Jawad and B. Hameed and S. Sabar',
+                                    'title' => 'Microwave Enhanced Synthesis of Sulfonated Chitosan-Montmorillonite for Effective Removal of Methylene Blue',
+                                    'year' => '2021',
+                                    'journal' => 'J. Polym. Environ.',
+                                    'volume' => '29',
+                                    ]
+                            ],
 
 
     

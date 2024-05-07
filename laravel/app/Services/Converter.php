@@ -2664,17 +2664,13 @@ class Converter
             ////////////////////////////////////////////
 
             case 'thesis':
-            case 'phdthesis':
-            case 'mathesis':
-                if ($itemKind == 'thesis') {
-                    if (preg_match('/' . $this->masterRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                        $itemKind = 'mastersthesis';
-                    } elseif (preg_match('/' . $this->phdRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                        $itemKind = 'phdthesis';
-                    } else {
-                        $itemKind = 'phdthesis';
-                        $warnings[] = "Can't determine whether MA or PhD thesis; set to be PhD thesis.";
-                    }
+                if (preg_match('/' . $this->masterRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                    $itemKind = 'mastersthesis';
+                } elseif (preg_match('/' . $this->phdRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                    $itemKind = 'phdthesis';
+                } else {
+                    $itemKind = 'phdthesis';
+                    $warnings[] = "Can't determine whether MA or PhD thesis; set to be PhD thesis.";
                 }
                 $this->verbose(['fieldName' => 'Item type', 'content' => $itemKind]);
 
@@ -2788,9 +2784,9 @@ class Converter
 
         if ($language == 'my') {
             foreach ($item as $name => $field) {
-                if ($name != 'year') {
+//                if ($name != 'year') {
                     $item->$name = $this->translate($field, 'my');
-                }
+//                }
             }
             $item->language = 'Burmese';
         }
