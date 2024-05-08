@@ -214,7 +214,7 @@ class ConvertFile extends Component
 
         if (Str::contains($filestring, ['@article', '@book', '@incollection', '@inproceedings', '@unpublished', '@online', '@techreport', '@phdthesis', '@mastersthesis', '@misc'])) {
             $this->fileError = 'bibtex';
-        } elseif (substr_count($filestring, '\bibinfo{') > 2) {
+        } elseif (substr_count($filestring, '\bibinfo{') > 2 || substr_count($filestring, '\bibinfo {') > 2) {
             $this->fileError = 'bbl-natbib';
         }
 
