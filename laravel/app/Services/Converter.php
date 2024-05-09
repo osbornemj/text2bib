@@ -812,7 +812,7 @@ class Converter
 
         //$authorTitle = null;
         if ($language == 'my') {
-            preg_match('/^(?P<author>[^,]*, [^,]*), (?P<remainder>.*)$/', $remainder, $matches);
+            preg_match('/^(?P<author>[^,]*, ?[^,]*), ?(?P<remainder>.*)$/', $remainder, $matches);
             //$this->setField($item, 'author', rtrim($words[0], ',') ?? '', 'setField m1');
             $authorConversion = ['authorstring' => $matches['author'], 'warnings' => [], 'oneWordAuthor' => false];
             array_shift($words);
