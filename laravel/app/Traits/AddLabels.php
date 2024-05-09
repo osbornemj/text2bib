@@ -68,8 +68,14 @@ trait AddLabels
             }
         }
 
+        if ($conversion->language == 'my') {
+            $year = $this->translateFrom($item->year, 'my');
+        } else {
+            $year = $item->year ?? '';
+        }
+
         if ($conversion->label_style == 'short') {
-            $label = mb_strtolower($label) . (isset($item->year) ? mb_substr($item->year, 2) : '');
+            $label = mb_strtolower($label) . mb_substr($year, 2, 2);
         } elseif ($conversion->label_style == 'gs') {
             $firstAuthor = count($authors) ? $authors[0] : 'none';
 
@@ -85,7 +91,7 @@ trait AddLabels
                 // last name is segment up to comma
                 $label = mb_strtolower(substr($firstAuthor, 0, strpos($firstAuthor, ',')));
             }
-            $label .= isset($item->year) ? $item->year : '';
+            $label .= $year;
             $title = $item->title;
             if (Str::startsWith($title, ['A ', 'The ', 'On ', 'An '])) {
                 $title = Str::after($title, ' ');   
@@ -95,7 +101,7 @@ trait AddLabels
 
             $label .= mb_strtolower($this->onlyLetters($firstTitleWord));
         } else {
-            $label .= isset($item->year) ? $item->year : '';
+            $label .= $year;
         }
 
         $label = trim($label);
@@ -108,4 +114,24 @@ trait AddLabels
     {
         return preg_replace("/[^a-z,\s]+/i", "", $string);
     }
+
+    public function translateFrom($string, $language)
+    {
+        if ($language == 'my') {
+            // Burmese numerals
+            $string = str_replace("\xE1\x81\x80", "0", $string);
+            $string = str_replace("\xE1\x81\x81", "1", $string);
+            $string = str_replace("\xE1\x81\x82", "2", $string);
+            $string = str_replace("\xE1\x81\x83", "3", $string);
+            $string = str_replace("\xE1\x81\x84", "4", $string);
+            $string = str_replace("\xE1\x81\x85", "5", $string);
+            $string = str_replace("\xE1\x81\x86", "6", $string);
+            $string = str_replace("\xE1\x81\x87", "7", $string);
+            $string = str_replace("\xE1\x81\x88", "8", $string);
+            $string = str_replace("\xE1\x81\x89", "9", $string);
+        }
+
+        return $string;
+    }
+    
 }

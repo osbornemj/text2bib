@@ -331,7 +331,7 @@ class Converter
             'es' => '([Oo]btenido|[Aa]ccedido)[,:]? (?P<date2>' . $dateRegExp . ')',
             'pt' => '([Oo]btido |[Aa]cesso (em:?)? )(?P<date2>' . $dateRegExp . ')',
             'my' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
-            'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken),? (?P<date2>' . $dateRegExp . ')',
+            'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken|[Gg]eopend),? (?P<date2>' . $dateRegExp . ')',
         ];
 
         // Month abbreviations in many languages: https://web.library.yale.edu/cataloging/months
