@@ -222,7 +222,7 @@ class Converter
             'es' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
             'pt' =>
-                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '1ª', '2ª', '3ª', '4ª', '5ª', '6ª', '7ª', '8ª', '9ª'],
             'my' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
             'nl' =>
@@ -238,14 +238,14 @@ class Converter
         $this->editorEndRegExp = '[\(\[]?eds?\.?[\)\]]?$|[\(\[]?editors?[\)\]]?$';
         $this->editorRegExp = '( eds?[\. ]|[\(\[]eds?\.?[\)\]]| editors?| [\(\[]editors?[\)\]])';
 
-        $this->editionRegExp = '(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh) (rev\. |revised )?(ed\.|edition)';
+        $this->editionRegExp = '(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh) (rev\. |revised )?(ed\.|edition|vydání|édition|edición|edição|editie)';
 
         $this->volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
         $this->volRegExp2 = '/^\(?vol(\.|ume)? ?|^\(?v\. /i';
-        $this->volumeRegExp = '[Vv]olume ?|[Vv]ol\.? ?|VOL\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{';
+        $this->volumeRegExp = '[Vv]olume ?|[Vv]ol ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{';
 
-        $this->numberRegExp = '[Nn][Oo]s?\.?:? ?|[Nn]umbers? ?|[Nn]\. |№ |[Ii]ssues? ?';
+        $this->numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ |[Ii]ssues? ?';
 
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})';
         // hlm.: Indonesian, ss: Turkish
@@ -504,6 +504,15 @@ class Converter
                 $doi = $matches['doi'];
                 $remainder = str_replace($matches[0], '', $remainder);
             } 
+        }
+
+        // doi might not be labelled at all: look for '10.' followed by at least four digits and then a slash and some more characters
+        if (empty($doi)) {
+            preg_match('% (?P<doi>10\.[0-9]{4,}/[^ ]{5,})([ .]|$)%', $remainder, $matches);
+            if (isset($matches['doi'])) {
+                $doi = rtrim($matches['doi'], '.');
+                $remainder = str_replace($matches[0], '', $remainder);
+            }
         }
 
         if (substr_count($doi, ')') > substr_count($doi, '(') && substr($doi, -1) == ')') {
@@ -778,6 +787,10 @@ class Converter
             $words[] = $word;
         }
 
+        if (isset($words[0]) && $words[0] == '\\it') {
+            array_shift($words);
+        }
+
         ////////////////////////////////////////
         // Check for presence of journal name //
         ////////////////////////////////////////
@@ -824,6 +837,7 @@ class Converter
             $month = $day = $date = null;
             $itemKind = 'book';
             $remainder = implode(' ', $words);
+        // Entry starts ______ [i.e. author from previous entry]
         } elseif (isset($words[0]) && preg_match('/^_+\.?$/', $words[0])) {
             $authorConversion = ['authorstring' => $previousAuthor, 'warnings' => [], 'oneWordAuthor' => false];
             $month = $day = $date = null;
@@ -906,7 +920,7 @@ class Converter
             // }
         }
 
-        $remainder = trim($remainder, '.},; ');
+        $remainder = trim($remainder, '.},;/ ');
         $this->verbose("[1] Remainder: " . $remainder);
 
         ////////////////////
@@ -983,6 +997,10 @@ class Converter
 
             if (substr($title, 0, 1) == '{' && substr($title, -1) == '}') {
                 $title = trim($title, '{}');
+            }
+            // Can in which quotation marks were in wrong encoding and appear as ?'s.
+            if (substr($title, 0, 1) == '?' && substr($title, -1) == '?') {
+                $title = trim($title, '?., ');
             }
             $this->setField($item, 'title', trim($title), 'setField 12');
         }
@@ -2948,8 +2966,17 @@ class Converter
             array_shift($remainingWords);
             $remainder = implode(' ', $remainingWords);
 
-            // If $word is one of the italic codes ending in a space and previous word ends in some punctuation, stop and form title
-            if (in_array($word . ' ', $this->italicCodes) && isset($words[$key-1]) && in_array(substr($words[$key-1], -1), [',', '.', ':', ';', '!', '?'])) {
+            // If $word is one of the italic codes ending in a space and previous word ends in some punctuation, OR
+            // word is '//' (used as separator in some references (Russian?)), stop and form title
+            if (
+                    (
+                    in_array($word . ' ', $this->italicCodes) &&
+                    isset($words[$key-1]) &&
+                    in_array(substr($words[$key-1], -1), [',', '.', ':', ';', '!', '?'])
+                    )
+                    ||
+                    $word == '//'
+                ) {
                 $this->verbose("Ending title, case 1");
                 $title = rtrim(implode(' ', $initialWords), ',:;.');
                 break;
@@ -3683,7 +3710,7 @@ class Converter
                 break;
             }
 
-            if (!$done) {
+            if (! $done) {
                 $this->verbose(['text' => 'Word ' . $i . ": ", 'words' => [$word], 'content' => " - authorIndex: " . $authorIndex . ", namePart: " . $namePart]);
                 $this->verbose("fullName: " . $fullName);
             }
@@ -3908,7 +3935,7 @@ class Converter
                     $fullName .= ' ' . $word;
                 } elseif (substr($word,-1) == ',' && $this->isInitials(substr($word,0,-1))) {
                     $this->verbose('[convertToAuthors 14]');
-                    $fullName .= ' ' . substr($word,0,-1);
+                    $fullName .= ' ' . substr($word, 0, -1);
                     $namePart = 0;
                     $authorIndex++;
                 } else {
@@ -4127,7 +4154,7 @@ class Converter
                         &&
                         (
                             $nameScore['count'] == 0 ||
-                            $nameScore['score'] / $nameScore['count'] < 0.25 ||
+                            $nameScore['score'] / $nameScore['count'] < 0.26 ||
                             (isset($bareWords[1]) && mb_strtolower($bareWords[1]) == $bareWords[1] && ! $this->isAnd($bareWords[1], $language) && ! in_array($bareWords[1], $this->vonNames))
                         )
                         &&
@@ -4137,7 +4164,7 @@ class Converter
                             ($remainingWords[0] == 'A' && isset($remainingWords[1]) && $remainingWords[1][0] == strtolower($remainingWords[1][0]))
                         )
                     ) {
-                    // Low nameScore relative to number of bareWords (e.g. less than 25% of words not in dictionary)
+                    // Low nameScore relative to number of bareWords (e.g. less than 26% of words not in dictionary)
                     // Note that this check occurs only when $namePart > 0---so it rules out double-barelled
                     // family names that are not followed by commas.  ('Paulo Klinger Monteiro, ...' is OK.)
                     // Cannot set limit to be > 1 bareWord, because then '... Smith, Nancy Lutz and' gets truncated
@@ -4947,7 +4974,15 @@ class Converter
     {
         $this->verbose(['text' => 'formatAuthor: argument ', 'words' => [$nameString]]);
 
+        // If $nameString contains no space, just return it.  (Probably name for website?)
+        if (! str_contains(trim($nameString, ' .'), ' ')) {
+            return trim($nameString, ' .');
+        }
+
         $nameString = str_replace('..', '.', $nameString);
+        if (! str_contains($nameString, '{')) {
+            $nameString = rtrim($nameString, '}');
+        }
 
         $namesRaw = explode(' ', $nameString);
 
@@ -4979,7 +5014,7 @@ class Converter
 
         $fName = '';
         $commaPassed = false;
-        $initialPassed = false;
+        //$initialPassed = false;
 
         $lettersOnlyNameString = preg_replace("/[^A-Za-z]/", '', $nameString);
         if (strtoupper($lettersOnlyNameString) != $lettersOnlyNameString) {
@@ -4991,14 +5026,14 @@ class Converter
             if ($i) {
                 $fName .= ' ';
             }
-            if (strpos($name, '.') !== false) {
-                $initialPassed = true;
-            }
+            // if (strpos($name, '.') !== false) {
+            //     $initialPassed = true;
+            // }
 
             // If name (all components) is not ALL uppercase, there are fewer than 3 letters
-            // in $name or a comma has occurred, and all letters in the name are uppercase, assume $name
+            // in $name or a comma has occurred and there are fewer than 4 letters, and all letters in the name are uppercase, assume $name
             // is initials.  Put periods and spaces as appropriate.
-            if (! $allUppercase && (strlen($lettersOnlyName) < 3 || $commaPassed) 
+            if (! $allUppercase && (strlen($lettersOnlyName) < 3 || ($commaPassed && strlen($lettersOnlyName) < 4)) 
                         && strtoupper($lettersOnlyName) == $lettersOnlyName && $lettersOnlyName != 'III') {
                 // First deal with single accented initial
                 // Case of multiple accented initials not currently covered
@@ -5032,13 +5067,17 @@ class Converter
 
             // If name is ALL uppercase and contains no period, translate uppercase component to an u.c. first letter and the rest l.c.
             // (Contains no period to deal with name H.-J., which should not be convered to H.-j.)
-            } elseif (strtoupper($lettersOnlyName) == $lettersOnlyName && strpos($name, '.') === false && $lettersOnlyName != 'III') {
+            } elseif (
+                strtoupper($lettersOnlyName) == $lettersOnlyName &&
+                (strpos($name, '.') === false || strpos($name, '.') < strlen($name)) &&
+                $lettersOnlyName != 'III'
+                ) {
                 $chars = mb_str_split($name);
                 $lcName = '';
                 foreach ($chars as $i => $char) {
                     $lcName .= ($i && $chars[$i-1] != '-') ? mb_strtolower($char) : $char;
                 }
-                $fName .= $lcName;
+                $fName .= strlen($lcName) > 2 ? rtrim($lcName, '.') : $lcName;
             } else {
                 $fName .= $name;
             }
@@ -5132,6 +5171,7 @@ class Converter
         $numberWithRoman = '([1-9][0-9]{0,3}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
         $numberRange = $number . '((--?-?|_)' . $number . ')?';
+        $letterNumberRange = $letterNumber . '((--?-?|_)' . $letterNumber . ')?';
         $numberRangeWithRoman = $numberWithRoman . '((--?-?|_)' . $numberWithRoman . ')?';
         $pages = '[Pp]p?( |\. )|[Pp]ages |s.\ ?|стр\. |Hlm\. ';
         $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')';
@@ -5141,7 +5181,7 @@ class Converter
         // Letter in front of volume is allowed only if preceded by "vol(ume)" and is single number
         $volumeWordLetterRx = '('. $this->volumeRegExp . ')(?P<vol>' . $letterNumber . ')';
         $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRange . ')';
-        $pagesRx = '(?P<pageWord>'. $pages . ')?(?P<pp>' . $numberRange . ')';
+        $pagesRx = '(?P<pageWord>'. $pages . ')?(?P<pp>' . $letterNumberRange . ')';
         $punc1 = '(}? |, ?| ?: ?|,? ?\(\(?)';
         $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
 
@@ -5160,8 +5200,8 @@ class Converter
                 $this->addToField($item, 'note', 'Article ' . $matches['pp'], 'getVolumeNumberPagesForArticle 5b');
             }
             $remainder = '';
-        // e.g. Volume 6, No. 3 
-        } elseif (preg_match('/^' . $volumeWordRx . $punc1 . $numberWordRx . '$/', $remainder, $matches)) {
+        // e.g. Volume A6, No. 3 
+        } elseif (preg_match('/^' . $volumeWordLetterRx . $punc1 . $numberWordRx . '$/', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 6');
             $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 7');
             $remainder = '';
@@ -5182,6 +5222,13 @@ class Converter
                 $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches[3][$matchIndex][0]), 'getVolumeNumberPagesForArticle 10');
                 $take = $matches[0][$matchIndex][1];
                 $drop = $matches[3][$matchIndex][1] + strlen($matches[3][$matchIndex][0]);
+            // single page
+            } elseif (preg_match('/p\. (?P<pp>[1-9][0-9]{0,5})/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                if (isset($matches['pp'])) {
+                    $this->setField($item, 'pages', $matches['pp'][0], 'getVolumeNumberPagesForArticle 10a');
+                    $take = $matches[0][1];
+                    $drop = $matches[1][1] + strlen($matches[1][0]);
+                }
             } else {
                 $item->pages = '';
                 $take = 0;

@@ -4168,9 +4168,9 @@ class ExampleSeeder extends Seeder
                             'type' => 'article',
                             'bibtex' => [
                                 'author' => 'Yan, B. and Luh, P. B. and Warner, G. and Zhang, P.',
-                                'title' => ' Operation and Design Optimization of Microgrids and Renewables',
+                                'title' => 'Operation and Design Optimization of Microgrids with Renewables',
                                 'year' => '2017',
-                                'journal' => 'IEEE Trans Autom. Sci. Eng',
+                                'journal' => 'IEEE Trans. Autom. Sci. Eng',
                                 'volume' => '14',
                                 'pages' => '573-585',
                                 ]
@@ -4583,7 +4583,7 @@ class ExampleSeeder extends Seeder
                             'type' => 'online',
                             'bibtex' => [
                                 'url' => 'https://www-statista-com.ezproxy.herts.ac.uk/statistics/264656/countries-with-the-highest-unemployment-rate/',
-                                'author' => 'CIA.',
+                                'author' => 'CIA',
                                 'year' => '2024',
                                 'title' => 'The 20 countries with the highest unemployment rate in 2023. Statista',
                                 'urldate' => 'April 09, 2024',
@@ -5394,20 +5394,74 @@ class ExampleSeeder extends Seeder
                                     'volume' => '29',
                                     ]
                             ],
-
-
+                   			// spaces after "vol" and "no"
+                            [
+                                'source' => 'KABAKOFF, R. P.; CHAZDON, R. L. Effects of Canopy Species Dominance on Understorey Light Availability in Low-Elevation Secondary Forest Stands in Costa Rica . Journal of Tropical Ecology , Vol . 12 , No . 6 , 1996 . ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Kabakoff, R. P. and Chazdon, R. L.',
+                                    'title' => 'Effects of Canopy Species Dominance on Understorey Light Availability in Low-Elevation Secondary Forest Stands in Costa Rica',
+                                    'year' => '1996',
+                                    'journal' => 'Journal of Tropical Ecology',
+                                    'volume' => '12',
+                                    'number' => '6',
+                                    ]
+                            ],
+                   			// Page number starting with letter not detected
+                            [
+                                'source' => 'Philip, N., Madore, M., & Kozel, F. (2021). Transcranial Magnetic Stimulation in Veterans-Real World Efficacy and the Foundation for Mechanistic Insights. Biological Psychiatry, 89(9), S76. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Philip, N. and Madore, M. and Kozel, F.',
+                                    'title' => 'Transcranial Magnetic Stimulation in Veterans-Real World Efficacy and the Foundation for Mechanistic Insights',
+                                    'journal' => 'Biological Psychiatry',
+                                    'year' => '2021',
+                                    'volume' => '89',
+                                    'number' => '9',
+                                    'pages' => 'S76',
+                                    ]
+                            ],
+                            // p. 12 should not be classified as volume.  Start of title included in authors.
+                            [
+                                'source' => 'FRAZER, G.; CANHAM, C.; LERTZMAN, K. Gap Light Analyzer (GLA), Version 2.0: Imaging software to extract canopy structure and gap light transmission indices from truecolour fisheye photographs, users manual and program documentation. Program, p. 36, 1999. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Frazer, G. and Canham, C. and Lertzman, K.',
+                                    'title' => 'Gap Light Analyzer (GLA), Version 2.0: Imaging software to extract canopy structure and gap light transmission indices from truecolour fisheye photographs, users manual and program documentation',
+                                    'year' => '1999',
+                                    'journal' => 'Program',
+                                    'pages' => '36',
+                                    ]
+                            ],
+                   			// uppercase name interpreted as many initials
+                            [
+                                'source' => 'HOODA, SHALINI & JOOD, SUDESH. (2017). Effect of soaking and germination on nutrient and antinutrient contents of fenugreek (Trigonella foenum graecum L.). Journal of Food Biochemistry. 27. 165 - 176. 10.1111/j.1745-4514.2003.tb00274.x. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Hooda, Shalini and Jood, Sudesh',
+                                    'year' => '2017',
+                                    'title' => 'Effect of soaking and germination on nutrient and antinutrient contents of fenugreek (Trigonella foenum graecum L.)',
+                                    'journal' => 'Journal of Food Biochemistry.',
+                                    'pages' => '165-176',
+                                    'volume' => '27',
+                                    'doi' => '10.1111/j.1745-4514.2003.tb00274.x',
+                                    ]
+                            ],
+                            // Starts with {\it; separator //.  (Original had no title; I added a dummy one.)
+                            [
+                                'source' => '\bibitem{Tluczykont} {\it Tluczykont M, Hampf D, Horns D, Spitschan D, Kuzmichev L, Prosin V, Spiering C and Wischnewski R} // No title // Astroparticle Physics 2014 {\bf 56}, 42–53 ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Tluczykont, M. and Hampf, D. and Horns, D. and Spitschan, D. and Kuzmichev, L. and Prosin, V. and Spiering, C. and Wischnewski, R.',
+                                    'title' => 'No title',
+                                    'journal' => 'Astroparticle Physics',
+                                    'year' => '2014',
+                                    'volume' => '56',
+                                    'pages' => '42-53',
+                                    ]
+                            ],            
     
-                            
 
-                
-
-              
-                              
-                            
-                            
-                            
-                                                                                               
-                        
                 ];
 
             DB::statement('DELETE FROM examples');
