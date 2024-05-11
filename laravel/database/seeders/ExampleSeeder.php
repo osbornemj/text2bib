@@ -5459,7 +5459,38 @@ class ExampleSeeder extends Seeder
                                     'volume' => '56',
                                     'pages' => '42-53',
                                     ]
-                            ],            
+                            ],
+                            // author is name of organization
+                            [
+                                'source' => 'National Center for Biotechnology Information (2024). PubChem Compound Summary for CID 62648, Ammonium Persulfate. Retrieved May 10, 2024 from https://pubchem.ncbi.nlm.nih.gov/compound/Ammonium-Persulfate. ',
+                                'type' => 'online',
+                                'bibtex' => [
+                                    'title' => 'PubChem Compound Summary for CID 62648, Ammonium Persulfate',
+                                    'url' => 'https://pubchem.ncbi.nlm.nih.gov/compound/Ammonium-Persulfate',
+                                    'urldate' => 'May 10, 2024',
+                                    'author' => 'National Center for Biotechnology Information',
+                                    'year' => '2024',
+                                    ]
+                            ], 
+                   			// authors not detected (others in conversion 3448: see file 1408-3448).
+                            [
+                                'source' => '1: Ferris JK, Lo BP, Barisano G. Modulation of the Association Between Corticospinal Tract Damage and Outcome After Stroke by White Matter Hyperintensities. Neurology. 2024 May 28;102(10):e209387. doi: 10.1212/WNL.0000000000209387. Epub 2024 May 3. PMID: 38701386. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'note' => 'PMID: 38701386',
+                                    'doi' => '10.1212/WNL.0000000000209387',
+                                    'author' => 'Ferris, J. K. and Lo, B. P. and Barisano, G.',
+                                    'title' => 'Modulation of the Association Between Corticospinal Tract Damage and Outcome After Stroke by White Matter Hyperintensities',
+                                    'year' => '2024',
+                                    'month' => 'May',
+                                    'date' => '2024-05-28',
+                                    'journal' => 'Neurology.',
+                                    'volume' => '102',
+                                    'number' => '10',
+                                    'pages' => 'e209387',
+                                    ]
+                            ],
+           
     
 
                 ];

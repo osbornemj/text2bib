@@ -431,8 +431,8 @@ class Converter
         }
 
         if ($firstComponent == 'authors') {
-            // Remove numbers at start of entry, like '6.' or '[14]'.
-            $entry = ltrim($entry, ' .0123456789[]()|*+');
+            // Remove numbers and other symbols at start of entry, like '6.' or '[14]'.
+            $entry = ltrim($entry, ' .0123456789[]()|*+:');
 
             // If entry starts with '\bibitem [abc] {<label>}', get <label> and remove '\bibitem' and arguments
             if (preg_match('/^\\\bibitem *(\[[^\]]*\])? *{(?P<label>[^}]*)}(?P<entry>.*)$/', $entry, $matches)) {
@@ -931,10 +931,23 @@ class Converter
 
         $remainder = ltrim($remainder, ': ');
 
-        $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
-        $titleStyle = $style;
-
-        $newRemainder = $before . ltrim($after, "., ");
+        $title = null;
+        // First deal with the (rare) case of a title in {...}
+        // Exclude case in which remainder begins {\ ...
+        if (isset($remainder[0]) && isset($remainder[1]) && $remainder[0] == '{' && $remainder[1] != '\\') {
+            $before = ltrim(Str::before($remainder, '}'), '{');
+            // exclude canse in which $before is all uppercase, in which case {} may delimit string that has to be uppercase
+            if (mb_strtoupper($before) != $before) {
+                $title = $before;
+                $newRemainder = Str::after($remainder, '}');
+            }
+        }
+        
+        if (! $title) {
+            $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
+            $titleStyle = $style;
+            $newRemainder = $before . ltrim($after, "., ");
+        }
 
         if ($language == 'my') {
             $title = (string) $title;
@@ -3018,6 +3031,12 @@ class Converter
                     }
                 }
 
+                $upcomingYear = false;
+                if ($stringToNextPeriod) {
+                    $followingRemainder = mb_substr($remainder, mb_strlen($stringToNextPeriod));
+                    $upcomingYear = $this->isYear(trim($followingRemainder));
+                }
+
                 // When a word ending in punctuation or preceding a word starting with ( is encountered, check whether
                 // it is followed by
                 // italics
@@ -3144,13 +3163,16 @@ class Converter
                     // else if following string up to next period contains only letters, spaces, hyphens, (, ), \, ,, :, and
                     // quotation marks and doesn't start with "in"
                     // (which is unlikely to be within a title following punctuation)
-                    // and is followed by at least 30 characters (for the publication info), assume it is part of the title,
+                    // and is followed by at least 30 characters or 37 if it contains pages (for the publication info),
+                    // assume it is part of the title,
                     } elseif (
                             preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriod,0,-1))
                             //preg_match('/[a-zA-Z -]+/', substr($stringToNextPeriod,0,-1))
                             && !preg_match($this->inRegExp1, $remainder)
-                            && strlen($remainder) > strlen($stringToNextPeriod) + ($containsPages ? 37 : 30)) {
-                        $this->verbose("Not ending title, case 2 (next word is " . $nextWord . ")");
+                            && strlen($remainder) > strlen($stringToNextPeriod) + ($containsPages ? 37 : 30)
+                            && ! $upcomingYear
+                            ) {
+                        $this->verbose("Not ending title, case 2 (next word is '" . $nextWord . "', followed by '" . $stringToNextPeriod . "')");
                     // else if working paper string occurs later in remainder,
                     } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/i', $remainder, $matches)) {
                         // if no intervening punctuation, end title
@@ -4064,7 +4086,7 @@ class Converter
                 $bareWords = $this->bareWords($remainingWords, false, $language);
                 // If 'and' has not already occurred ($hasAnd is false), its occurrence in $barewords is compatible
                 // with $barewords being part of the authors' names OR being part of the title, so should be ignored.
-                $nameScore = $this->nameScore($bareWords, !$hasAnd);
+                $nameScore = $this->nameScore($bareWords, ! $hasAnd);
                 $this->verbose("bareWords (no trailing punct, not year in parens): " . implode(' ', $bareWords));
                 $this->verbose("nameScore: " . $nameScore['score']);
                 if ($nameScore['count']) {
@@ -4878,6 +4900,7 @@ class Converter
         $aspell = Aspell::create();
         $wordsToCheck = [];
         $score = 0;
+
         foreach ($words as $word) {
             // Names are in dictionary with initial u.c. letter, so convert word to l.c. to exclude them as regular words
             $lcword = mb_strtolower($word);
@@ -4885,25 +4908,27 @@ class Converter
             if (($this->isAnd($word) && ! $ignoreAnd) || $this->isInitials(($word))) {
                 $score++;
             } elseif (
-                    ($lcword != 'and' || ! $ignoreAnd) &&
-                    ((isset($word[0]) && mb_strtoupper($word[0]) == $word[0]) || in_array($word, $this->vonNames)) &&
+                // not using isAnd here, because that allows "with"
+                    ($word != 'and' || ! $ignoreAnd) &&
+//                    ((isset($word[0]) && mb_strtoupper($word[0]) == $word[0]) || in_array($word, $this->vonNames)) &&
                     ! $this->isInitials($word) &&
                     ! in_array($word, $this->dictionaryNames)
                 ) {
                 $wordsToCheck[] = $lcword;
-                if (in_array($lcword, $this->stopwords)) {
+                if (in_array($lcword, $this->stopwords) && ! in_array($word, $this->vonNames)) {
                     $score -= 2;
                 }
-                if (in_array($word, $this->vonNames)) {
+                if (in_array($word, $this->vonNames) && ! $this->inDict($lcword)) {
                     $score += 2;
                 }
             }
         }
+
         $string = implode(' ', $wordsToCheck);
-        // Number of words in string not in dictionary
+        // Number of words in $wordsToCheck not in dictionary
         $score += iterator_count($aspell->check($string, ['en_US']));
         
-        $returner = ['count' => count($words), 'score' => $score];
+        $returner = ['count' => count($wordsToCheck), 'score' => $score];
 
         return $returner;
     }
