@@ -1267,7 +1267,7 @@ class ExampleSeeder extends Seeder
                 ],
                 [
                     'source' => '\bibitem{K2-54} Auckly, D. R. (1995). Surgery numbers of 3-manifolds: a hyperbolic example. In W. H. Kazez (Ed.), Geometric Topology, Proc. of the 1993 Georgia International Topology Conference. International Press.',
-                    'type' => 'incollection',
+                    'type' => 'inproceedings',
                     'bibtex' => [
                         'year' => '1995',
                         'title' => 'Surgery numbers of 3-manifolds: a hyperbolic example',
@@ -2126,7 +2126,7 @@ class ExampleSeeder extends Seeder
                             ]
                     ],
                     [
-                        'source' => '2007 * | Mooney, W. D., G. C. Beroza, and R. Kind, Fault Zones from Top to Bottom: A Geophysical Perspective, in Tectonic Faults: Agents of Change on a Dynamic Earth, Mark R. Handy, Greg Hirth, and Niels Hovius ed., Dahlem Foundation Conference, Berlin, Germany, ISBN-10:0-262-08362-0, 9-46. ',
+                        'source' => '2007 * | Mooney, W. D., G. C. Beroza, and R. Kind, Fault Zones from Top to Bottom: A Geophysical Perspective, in Tectonic Faults: Agents of Change on a Dynamic Earth, Mark R. Handy, Greg Hirth, and Niels Hovius ed., Berlin, Germany, ISBN-10:0-262-08362-0, 9-46. ',
                         'type' => 'incollection',
                         'bibtex' => [
                             'year' => '2007',
@@ -2137,7 +2137,6 @@ class ExampleSeeder extends Seeder
                             'editor' => 'Mark R. Handy and Greg Hirth and Niels Hovius',
                             'address' => 'Berlin, Germany',
                             'booktitle' => 'Tectonic Faults: Agents of Change on a Dynamic Earth',
-                            'publisher' => 'Dahlem Foundation Conference',
                             ]
                     ],
                     [
@@ -3556,7 +3555,7 @@ class ExampleSeeder extends Seeder
                             'title' => 'History of Ebola Disease Outbreaks. Cases and Outbreaks of Ebola Disease by Year',
                             'year' => '2023',
                             'url' => 'https://www.cdc.gov/vhf/ebola/history/chronology.html?CDC_AA_refVal=https',
-                            'note' => 'Estados Unidoes: CDC',
+                            'note' => 'Estados Unidos: CDC',
                         ],
                         'language' => 'pt',
                         'char_encoding' => 'utfleave',
@@ -4948,7 +4947,7 @@ class ExampleSeeder extends Seeder
                                 'bibtex' => [
                                     'author' => 'K. Plis and R. Bunescu and C. Marling',
                                     'title' => 'A machine learning approach to predicting blood glucose levels for diabetes management',
-                                    'journal' => 'AAAI-14: 2014 Association for the Advancement of Artificial Intelligence Workshop, Ohio',
+                                    'booktitle' => 'AAAI-14: 2014 Association for the Advancement of Artificial Intelligence Workshop, Ohio',
                                     'year' => '2014',
                                     ]
                             ],
@@ -5490,8 +5489,110 @@ class ExampleSeeder extends Seeder
                                     'pages' => 'e209387',
                                     ]
                             ],
-           
-    
+                            // Still correct after adding Proc. IEEE to proceedings exceptions?
+                            [
+                                'source' => '\bibitem{deeprl19} K. Li,W.Ni, E. Tovar, and A. Jamalipour, “Deep q-learning-based resource management in UAV-assisted wireless powered IoT networks,” in Proc. IEEE Int. Conf. Commun., Dublin, Ireland, 2020, pp. 1–6. ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'K. Li and W. Ni and E. Tovar and A. Jamalipour',
+                                    'title' => 'Deep q-learning-based resource management in UAV-assisted wireless powered IoT networks',
+                                    'year' => '2020',
+                                    'pages' => '1-6',
+                                    'booktitle' => 'Proc. IEEE Int. Conf. Commun., Dublin, Ireland',
+                                    ]
+                            ],
+                            // booktitle ended early; wrong year
+                            [
+                                'source' => '\bibitem{l1pruning}X. Liu, W. Xia and Z. Fan, "A Deep Neural Network Pruning Method Based on Gradient L1-norm," 2020 IEEE 6th International Conference on Computer and Communications (ICCC), Chengdu, China, 2020, pp. 2070-2074, doi: 10.1109/ICCC51575.2020.9345039. ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'doi' => '10.1109/ICCC51575.2020.9345039',
+                                    'author' => 'X. Liu and W. Xia and Z. Fan',
+                                    'title' => 'A Deep Neural Network Pruning Method Based on Gradient L1-norm',
+                                    'pages' => '2070-2074',
+                                    'year' => '2020',
+                                    'booktitle' => '2020 IEEE 6th International Conference on Computer and Communications (ICCC), Chengdu, China',
+                                    ]
+                            ],
+                            //
+                            [
+                                'source' => '\bibitem{scheduling2}Yang, T., Chai, R., \& Zhang, L. (2020, May). Latency optimization-based joint task offloading and scheduling for multi-user MEC system. In 2020 29th Wireless and Optical Communications Conference (WOCC) (pp. 1-6). IEEE. ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'month' => 'May',
+                                    'author' => 'Yang, T. and Chai, R. and Zhang, L.',
+                                    'year' => '2020',
+                                    'title' => 'Latency optimization-based joint task offloading and scheduling for multi-user MEC system',
+                                    'booktitle' => '2020 29th Wireless and Optical Communications Conference (WOCC)',
+                                    'pages' => '1-6',
+                                    'publisher' => 'IEEE',
+                                    ]
+                            ],
+                            // booktitle ended early; wrong type
+                            [
+                                'source' => '\bibitem{batch2}B. Liu, W. Shen, P. Li and X. Zhu, "Accelerate Mini-batch Machine Learning Training With Dynamic Batch Size Fitting," 2019 International Joint Conference on Neural Networks (IJCNN), Budapest, Hungary, 2019, pp. 1-8, doi: 10.1109/IJCNN.2019.8851944. ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'doi' => '10.1109/IJCNN.2019.8851944',
+                                    'author' => 'B. Liu and W. Shen and P. Li and X. Zhu',
+                                    'title' => 'Accelerate Mini-batch Machine Learning Training With Dynamic Batch Size Fitting',
+                                    'year' => '2019',
+                                    'pages' => '1-8',
+                                    'booktitle' => '2019 International Joint Conference on Neural Networks (IJCNN), Budapest, Hungary',
+                                    ]
+                            ],
+                            // booktitle ended early
+                            [
+                                'source' => '\bibitem{allocation}B. Zhang and C. Wang, "Deep Reinforcement Learning-based Predictive Maintenance Task Offloading and Resource Allocation," 2023 IEEE 23rd International Conference on Communication Technology (ICCT), Wuxi, China, 2023, pp. 659-664, doi: 10.1109/ICCT59356.2023.10419793. ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'doi' => '10.1109/ICCT59356.2023.10419793',
+                                    'author' => 'B. Zhang and C. Wang',
+                                    'title' => 'Deep Reinforcement Learning-based Predictive Maintenance Task Offloading and Resource Allocation',
+                                    'year' => '2023',
+                                    'pages' => '659-664',
+                                    'booktitle' => '2023 IEEE 23rd International Conference on Communication Technology (ICCT), Wuxi, China',
+                                    ]
+                            ],
+                            // New York included in title
+                            [
+                                'source' => 'Le Cam, L. (1986), Asymptotic Methods in Statistical Decision Theory, New York: Springer. ',
+                                'type' => 'book',
+                                'bibtex' => [
+                                    'author' => 'Le Cam, L.',
+                                    'year' => '1986',
+                                    'title' => 'Asymptotic Methods in Statistical Decision Theory',
+                                    'address' => 'New York',
+                                    'publisher' => 'Springer',
+                                    ]
+                            ],
+                   			// title terminated too early, before India
+                            [
+                                'source' => 'Kulshrestha S., Awasthi A., Dabral S. K. (2013).Assessment of heavy metals in the industrial effluents, tube-wells and municipal supplied water of Dehradun, India. J Environ Sci Eng,:55(3):290-300. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Kulshrestha, S. and Awasthi, A. and Dabral, S. K.',
+                                    'year' => '2013',
+                                    'title' => 'Assessment of heavy metals in the industrial effluents, tube-wells and municipal supplied water of Dehradun, India',
+                                    'journal' => 'J Environ Sci Eng',
+                                    'pages' => '290-300',
+                                    'volume' => '55',
+                                    'number' => '3',
+                                    ]
+                            ],
+                            // booktitle not detected 
+                            [
+                                'source' => 'Rubega, M., Pascucci, D., Queralt, J. R., Van Mierlo, P., Hagmann, P., Plomp, G. and Michel, C. M. (2019), Time-varying effective eeg source connectivity: The optimization of model parameters, in ‘2019 41st Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)’, IEEE, pp. 6438–6441. ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'Rubega, M. and Pascucci, D. and Queralt, J. R. and Van Mierlo, P. and Hagmann, P. and Plomp, G. and Michel, C. M.',
+                                    'year' => '2019',
+                                    'title' => 'Time-varying effective eeg source connectivity: The optimization of model parameters',
+                                    'booktitle' => '2019 41st Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)',
+                                    'publisher' => 'IEEE',
+                                    'pages' => '6438-6441',
+                                    ]
+                            ],
 
                 ];
 

@@ -268,11 +268,11 @@ class Converter
 
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
         // Could add "symposium" to list of words
-        $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference on|^symposium on | meeting | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop |^actas del )';
-        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc. Natl. Acad|^Proc. National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.|^Proc. Roy. Soc. A|^Proc. Roy. Soc.|^Proceedings of the International Association of Hydrological Sciences';
+        $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference|symposium on | meeting | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop|^actas del )';
+        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc. Natl. Acad|^Proc. National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.|^Proc. Roy. Soc. A|^Proc. Roy. Soc.|^Proceedings of the International Association of Hydrological Sciences|^Proc. IEEE(?! [a-zA-Z])|^Proceedings of the IEEE';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
-        $this->masterRegExp = '[Mm]aster(\'?s)?|M\.?A\.?';
+        $this->masterRegExp = '[Mm]aster(\'?s)?|M\.?A\.?|M\.?Sc\.?';
         $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral';
         $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]issertation))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de maestría|Tese de doutorado|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce)';
         // pt: Dissertação de Mestrado | Tese de mestrado
@@ -1733,89 +1733,103 @@ class Converter
                 // The only reason why $item->editor could be set other than by the previous code block is that the 
                 // item is a book with an editor rather than an author.  So probably the following condition could
                 // be replaced by } else {.
-                if ($remainder && !isset($item->editor)) {
-                    $updateRemainder = true;
-                    // If a city or publisher has been found, temporarily remove it from remainder to see what is left
-                    // and whether info can be extracted from what is left
-                    $tempRemainder = $remainder;
-                    $remainderAfterCityString = trim(Str::after($remainder, $cityString), ', ');
-                    if ($cityString) {
-                        // If there is no publisher string and the type is inproceedings and there is only one word left, assume
-                        // it is part of booktitle
-                        if (!$publisherString && $itemKind == 'inproceedings' && strpos($remainderAfterCityString, ' ') === false) {
-                            $booktitle = $remainder;
-                            $tempRemainder = $cityString = '';
-                        } else {
-                            // limit of 1, in case city appears also in publisher name
-                            $tempRemainder = $this->findAndRemove($tempRemainder, $cityString, 1);
-                        }
-                    }
-                    if ($publisherString) {
-                        $tempRemainder = $this->findAndRemove($tempRemainder, $publisherString);
-                    }
-                    $tempRemainder = trim($tempRemainder, ',.: ');
-                    $tempRemainderEndsWithParen = substr($tempRemainder, -1) == ')';
-                    $tempRemainder = trim($tempRemainder, ',.:() ');
-                    $this->verbose('[in13] tempRemainder: ' . $tempRemainder);
-
-                    // If item doesn't contain string identifying editors, look more carefully to see whether
-                    // it contains a string that could be editors' names.
-                    if (!$containsEditors) {
-                        if (strpos($tempRemainder, '.') === false && strpos($tempRemainder, ',') === false) {
-                            $this->verbose("tempRemainder contains no period or comma, so appears to not contain editors' names");
-                            if (!$booktitle) {
-                                $booktitle = $tempRemainder;
-                                $this->verbose('booktitle case 2');
-                            }
-                            $this->setField($item, 'editor', '', 'setField 37');
-                            $warnings[] = 'No editor found';
-                            $this->setField($item, 'address', $cityString, 'setField 38');
-                            $this->setField($item, 'publisher', $publisherString, 'setField 39');
-                            $newRemainder = trim(Str::remove([$cityString, $publisherString, $booktitle], $tempRemainder), ', ');
-                        } elseif (strpos($tempRemainder, ',') !== false) {
-                            // Looking at strings following commas, to see if they are names
-                            $tempRemainderLeft = ', ' . $tempRemainder;
-                            $possibleEds = null;
-                            while (strpos($tempRemainderLeft, ',') !== false && ! $possibleEds) {
-                                $tempRemainderLeft = trim(strchr($tempRemainderLeft, ','), ', ');
-                                $tempRemainderWords = explode(' ', $tempRemainderLeft);
-                                $bareWordCount = 0;
-                                foreach ($tempRemainderWords as $word) {
-                                    if (!Str::endsWith($word, [',', '.'])) {
-                                        $bareWordCount++;
-                                    } else {
-                                        break;
-                                    }
-                                }
-                                if ($bareWordCount < 4 && $this->isNameString($tempRemainderLeft)) {
-                                    $possibleEds = $tempRemainderLeft;
-                                }
-                            }
-                            if (!$possibleEds) {
-                                $this->verbose("No string that could be editors' names identified in tempRemainder");
-
-                                if ($cityString || $publisherString) {
-                                    if (!$booktitle) {
-                                        $booktitle = $tempRemainder;
-                                        $this->verbose("Booktitle case 3");
-                                    }
-                                    $this->setField($item, 'editor', '', 'setField 40');
-                                    $warnings[] = 'No editor found';
-                                    $this->setField($item, 'address', $cityString, 'setField 41');
-                                    $this->setField($item, 'publisher', $publisherString, 'setField 42');
-                                    $newRemainder = '';
-                                }
-
-                                // Otherwise leave it to rest of code to figure out whether there is an editor, and
-                                // publisher and address.  (Deals well with Harstad et al. items in Examples.)
+                if ($remainder && ! isset($item->editor)) {
+                    $periodPosition = strpos($remainder, '.');
+                    // If type is inproceedings and there is a period that is not preceded by any of the $bookTitleAbbrevs
+                    // and $remainder does not contain a string for editors, take booktitle to be $remainder up to period.
+                    if (
+                        $itemKind == 'inproceedings' &&
+                        $periodPosition !== false &&
+                        ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->bookTitleAbbrevs) &&
+                        ! preg_match('/ edited |[ \(]eds?\.|[ \(]pp\./i', $remainder)
+                       ) {
+                        $booktitle = substr($remainder, 0, $periodPosition);
+                        $remainder = trim(substr($remainder, $periodPosition+1));
+                        $this->verbose('[in3a] booktitle: ' . $booktitle);
+                    } else {
+                        $updateRemainder = true;
+                        // If a city or publisher has been found, temporarily remove it from remainder to see what is left
+                        // and whether info can be extracted from what is left
+                        $tempRemainder = $remainder;
+                        $remainderAfterCityString = trim(Str::after($remainder, $cityString), ', ');
+                        if ($cityString) {
+                            // If there is no publisher string and the type is inproceedings and there is only one word left, assume
+                            // it is part of booktitle
+                            if (! $publisherString && $itemKind == 'inproceedings' && strpos($remainderAfterCityString, ' ') === false) {
+                                $booktitle = $remainder;
+                                $tempRemainder = $cityString = '';
                             } else {
-                                $this->verbose("The string \"" . $possibleEds . "\" is a possible string of editors' names");
+                                // limit of 1, in case city appears also in publisher name
+                                $tempRemainder = $this->findAndRemove($tempRemainder, $cityString, 1);
+                            }
+                        }
+                        if ($publisherString) {
+                            $tempRemainder = $this->findAndRemove($tempRemainder, $publisherString);
+                        }
+                        $tempRemainder = trim($tempRemainder, ',.: ');
+                        $tempRemainderEndsWithParen = substr($tempRemainder, -1) == ')';
+                        $tempRemainder = trim($tempRemainder, ',.:() ');
+                        $this->verbose('[in13] tempRemainder: ' . $tempRemainder);
+
+                        // If item doesn't contain string identifying editors, look more carefully to see whether
+                        // it contains a string that could be editors' names.
+                        if (! $containsEditors) {
+                            if (strpos($tempRemainder, '.') === false && strpos($tempRemainder, ',') === false) {
+                                $this->verbose("tempRemainder contains no period or comma, so appears to not contain editors' names");
+                                if (!$booktitle) {
+                                    $booktitle = $tempRemainder;
+                                    $this->verbose('booktitle case 2');
+                                }
+                                $this->setField($item, 'editor', '', 'setField 37');
+                                $warnings[] = 'No editor found';
+                                $this->setField($item, 'address', $cityString, 'setField 38');
+                                $this->setField($item, 'publisher', $publisherString, 'setField 39');
+                                $newRemainder = trim(Str::remove([$cityString, $publisherString, $booktitle], $tempRemainder), ', ');
+                            } elseif (strpos($tempRemainder, ',') !== false) {
+                                // Looking at strings following commas, to see if they are names
+                                $tempRemainderLeft = ', ' . $tempRemainder;
+                                $possibleEds = null;
+                                while (strpos($tempRemainderLeft, ',') !== false && ! $possibleEds) {
+                                    $tempRemainderLeft = trim(strchr($tempRemainderLeft, ','), ', ');
+                                    $tempRemainderWords = explode(' ', $tempRemainderLeft);
+                                    $bareWordCount = 0;
+                                    foreach ($tempRemainderWords as $word) {
+                                        if (!Str::endsWith($word, [',', '.'])) {
+                                            $bareWordCount++;
+                                        } else {
+                                            break;
+                                        }
+                                    }
+                                    if ($bareWordCount < 4 && $this->isNameString($tempRemainderLeft)) {
+                                        $possibleEds = $tempRemainderLeft;
+                                    }
+                                }
+                                if (!$possibleEds) {
+                                    $this->verbose("No string that could be editors' names identified in tempRemainder");
+
+                                    if ($cityString || $publisherString) {
+                                        if (! $booktitle) {
+                                            $booktitle = $tempRemainder;
+                                            $this->verbose("Booktitle case 3");
+                                        }
+                                        $this->setField($item, 'editor', '', 'setField 40');
+                                        $warnings[] = 'No editor found';
+                                        $this->setField($item, 'address', $cityString, 'setField 41');
+                                        $this->setField($item, 'publisher', $publisherString, 'setField 42');
+                                        $newRemainder = '';
+                                    }
+
+                                    // Otherwise leave it to rest of code to figure out whether there is an editor, and
+                                    // publisher and address.  (Deals well with Harstad et al. items in Examples.)
+                                } else {
+                                    $this->verbose("The string \"" . $possibleEds . "\" is a possible string of editors' names");
+                                }
                             }
                         }
                     }
                 }
 
-                if ($remainder && !$booktitle) {
+                if ($remainder && ! $booktitle) {
                     $updateRemainder = true;
                     $remainderContainsEds = false;
                     $postEditorString = '';
@@ -2018,8 +2032,10 @@ class Converter
                                 if (isset($beforeEds) && isset($afterEds) && isset($item->editor)) {
                                     $booktitle = $beforeEds;
                                     $remainder = $afterEds;
+                                } elseif ($itemKind == 'inproceedings') {
+                                    $booktitle = $remainder;
+                                    $newRemainder = '';
                                 } else {
-
                                     // Take book title to be string up to first comma or period that does not follow an uppercase letter
                                     $leftParenCount = $rightParenCount = 0;
                                     for ($j = 0; $j < strlen($remainder) && ! $booktitle; $j++) {
@@ -2124,6 +2140,7 @@ class Converter
                             }
 
                             // Take words in remaining string up to the last ending in a comma or period
+                            $j = 0;
                             $reversePossibleEditors = array_reverse($possibleEditors);
                             foreach ($reversePossibleEditors as $i => $word) {
                                 if (in_array(substr($word, -1), ['.', ','])) {
@@ -3051,11 +3068,12 @@ class Converter
                 // If so, the title is $remainder up to the punctuation.
                 // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
                 // of the cases ``<word>.'' and "<word>."
+                //$this->verbose('Remainder: ' . $remainder);
                 if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && $nextWord[0] == '(')) {
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
-                        || preg_match('/^[Ii]n ([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^[Ii]n [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
                         || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
@@ -3064,8 +3082,9 @@ class Converter
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
                         || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
                         || (preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) && in_array(trim($matches['city']), $this->cities))
-                        || preg_match('/^' . $this->fullThesisRegExp . '/', $remainder)
+                        || preg_match('/^\(?' . $this->fullThesisRegExp . '/', $remainder)
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
+                        || Str::startsWith(ltrim($remainder, '('), $this->cities)
                         ) {
                         $this->verbose("Ending title, case 2 (word '" . $word . "')");
                         $title = rtrim(implode(' ', $initialWords), ',:;.');
@@ -3100,8 +3119,8 @@ class Converter
                 // If end of title has not been detected and word ends in period-equivalent or comma, or next word starts with '('
                 if (
                     Str::endsWith($word, ['.', '!', '?', ','])
-                    ||
-                    ($nextWord && $nextWord[0] == '(' && substr($nextWord, -1) != ')')
+                    // ||
+                    // ($nextWord && $nextWord[0] == '(' && substr($nextWord, -1) != ')')
                     ) {
                     // if first character of next word is lowercase letter and does not end in period
                     // OR $word and $nextWord are A. and D. or B. and C.
@@ -3109,7 +3128,7 @@ class Converter
                     if (
                         $nextWord 
                             && (
-                            (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.')
+                            (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.' && $nextWord != 'in')
                                     || ($word == 'A.' && $nextWord == 'D.')
                                     || ($word == 'B.' && $nextWord == 'C.')
                                     || Str::startsWith($remainder, ['I. ', 'II. ', 'III. '])
@@ -3133,8 +3152,10 @@ class Converter
                             && 
                             isset($words[$key+2]) 
                             &&
+                            ! in_array($words[$key+2], ['J', 'J.', 'Journal'])
+                            &&
                             (! Str::endsWith($word, ',') || 
-                                ! $this->inDict(substr($nextWord,0,-1)) || 
+                                ! $this->inDict(substr($nextWord, 0, -1)) || 
                                 $this->isInitials($nextWord) || 
                                 (mb_strtolower($nextWord[0]) == $nextWord[0]
                                 &&
@@ -3200,19 +3221,22 @@ class Converter
                         // else if 
                         // (word ends with period or comma and there are 4 or more words till next punctuation, which is a period)
                         // OR entry contains url access info [in which case there is no more publication info to come]
-                        // and at least three non-stopwords are all lowercase, continue [to catch Example 116]
+                        // [[ restriction removed: and at least three non-stopwords are all lowercase, continue [to catch Example 116]]
                         // Treat hyphens in words as spaces
                         $modStringToNextPeriod = preg_replace('/([a-z])-([a-z])/', '$1 $2', $stringToNextPeriod);
                         $wordsToNextPeriod = explode(' ',  $modStringToNextPeriod);
-                        $lcWordCount = 0;
-                        foreach ($wordsToNextPeriod as $remainingWord) {
-                            if (! in_array($remainingWord, $this->stopwords) && isset($remainingWord[0]) && ctype_alpha($remainingWord[0]) && mb_strtolower($remainingWord) == $remainingWord) {
-                                $lcWordCount++;
-                            }
-                        }
-                        if ((($lcWordCount > 2 && substr_count($modStringToNextPeriod, ' ') > 3) || $containsUrlAccessInfo)
+                        // $lcWordCount = 0;
+                        // foreach ($wordsToNextPeriod as $remainingWord) {
+                        //     if (! in_array($remainingWord, $this->stopwords) && isset($remainingWord[0]) && ctype_alpha($remainingWord[0]) && mb_strtolower($remainingWord) == $remainingWord) {
+                        //         $lcWordCount++;
+                        //     }
+                        // }
+                        //if ((($lcWordCount > 2 && substr_count($modStringToNextPeriod, ' ') > 3) || $containsUrlAccessInfo)
+                        if ((substr_count($modStringToNextPeriod, ' ') > 3 || $containsUrlAccessInfo)
                             // comma added in next line to deal with one case, but it may be dangerous
                             && Str::endsWith($word, ['.', ',', '?', '!']) 
+                            && ! Str::startsWith($modStringToNextPeriod, ['In']) 
+                            && ! Str::contains($modStringToNextPeriod, ['pp.']) 
                             && substr_count($modStringToNextPeriod, ',') == 0
                             && substr_count($modStringToNextPeriod, ':') == 0
                         ) {
@@ -3655,7 +3679,38 @@ class Converter
 
         $wordHasComma = $prevWordHasComma = $oneWordAuthor = false;
 
-        $this->verbose('convertToAuthors: Looking at each word in turn');
+        // First check for organization name
+        // If first 3-6 words are all letters and in the dictionary except possibly last one, which is letters with a period at the end
+        // then they make up the name of an organization
+        // (Dictionary check is to exclude strings like 'John Doe and Jane Doe' or 'Doe J and Doe K', which needs processing
+        // as names, to insert commas after the last names.)
+        $this->verbose('convertToAuthors: Checking for name of organization');
+        $name = '';
+        foreach ($words as $i => $word) {
+            if (ctype_alpha((string) $word) && $this->inDict($word)) {
+                $name .= ($i ? ' ' : '') . $word;
+            } else {
+                $xword = substr($word, 0, -1);
+                // possibly last character could be other punctuation?
+                if (ctype_alpha((string) $xword) && $this->inDict($xword) && in_array(substr($word, -1), ['.'])) {
+                    if ($i >= 2 && $i <= 5) {
+                        $remainder = implode(' ', array_slice($words, $i+1));
+                        $year = $this->getYear($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language);
+                        return ['authorstring' => $name . ' ' . $xword, 'warnings' => [], 'oneWordAuthor' => $oneWordAuthor];
+                    } else {
+                        break;
+                    }
+                } elseif ($i >= 3 && $i <= 6) {
+                    $remainder = implode(' ', array_slice($words, $i));
+                    $year = $this->getYear($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language);
+                    return ['authorstring' => $name, 'warnings' => [], 'oneWordAuthor' => $oneWordAuthor];
+                } else {
+                    break;
+                }        
+            }
+        }
+
+        $this->verbose('convertToAuthors: Organization name not found.  Looking at each word in turn');
         foreach ($words as $i => $word) {
             if ($skip) {
                 $skip = false;
@@ -4302,10 +4357,10 @@ class Converter
       * OR starts with <space>'<not '> and ends with <not \>'<not letter>
       * OR starts with unescaped `<not `> and ends with <not \>'<not letter>
       * @param $string string
-      * @param $start boolean (if true, check only for substring at start of string)
-      * @param $italicsOnly boolean (if true, get only italic string, not quoted string)
-      * @param $before part of $string preceding left delimiter and matched text
-      * @param $after part of $string following matched text and right delimiter
+      * @param $start boolean: (if true, check only for substring at start of string)
+      * @param $italicsOnly boolean: (if true, get only italic string, not quoted string)
+      * @param $before: part of $string preceding left delimiter and matched text
+      * @param $after: part of $string following matched text and right delimiter
       * @param $style style detected: 'none', 'italic', or 'quoted'
       * @return $matchedText: quoted or italic substring
       */
@@ -4313,6 +4368,7 @@ class Converter
     {
         $matchedText = $quotedText = $beforeQuote = $afterQuote = '';
         $style = 'none';
+        $end = false;
 
         /* 
          * Rather than using the following loop, could use regular expressions.  Versions of expressions
@@ -4384,6 +4440,12 @@ class Converter
                 } else {
                     $beforeQuote .= $char;
                 }
+            }
+        
+            // There is no matching end quote
+            if (! $start && $begin && $end == false) {
+                $quotedText = $beforeQuote = '';
+                $afterQuote = $string;
             }
         }
 
@@ -4609,7 +4671,8 @@ class Converter
         $monthRegExp = '((' . $months . ')([-\/](' . $months . '))?)?';
         // In following line, [1-2]?[0-9]? added to allow second year to have four digits.  Should be (18|19|20), but that
         // would mean adding a group, which would require the recalculation of all the indices ...
-        $yearRegExp = '((' . $centuries . ')([0-9]{2})(-[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
+        // Year should not be preceded by 'pp. ', which would mean it is in fact a page number/page range.
+        $yearRegExp = '((?<!pp\. )(' . $centuries . ')([0-9]{2})(-[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
         $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
 
         // Require space or ',' in front of year if search is not restricted to start or in parens or brackets,
@@ -4645,7 +4708,7 @@ class Converter
 
         foreach ($yearIndexes as $i) {
             if (isset($matches[$i]) && count($matches[$i])) {
-                if (!$start) {
+                if (! $start) {
                     $foundMatch = $matches[$i][count($matches[$i]) - 1];
                     $wholeMatch = $matches[0][count($matches[0]) - 1];
                 } else {
@@ -4664,7 +4727,7 @@ class Converter
             $monthIndexes = $start ? [2, 11, 20] : [2, 11, 20, 29];
             foreach ($monthIndexes as $i) {
                 if (isset($matches[$i]) && count($matches[$i])) {
-                    if (!$start) {
+                    if (! $start) {
                         $foundMatch = $matches[$i][count($matches[$i]) - 1];
                         $wholeMatch = $matches[0][count($matches[0]) - 1];
                     } else {
@@ -4760,9 +4823,16 @@ class Converter
             $publisher = trim(substr($string, strpos($string, ':') + 1), ',.: ');
         // else if string contains no colon and at least one ',', take publisher to be string
         // preceding first colon and and city to be rest
-        } elseif (!substr_count($string, ':') and substr_count($string, ',')) {
-            $publisher = trim(substr($string, 0, strpos($string, ',')), ',. ');
-            $address = trim(substr($string, strpos($string, ',') + 1), ',.: ');
+        } elseif (! substr_count($string, ':') && substr_count($string, ',')) {
+            $wordBeforeComma = trim(substr($string, 0, strpos($string, ',')), ',. ');
+            $wordAfterComma = trim(substr($string, strpos($string, ',') + 1), ',.: ');
+            if ($wordBeforeComma == $cityString) {
+                $address = $wordBeforeComma . ', ' . $wordAfterComma;
+                $publisher = '';
+            } else {
+                $publisher = $wordBeforeComma;
+                $address = $wordAfterComma;
+            }
             $remainder = '';
         // else take publisher/city to be strings that match list above and report rest to be
         // city/publisher
@@ -4934,7 +5004,7 @@ class Converter
     }
 
     /*
-     * Determine whether $word is in the dictionary
+     * Determine whether $word is in the dictionary and not in the list of names in the dictionary
      */
     private function inDict(string $word, bool $lowercaseOnly = true): bool
     {
