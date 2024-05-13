@@ -1747,7 +1747,7 @@ class ExampleSeeder extends Seeder
                         'month' => 'May',
                         'title' => 'Optimal eigenstructure achievement with robustness guarantees',
                         'author' => 'R. F. Wilson and J. R. Cloutier',
-                        'booktitle' => 'Proc. Amer. Control Conf., San Diego, CA',
+                        'booktitle' => 'Proc. Amer. Control Conf., San Diego, CA, May 1990',
                         ]
                 ],
                 [
@@ -1758,7 +1758,7 @@ class ExampleSeeder extends Seeder
                         'month' => 'December',
                         'title' => 'Generalized and robust eigenstructure assignment',
                         'author' => 'R. F. Wilson and J. R. Cloutier',
-                        'booktitle' => 'Proc. AIAA Missile Sci. Conf., Monterey, CA',
+                        'booktitle' => 'Proc. AIAA Missile Sci. Conf., Monterey, CA, Dec. 1990',
                         ]
                 ],
                 [
@@ -1806,7 +1806,7 @@ class ExampleSeeder extends Seeder
                         'month' => 'June',
                         'title' => 'Robust constrained eigensystem assignment',
                         'author' => 'K. E. Simonyi and N. K. Loh',
-                        'booktitle' => 'Proc. Amer. Cont. Conf., Pittsburgh, PA',
+                        'booktitle' => 'Proc. Amer. Cont. Conf., Pittsburgh, PA, June 1989',
                         ]
                 ],
                 [
@@ -1827,7 +1827,7 @@ class ExampleSeeder extends Seeder
                             'year' => '1989',
                             'pages' => '1705-1707',
                             'title' => 'Flight control application of eigenstructure assignment with optimization of robustness to structure state space uncertainty',
-                            'author' => 'K. M. Sobel and W. Yu.',
+                            'author' => 'K. M. Sobel and W. Yu',
                             'booktitle' => 'Proc. 28th IEEE Conf. Decision and Control, Tampa, FL',
                             ]
                     ],
@@ -1876,7 +1876,7 @@ class ExampleSeeder extends Seeder
                             'year' => '1985',
                             'title' => 'Simultaneous Stabilizability of Single Input-Single Output Systems',
                             'author' => 'Barmish, B. R. and Wei, K. H.',
-                            'booktitle' => 'Proceedings of 7th Int. Symp. On Math Theory of Networks and Systems, Stockholm, Sweden',
+                            'booktitle' => 'Proceedings of 7th Int. Symp. On Math Theory of Networks and Systems, Stockholm, Sweden, 1985',
                             ]
                     ],
                     [
@@ -1887,7 +1887,7 @@ class ExampleSeeder extends Seeder
                             'month' => 'December',
                             'pages' => '1323-1332',
                             'title' => 'Robust Multivariable Regulator Design- General Case & Special Cases',
-                            'booktitle' => 'Proc. of 1985 Conference on Decision & Control',
+                            'booktitle' => 'Proc. of 1985 Conference on Decision & Control, Dec. 1985',
                             'author' => 'Soh, Y. C. and Evans, R. J.',
                             ]
                     ],
@@ -1920,7 +1920,7 @@ class ExampleSeeder extends Seeder
                             'year' => '1993',
                             'title' => 'H^2 robust control with pole placement',
                             'author' => 'J. C. Geromel and G. Garcia and J. Bernussou',
-                            'booktitle' => 'Proc. 12th World I. F. A. C. Congress, Sydney, Australia',
+                            'booktitle' => 'Proc. 12th World I. F. A. C. Congress, Sydney, Australia, 1993',
                             ]
                     ],
                     [
@@ -5498,7 +5498,7 @@ class ExampleSeeder extends Seeder
                                     'title' => 'Deep q-learning-based resource management in UAV-assisted wireless powered IoT networks',
                                     'year' => '2020',
                                     'pages' => '1-6',
-                                    'booktitle' => 'Proc. IEEE Int. Conf. Commun., Dublin, Ireland',
+                                    'booktitle' => 'Proc. IEEE Int. Conf. Commun., Dublin, Ireland, 2020',
                                     ]
                             ],
                             // booktitle ended early; wrong year
@@ -5593,6 +5593,235 @@ class ExampleSeeder extends Seeder
                                     'pages' => '6438-6441',
                                     ]
                             ],
+                   			// Another proceedings exception
+                            [
+                                'source' => '\bibitem {1} C. E. Shannon, “Communication in the presence of noise,” Proceedings of the IRE, vol. 37, Issue no. 1, pp. 10–21, 1949. doi:10.1109/JRPROC.1949.232969 ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'doi' => '10.1109/JRPROC.1949.232969',
+                                    'author' => 'C. E. Shannon',
+                                    'title' => 'Communication in the presence of noise',
+                                    'year' => '1949',
+                                    'pages' => '10-21',
+                                    'volume' => '37',
+                                    'number' => '1',
+                                    'journal' => 'Proceedings of the IRE',
+                                    ]
+                            ],
+                            [
+                                'source' => '    6 Braasch, M.S.,“Isolation of GPS multipath and receiver tracking errors,” Journal of the Institute Navigation, vol. 41, pp. 415–434, 1995.  ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Braasch, M. S.',
+                                    'title' => 'Isolation of GPS multipath and receiver tracking errors',
+                                    'year' => '1995',
+                                    'journal' => 'Journal of the Institute Navigation',
+                                    'volume' => '41',
+                                    'pages' => '415-434',
+                                    ]
+                            ],
+                            [
+                                'source' => 'Treasure J, Duarte TA, Schmidt U. Eating disorders. Lancet 2020;395:899-911.  ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Treasure, J. and Duarte, T. A. and Schmidt, U.',
+                                    'title' => 'Eating disorders',
+                                    'year' => '2020',
+                                    'journal' => 'Lancet',
+                                    'volume' => '395',
+                                    'pages' => '899-911',
+                                    ]
+                            ],
+                   			// No space between , and "
+                            [
+                                'source' => '\bibitem {14} Naushad Ansari,Anubha Gupta ,”Image Reconstruction using Matched Wavelet Estimated from Data Sensed Compressively using partial canonical Identity matrix” IEEE Transactions on Image Processing Vol26 No.8 ,2017 pp.3680-3695. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Naushad Ansari and Anubha Gupta',
+                                    'title' => 'Image Reconstruction using Matched Wavelet Estimated from Data Sensed Compressively using partial canonical Identity matrix',
+                                    'year' => '2017',
+                                    'journal' => 'IEEE Transactions on Image Processing',
+                                    'volume' => '26',
+                                    'number' => '8',
+                                    'pages' => '3680-3695',
+                                    ]
+                            ],
+                			//"India" was detected as first word of journal name
+                            [
+                                'source' => 'Muthu, C., Ayyanar, M., Raja, N., & Ignacimuthu, S. (2006). Medicinal plants used by traditional healers in Kancheepuram District of Tamil Nadu, India. Journal of Ethnobiology and ethnomedicine, 2(1), 1-10. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Muthu, C. and Ayyanar, M. and Raja, N. and Ignacimuthu, S.',
+                                    'year' => '2006',
+                                    'title' => 'Medicinal plants used by traditional healers in Kancheepuram District of Tamil Nadu, India',
+                                    'journal' => 'Journal of Ethnobiology and ethnomedicine',
+                                    'volume' => '2',
+                                    'number' => '1',
+                                    'pages' => '1-10',
+                                    ]
+                            ],
+                            // Not recognized as phdthesis
+                            [
+                                'source' => 'Khanal, Y. (2008). Valuation of carbon sequestration and water supply services in community forests of Palpa district, Nepal (Doctoral dissertation, Tribhuvan University,)., Kathmanndu: Tribhuvan University. ',
+                                'type' => 'phdthesis',
+                                'bibtex' => [
+                                    'author' => 'Khanal, Y.',
+                                    'year' => '2008',
+                                    'title' => 'Valuation of carbon sequestration and water supply services in community forests of Palpa district, Nepal',
+                                    'school' => 'Tribhuvan University',
+                                    ]
+                            ],
+                   			// \enquote used for quoted string
+                            [
+                                'source' => '	\bibitem{ref:Atabaki16} 	M.~M. Atabaki, N. Yazdian, J. Ma, R. Kovacevic. 	\enquote{High power laser welding of think steel plates in a horizontal butt joint configuration}. 	\newblock In: {\em Optics \& Laser Technology}, vol. 83, pp. 1--12.  	\newblock 2016. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'M. M. Atabaki and N. Yazdian and J. Ma and R. Kovacevic',
+                                    'title' => 'High power laser welding of think steel plates in a horizontal butt joint configuration',
+                                    'year' => '2016',
+                                    'journal' => 'Optics \& Laser Technology',
+                                    'volume' => '83',
+                                    'pages' => '1-12',
+                                    ]
+                            ],
+                   			// Issue abbreviated as iss:
+                            [
+                                'source' => 'Yeo, R., (2002) "From individual to team learning: practical perspectives on the learning organisation", Team Performance Management, Vol. 8 Iss: 7/8, pp.157 – 170. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Yeo, R.',
+                                    'year' => '2002',
+                                    'title' => 'From individual to team learning: practical perspectives on the learning organisation',
+                                    'journal' => 'Team Performance Management',
+                                    'pages' => '157-170',
+                                    'volume' => '8',
+                                    'number' => '7/8',
+                                    ]
+                            ],
+                   			// Authors stopped too early
+                            [
+                                'source' => 'Allison, M., Kaye, J. (2005). Strategic Planning for Nonprofit Organizations. ',
+                                'type' => 'unpublished',
+                                'bibtex' => [
+                                    'author' => 'Allison, M. and Kaye, J.',
+                                    'title' => 'Strategic Planning for Nonprofit Organizations',
+                                    'year' => '2005',
+                                    ]
+                            ],
+                   			// No space between , and "
+                            [
+                                'source' => '\bibitem {14} Naushad Ansari,Anubha Gupta ,”Image Reconstruction using Matched Wavelet Estimated from Data Sensed Compressively using partial canonical Identity matrix” IEEE Transactions on Image Processing Vol26 No.8 ,2017 pp.3680-3695. ',
+                                'type' => 'article',
+                                'bibtex' => [
+                                    'author' => 'Naushad Ansari and Anubha Gupta',
+                                    'title' => 'Image Reconstruction using Matched Wavelet Estimated from Data Sensed Compressively using partial canonical Identity matrix',
+                                    'year' => '2017',
+                                    'journal' => 'IEEE Transactions on Image Processing',
+                                    'volume' => '26',
+                                    'number' => '8',
+                                    'pages' => '3680-3695',
+                                    ]
+                            ],
+                  			// Title ended early; date at end of booktitle
+                            [
+                                'source' => '[10] D.-A. Clevert, T. Unterthiner, and S. Hochreiter. Fast and accurate deep network learning by Exponential Linear Units (ELUs). In 4th International Conference on Learning Representations (ICLR), May 24, 2016.  ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'D.-A. Clevert and T. Unterthiner and S. Hochreiter',
+                                    'title' => 'Fast and accurate deep network learning by Exponential Linear Units (ELUs)',
+                                    'year' => '2016',
+                                    'booktitle' => '4th International Conference on Learning Representations (ICLR), May 24, 2016',
+                                    ]
+                            ],
+                            // Date at end of booktitle
+                            [
+                                'source' => '[16] S. Huang et al. DSANet: Dual self-attention network for multivariate time series forecasting. In 28th ACM International Conference on Information and Knowledge Management (CIKM), November 3-7, 2019.  ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'S. Huang and others',
+                                    'title' => 'DSANet: Dual self-attention network for multivariate time series forecasting',
+                                    'year' => '2019',
+                                    'booktitle' => '28th ACM International Conference on Information and Knowledge Management (CIKM), November 3-7, 2019',
+                                    ]
+                            ],
+                            // Date at end of booktitle
+                            [
+                                'source' => '[21] D. P. Kingma and J. Ba. Adam: A method for stochastic optimization. In 3rd International Conference on Learning Representations (ICLR) May 7-9, 2015.  ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'D. P. Kingma and J. Ba',
+                                    'title' => 'Adam: A method for stochastic optimization',
+                                    'year' => '2015',
+                                    'booktitle' => '3rd International Conference on Learning Representations (ICLR) May 7-9, 2015',
+                                    ]
+                            ],
+                            // Date at end of booktitle
+                            [
+                                'source' => '[48] Y. Wu et al. Deep learning for epidemiological predictions. In 41st International ACM SIGIR Conference on Research & Development in Information Retrieval (SIGIR), July 8-12, 2018.  ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'Y. Wu and others',
+                                    'title' => 'Deep learning for epidemiological predictions',
+                                    'year' => '2018',
+                                    'booktitle' => '41st International ACM SIGIR Conference on Research & Development in Information Retrieval (SIGIR), July 8-12, 2018',
+                                    ]
+                            ],
+                            // date at end of booktitle
+                            [
+                                'source' => '\bibitem {18} Xuan, Y.; Yang, C. "2sER-VGSR-Net: A Two-Stage Enhancement Reconstruction Based On Video Group Sparse Representation Network For Compressed Video Sensing" In Proceedings of the 2020 IEEE International Conference on Multimedia and Expo (ICME), London, UK, 6–10 July 2020; pp. 1–6. ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'Xuan, Y. and Yang, C.',
+                                    'title' => '2sER-VGSR-Net: A Two-Stage Enhancement Reconstruction Based On Video Group Sparse Representation Network For Compressed Video Sensing',
+                                    'year' => '2020',
+                                    'pages' => '1-6',
+                                    'booktitle' => 'Proceedings of the 2020 IEEE International Conference on Multimedia and Expo (ICME), London, UK, 6--10 July 2020',
+                                    ]
+                            ],
+                            // date at end of booktitle
+                            [
+                                'source' => '\bibitem {19} Mousavi, A.; Patel, A.B.; Baraniuk, R.G. A deep learning approach to structured signal recovery. In Proceedings of the 2015 53rd Annual Allerton Conference on Communication, Control, and Computing (Allerton), Monticello, IL, USA, 29 September–2 October 2015; pp. 1336–1343. ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'Mousavi, A. and Patel, A. B. and Baraniuk, R. G.',
+                                    'title' => 'A deep learning approach to structured signal recovery',
+                                    'year' => '2015',
+                                    'pages' => '1336-1343',
+                                    'booktitle' => 'Proceedings of the 2015 53rd Annual Allerton Conference on Communication, Control, and Computing (Allerton), Monticello, IL, USA, 29 September--2 October 2015',
+                                    ]
+                            ],
+                            // date at end of booktitle
+                            [
+                                'source' => '\bibitem {20} Kulkarni, K.; Lohit, S.; Turaga, P.; Kerviche, R.; Ashok, A. ReconNet: Non-iterative reconstruction of images from compressively sensed measurements. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), Las Vegas,NV, USA, 27–30 June 2016; pp. 449–458. ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'Kulkarni, K. and Lohit, S. and Turaga, P. and Kerviche, R. and Ashok, A.',
+                                    'title' => 'ReconNet: Non-iterative reconstruction of images from compressively sensed measurements',
+                                    'year' => '2016',
+                                    'booktitle' => 'Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), Las Vegas, NV, USA, 27--30 June 2016',
+                                    'pages' => '449-458',
+                                    ]
+                            ],
+                            // year at end of booktitle
+                            [
+                                'source' => '\bibitem{30}Yulun Zhang, Yapeng Tian, Yu Kong, Bineng Zhong, Yun Fu; "Residual dense network for image super-resolution", in Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2018, pp. 2472-2481 ',
+                                'type' => 'inproceedings',
+                                'bibtex' => [
+                                    'author' => 'Yulun Zhang and Yapeng Tian and Yu Kong and Bineng Zhong and Yun Fu',
+                                    'title' => 'Residual dense network for image super-resolution',
+                                    'booktitle' => 'Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2018',
+                                    'year' => '2018',
+                                    'pages' => '2472-2481',
+                                    ]
+                            ],
+
+
+
+
+
+
+                
+                
 
                 ];
 
