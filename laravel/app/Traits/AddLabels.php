@@ -92,7 +92,7 @@ trait AddLabels
                 $label = mb_strtolower(substr($firstAuthor, 0, strpos($firstAuthor, ',')));
             }
             $label .= $year;
-            $title = $item->title;
+            $title = $item->title ?? '';
             if (Str::startsWith($title, ['A ', 'The ', 'On ', 'An '])) {
                 $title = Str::after($title, ' ');   
             }
