@@ -249,7 +249,7 @@ class Converter
 
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})';
         // hlm.: Indonesian, ss: Turkish
-        $this->startPagesRegExp = '/^pages |^pp\.?|^p\.|^p |^стр\. |^hlm\. |^ss?\. /i';
+        $this->startPagesRegExp = '/(^pages |^pp\.?|^p\. ?|^p |^стр\. |^hlm\. |^ss?\. )[0-9]/i';
 
         // en for Spanish (and French?), em for Portuguese
         $this->inRegExp1 = '/^[iIeE]n:? /';
@@ -345,6 +345,9 @@ class Converter
             'fr' => '(?P<m1>janvier|janv[.,; ])|(?P<m2>février|févr[.,; ])|(?P<m3>mars)|(?P<m4>avril|avr[., ])|'
                 . '(?P<m5>mai)|(?P<m6>juin)|(?P<m7>juillet|juill?[.,; ])|(?P<m8>aout|août)|'
                 . '(?P<m9>septembre|sept?[.,; ])|(?P<m10>octobre|oct[.,; ])|(?P<m11>novembre|nov[.,; ])|(?P<m12>décembre|déc[.,; ])',
+            // 'id' => '(?P<m1>Januari|Jan[.,; ]|Djan[.,; ])|(?P<m2>Februari|Peb[.,; ])|(?P<m3>Maret|Mrt[.,; ])|(?P<m4>April|Apr[.,; ])|'
+            //     . '(?P<m5>Mei)|(?P<m6>Juni|Djuni)|(?P<m7>Juli|Djuli)|(?P<m8>Augustus|Ag[.,; ])|'
+            //     . '(?P<m9>September|Sept[.,; ])|(?P<m10>Oktober|Okt[.,; ])|(?P<m11>November|Nop[.,; ])|(?P<m12>Desember|des[.,; ])',
             'es' => '(?P<m1>enero)|(?P<m2>febrero|feb[.,; ])|(?P<m3>marzo|mar[.,; ])|(?P<m4>abril|abr[.,; ])|'
                 . '(?P<m5>mayo)|(?P<m6>junio|jun[.,; ])|(?P<m7>julio|jul[.,; ])|(?P<m8>agosto)|'
                 . '(?P<m9>septiembre|sept?[.,; ])|(?P<m10>octubre|oct[.,; ])|(?P<m11>noviembre|nov[.,; ])|(?P<m12>deciembre|dec[.,; ])',
@@ -768,6 +771,7 @@ class Converter
                     $skip = 2;
                 }
             } elseif (in_array($char, ['.', ',']) 
+                    && (! isset($chars[$i-1]) || $chars[$i-1] != '\\')
                     && isset($chars[$i+1]) 
                     && ! in_array($chars[$i+1], [' ', '.', ',', ';', '-', '"', "'"]) 
                     && ! (isset($chars[$i-1]) && ctype_digit($chars[$i-1]) && ctype_digit($chars[$i+1]))
@@ -1678,6 +1682,9 @@ class Converter
                         if (isset($item->month)) {
                             unset($item->month);
                         }
+                        // if (empty($dateResult['year']) && isset($year)) {
+                        //     $remainderWithoutDate = str_replace($year, '', $remainderWithoutDate);
+                        // }
                     } elseif (isset($year) && $yearPos !== false) {
                         $datePos = $yearPos;
                         $remainderWithoutDate = str_replace($year, '', $remainderWithMonthYear);
@@ -1814,10 +1821,16 @@ class Converter
                         $remainderAfterCityString = trim(Str::after($remainder, $cityString), ', ');
                         $dateNext = $this->isDate($remainderAfterCityString, $language, 'starts', true);
                         if ($cityString && ! $dateNext) {
-                            // If there is no publisher string and the type is inproceedings and there is only one word left, assume
-                            // it is part of booktitle
+                            // If there is no publisher string and the type is inproceedings and there is only one word left and
+                            // it is not the year, assume it is part of booktitle
+                            // Case in which it's the year: something like '... June 3-7, New York, NY, 2010'.
                             if (! $publisherString && $itemKind == 'inproceedings' && strpos($remainderAfterCityString, ' ') === false) {
-                                $booktitle = $remainder;
+                                if ($this->isYear(($remainderAfterCityString))) {
+                                    $booktitle = trim(Str::before($remainder, $remainderAfterCityString), ',. ');
+                                } else {
+                                    $booktitle = $remainder;
+                                }
+                                $this->verbose('[in3b] booktitle: ' . $booktitle);
                                 $tempRemainder = $cityString = '';
                             } else {
                                 // limit of 1, in case city appears also in publisher name
@@ -3229,6 +3242,8 @@ class Converter
                             ) 
                             && 
                             (! $journal || rtrim($nextWord, '.') == rtrim(strtok($journal, ' '), '.'))
+                            &&
+                            ! ($word == 'U.' && $nextWord == 'S.') // special case of 'U. S.' in title
                         ) {
                         $this->verbose("Ending title, case 4");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
@@ -3247,7 +3262,7 @@ class Converter
                         $this->verbose("Ending title, case 4c");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
-                    // else if following string up to next period contains only letters, spaces, hyphens, (, ), \, ,, :, and
+                    // else if string up to next period contains only letters, spaces, hyphens, (, ), \, ,, :, and
                     // quotation marks and doesn't start with "in"
                     // (which is unlikely to be within a title following punctuation)
                     // and is followed by at least 30 characters or 37 if it contains pages (for the publication info),
@@ -3287,7 +3302,9 @@ class Converter
                         // else if 
                         // (word ends with period or comma and there are 4 or more words till next punctuation, which is a period)
                         // OR entry contains url access info [in which case there is no more publication info to come]
-                        // [[ restriction removed: and at least three non-stopwords are all lowercase, continue [to catch Example 116]]
+                        // AND ... AND stringToNextPeriod doesn't start with In or pp and doesn't contain commas or colons
+                        // AND (the rest of the remainder is not all-numebers and punctuation (has to include publication info) OR
+                        // entry contains url access info (which has been removed))
                         // Treat hyphens in words as spaces
                         $modStringToNextPeriod = preg_replace('/([a-z])-([a-z])/', '$1 $2', $stringToNextPeriod);
                         $wordsToNextPeriod = explode(' ',  $modStringToNextPeriod);
@@ -3305,6 +3322,7 @@ class Converter
                             && ! Str::contains($modStringToNextPeriod, ['pp.']) 
                             && substr_count($modStringToNextPeriod, ',') == 0
                             && substr_count($modStringToNextPeriod, ':') == 0
+                            && (! preg_match('/^[0-9;:\.\- ]*$/', $followingRemainder)  || $containsUrlAccessInfo)
                         ) {
                             $this->verbose("Not ending title, case 6 (word '" . $word ."')");
                         } elseif (! isset($words[$key+2])) {
@@ -3531,7 +3549,7 @@ class Converter
     {
         $case = 0;
         // Allow two periods after letter, in case of typo or initial at end of name string.
-        if (preg_match('/^[A-Z]\.?\.?$/', $word)) { // A..
+        if (preg_match('/^[A-Z]\.?\.?$/', $word)) { // A or A. or A..
             $case = 1;
         } elseif (preg_match('/^[A-Z]\.[A-Z]\.$/', $word)) { // A.B.
             $case = 2;
@@ -3543,6 +3561,10 @@ class Converter
             $case = 5;
         } elseif (preg_match('/^[A-Z]\.-[A-Z]\.$/', $word)) { // A.-B.
             $case = 6;
+        } elseif (preg_match('/^{\\\\.I}$/', $word)) { // capital I with dot
+            $case = 7;
+        } elseif (in_array($word, ['Á.', 'Á'])) { // Á
+            $case = 8;
         }
 
         if ($case) {
@@ -3557,7 +3579,7 @@ class Converter
      * Report whether string is a date OR, if $type is 'contains', report the date it contains,
      * in a range of formats, including 2 June 2018, 2 Jun 2018, 2 Jun. 2018, June 2, 2018,
      * 6-2-2018, 6/2/2018, 2-6-2018, 2/6/2018.
-     * If $allowRange is true, dates like 6-8 June, 2024 are allowed
+     * If $allowRange is true, dates like 6-8 June, 2024 are allowed AND year is optional
      */
     private function isDate(string $string, string $language = 'en', string $type = 'is', bool $allowRange = false): bool|array
     {
@@ -3585,8 +3607,8 @@ class Converter
         $matches = [];
         $isDates = [];
         if ($allowRange) {
-            $isDates[1] = preg_match('/(' . $starts . $dayRange . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ')?' . $year . $ends . ')/i' , $string, $matches[1]);
-            $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $dayRange . ',? '. $year . $ends . ')/i', $string, $matches[2]);
+            $isDates[1] = preg_match('/(' . $starts . $dayRange . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ')?' . $year . '?' . $ends . ')/i' , $string, $matches[1]);
+            $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $dayRange . ',? '. $year . '?' . $ends . ')/i', $string, $matches[2]);
         } else {
             $isDates[1] = preg_match('/(' . $starts . $day . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ')?' . $year . $ends . ')/i' , $string, $matches[1]);
             $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $day . ',? '. $year . $ends . ')/i', $string, $matches[2]);
@@ -3843,7 +3865,7 @@ class Converter
                 $remainingWords = array_merge([$firstWord, '(' . Str::after($word, '(')], $remain);
                 $word = $firstWord;
             }
-            
+
             if ($case == 12 
                     && ! in_array($word, ['Jr.', 'Jr.,', 'Sr.', 'Sr.,', 'III', 'III,']) 
                     // Deal with names like Bruine de Bruin, W.
@@ -3954,7 +3976,7 @@ class Converter
                 $namePart = 0;
                 $authorIndex++;
                 $reason = 'Word is "and" or equivalent';
-            } elseif ($word == 'et') {
+            } elseif (in_array($word, ['et', 'et.'])) {
                 // Word is 'et'
                 $this->verbose('nextWord: ' . $nextWord);
                 if (in_array($nextWord, ['al..', 'al.', 'al'])) {
@@ -5137,7 +5159,7 @@ class Converter
      */
     private function spaceOutInitials(string $string): string
     {
-        return preg_replace('/\.([^ -])/', '. $1', $string);
+        return preg_replace('/(?<!\\\)\.([^ -])/', '. $1', $string);
     }
 
     /**
@@ -5346,7 +5368,7 @@ class Converter
     {
         $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
         // First check for some common patterns
-        $number = '[a-z]?[1-9][0-9]{0,5}[A-Za-z]?';
+        $number = '[a-z]?[0-9][0-9]{0,6}[A-Za-z]?';
         $numberWithRoman = '([1-9][0-9]{0,3}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
         $numberRange = $number . '(( ?--?-? ?|_)' . $number . ')?';
