@@ -4407,7 +4407,7 @@ class Converter
                             // so with author name there must be at least 9 words left for author to be added.
                             // (Applies mostly to books with short titles.)  However, if next word is "and", that definitely
                             // is not the start of the title and if nameScore per word is 1 or more, upcoming words really must be names
-                            } elseif ($type == 'authors' && count($remainingWords) < 9 && isset($remainingWords[0]) && ! $this->isAnd($remainingWords[0]) && $determineEnd && $nameScore['score'] / $nameScore['count'] < 1) {
+                            } elseif ($type == 'authors' && count($remainingWords) < 9 && isset($remainingWords[0]) && ! $this->isAnd($remainingWords[0]) && $determineEnd && $nameScore['count'] > 0 && $nameScore['score'] / $nameScore['count'] < 1) {
                                 $this->verbose('[convertToAuthors 33]');
                                 $this->addToAuthorString(15, $authorstring, $this->formatAuthor($fullName));
                                 $done = true;
