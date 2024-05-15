@@ -1499,7 +1499,7 @@ class Converter
                     $remainder = '';
                 } else {
                     // Get pages
-                    $this->getVolumeNumberPagesForArticle($remainder, $item);
+                    $this->getVolumeNumberPagesForArticle($remainder, $item, $language);
 
                     $pagesReported = false;
                     if (! empty($item->pages)) {
@@ -3156,7 +3156,7 @@ class Converter
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
                         || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
-                        || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+,? ?(' . $this->numberRegExp . ')?[0-9, \-p\.()]*$/', $remainder)  // journal name, pub info?
+                        || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?,? ?(' . $this->numberRegExp . ')?[0-9, \-p\.()]*$/', $remainder)  // journal name, pub info? ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
                         || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
@@ -3296,8 +3296,8 @@ class Converter
                         $this->verbose("Ending title, case 5a (word: \"" . $word . "\"; journal info is next)");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
-                    } elseif (Str::endsWith($word, [',']) && preg_match('/' . $this->volumeRegExp . '/', $remainder)) {
-                        $this->verbose("Not ending title, case 5 (word: \"" . $word . "\"; volume info is coming up)");
+                    // } elseif (Str::endsWith($word, [',']) && preg_match('/' . $this->volumeRegExp . '/', $remainder)) {
+                    //     $this->verbose("Not ending title, case 5 (word: \"" . $word . "\"; volume info is coming up)");
                     } else {
                         // else if 
                         // (word ends with period or comma and there are 4 or more words till next punctuation, which is a period)
@@ -3820,7 +3820,11 @@ class Converter
                 continue;
             }
 
-            $word = substr($word, -1) == ';' ? substr($word, 0, -1) . ',' : $word;
+            $wordEndsName = false;
+            if (substr($word, -1) == ';') {
+                $word = substr($word, 0, -1) . ',';
+                $wordEndsName = true;
+            }
 
             // Word is in vonNames or it is all uppercase and lowercased version of it is a lowercased vonName
             $wordIsVon = in_array($word, $this->vonNames)
@@ -3873,6 +3877,7 @@ class Converter
                     && ! $this->isAnd($words[$i+1], $language) // next word is not 'and'
                 )  {
                 $namePart = 0;
+                $this->verbose("\$namePart set to 0");
                 $authorIndex++;
             }
 
@@ -3938,6 +3943,7 @@ class Converter
                 //array_shift($remainingWords);
                 $fullName = '';
                 $namePart = 0;
+                $this->verbose("\$namePart set to 0");
                 $authorIndex++;
                 $remainder = implode(" ", $remainingWords);
                 $done = false;
@@ -3974,6 +3980,7 @@ class Converter
                 $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName) . ' and');
                 $fullName = '';
                 $namePart = 0;
+                $this->verbose("\$namePart set to 0");
                 $authorIndex++;
                 $reason = 'Word is "and" or equivalent';
             } elseif (in_array($word, ['et', 'et.'])) {
@@ -4091,6 +4098,7 @@ class Converter
                     $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName . ' ' . $word));
                     $fullName = '';
                     $namePart = 0;
+                    $this->verbose("\$namePart set to 0");
                     $authorIndex++;
                     $reason = 'Word is "and" or equivalent';
                 // Check if $word and first word of $remainingWords are plausibly a name.  If not, end search if $determineEnd.
@@ -4113,10 +4121,14 @@ class Converter
                     ) {
                     $this->verbose('[convertToAuthors 13]');
                     $fullName .= ' ' . $word;
-                } elseif (substr($word,-1) == ',' && $this->isInitials(substr($word,0,-1))) {
+                // $nextWord not initials, to rule out case like GUO, J., where GUO gets classified as initials because it is all
+                // uppercase and has only 3 letters.  Logically could make condition $namePart > 0, but $namePart is sometimes set to
+                // 0 in the middle of a name.
+                } elseif (substr($word,-1) == ',' && $this->isInitials(substr($word,0,-1)) && ! $this->isInitials(substr($nextWord, 0, -1))) {
                     $this->verbose('[convertToAuthors 14]');
                     $fullName .= ' ' . substr($word, 0, -1);
                     $namePart = 0;
+                    $this->verbose("\$namePart set to 0");
                     $authorIndex++;
                 } else {
                     $this->verbose('[convertToAuthors 15]');
@@ -4225,6 +4237,7 @@ class Converter
                         }
 
                         $namePart = 0;
+                        $this->verbose("\$namePart set to 0");
                         $authorIndex++;
                     }
                     $this->verbose('Name with Jr., Sr., or III; fullName: ' . $fullName);
@@ -4245,7 +4258,7 @@ class Converter
                 // with $barewords being part of the authors' names OR being part of the title, so should be ignored.
                 $nameScore = $this->nameScore($bareWords, ! $hasAnd);
                 $this->verbose("bareWords (no trailing punct, not year in parens): " . implode(' ', $bareWords));
-                $this->verbose("nameScore: " . $nameScore['score']);
+                $this->verbose("nameScore: " . $nameScore['score'] . ". Count: " . $nameScore['count']);
                 if ($nameScore['count']) {
                     $this->verbose('[convertToAuthors 24]');
                     $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
@@ -4376,7 +4389,7 @@ class Converter
                             $case = 11;
                         }
                     } elseif (! in_array(substr($words[$i+1],-1), [',', ';']) && ! $this->isInitials($words[$i+1]) && isset($words[$i+2]) && $this->isAnd($words[$i+2], $language)) {
-                        // $nameComplete and next word does not end in a comma and following work is 'and'
+                        // $nameComplete and next word does not end in a comma and following word is 'and'
                         $this->verbose('[convertToAuthors 30]');
                         $this->addToAuthorString(13, $authorstring, $this->formatAuthor($fullName));
                         $done = true;
@@ -4399,7 +4412,6 @@ class Converter
                         } else {
                             // Low name score relative to number of bareWords (e.g. less than 25% of words not in dictionary)
                             if ($nameScore['count'] > 2 && $nameScore['score'] / $nameScore['count'] < 0.25) {
-                                //dump($nameScore);
                                 $this->verbose('[convertToAuthors 32]');
                                 $this->addToAuthorString(14, $authorstring, $this->formatAuthor($fullName));
                                 $done = true;
@@ -4412,8 +4424,8 @@ class Converter
                                 $this->addToAuthorString(15, $authorstring, $this->formatAuthor($fullName));
                                 $done = true;
                             }
-                            $this->verbose('[convertToAuthors 34]');
                             $case = 12;
+                            $this->verbose('[convertToAuthors 34]');
                         }
                     }
                 } else {
@@ -4422,6 +4434,7 @@ class Converter
                         $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name, so 'namePart' not incremented");
                     } else {
                         $namePart++;
+                        $this->verbose("\$namePart set to 0");
                     }
                     if ($i + 1 == count($words)) {
                         $this->addToAuthorString(14, $authorstring, $this->formatAuthor($fullName));
@@ -5010,7 +5023,7 @@ class Converter
                 && ! preg_match('/' . $this->proceedingsExceptions . '/i', $string)) {
             $isProceedings = true;
         }
-//dd($string, $this->proceedingsRegExp, $this->proceedingsExceptions);
+
         return $isProceedings;
     }
 
@@ -5364,18 +5377,22 @@ class Converter
     // to start with uppercase letter only if first number in range does so---and if pp. is present, almost
     // anything following should be allowed as page numbers?
     // '---' shouldn't be used in page range, but might be used by mistake
-    private function getVolumeNumberPagesForArticle(string &$remainder, object &$item): void
+    private function getVolumeNumberPagesForArticle(string &$remainder, object &$item, string $language): void
     {
         $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
+
+        $months = $this->monthsRegExp[$language];
+
         // First check for some common patterns
         $number = '[a-z]?[0-9][0-9]{0,6}[A-Za-z]?';
         $numberWithRoman = '([1-9][0-9]{0,3}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
-        $numberRange = $number . '(( ?--?-? ?|_)' . $number . ')?';
+        $numberRange = $number . '(( ?--?-? ?|_|\?)' . $number . ')?';
         // slash is permitted in range of issues (e.g. '1/2'), but not for volume, because '12/3' is interepreted to mean
         // volume 12 number 3
         $numberRangeWithSlash = $number . '(( ?--?-? ?|_|\/)' . $number . ')?';
-        $letterNumberRange = $letterNumber . '(( ?--?-? ?|_)' . $letterNumber . ')?';
+        $monthRange = '\(?(?P<month1>' . $months . ')(-(?P<month2>' . $months . '))?\)?';
+        $letterNumberRange = $letterNumber . '(( ?--?-? ?|_|\?)' . $letterNumber . ')?';
         $numberRangeWithRoman = $numberWithRoman . '((--?-?|_)' . $numberWithRoman . ')?';
         $pages = '[Pp]p?( |\. )|[Pp]ages |s.\ ?|стр\. |Hlm\. ';
         $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')';
@@ -5388,18 +5405,19 @@ class Converter
         $pagesRx = '(?P<pageWord>'. $pages . ')?(?P<pp>' . $letterNumberRange . ')';
         $punc1 = '(}? |, ?| ?: ?|,? ?\(\(?)';
         $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
-
+//dd('/^' . $volumeWithRomanRx . $punc1 . $numberRx . '( ?' . $monthRange . ' ?)?' . $punc2 . $pagesRx);
         // e.g. Volume 6, No. 3, pp. 41-75 OR 6(3) 41-75
-        if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/', $remainder, $matches)) {
-            $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
+        // if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . '( ?' . $monthRange . ' ?)?' . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
+        if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
+                $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
             $this->setField($item, 'number', str_replace(['---', '--', ' - '], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
             $this->setField($item, 'pages', str_replace(['---', '--', ' - ', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
             $remainder = '';
         // e.g. Volume 6, 41-75$ OR 6 41-75$
        } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
-            if (str_contains($matches['pp'], '-') || str_contains($matches['pp'], '_') || strlen($matches['pp']) < 6 || (isset($matches['pageWord']) && $matches['pageWord'])) {
-                $this->setField($item, 'pages', str_replace(['---', '--', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5a');
+            if (Str::contains($matches['pp'], ['-', '_', '?']) || strlen($matches['pp']) < 6 || (isset($matches['pageWord']) && $matches['pageWord'])) {
+                $this->setField($item, 'pages', str_replace(['---', '--', '_', '?'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5a');
             } else {
                 $this->addToField($item, 'note', 'Article ' . $matches['pp'], 'getVolumeNumberPagesForArticle 5b');
             }

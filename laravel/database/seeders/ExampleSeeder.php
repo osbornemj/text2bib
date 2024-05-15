@@ -2810,10 +2810,10 @@ class ExampleSeeder extends Seeder
                     ]
             ],
             [
-                'source' => 'Chen, S. J., L., R., Z. S. Xu, A. A. Khoreshok, H. B. Shao, and F. Feng. 2023. Surface Subsidence Laws of Footwall Coal Seam Mining of Normal Fault Under Different Overburden Strata. Journal of Shandong University of Science & Technology (Natural Science) 42, no. 01: 38–48. ',
+                'source' => 'Chen, S. J., Z. S. Xu, A. A. Khoreshok, H. B. Shao, and F. Feng. 2023. Surface Subsidence Laws of Footwall Coal Seam Mining of Normal Fault Under Different Overburden Strata. Journal of Shandong University of Science & Technology (Natural Science) 42, no. 01: 38–48. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => 'Chen, S. J. L. R. and Z. S. Xu and A. A. Khoreshok and H. B. Shao and F. Feng',
+                    'author' => 'Chen, S. J. and Z. S. Xu and A. A. Khoreshok and H. B. Shao and F. Feng',
                     'year' => '2023',
                     'title' => 'Surface Subsidence Laws of Footwall Coal Seam Mining of Normal Fault Under Different Overburden Strata',
                     'journal' => 'Journal of Shandong University of Science & Technology (Natural Science)',
@@ -5883,7 +5883,7 @@ class ExampleSeeder extends Seeder
             ],
             // title ended in middle of U.S.
             [
-                'source' => 'Gonzales, L. D., Hall, K., Benton, A., Kanhai, D., & Núñez, A. M. (2021, March 11). Comfort over Change: a Case Study of Diversity and Inclusivity Efforts in U.S. Higher Education. Innovative Higher Education, 46(4), 445–460. https://doi.org/10.1007/s10755-020-09541-7 ',
+                'source' => 'Gonzales, L. D., Hall, K., Benton, A., Kanhai, D., & Núñez, A. M. (2021, March 11). Comfort over Change: a Case Study of Diversity and Inclusivity Efforts in U.S. Higher Education. Innovative Higher Education, 46(4), 445-460. https://doi.org/10.1007/s10755-020-09541-7 ',
                 'type' => 'article',
                 'bibtex' => [
                     'doi' => '10.1007/s10755-020-09541-7',
@@ -5927,6 +5927,75 @@ class ExampleSeeder extends Seeder
                     ],
 					'char_encoding' => 'utf8leave'
             ],
+			// classified as unpublished
+			[
+                'source' => '\bibitem{Nagaosa2013} N. Nagaosa and Y. Tokura, Topological properties and dynamics of magnetic skyrmions, Nature Nanotechnology \textbf{8}, 899-911 (2013). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'N. Nagaosa and Y. Tokura',
+                    'title' => 'Topological properties and dynamics of magnetic skyrmions',
+                    'journal' => 'Nature Nanotechnology',
+                    'year' => '2013',
+                    'volume' => '8',
+                    'pages' => '899-911',
+                    ]
+            ],
+			// classified as unpublished
+			 [
+                'source' => '\bibitem{Bogdanov-Nature2006} U. K. Rößler, N. Bogdanov, and C. Pfleiderer, Spontaneous skyrmion ground states in magnetic metals, Nature \textbf{442}, 797-801 (2006). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'U. K. R{\"o}{\ss}ler and N. Bogdanov and C. Pfleiderer',
+                    'title' => 'Spontaneous skyrmion ground states in magnetic metals',
+                    'journal' => 'Nature',
+                    'year' => '2006',
+                    'volume' => '442',
+                    'pages' => '797-801',
+                    ]
+            ],
+   			// author's name interpreted as initials
+			[
+                'source' => 'KUM, C. W.; SATO, T.; GUO, J.; LIU, K.; BUTLER, D. 2018. A novel media properties-based material removal rate model for magnetic field-assisted finishing. International Journal of Mechanical Sciences, v. 141, p. 189–197. . ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kum, C. W. and Sato, T. and Guo, J. and Liu, K. and Butler, D.',
+                    'year' => '2018',
+                    'title' => 'A novel media properties-based material removal rate model for magnetic field-assisted finishing',
+                    'journal' => 'International Journal of Mechanical Sciences',
+                    'volume' => '141',
+                    'pages' => '189-197',
+                    ]
+            ],
+			// should recognize '?' as page separator?
+			[
+                'source' => '	Le AD, Zhou B, Shiu HR, Lee CI, Chang WC. Numerical simulation and experimental validation of liquid water behaviors in a proton exchange membrane fuel cell cathode with serpentine channels. J Power Sources 2010;195:7302?15. doi:10.1016/j.jpowsour.2010.05.045. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.jpowsour.2010.05.045',
+                    'author' => 'Le, A. D. and Zhou, B. and Shiu, H. R. and Lee, C. I. and Chang, W. C.',
+                    'title' => 'Numerical simulation and experimental validation of liquid water behaviors in a proton exchange membrane fuel cell cathode with serpentine channels',
+                    'year' => '2010',
+                    'journal' => 'J Power Sources',
+                    'pages' => '7302-15',
+                    'volume' => '195',
+                    ]
+            ],
+			// issue number has slash
+			[
+                'source' => 'Bailey, Don Clifford. 1960 ‘Early Japanese Lexicography’. Monumenta Nipponica, Vol. 16, No. 1/2 (April-July), pp. 1-52. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bailey, Don Clifford',
+                    'title' => 'Early Japanese Lexicography',
+                    'journal' => 'Monumenta Nipponica',
+                    'year' => '1960',
+                    'month' => 'April-July',
+                    'volume' => '16',
+                    'number' => '1/2',
+                    'pages' => '1-52',
+                    ]
+            ],	
+
 			
         ];
 
