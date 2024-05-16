@@ -1887,7 +1887,7 @@ class ExampleSeeder extends Seeder
                     'month' => 'December',
                     'pages' => '1323-1332',
                     'title' => 'Robust Multivariable Regulator Design- General Case & Special Cases',
-                    'booktitle' => 'Proc. of 1985 Conference on Decision & Control, Dec. 1985',
+                    'booktitle' => 'Proc. of 1985 Conference on Decision & Control',
                     'author' => 'Soh, Y. C. and Evans, R. J.',
                     ]
             ],
@@ -5989,12 +5989,194 @@ class ExampleSeeder extends Seeder
                     'title' => 'Early Japanese Lexicography',
                     'journal' => 'Monumenta Nipponica',
                     'year' => '1960',
-                    'month' => 'April-July',
                     'volume' => '16',
-                    'number' => '1/2',
+                    'number' => '1/2 (April-July)',
                     'pages' => '1-52',
                     ]
-            ],	
+            ],
+   			// Many proceedings, including the following, in 1463-3663-source.txt
+			// year should not be included at end of booktitle
+			[
+                'source' => 'Michael Braun, Anja Mainz, Ronee Chadowitz, Bastian Pfleging, and Florian Alt. At your service: Designing voice assistant personalities to improve automotive user interfaces. In Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems , CHI ’19, page 1–11, 2019. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Michael Braun and Anja Mainz and Ronee Chadowitz and Bastian Pfleging and Florian Alt',
+                    'title' => 'At your service: Designing voice assistant personalities to improve automotive user interfaces',
+                    'year' => '2019',
+                    'pages' => '1-11',
+                    'booktitle' => 'Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems, CHI \'19',
+                    ]
+            ], 
+			// year should not be included at end of booktitle
+			[
+                'source' => 'Seungbeom Choi, Sunho Lee, Yeonjae Kim, Jongse Park, Youngjin Kwon, and Jaehyuk Huh.  Serving heterogeneous machine learning models on Multi-GPU servers with Spatio-Temporal sharing. In Proceedings of 2022 USENIX Annual Technical Conference (USENIX ATC 22) , pages 199–216, 2022. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Seungbeom Choi and Sunho Lee and Yeonjae Kim and Jongse Park and Youngjin Kwon and Jaehyuk Huh',
+                    'title' => 'Serving heterogeneous machine learning models on Multi-GPU servers with Spatio-Temporal sharing',
+                    'year' => '2022',
+                    'pages' => '199-216',
+                    'booktitle' => 'Proceedings of 2022 USENIX Annual Technical Conference (USENIX ATC 22)',
+                    ]
+            ],
+			// year not included at end of booktitle --- which is correct.
+			[
+                'source' => 'Jianfeng Gu, Yichao Zhu, Puxuan Wang, Mohak Chadha, and Michael Gerndt. Fast-gshare: Enabling efficient spatio-temporal gpu sharing in serverless computing for deep learning inference. In Proceedings of the 52nd International Conference on Parallel Processing , ICPP ’23, page 635–644, 2023. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Jianfeng Gu and Yichao Zhu and Puxuan Wang and Mohak Chadha and Michael Gerndt',
+                    'title' => 'Fast-gshare: Enabling efficient spatio-temporal gpu sharing in serverless computing for deep learning inference',
+                    'year' => '2023',
+                    'pages' => '635-644',
+                    'booktitle' => 'Proceedings of the 52nd International Conference on Parallel Processing, ICPP \'23',
+                    ]
+            ],
+			// year included at end of booktitle --- correct?
+			[
+                'source' => 'Baolin  Li,  Siddharth  Samsi,  Vijay  Gadepally,  and  Devesh  Tiwari. Clover: Toward sustainable ai with carbon-aware machine learning inference service.  In Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis , SC ’23, 2023. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Baolin Li and Siddharth Samsi and Vijay Gadepally and Devesh Tiwari',
+                    'title' => 'Clover: Toward sustainable ai with carbon-aware machine learning inference service',
+                    'year' => '2023',
+                    'booktitle' => 'Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis, SC \'23, 2023',
+                    ]
+            ],
+			// year not included at end of booktitle --- which is correct.
+			[
+                'source' => 'Suyi Li, Luping Wang, Wei Wang, Yinghao Yu, and Bo Li.  George: Learning to place long-lived containers in large clusters with operation constraints. In Proceedings of the ACM Symposium on Cloud Computing , SoCC ’21, page 258–272, 2021. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Suyi Li and Luping Wang and Wei Wang and Yinghao Yu and Bo Li',
+                    'title' => 'George: Learning to place long-lived containers in large clusters with operation constraints',
+                    'year' => '2021',
+                    'pages' => '258-272',
+                    'booktitle' => 'Proceedings of the ACM Symposium on Cloud Computing, SoCC \'21',
+                    ]
+            ],
+			// two commas between booktitle and city
+			[
+                'source' => 'Wencong Xiao, Romil Bhardwaj, Ramachandran Ramjee, Muthian Sivathanu, Nipun Kwatra, Zhenhua Han, Pratyush Patel, Xuan Peng, Hanyu Zhao, Quanlu Zhang, Fan Yang, and Lidong Zhou. Gandiva: Introspective cluster scheduling for deep learning. In Proceedings of 13th USENIX Symposium on Operating Systems Design and Implementation (OSDI 18) , pages 595–610, Carlsbad, CA, 2018. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Wencong Xiao and Romil Bhardwaj and Ramachandran Ramjee and Muthian Sivathanu and Nipun Kwatra and Zhenhua Han and Pratyush Patel and Xuan Peng and Hanyu Zhao and Quanlu Zhang',
+                    'title' => 'Fan Yang, and Lidong Zhou. Gandiva: Introspective cluster scheduling for deep learning',
+                    'year' => '2018',
+                    'pages' => '595-610',
+                    'booktitle' => 'Proceedings of 13th USENIX Symposium on Operating Systems Design and Implementation (OSDI 18), Carlsbad, CA',
+                    ]
+            ],
+			// extra punctuation in booktitle
+			[
+                'source' => 'Lekchiri, A. (1996). Soil testing and leaf analysis in Morocco. Proc. 8th Int. Soc. Citriculture, (pp. 1286-1292). Sun City, South Africa. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Lekchiri, A.',
+                    'year' => '1996',
+                    'title' => 'Soil testing and leaf analysis in Morocco',
+                    'pages' => '1286-1292',
+                    'booktitle' => 'Proc. 8th Int. Soc. Citriculture, Sun City, South Africa',
+                    ]
+            ],
+			// missing closing parenthesis at end of booktitle
+			[
+                'source' => 'Chengliang Zhang, Minchen Yu, Wei Wang, and Feng Yan. MArk: Exploiting cloud services for Cost-Effective, SLO-Aware machine learning inference serving. In 2019 USENIX Annual Technical Conference (USENIX ATC 19) , pages 1049–1062, 2019. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Chengliang Zhang and Minchen Yu and Wei Wang and Feng Yan',
+                    'title' => 'MArk: Exploiting cloud services for Cost-Effective, SLO-Aware machine learning inference serving',
+                    'year' => '2019',
+                    'pages' => '1049-1062',
+                    'booktitle' => '2019 USENIX Annual Technical Conference (USENIX ATC 19)',
+                    ]
+            ],
+   			// conference date identified as page range
+			[
+                'source' => ' S. Garzia, M.A. Scarpolini, K. Capellini, V. Positano, F. Cademartiri, S. Celi. "Deep learning thoracic aorta segmentation for feature extraction and hemodynamic analysis from 3D PC-MRI". 28th Congress of the European Society of Biomechanics, July 9-12, 2023, Maastricht, the Netherlands. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'S. Garzia and M. A. Scarpolini and K. Capellini and V. Positano and F. Cademartiri and S. Celi',
+                    'title' => 'Deep learning thoracic aorta segmentation for feature extraction and hemodynamic analysis from 3D PC-MRI',
+                    'year' => '2023',
+                    'booktitle' => '28th Congress of the European Society of Biomechanics, July 9-12, 2023, Maastricht, the Netherlands',
+                    ]
+            ],
+			// conference date identified as page range
+			[
+                'source' => 'K. Capellini, E. Gasparotti, E. Vignali,B. M. Fanni, U. Cella, E. Costa, M.E. Biancolini, S. Celi. "An image-based CFD and RBF mesh morphing approach: an alternative for standard FSI technique". 26th Congress of the European Society of Biomechanics, July 11-14, 2021, Milan, Italy. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'K. Capellini and E. Gasparotti and E. Vignali and B. M. Fanni and U. Cella and E. Costa and M. E. Biancolini and S. Celi',
+                    'title' => 'An image-based CFD and RBF mesh morphing approach: an alternative for standard FSI technique',
+                    'year' => '2021',
+                    'booktitle' => '26th Congress of the European Society of Biomechanics, July 11-14, 2021, Milan, Italy',
+                    ]
+            ],
+			// booktitle not correctly interpreted
+			[
+                'source' => 'J. Singh, K. Capellini, B.M. Fanni, A. Mariotti, M.V. Salvetti, S. Celi. "Numerical simulations to predict the onset of atherosclerotic plaques in carotid arteries".WECM\'23 - 2nd Workshop on Experimental and Computational Mechanics, September 20-22, 2023, Pisa, Italy. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'J. Singh and K. Capellini and B. M. Fanni and A. Mariotti and M. V. Salvetti and S. Celi',
+                    'title' => 'Numerical simulations to predict the onset of atherosclerotic plaques in carotid arteries',
+                    'year' => '2023',
+                    'booktitle' => 'WECM\'23 - 2nd Workshop on Experimental and Computational Mechanics, September 20-22, 2023, Pisa, Italy',
+                    ]
+            ],
+			// booktitle not correctly identified
+			[
+                'source' => 'M.A. Scarpolini, M. Mazzoli, S. Garzia, A. Clemente, A. Monteleone,K. Capellini, S. Celi. "Deploying digital twins of the cardiovascular system in clinics: a deep learning-based automatized framework".XI Annual Meeting of the Italian Chapter of the European Society of Biomechanics, October 6-7, 2022, Massa, Italy. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'M. A. Scarpolini and M. Mazzoli and S. Garzia and A. Clemente and A. Monteleone and K. Capellini and S. Celi',
+                    'title' => 'Deploying digital twins of the cardiovascular system in clinics: a deep learning-based automatized framework',
+                    'year' => '2022',
+                    'booktitle' => 'XI Annual Meeting of the Italian Chapter of the European Society of Biomechanics, October 6-7, 2022, Massa, Italy',
+                    ]
+            ],
+			// booktitle problem
+			[
+                'source' => 'B.M. Fanni, E. Gasparotti, K. Capellini, C. Capelli, E. Vignali, V. Positano, S. Celi. "A novel image-based formulation for enhanced patient-specific in silico simulations of cardiovascular interventions". International CAE conference and exhibition. October 28-29, 2019, Vicenza, Italy. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'B. M. Fanni and E. Gasparotti and K. Capellini and C. Capelli and E. Vignali and V. Positano and S. Celi',
+                    'title' => 'A novel image-based formulation for enhanced patient-specific in silico simulations of cardiovascular interventions',
+                    'year' => '2019',
+                    'booktitle' => 'International CAE conference and exhibition. October 28-29, 2019, Vicenza, Italy',
+                    ]
+            ],
+			// address repeated at end of editor name
+            [
+                'source' => 'Beghi, Clemente. 2011. “The Dissemination of Esoteric Scriptures in Eighth Century Japan.” In Esoteric Buddhism and the Tantras in East Asia, 661-682. Edited by Charles Orzech, Leiden: Brill. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Beghi, Clemente',
+                    'title' => 'The Dissemination of Esoteric Scriptures in Eighth Century Japan',
+                    'year' => '2011',
+                    'pages' => '661-682',
+                    'editor' => 'Charles Orzech',
+                    'address' => 'Leiden',
+                    'publisher' => 'Brill',
+                    'booktitle' => 'Esoteric Buddhism and the Tantras in East Asia',
+                    ]
+            ],
+			// address repeated at end of editor name
+			[
+                'source' => 'Gardiner, David L. 1999. “Japan’s First Shingon Ceremony.” In Religions of Japan in Practice. Edited by George J. Tanabe, Jr. Princeton, NJ: Princeton University Press. 153-158. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Gardiner, David L.',
+                    'title' => 'Japan\'s First Shingon Ceremony',
+                    'year' => '1999',
+                    'pages' => '153-158',
+                    'editor' => 'Tanabe Jr., George J.',
+                    'address' => 'Princeton, NJ',
+                    'publisher' => 'Princeton University Press',
+                    'booktitle' => 'Religions of Japan in Practice',
+                    ]
+            ],
+
+	
 
 			
         ];
