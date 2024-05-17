@@ -318,7 +318,7 @@ class Converter
         $this->retrievedFromRegExp2 = [
             'en' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
             'cz' => '[Dd]ostupné (?P<date1>' . $dateRegExp . ' )?(, )?z |[Zz]přístupněno (?P<date2>' . $dateRegExp . ' )?na ',
-            'fr' => '[Rr]écupéré (?P<date1>' . $dateRegExp . ' )?sur |[Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?(à|sur) ',
+            'fr' => '[Rr]écupéré (le )?(?P<date1>' . $dateRegExp . ' )?,? ?(sur|de) |[Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?,? ?(à|sur|de) ',
             'es' => '[Oo]btenido (?P<date1>' . $dateRegExp . ' )?de |[Aa]ccedido (?P<date2>' . $dateRegExp . ' )?en ',
             'pt' => '[Oo]btido (?P<date1>' . $dateRegExp . ' )?de |[Aa]cesso (?P<date2>' . $dateRegExp . ' )?em ',
             'my' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
@@ -328,7 +328,7 @@ class Converter
         $this->accessedRegExp1 = [
             'en' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'cz' => '([Nn]ačteno|[Zz]přístupněno|[Zz]obrazeno)( dne)?[,:]? (?P<date2>' . $dateRegExp . ')',
-            'fr' => '([Rr]écupéré |[Cc]onsulté (le )?)(?P<date2>' . $dateRegExp . ')',
+            'fr' => '([Rr]écupéré |[Cc]onsulté )(le )?(?P<date2>' . $dateRegExp . ')',
             'es' => '([Oo]btenido|[Aa]ccedido)[,:]? (?P<date2>' . $dateRegExp . ')',
             'pt' => '([Oo]btido |[Aa]cesso (em:?)? )(?P<date2>' . $dateRegExp . ')',
             'my' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
@@ -537,9 +537,10 @@ class Converter
             $doi = preg_replace('/([^\\\])_/', '$1\_', $doi);
         }
 
-        // In case doi is repeated, as in \href{https://doi.org/<doi>}{<doi>}
+        // In case doi is repeated, as in \href{https://doi.org/<doi>}{<doi>} (in which case second {...} will remain)
         $remainder = str_replace('{\tt ' . $doi . '}', '', $remainder);
-        $remainder = str_replace($doi, '', $remainder);
+        $remainder = str_replace('{' . $doi . '}', '', $remainder);
+        // $remainder = str_replace($doi, '', $remainder);
 
         if ($doi) {
             $this->setField($item, 'doi', $doi, 'setField 1');
@@ -860,6 +861,7 @@ class Converter
             $remainder = implode(' ', $words);
         } else {
             $authorConversion = $this->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, true, 'authors', $language);
+            $authorIsOrganization = $authorConversion['organization'] ?? false;
         }
 
         // restore rest of $completeRemainder
@@ -910,9 +912,6 @@ class Converter
 
         if ($isEditor === false && ! Str::contains($authorstring, $editorPhrases)) {
             $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 7');
-            // if ($language == 'my') {
-            //     $this->setField($item, 'author-title', $authorTitle, 'setField m2');
-            // }
         } else {
             $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' .,'), 'setField 8');
         }
@@ -923,9 +922,6 @@ class Converter
             if (preg_match('/[\(\[]?[0-9]{4}[\)\]]? \[[0-9]{4}\]/', $year)) {
                 $hasSecondaryDate = true;
             }
-            // if ($language == 'my') {
-            //     $this->setField($item, 'years', $year, 'setField m5');
-            // }
         }
 
         $remainder = trim($remainder, '.},;/ ');
@@ -1081,6 +1077,7 @@ class Converter
         $endsWithInReview = false;
         $containsDigitOutsideVolume = true;
         $containsNumberDesignation = false;
+        $startsAddressPublisher = false;
         $cityLength = 0;
         $publisherString = $cityString = '';
 
@@ -1240,6 +1237,11 @@ class Converter
         }
         $city = null;
 
+        if (preg_match('/^[a-z ]{0,25}: [a-z ]{0,25}/i', $remainder)) {
+            $startsAddressPublisher = true;
+            $this->verbose("Remainder has address: publisher format.");
+        }
+
         // if (preg_match('/' . $this->isbnRegExp1 . $this->isbnRegExp2 . '/', $remainder)) {
         //     $containsIsbn = true;
         //     $this->verbose("Contains an ISBN string.");
@@ -1259,7 +1261,12 @@ class Converter
         if ($itemKind) {
             // $itemKind is already set
         } elseif (
-            $onlineFlag
+            (
+                $onlineFlag &&
+                ! $containsInteriorVolume &&
+                ! $containsPageRange &&
+                ! $containsJournalName
+            )
             ||
             (
                 isset($item->url) &&
@@ -1271,7 +1278,9 @@ class Converter
                 ! $containsPageRange &&
                 ! $containsJournalName &&
                 ! $containsThesis &&
-                ! Str::contains($item->url, ['journal'])
+                ! Str::contains($item->url, ['journal']) &&
+                // if remainder has address: publisher format, item is book unless author is organization
+                (! $startsAddressPublisher || $authorIsOrganization)
                 // && $itemYear && $itemMonth && $itemDay))
             )
         ) {
@@ -3818,14 +3827,24 @@ class Converter
                     if ($i >= 2 && $i <= 5) {
                         $remainder = implode(' ', array_slice($words, $i+1));
                         $year = $this->getYear($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language);
-                        return ['authorstring' => $name . ' ' . $xword, 'warnings' => [], 'oneWordAuthor' => $oneWordAuthor];
+                        return [
+                            'authorstring' => $name . ' ' . $xword,
+                            'warnings' => [],
+                            'oneWordAuthor' => $oneWordAuthor,
+                            'organization' => true,
+                        ];
                     } else {
                         break;
                     }
                 } elseif ($i >= 3 && $i <= 6) {
                     $remainder = implode(' ', array_slice($words, $i));
                     $year = $this->getYear($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language);
-                    return ['authorstring' => $name, 'warnings' => [], 'oneWordAuthor' => $oneWordAuthor];
+                    return [
+                        'authorstring' => $name,
+                        'warnings' => [],
+                        'oneWordAuthor' => $oneWordAuthor,
+                        'organization' => true,
+                    ];
                 } else {
                     break;
                 }        
@@ -4033,6 +4052,15 @@ class Converter
                     $this->addToAuthorString(16, $authorstring, $this->formatAuthor($fullName));
                     $remainder = $word . ' ' . implode(" ", $remainingWords);
                     $done = true;
+                } elseif (
+                        $type == 'editors'
+                        && isset($words[$i-1])
+                        && in_array(substr($words[$i-1], -1), ['.', ',', ';'])
+                    ) { 
+                    $this->verbose('Looking for editor, word ends in colon, and previous word ends in comma or period, so assuming word is start of publication info (address of publisher).');
+                    $this->addToAuthorString(16, $authorstring, $this->formatAuthor($fullName));
+                    $remainder = $word . ' ' . implode(" ", $remainingWords);
+                    $done = true;
                 } else {
                     $this->verbose('[convertToAuthors 5]');
                     $nameComponent = $word;
@@ -4149,9 +4177,25 @@ class Converter
                     $namePart = 0;
                     $this->verbose("\$namePart set to 0");
                     $authorIndex++;
+                } elseif (
+                    // $word is publication city and either it ends in a color or next word is two-letter state abbreviation followed by colon
+                    $type == 'editors'
+                    && in_array(trim($word, ',: '), $this->cities)
+                    && 
+                        (
+                            substr($word, -1) == ':'
+                            ||
+                            (
+                                isset($words[$i+1])
+                                && preg_match('/^[A-Z]{2}:$/', $words[$i+1])
+                            )
+                        )
+                ) {
+                    $done = true;
+                    $this->addToAuthorString(28, $authorstring, $this->formatAuthor($fullName));
                 } else {
                     $this->verbose('[convertToAuthors 15]');
-                    if (!$prevWordAnd && $authorIndex) {
+                    if (! $prevWordAnd && $authorIndex) {
                         $this->addToAuthorString(7, $authorstring, $this->formatAuthor($fullName) . ' and');
                         $fullName = '';
                         $prevWordAnd = true;
@@ -4388,7 +4432,27 @@ class Converter
                     $this->addToAuthorString(11, $authorstring, $this->formatAuthor($fullName));
                 } elseif ($nameComplete && Str::endsWith($word, [',', ';']) && isset($words[$i + 1]) && ! $this->isEd($words[$i + 1])) {
                     // $word ends in comma or semicolon and next word is not string for editors
-                    if ($hasAnd) {
+                    if (
+                        $type == 'editors'
+                        && in_array(trim($words[$i+1], ', '), $this->cities)
+                        &&
+                            (
+                                substr($words[$i+1], -1) == ':'
+                                ||
+                                (
+                                    isset($words[$i+2])
+                                    &&
+                                    (
+                                        strlen($words[$i+2]) == 2
+                                        &&
+                                        substr($words[$i+2], -1) == ':'
+                                    )
+                                )
+                            )
+                    ) {
+                        $done = true;
+                        $this->addToAuthorString(27, $authorstring, $this->formatAuthor($fullName));
+                    } elseif ($hasAnd) {
                         $this->verbose('[convertToAuthors 29]');
                         // $word ends in comma or semicolon and 'and' has already occurred
                         // To cover the case of a last name containing a space, look ahead to see if next words
@@ -4420,7 +4484,7 @@ class Converter
                         // (Of course this routine won't do the trick if there are more authors after this one.  In
                         // that case, you need to look further ahead.)
                         $this->verbose('[c2a getYear 9]');
-                        if (!$prevWordHasComma && $i + 2 < count($words)
+                        if (! $prevWordHasComma && $i + 2 < count($words)
                                 && (
                                     $this->getYear($words[$i + 2], $trash, $trash1, $trash2, $trash3, true, true, true, $language)
                                     ||
@@ -4462,7 +4526,12 @@ class Converter
             }
         }
 
-        return ['authorstring' => $authorstring, 'warnings' => $warnings, 'oneWordAuthor' => $oneWordAuthor];
+        return [
+            'authorstring' => $authorstring,
+            'warnings' => $warnings,
+            'oneWordAuthor' => $oneWordAuthor,
+            'organization' => false,
+        ];
     }
 
     /**
@@ -4753,7 +4822,9 @@ class Converter
                 // (year month) or (year month day) (or without parens or with brackets)
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]?/i', $string, $matches1)
                 ||
-                // (day month year) or (month year) (or without parens or with brackets)
+                // (year, day month) 
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),? (?P<day>[0-9]{1,2}) (?P<month>' . $months . ') ?)[\)\]]?/i', $string, $matches1)
+                ||                // (day month year) or (month year) (or without parens or with brackets)
                 // The optional "de" between day and month and between month and year is for Portuguese
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
                 ||
@@ -4943,8 +5014,7 @@ class Converter
         if (substr_count($string, ':') == 1) {
             // Work back from ':' looking for '(' not followed by ')'.  If found, take the following char to
             // be the start of the address (covers case like "extra stuff (New York: Addison-Wesley).
-            $colonPos = strpos($string, ':');
-            for ($j = $colonPos; $j > 0 and $string[$j] != ')' and $string[$j] != '('; $j--) {
+            for ($j = strpos($string, ':'); $j > 0 and $string[$j] != ')' && $string[$j] != '('; $j--) {
 
             }
             if ($string[$j] == '(') {
@@ -4953,8 +5023,13 @@ class Converter
             } else {
                 $remainder = '';
             }
-            $address = rtrim(ltrim(substr($string, 0, strpos($string, ':')), ',. '), ': ');
-            $publisher = trim(substr($string, strpos($string, ':') + 1), ',.: ');
+            $colonPos = strpos($string, ':');
+            $address = rtrim(ltrim(substr($string, 0, $colonPos), ',. '), ': ');
+            $afterColon = trim(substr($string, $colonPos + 1), ',.: ');
+            // In case year is repeated after publisher, remove it and put it in $remainder
+            $result = $this->findRemoveAndReturn($afterColon, '((19|20)[0-9]{2})');
+            $publisher = trim($afterColon, '., ');
+            $remainder = $result ? $result[0] : '';
         // else if string contains no colon and at least one ',', take publisher to be string
         // preceding first colon and and city to be rest
         } elseif (! substr_count($string, ':') && substr_count($string, ',')) {
@@ -5542,7 +5617,7 @@ class Converter
                 $this->verbose('No number assigned');
             } else {
                 // Starts with volume
-                preg_match('/^(' . $this->volumeRegExp . ')(?P<volume>[1-9][0-9]{0,3})[,\.\/ ]/', $remainder, $matches);
+                preg_match('/^(' . $this->volumeRegExp . ')(?P<volume>[1-9][0-9]{0,3})[,\.\/ ](--? ?)?/', $remainder, $matches);
                 if (isset($matches['volume'])) {
                     $volume = $matches['volume'];
                     $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 17');

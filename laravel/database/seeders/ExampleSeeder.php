@@ -3559,7 +3559,7 @@ class ExampleSeeder extends Seeder
                     'note' => 'Estados Unidos: CDC',
                 ],
                 'language' => 'pt',
-                'char_encoding' => 'utfleave',
+                'char_encoding' => 'utf8leave',
             ],
             [
                 'source' => 'FRIEDEN, Thomas R. et al. Ebola 2014—new challenges, new global response and responsibility. New England Journal of Medicine, v. 371, n. 13, p. 1177-1180, 2014. ',
@@ -3830,7 +3830,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'O vinho e sua história - Do Império Romano, pela Idade Média, até os nossos dias, o vinho acompanhou os principais momentos da história da humanidade e se transformou',
                     'author' => 'Aguiar, J. E. and Miwa, M.',
                 ],
-                'char_encoding' => 'utfleave',
+                'char_encoding' => 'utf8leave',
                 'language' => 'pt',
             ],
             [
@@ -4702,7 +4702,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '3',
                     'number' => '1',
                 ],
-                'char_encoding' => 'utfleave',
+                'char_encoding' => 'utf8leave',
             ],
             [
                 'source' => 'Balas, D.B., Tiwari, M.K., Trivedi, M. & Patel, G.R. (2023) Impact of Land Surface Temperature (LST) and Ground Air Temperature (Tair) on Land Use and Land Cover (LULC): An Investigative Study. International Journal of Environment and Climate Change. https://api.semanticscholar.org/CorpusID:261847328. ',
@@ -4722,11 +4722,11 @@ class ExampleSeeder extends Seeder
                     'url' => 'https://api.semanticscholar.org/CorpusID:126412072',
                     'author' => 'Dikbaş, F.',
                     'year' => '2017',
-                    'title' => 'A novel two‐dimensional correlation coefficient for assessing associations in time series data',
+                    'title' => 'A novel two-dimensional correlation coefficient for assessing associations in time series data',
                     'journal' => 'International Journal of Climatology.',
                     'volume' => '37',
                 ],
-                'char_encoding' => 'utfleave',
+                'char_encoding' => 'utf8leave',
             ], 
             [
                 'source' => 'França, F.M., Ferreira, J., Vaz-de-Mello, F.Z., Maia, L.F., Berenguer, E., Ferraz Palmeira, A., Fadini, R., Louzada, J., Braga, R., Hugo Oliveira, V. & Barlow, J. (2020) El Niño impacts on human-modified tropical forests: Consequences for dung beetle diversity and associated ecological processes. Biotropica. 52 (2). doi:10.1111/btp.12756. ',
@@ -4740,7 +4740,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '52',
                     'number' => '2',
                 ],
-                'char_encoding' => 'utfleave',
+                'char_encoding' => 'utf8leave',
             ],
             [
                 'source' => 'Acuña, A. M., Caso, L., Aliphat, M. M., and Vergara, C. H. (2011). Edible insects as part of the traditional food system of the Popoloca town of Los Reyes Metzontla, Mexico. Journal of Ethnobiology, 31(1), 150-169. ',
@@ -4754,7 +4754,7 @@ class ExampleSeeder extends Seeder
                     'number' => '1',
                     'pages' => '150-169',
                 ],
-                'char_encoding' => 'utfleave',
+                'char_encoding' => 'utf8leave',
             ],
             [
                 'source' => 'Marcantonio ER, Ngo LH, O\'Connor M, Jones RN, Crane PK, Metzger ED, Inouye SK. 3D-CAM: derivation and validation of a 3-minute diagnostic interview for CAM-defined delirium: a cross-sectional diagnostic test study. Ann Intern Med. 2014 Oct 21;161(8):554-61.  ',
@@ -5897,7 +5897,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '445-460',
                     'date' => '2021-03-11',
                 ],
-                'char_encoding' => 'utf8eave',
+                'char_encoding' => 'utf8leave',
             ],
             // title ended in middle of U.S.
             [
@@ -6169,12 +6169,132 @@ class ExampleSeeder extends Seeder
                     'title' => 'Japan\'s First Shingon Ceremony',
                     'year' => '1999',
                     'pages' => '153-158',
-                    'editor' => 'Tanabe Jr., George J.',
+                    'editor' => 'Tanabe, Jr., George J.',
                     'address' => 'Princeton, NJ',
                     'publisher' => 'Princeton University Press',
                     'booktitle' => 'Religions of Japan in Practice',
                     ]
             ],
+			// date after booktitle
+			[
+                'source' => 'Zhang, B., Liang, P., Zhou, X., Ahmad, A. and Waseem, M. (2023), “Practices and Challenges of Using GitHub Copilot: An Empirical Study”, in Proceedings of the 35th International Conference on Software Engineering and Knowledge Engineering, July 1-10, 2023, KSI Research Inc, pp. 124–129. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Zhang, B. and Liang, P. and Zhou, X. and Ahmad, A. and Waseem, M.',
+                    'title' => 'Practices and Challenges of Using GitHub Copilot: An Empirical Study',
+                    'year' => '2023',
+                    'pages' => '124-129',
+                    'booktitle' => 'Proceedings of the 35th International Conference on Software Engineering and Knowledge Engineering, July 1-10, 2023, KSI Research Inc',
+                    ]
+            ],
+			// urldate not correctly detected
+			[
+                'source' => 'Thèse.fr. (2016). Système hybride d\'adaptation dans les systèmes de recommandation. Récupéré le 24 avril 2024, de https://theses.fr/2016SACLC050 ',
+                'type' => 'online',
+                'bibtex' => [
+                    'url' => 'https://theses.fr/2016SACLC050',
+                    'author' => 'Thèse.fr',
+                    'year' => '2016',
+                    'title' => 'Système hybride d\'adaptation dans les systèmes de recommandation',
+					'urldate' => '24 avril 2024',
+                ],
+                'language' => 'fr',
+                'char_encoding' => 'utf8leave',
+            ],
+			// date not detected correctly
+            [
+                'source' => 'Negre, E. (2018, 20 Septembre). Les systèmes de recommandation : une catégorisation. Récupéré le 24 avril 2024, de https://interstices.info/les-systemes-de-recommandation-categorisation/ ',
+                'type' => 'online',
+                'bibtex' => [
+                    'title' => 'Les systèmes de recommandation : une catégorisation',
+                    'url' => 'https://interstices.info/les-systemes-de-recommandation-categorisation/',
+                    'author' => 'Negre, E.',
+                    'year' => '2018',
+                    'month' => 'septembre',
+                    'date' => '2018-09-20',
+                    'urldate' => '24 avril 2024',
+                    ],
+					'language' => 'fr',
+                    'char_encoding' => 'utf8leave',
+            ],
+			// year included in publisher name
+			[
+                'source' => 'Placher, William C. 1997. ‘Postliberal Theology’, in The Modern Theologians: An Introduction to Christian Theology in the Twentieth Century. Edited by David F. Ford. Malden, MA: Blackwell, 1997, 343–356.  ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Placher, William C.',
+                    'title' => 'Postliberal Theology',
+                    'year' => '1997',
+                    'pages' => '343-356',
+                    'editor' => 'David F. Ford',
+                    'address' => 'Malden, MA',
+                    'publisher' => 'Blackwell',
+                    'booktitle' => 'The Modern Theologians: An Introduction to Christian Theology in the Twentieth Century',
+                    ]
+            ],
+			// book wrongly classified as online            
+			[
+                'source' => 'James, Vanus and Lloyd Taylor. 2021. Competing for Development: Perspectives on Self-Sustaining Growth for Caribbean Economies. Port of Spain: Tapia House Group. Available at https://competingfordevelopment.com.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Port of Spain',
+					'publisher' => 'Tapia House Group',
+                    'url' => 'https://competingfordevelopment.com',
+                    'author' => 'James, Vanus and Lloyd Taylor',
+                    'year' => '2021',
+                    'title' => 'Competing for Development: Perspectives on Self-Sustaining Growth for Caribbean Economies',
+                    ]
+            ],
+			// book wrongly classified as online
+			[
+                'source' => 'Clark, J. B. (1899). The Distribution of Wealth: A Theory of Wages, Interest, and Profits. New York: MacMillan (1908 Edition). Available at https://oll.libertyfund.org/title/clark-the-distribution-of-wealth-a-theory-of-wages-interest-and-profits.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'New York',
+					'publisher' => 'MacMillan',
+					'edition' => '1908',
+                    'url' => 'https://oll.libertyfund.org/title/clark-the-distribution-of-wealth-a-theory-of-wages-interest-and-profits',
+                    'author' => 'Clark, J. B.',
+                    'year' => '1899',
+                    'title' => 'The Distribution of Wealth: A Theory of Wages, Interest, and Profits',
+                    ]
+            ],
+   			// repetition of doi; failure to get volume etc.
+			[
+                'source' => '[6]	S. Firdous, G. A. Wagai, and K. Sharma, "A survey on diabetes risk prediction using machine learning approaches," J. Family Med. Prim. Care, vol. 11, no. 11, pp. 6929–6934, Nov. 2022. doi: 10.4103/jfmpc.jfmpc_502_22. [Online]. Available: https://doi.org/10.4103/jfmpc.jfmpc_502_22. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.4103/jfmpc.jfmpc_502_22',
+                    'url' => 'https://doi.org/10.4103/jfmpc.jfmpc_502_22',
+                    'author' => 'S. Firdous and G. A. Wagai and K. Sharma',
+                    'title' => 'A survey on diabetes risk prediction using machine learning approaches',
+					'journal' => 'J. Family Med. Prim. Care',
+					'volume' => '11',
+					'number' => '11',
+					'pages' => '6929-6934',
+                    'year' => '2022',
+                    'month' => 'November',
+                    ]
+            ],
+			// volume - number format
+			[
+                'source' => '[140]    A.P. Adedigba and A.R. Zubair, “Performance Comparison of Blood Glucose Controllers for Diabetic Patients”, International Journal of Computer Applications, Volume 184 – No.8, April 2022 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'A. P. Adedigba and A. R. Zubair',
+                    'title' => 'Performance Comparison of Blood Glucose Controllers for Diabetic Patients',
+                    'year' => '2022',
+                    'month' => 'April',
+                    'journal' => 'International Journal of Computer Applications',
+                    'volume' => '184',
+					'number' => '8',
+                    ]
+            ],
+
+
+
+
+
 
 	
 

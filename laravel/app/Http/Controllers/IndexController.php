@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 use App\Models\Conversion;
+use App\Models\Example;
 use App\Models\ItemType;
 use App\Models\Output;
 use App\Models\UserFile;
@@ -33,7 +34,17 @@ class IndexController extends Controller
 
     public function about(): View
     {
-        return view('about');
+        $exampleCount = Example::count();
+        return view('about', compact('exampleCount'));
+    }
+
+    public function examples(): View
+    {
+        $examples = Example::orderByDesc('id')
+            ->with('fields')
+            ->paginate(50);
+
+        return view('examples', compact('examples'));
     }
 
     public function requiredResponses(): View
