@@ -6290,13 +6290,138 @@ class ExampleSeeder extends Seeder
 					'number' => '8',
                     ]
             ],
+			// Not detected as PhD thesis
+			[
+                'source' => '[9] Ben Mhenni, A. A. (2007). Influence de l\'état de surface et du serrage sur les outils assemblés par frettage [Thèse de doctorat, École Polytechnique de Montréal]. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Ben Mhenni, A. A.',
+                    'title' => 'Influence de l\'état de surface et du serrage sur les outils assemblés par frettage',
+                    'year' => '2007',
+                    'school' => 'École Polytechnique de Montréal',
+                    ],
+					'language' => 'fr',
+                    'char_encoding' => 'utf8leave',
+            ],
+			// wrongly classified as inproceedings
+			[
+                'source' => 'Ford, I. J., Statistical Mechanics of Nucleation: A Review. Proc. Inst. Mech. Eng. C 2004, 218, 883–899. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Ford, I. J.',
+                    'title' => 'Statistical Mechanics of Nucleation: A Review',
+                    'journal' => 'Proc. Inst. Mech. Eng. C',
+                    'year' => '2004',
+                    'volume' => '218',
+                    'pages' => '883-899',
+                    ]
+            ],
+			// title included in author string
+			[
+                'source' => 'Clausen, C. H.; Jensen, J.; Castillo, J.; Dimaki, M.; Svendsen, W. E., Qualitative Mapping of Structurally Different Dipeptide Nanotubes. Nano Lett. 2008, 8, 4066–4069. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Clausen, C. H. and Jensen, J. and Castillo, J. and Dimaki, M. and Svendsen, W. E.',
+					'title' => 'Qualitative Mapping of Structurally Different Dipeptide Nanotubes',
+                    'journal' => 'Nano Lett',
+                    'year' => '2008',
+                    'volume' => '8',
+                    'pages' => '4066-4069',
+                    ]
+            ],
+			// J included at end of title
+			[
+                'source' => 'Jacobs, W. M.; Reinhardt, A.; Frenkel, D., Communication: Theoretical Prediction of Free-Energy Landscapes for Complex Self-Assembly. J. Chem. Phys. 2015, 142, 021101. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Jacobs, W. M. and Reinhardt, A. and Frenkel, D.',
+                    'title' => 'Communication: Theoretical Prediction of Free-Energy Landscapes for Complex Self-Assembly',
+                    'journal' => 'J. Chem. Phys',
+                    'year' => '2015',
+                    'volume' => '142',
+                    'note' => 'Article 021101',
+                    ]
+            ],
+			// remove dash at end of title
+			[
+                'source' => 'Boschetti, A. a. (2018). Python Data Science Essentials - Third Edition. BIRMINGHAM - MUMBAI: Packt Publishing. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Boschetti, A. a.',
+                    'year' => '2018',
+                    'edition' => 'Third',
+                    'title' => 'Python Data Science Essentials',
+                    'publisher' => 'Packt Publishing',
+                    'address' => 'BIRMINGHAM - MUMBAI',
+                    ]
+            ],
+			// date not detected
+			[
+                'source' => 'ECBTI. (2023, 08 28). Líneas de Investigación ECBTI Universidad Nacional Abierta y a Distancia UNAD. UNAD: https://academia.unad.edu.co/investigacion-ecbti/cadenas-de-formacion ',
+                'type' => 'online',
+                'bibtex' => [
+                    'url' => 'https://academia.unad.edu.co/investigacion-ecbti/cadenas-de-formacion',
+                    'author' => 'ECBTI',
+                    'title' => 'Líneas de Investigación ECBTI Universidad Nacional Abierta y a Distancia UNAD',
+					'year' => '2023',
+					'month' => 'August',
+					'date' => '2023-08-28',
+                    ]
+            ],
+			// date not detected
+			[
+                'source' => 'fastText. (n.d.). Pretrained-vectors. Retrieved 08 28, 2020, from https://github.com/facebookresearch/fastText/blob/master/docs/pretrained-vectors.md ',
+                'type' => 'online',
+                'bibtex' => [
+                    'url' => 'https://github.com/facebookresearch/fastText/blob/master/docs/pretrained-vectors.md',
+                    'author' => 'fastText',
+                    'year' => 'n.d.',
+                    'title' => 'Pretrained-vectors',
+					'urldate' => '08 28, 2020',
+                    ]
+            ],
+			// date not detected
+			 [
+                'source' => 'Perez, J. (n.d.). Spanish Word Embeddings. Retrieved 08 01, 2020, from https://github.com/dccuchile/spanish-word-embeddings ',
+                'type' => 'article',
+                'bibtex' => [
+                    'url' => 'https://github.com/dccuchile/spanish-word-embeddings',
+                    'author' => 'Perez, J.',
+                    'year' => 'n.d.',
+                    'title' => 'Spanish Word Embeddings',
+                    'journal' => 'Retrieved',
+                    'urldate' => '08 01, 2020',
+                    ]
+            ],
+   			// [J] at end of title and entry should be ignored
+			[
+                'source' => '[3]	Liu C L, Yin F, Wang D H, et al. Online and offline handwritten Chinese character recognition: benchmarking on new databases[J]. Pattern Recognition, 2013, 46(1): 155-162.[J]. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Liu, C. L. and Yin, F. and Wang, D. H. and others',
+                    'title' => 'Online and offline handwritten Chinese character recognition: benchmarking on new databases',
+                    'year' => '2013',
+                    'journal' => 'Pattern Recognition',
+                    'volume' => '46',
+                    'number' => '1',
+                    'pages' => '155-162',
+                    ]
+            ],
+			// [J] at end of title and entry should be ignored
+			 [
+                'source' => '[18]	Yang W, Jin L, Tao D, et al. DropSample: A new training method to enhance deep convolutional neural networks for large-scale unconstrained handwritten Chinese character recognition[J]. Pattern Recognition, 2016, 58: 190-203.[J]. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Yang, W. and Jin, L. and Tao, D. and others',
+                    'title' => 'DropSample: A new training method to enhance deep convolutional neural networks for large-scale unconstrained handwritten Chinese character recognition',
+                    'year' => '2016',
+                    'journal' => 'Pattern Recognition',
+                    'pages' => '190-203',
+                    'volume' => '58',
+                    ]
+            ],
 
 
-
-
-
-
-	
 
 			
         ];

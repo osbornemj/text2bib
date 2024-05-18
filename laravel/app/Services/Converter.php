@@ -270,7 +270,7 @@ class Converter
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
         // Could add "symposium" to list of words
         $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference|symposium on | meeting |congress of the | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop|^actas del )';
-        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc. Natl. Acad|^Proc. National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.|^Proc. Roy. Soc. A|^Proc. Roy. Soc.|^Proceedings of the International Association of Hydrological Sciences|^Proc. IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! Conference)|^Proceedings of the IRE';
+        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc. Natl. Acad|^Proc. National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.|^Proc. Roy. Soc. A|^Proc. Roy. Soc.|^Proceedings of the International Association of Hydrological Sciences|^Proc. IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! Conference)|^Proceedings of the IRE|^Proc. Inst. Mech. Eng.';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?|M\.?A\.?|M\.?Sc\.?';
@@ -461,6 +461,10 @@ class Converter
 
         // Don't put the following earlier---{} may legitimately follow \bibitem
         $entry = str_replace("{}", "", $entry);
+
+        // It could be that a [J] at the end signifies a journal article, in which case that info could be used.
+        $entry = Str::replaceEnd('[J].', '', $entry);
+        $entry = Str::replaceEnd('[J]', '', $entry);
 
         // If first component is authors and entry starts with [n] or (n) for some number n, eliminate it
         if ($firstComponent == 'authors') {
@@ -936,6 +940,7 @@ class Converter
         $remainder = ltrim($remainder, ': ');
 
         $title = null;
+        $titleStyle = '';
         // First deal with the (rare) case of a title in {...}
         // Exclude case in which remainder begins {\ ...
         if (isset($remainder[0]) && isset($remainder[1]) && $remainder[0] == '{' && $remainder[1] != '\\') {
@@ -1006,7 +1011,8 @@ class Converter
                 $title = substr($title, 0, -2); 
             }
 
-            $title = rtrim($title, ' .,');
+            // The - is in case it is used as a separator
+            $title = rtrim($title, ' .,-');
             // Remove '[J]' at end of title (why does it appear?)
             if (preg_match('/\[J\]$/', $title)) {
                 $title = substr($title, 0, -3);
@@ -3175,8 +3181,7 @@ class Converter
                 // If so, the title is $remainder up to the punctuation.
                 // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
                 // of the cases ``<word>.'' and "<word>."
-                //$this->verbose('Remainder: ' . $remainder);
-                if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && $nextWord[0] == '(')) {
+                if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && in_array($nextWord[0], ['(', '[']))) {
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
@@ -3189,7 +3194,7 @@ class Converter
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
                         || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
                         || (preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) && in_array(trim($matches['city']), $this->cities))
-                        || preg_match('/^\(?' . $this->fullThesisRegExp . '/', $remainder)
+                        || preg_match('/^[\(\[]?' . $this->fullThesisRegExp . '/', $remainder)
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
                         || Str::startsWith(ltrim($remainder, '('), $this->cities)
                         ) {
@@ -5250,13 +5255,14 @@ class Converter
                     && substr($words[$i], 0, 2) != "d'" 
                     && ! in_array($words[$i], ['...', '…']) 
                     && ! in_array($words[$i], $this->vonNames)
+                    && $words[$i] != 'of'  // To deal with "Nicholas of Breslov" as author; don't add to vonNames, because they are used in other places, and adding them will mean that parts of titles are classified as names
                 ) {
                 $this->verbose(['text' => 'isNotName: ', 'words' => [$words[$i]], 'content' => ' appears not to be a name']);
                 return true;
             }
         }
 
-        $this->verbose(['text' => 'isNotName: ', 'words' => [$word1, $word2], 'content' => ' appear to be names']);
+        $this->verbose(['text' => 'isNotName: ', 'words' => [$word1, $word2], 'content' => ' could be names']);
         return $result;
     }
 
@@ -5444,7 +5450,7 @@ class Converter
                 $remainder = implode(' ', $remainingWords);
                 if ($key === count($words) - 1 // last word in remainder
                     || Str::contains($words[$key+1], range('1', '9')) // next word contains a digit
-                    || preg_match('/^[IVXLCD]*$/', $words[$key+1]) // next word is Roman number
+                    || preg_match('/^[IVXLCD]{2,}$/', $words[$key+1]) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
                     || preg_match($this->volRegExp2, $remainder) // followed by volume info
                     || preg_match($this->startPagesRegExp, $remainder) // followed by pages info
                     || preg_match('/^' . $this->articleRegExp . '/i', $remainder) // followed by article info
