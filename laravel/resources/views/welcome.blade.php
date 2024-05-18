@@ -57,7 +57,7 @@
             </p>
         </div>
         <p class="mb-4">
-            Each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem{&lt;label&gt;}</code>, <code>\bibitem[&lt;text&gt;]{&lt;label&gt;}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any of the characters in the string <code>.,[]()|*+</code>, or, if it doesn't start with the year, any digit.  If it starts with a string in brackets that contains at least one letter (e.g. <code>[Arrow1990]</code>), the string is interpreted as the label for the item.  (An entirely numeric string in brackets is intepreted as number for the item, and is ignored.)  If it starts with the year, the year may be followed by any character in the string <code>|*+</code>.
+            Each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem{&lt;label&gt;}</code>, <code>\bibitem[&lt;text&gt;]{&lt;label&gt;}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any of the characters in the string <code>.,[]()|*+</code>, or, if it doesn't start with the year, any digit.  If it starts with a string in brackets that contains at least one letter (e.g. <code>[Arrow1990]</code>), the string is interpreted as the label for the item.  (An entirely numeric string in brackets is intepreted as a number for the item, and is ignored.)  If it starts with the year, the year may be followed by any character in the string <code>|*+</code>.
         </p>
         <p class="mb-4">
             You receive a BibTeX file of the references.

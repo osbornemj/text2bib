@@ -270,7 +270,7 @@ class Converter
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
         // Could add "symposium" to list of words
         $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference|symposium on | meeting |congress of the | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop|^actas del )';
-        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc. Natl. Acad|^Proc. National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.|^Proc. Roy. Soc. A|^Proc. Roy. Soc.|^Proceedings of the International Association of Hydrological Sciences|^Proc. IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! Conference)|^Proceedings of the IRE|^Proc. Inst. Mech. Eng.';
+        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc.? Natl.? Acad|^Proc. National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.|^Proc. Roy. Soc. A|^Proc. Roy. Soc.|^Proceedings of the International Association of Hydrological Sciences|^Proc. IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! Conference)|^Proceedings of the IRE|^Proc. Inst. Mech. Eng.';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?|M\.?A\.?|M\.?Sc\.?';
@@ -336,31 +336,32 @@ class Converter
         ];
 
         // Month abbreviations in many languages: https://web.library.yale.edu/cataloging/months
+        $p = '[.,;]?';
         $this->monthsRegExp = [
-            'en' => '(?P<m1>January|Jan[.,; ])|(?P<m2>February|Feb[.,; ])|(?P<m3>March|Mar[.,; ])|(?P<m4>April|Apr[.,; ])|'
-                . '(?P<m5>May)|(?P<m6>June|Jun[.,; ])|(?P<m7>July|Jul[.,; ])|(?P<m8>August|Aug[.,; ])|'
-                . '(?P<m9>September|Sept?[.,; ])|(?P<m10>October|Oct[.,; ])|(?P<m11>November|Nov[.,; ])|(?P<m12>December|Dec[.,; ])',
-            'cz' => '(?P<m1>leden|led[.,; ])|(?P<m1>únor|ún[.,; ])|(?P<m3>březen|břez[.,; ])|(?P<m4>duben|dub[.,; ])|'
-                . '(?P<m5>květen|květ[.,; ])|(?P<m6>červen|červ[.,; ])|(?P<m7>červenec|červen[.,; ])|(?P<m8>srpen|srp[.,; ])|'
-                . '(?P<m9>září|zář[.,; ])|(?P<m10>říjen|říj[.,; ])|(?P<m11>listopad|list[.,; ])|(?P<m12>prosinec|pros[.,; ])',
-            'fr' => '(?P<m1>janvier|janv[.,; ])|(?P<m2>février|févr[.,; ])|(?P<m3>mars)|(?P<m4>avril|avr[., ])|'
-                . '(?P<m5>mai)|(?P<m6>juin)|(?P<m7>juillet|juill?[.,; ])|(?P<m8>aout|août)|'
-                . '(?P<m9>septembre|sept?[.,; ])|(?P<m10>octobre|oct[.,; ])|(?P<m11>novembre|nov[.,; ])|(?P<m12>décembre|déc[.,; ])',
-            // 'id' => '(?P<m1>Januari|Jan[.,; ]|Djan[.,; ])|(?P<m2>Februari|Peb[.,; ])|(?P<m3>Maret|Mrt[.,; ])|(?P<m4>April|Apr[.,; ])|'
-            //     . '(?P<m5>Mei)|(?P<m6>Juni|Djuni)|(?P<m7>Juli|Djuli)|(?P<m8>Augustus|Ag[.,; ])|'
-            //     . '(?P<m9>September|Sept[.,; ])|(?P<m10>Oktober|Okt[.,; ])|(?P<m11>November|Nop[.,; ])|(?P<m12>Desember|des[.,; ])',
-            'es' => '(?P<m1>enero)|(?P<m2>febrero|feb[.,; ])|(?P<m3>marzo|mar[.,; ])|(?P<m4>abril|abr[.,; ])|'
-                . '(?P<m5>mayo)|(?P<m6>junio|jun[.,; ])|(?P<m7>julio|jul[.,; ])|(?P<m8>agosto)|'
-                . '(?P<m9>septiembre|sept?[.,; ])|(?P<m10>octubre|oct[.,; ])|(?P<m11>noviembre|nov[.,; ])|(?P<m12>deciembre|dec[.,; ])',
-            'pt' => '(?P<m1>janeiro|jan[.,; ])|(?P<m2>fevereiro|fev[.,; ])|(?P<m3>março|mar[.,; ])|(?P<m4>abril|abr[.,; ])|'
-                . '(?P<m5>maio|mai[.,; ])|(?P<m6>junho|jun[.,; ])|(?P<m7>julho|jul[.,; ])|(?P<m8>agosto|ago[.,; ])|'
-                . '(?P<m9>setembro|set[.,; ])|(?P<m10>outubro|oct[.,; ])|(?P<m11>novembro|nov[.,; ])|(?P<m12>dezembro|dez[.,; ])',
+            'en' => '(?P<m1>January|Jan' . $p . ')|(?P<m2>February|Feb' . $p . ')|(?P<m3>March|Mar' . $p . ')|(?P<m4>April|Apr' . $p . ')|'
+                . '(?P<m5>May)|(?P<m6>June|Jun' . $p . ')|(?P<m7>July|Jul' . $p . ')|(?P<m8>August|Aug' . $p . ')|'
+                . '(?P<m9>September|Sept?' . $p . ')|(?P<m10>October|Oct' . $p . ')|(?P<m11>November|Nov' . $p . ')|(?P<m12>December|Dec' . $p . ')',
+            'cz' => '(?P<m1>leden|led' . $p . ')|(?P<m1>únor|ún' . $p . ')|(?P<m3>březen|břez' . $p . ')|(?P<m4>duben|dub' . $p . ')|'
+                . '(?P<m5>květen|květ' . $p . ')|(?P<m6>červen|červ' . $p . ')|(?P<m7>červenec|červen' . $p . ')|(?P<m8>srpen|srp' . $p . ')|'
+                . '(?P<m9>září|zář' . $p . ')|(?P<m10>říjen|říj' . $p . ')|(?P<m11>listopad|list' . $p . ')|(?P<m12>prosinec|pros' . $p . ')',
+            'fr' => '(?P<m1>janvier|janv' . $p . ')|(?P<m2>février|févr' . $p . ')|(?P<m3>mars)|(?P<m4>avril|avr' . $p . ')|'
+                . '(?P<m5>mai)|(?P<m6>juin)|(?P<m7>juillet|juill?' . $p . ')|(?P<m8>aout|août)|'
+                . '(?P<m9>septembre|sept?' . $p . ')|(?P<m10>octobre|oct' . $p . ')|(?P<m11>novembre|nov' . $p . ')|(?P<m12>décembre|déc' . $p . ')',
+            // 'id' => '(?P<m1>Januari|Jan' . $p . '|Djan' . $p . ')|(?P<m2>Februari|Peb' . $p . ')|(?P<m3>Maret|Mrt' . $p . ')|(?P<m4>April|Apr' . $p . ')|'
+            //     . '(?P<m5>Mei)|(?P<m6>Juni|Djuni)|(?P<m7>Juli|Djuli)|(?P<m8>Augustus|Ag' . $p . ')|'
+            //     . '(?P<m9>September|Sept' . $p . ')|(?P<m10>Oktober|Okt' . $p . ')|(?P<m11>November|Nop' . $p . ')|(?P<m12>Desember|des' . $p . ')',
+            'es' => '(?P<m1>enero)|(?P<m2>febrero|feb' . $p . ')|(?P<m3>marzo|mar' . $p . ')|(?P<m4>abril|abr' . $p . ')|'
+                . '(?P<m5>mayo)|(?P<m6>junio|jun' . $p . ')|(?P<m7>julio|jul' . $p . ')|(?P<m8>agosto)|'
+                . '(?P<m9>septiembre|sept?' . $p . ')|(?P<m10>octubre|oct' . $p . ')|(?P<m11>noviembre|nov' . $p . ')|(?P<m12>deciembre|dec' . $p . ')',
+            'pt' => '(?P<m1>janeiro|jan' . $p . ')|(?P<m2>fevereiro|fev' . $p . ')|(?P<m3>março|mar' . $p . ')|(?P<m4>abril|abr' . $p . ')|'
+                . '(?P<m5>maio|mai' . $p . ')|(?P<m6>junho|jun' . $p . ')|(?P<m7>julho|jul' . $p . ')|(?P<m8>agosto|ago' . $p . ')|'
+                . '(?P<m9>setembro|set' . $p . ')|(?P<m10>outubro|oct' . $p . ')|(?P<m11>novembro|nov' . $p . ')|(?P<m12>dezembro|dez' . $p . ')',
             'my' => '(?P<m1>ဇန်နဝါရီလ)|(?P<m2>ဖေဖော်ဝါရီ)|(?P<m3>မတ်လ)|(?P<m4>ဧပြီလ)|'
                 . '(?P<m5>မေ)|(?P<m6>ဇွန်လ)|(?P<m7>ဇူလိုင်လ)|(?P<m8>ဩဂုတ်လ)|'
                 . '(?P<m9>စက်တင်ဘာ)|(?P<m10>အောက်တိုဘာလ)|(?P<m11>နိုဝင်ဘာလ)|(?P<m12>ဒီဇင်ဘာ)',
-            'nl' => '(?P<m1>januari|jan[.,; ])|(?P<m2>februari|febr[.,; ])|(?P<m3>maart|mrt[.,; ])|(?P<m4>april|apr[.,; ])|'
-                . '(?P<m5>mei)|(?P<m6>juni)|(?P<m7>juli)|(?P<m8>augustus|aug[.,; ])|'
-                . '(?P<m9>september|sep[.,; ])|(?P<m10>oktober|okt[.,; ])|(?P<m11>november|nov[.,; ])|(?P<m12>december|dec[.,; ])',
+            'nl' => '(?P<m1>januari|jan' . $p . ')|(?P<m2>februari|febr' . $p . ')|(?P<m3>maart|mrt' . $p . ')|(?P<m4>april|apr' . $p . ')|'
+                . '(?P<m5>mei)|(?P<m6>juni)|(?P<m7>juli)|(?P<m8>augustus|aug' . $p . ')|'
+                . '(?P<m9>september|sep' . $p . ')|(?P<m10>oktober|okt' . $p . ')|(?P<m11>november|nov' . $p . ')|(?P<m12>december|dec' . $p . ')',
         ];
 
         $this->vonNames = VonName::all()->pluck('name')->toArray();
@@ -472,6 +473,8 @@ class Converter
         // It could be that a [J] at the end signifies a journal article, in which case that info could be used.
         $entry = Str::replaceEnd('[J].', '', $entry);
         $entry = Str::replaceEnd('[J]', '', $entry);
+
+        $entry = Str::replaceEnd('\\', '', $entry);
 
         // If first component is authors and entry starts with [n] or (n) for some number n, eliminate it
         if ($firstComponent == 'authors') {
@@ -1035,10 +1038,12 @@ class Converter
                 $title = substr($title, 0, -3);
             }
 
+            $title = trim($title, '_');
+
             if (substr($title, 0, 1) == '{' && substr($title, -1) == '}') {
                 $title = trim($title, '{}');
             }
-            // Can in which quotation marks were in wrong encoding and appear as ?'s.
+            // Case in which quotation marks were in wrong encoding and appear as ?'s.
             if (substr($title, 0, 1) == '?' && substr($title, -1) == '?') {
                 $title = trim($title, '?., ');
             }
@@ -1075,6 +1080,7 @@ class Converter
             }
 
             if ($year && isset($month) && ! empty($day)) {
+                $day = strlen($day) == 1 ? '0' . $day : $day;
                 $this->setField($item, 'date', $year . '-' . $monthResult['month1number'] . '-' . $day, 'setField 15a');
             }
 
@@ -1493,7 +1499,7 @@ class Converter
                         }
                     }
 
-                    $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming);
+                    $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming, $language);
                     $journal = rtrim($journal, ' ,(');
                 }
 
@@ -1533,6 +1539,21 @@ class Converter
                     $this->addToField($item, 'note', trim($remainder, '()'), 'addToField 6');
                     $remainder = '';
                 } else {
+                    if (preg_match('/^(?P<month>' . $this->monthsRegExp[$language] . ') (?P<day>[0-9]{1,2})[.,;]/', $remainder, $matches)) {
+                        $monthResult = $this->fixMonth($matches['month'], $language);
+                        $monthNumber = '00';
+                        for ($j = 1; $j <= 12; $j++) {
+                            if ($matches['m' . $j]) {
+                                $monthNumber = strlen($j) == 1 ? '0' . $j : $j;
+                                break;
+                            }
+                        }
+                        $day = strlen($matches['day']) == 1 ? '0' . $matches['day'] : $matches['day'];
+                        $this->setField($item, 'month', $monthResult['months'], 'setField 21a');
+                        $this->setField($item, 'date', $year . '-' . $monthNumber . '-' . $day, 'setField 21b');
+                        $remainder = substr($remainder, strlen($matches[0]));
+                    }
+
                     // Get pages
                     $this->getVolumeNumberPagesForArticle($remainder, $item, $language);
 
@@ -3202,6 +3223,7 @@ class Converter
                 // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
                 // of the cases ``<word>.'' and "<word>."
                 if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && in_array($nextWord[0], ['(', '[']))) {
+                    $wordsToNextPeriod = explode(' ', $stringToNextPeriod);
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
@@ -3209,6 +3231,7 @@ class Converter
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
                         || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
+                        || in_array('Journal', $wordsToNextPeriod)  // 
                         || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.()]*$/', $remainder)  // journal name, pub info? ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
@@ -3660,7 +3683,6 @@ class Converter
             $ends = '';
         }
 
-        //$str = str_replace([","], "", trim($string, ',. '));
         $matches = [];
         $isDates = [];
         if ($allowRange) {
@@ -3847,7 +3869,9 @@ class Converter
         $this->verbose('convertToAuthors: Checking for name of organization');
         $name = '';
         foreach ($words as $i => $word) {
-            if (ctype_alpha((string) $word) && $this->inDict($word)) {
+            if ($this->isInitials($word)) {
+                break;
+            } elseif (ctype_alpha((string) $word) && $this->inDict($word)) {
                 $name .= ($i ? ' ' : '') . $word;
             } else {
                 $xword = substr($word, 0, -1);
@@ -4881,7 +4905,8 @@ class Converter
         if (! $start && $allowMonth) {
             if (
                 // <year> <month> <day>?
-                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>' . $months . ')( ?(?P<day>[0-3][0-9]))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug;9(8):473-480'
+                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>' . $months . ')( (?P<day>[0-9]{1,2}))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
                 ||
                 // <day>? <month> <year>
                 // The optional "de" between day and month and between month and year is for Spanish
@@ -5434,7 +5459,7 @@ class Converter
     }
 
     // Get journal name from $remainder, which includes also publication info
-    private function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming): string
+    private function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming, string $language): string
     {
         if ($italicStart) {
             // (string) on next line to stop VSCode complaining
@@ -5477,8 +5502,9 @@ class Converter
                 array_shift($remainingWords);
                 $remainder = implode(' ', $remainingWords);
                 if ($key === count($words) - 1 // last word in remainder
-                    || Str::contains($words[$key+1], range('1', '9')) // next word contains a digit
-                    || preg_match('/^[IVXLCD]{2,}$/', $words[$key+1]) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
+                    || (isset($words[$key+1]) && Str::contains($words[$key+1], range('1', '9'))) // next word contains a digit
+                    || (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
+                    || preg_match('/^(' . $this->monthsRegExp[$language] . ') [0-9]{1,2}[.,;]/', $remainder) // <month day> next
                     || preg_match($this->volRegExp2, $remainder) // followed by volume info
                     || preg_match($this->startPagesRegExp, $remainder) // followed by pages info
                     || preg_match('/^' . $this->articleRegExp . '/i', $remainder) // followed by article info

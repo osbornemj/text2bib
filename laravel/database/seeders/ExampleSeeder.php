@@ -6501,6 +6501,207 @@ class ExampleSeeder extends Seeder
                     'title' => 'Energy Piles in Cooling Dominated Climates',
                     ]
             ],
+   			// underscores used as quotes
+			[
+                'source' => 'Gandt, R. (1995). _Skygods: The Fall of Pan Am_. New York: William Morrow and Company. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Gandt, R.',
+                    'year' => '1995',
+                    'title' => 'Skygods: The Fall of Pan Am',
+                    'publisher' => 'William Morrow and Company',
+                    'address' => 'New York',
+                    ]
+            ],
+			// remove \\ at end of entry
+			[
+                'source' => '[5]	Kabir, M.M. Investigating the Effect of Connected Vehicle (CV) Route Guidance on Mobility. PhD thesis, Morgan State University, 2021.\\\\ ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Kabir, M. M.',
+                    'title' => 'Investigating the Effect of Connected Vehicle (CV) Route Guidance on Mobility',
+                    'year' => '2021',
+                    'school' => 'Morgan State University',
+                    ]
+            ],
+   			// authors ended early
+			[
+                'source' => 'Randy A Freeman and James A Primbs. Control lyapunov functions: New ideas from an old source. In Conference on Decision and Control (CDC), volume 4, pages 3926–3931. IEEE, 1996.  ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Randy A. Freeman and James A. Primbs',
+                    'title' => 'Control lyapunov functions: New ideas from an old source',
+                    'year' => '1996',
+                    'pages' => '3926-3931',
+                    'booktitle' => 'Conference on Decision and Control (CDC), volume 4, IEEE',
+                    ]
+            ],
+			// Journal included in title
+			[
+                'source' => 'Azhar NNZBA, Ghazali PLB, Mamat MB, Abdullah YB, Mahmud SB, Lambak SB, et al. Acceptance of Integrated Modification Model of Auto Takaful Insurance in Malaysia. Far East Journal of Mathematical Sciences (FJMS). 2017 May 1;101(8):1771–84. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Azhar Nnzba and Ghazali Plb and Mamat, M. B. and Abdullah, Y. B. and Mahmud, S. B. and Lambak, S. B. and others',
+                    'title' => 'Acceptance of Integrated Modification Model of Auto Takaful Insurance in Malaysia',
+					'journal' => 'Far East Journal of Mathematical Sciences (FJMS).',
+                    'year' => '2017',
+                    'month' => 'May',
+                    'date' => '2017-05-01',
+                    'volume' => '101',
+					'number' => '8',
+					'pages' => '1771-84',
+                    ]
+            ],
+   			// Didn't pick up month/day correctly
+    		[
+                'source' => 'Bouzakis KD, Bouzakis E, Kombogiannis S, Makrimallakis S, Skordaris G, Michailidis N, Charalampous P, Paraskevopoulou R, M\'Saoubi R, Aurich JC, Barthelmä F., 2014, Effect of cutting edge preparation of coated tools on their performance in milling various materials. CIRP Journal of Manufacturing Science and Technology. Jan 1;7(3):264-73. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bouzakis, K. D. and Bouzakis, E. and Kombogiannis, S. and Makrimallakis, S. and Skordaris, G. and Michailidis, N. and Charalampous, P. and Paraskevopoulou, R. and M\'Saoubi, R. and Aurich, J. C. and Barthelmä, F.',
+                    'year' => '2014',
+                    'title' => 'Effect of cutting edge preparation of coated tools on their performance in milling various materials',
+                    'journal' => 'CIRP Journal of Manufacturing Science and Technology.',
+                    'pages' => '264-73',
+                    'volume' => '7',
+                    'number' => '3',
+					'month' => 'January',
+					'date' => '2014-01-01',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// Didn't pick up month/day correctly
+			[
+                'source' => 'Tien DH, Duy TN, Thoa PTT. 2023. Applying GPR-FGRA hybrid algorithm for prediction and optimization of eco-friendly magnetorheological finishing Ti–6Al–4V alloy. International Journal on Interactive Design and Manufacturing. Apr 1;17(2):729–45. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Tien, D. H. and Duy, T. N. and Thoa Ptt',
+                    'year' => '2023',
+                    'title' => 'Applying GPR-FGRA hybrid algorithm for prediction and optimization of eco-friendly magnetorheological finishing Ti--6Al--4V alloy',
+                    'journal' => 'International Journal on Interactive Design and Manufacturing.',
+					'date' => '2023-04-01',
+					'month' => 'April',
+                    'pages' => '729-45',
+                    'volume' => '17',
+                    'number' => '2',
+                    ]
+            ],
+			// volume interpreted as day
+			[
+                'source' => 'Kalambouka A, Pampaka M, Omuvwie M, Wo L. Mathematics Dispositions of Secondary School Students with Special Educational Needs. Journal of Research in Special Educational Needs. 2016 Aug;16:701–7. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kalambouka, A. and Pampaka, M. and Omuvwie, M. and Wo, L.',
+                    'title' => 'Mathematics Dispositions of Secondary School Students with Special Educational Needs',
+                    'year' => '2016',
+                    'month' => 'August',
+					'volume' => '16',
+                    'journal' => 'Journal of Research in Special Educational Needs.',
+                    'pages' => '701-7',
+                    ]
+            ],
+			// day interpreted as volume
+			[
+                'source' => 'Lim YR, Ariffin AS, Ali M, Chang KL. A Hybrid MCDM Model for Live-Streamer Selection via the Fuzzy Delphi Method, AHP, and TOPSIS. Applied Sciences. 2021 Oct 8;11(19):9322. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Lim, Y. R. and Ariffin, A. S. and Ali, M. and Chang, K. L. A.',
+                    'title' => 'Hybrid MCDM Model for Live-Streamer Selection via the Fuzzy Delphi Method, AHP, and TOPSIS',
+                    'year' => '2021',
+                    'month' => 'October',
+					'date' => '2021-10-08',
+                    'journal' => 'Applied Sciences.',
+                    'pages' => '9322',
+                    'volume' => '11',
+					'number' => '19',
+                    ]
+            ],
+			// date picked up correctly
+			[
+                'source' => 'Yao KC, Lai JY, Huang WT, Tu JC. Utilize Fuzzy Delphi and Analytic Network Process to Construct Consumer Product Design Evaluation Indicators. Mathematics. 2022 Jan 27;10(3):397. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Yao, K. C. and Lai, J. Y. and Huang, W. T. and Tu, J. C.',
+                    'title' => 'Utilize Fuzzy Delphi and Analytic Network Process to Construct Consumer Product Design Evaluation Indicators',
+                    'year' => '2022',
+                    'month' => 'January',
+                    'date' => '2022-01-27',
+                    'journal' => 'Mathematics.',
+                    'volume' => '10',
+                    'number' => '3',
+                    'pages' => '397',
+                    ]
+            ],
+			// date picked up correctly
+			[
+                'source' => 'Diaz‐Carrion R, López‐Fernández M, Romero‐Fernandez PM. Constructing an index for comparing human resources management sustainability in Europe. Human Resource Management Journal. 2020 Feb 25;31(1):120–42. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Diaz-Carrion, R. and López-Fernández, M. and Romero-Fernandez, P. M.',
+                    'title' => 'Constructing an index for comparing human resources management sustainability in Europe',
+                    'year' => '2020',
+                    'month' => 'February',
+                    'date' => '2020-02-25',
+                    'journal' => 'Human Resource Management Journal.',
+                    'volume' => '31',
+                    'number' => '1',
+                    'pages' => '120-42',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+   			// No space after month => day interpreted incorrectly
+			[
+                'source' => '3: Abi Habib W, Brioude F, Edouard T, Bennett JT, Lienhardt-Roussie A, Tixier F, Salem J, Yuen T, Azzi S, Le Bouc Y, Harbison MD, Netchine I. Genetic disruption of the oncogenic HMGA2-PLAG1-IGF2 pathway causes fetal growth restriction. Genet Med. 2018 Feb;20(2):250-258. doi: 10.1038/gim.2017.105. PMID: 28796236; PMCID: PMC5846811. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'PMID: 28796236',
+                    'doi' => '10.1038/gim.2017.105',
+                    'author' => 'Abi Habib, W. and Brioude, F. and Edouard, T. and Bennett, J. T. and Lienhardt-Roussie, A. and Tixier, F. and Salem, J. and Yuen, T. and Azzi, S. and Le Bouc, Y. and Harbison, M. D. and Netchine, I.',
+                    'title' => 'Genetic disruption of the oncogenic HMGA2-PLAG1-IGF2 pathway causes fetal growth restriction',
+                    'year' => '2018',
+                    'month' => 'February',
+                    'journal' => 'Genet Med.',
+                    'pages' => '250-258',
+                    'volume' => '20',
+                    'number' => '2',
+                    ]
+            ],
+			// No space after month => day interpreted incorrectly
+			[
+                'source' => '1: Abdelhedi F, El Khattabi L, Cuisset L, Tsatsaris V, Viot G, Druart L, Lebbar A, Dupont JM. Neonatal Silver-Russell syndrome with maternal uniparental heterodisomy, trisomy 7 mosaicism, and dysplasia of the cerebellum. Am J Clin Pathol. 2014 Aug;142(2):248-53. doi: 10.1309/AJCPBLMPRXKU1JUE. PMID: 25015868. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'PMID: 25015868',
+                    'doi' => '10.1309/AJCPBLMPRXKU1JUE',
+                    'author' => 'Abdelhedi, F. and El Khattabi, L. and Cuisset, L. and Tsatsaris, V. and Viot, G. and Druart, L. and Lebbar, A. and Dupont, J. M.',
+                    'title' => 'Neonatal Silver-Russell syndrome with maternal uniparental heterodisomy, trisomy 7 mosaicism, and dysplasia of the cerebellum',
+                    'year' => '2014',
+                    'month' => 'August',
+                    'journal' => 'Am J Clin Pathol.',
+                    'volume' => '142',
+                    'number' => '2',
+                    'pages' => '248-53',
+                    ]
+            ],
+			// No space after month => day interpreted incorrectly
+			[
+                'source' => 'Hadi A, Puspa Liza Ghazali, Foziah M, Roslida Abdul Razak, Arifin J. The Role of Index For Assessment In Business. The Journal of Management Theory and Practice (JMTP). 2022 Sep 9;3(2):84–9. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Hadi, A. and Puspa Liza Ghazali and Foziah, M. and Roslida Abdul Razak and Arifin, J.',
+                    'title' => 'The Role of Index For Assessment In Business',
+                    'year' => '2022',
+                    'month' => 'September',
+                    'journal' => 'The Journal of Management Theory and Practice (JMTP).',
+                    'pages' => '84-9',
+                    'volume' => '3',
+                    'number' => '2',
+                    'date' => '2022-09-09',
+                    ]
+            ],
+
+
+
+
 
 
 
