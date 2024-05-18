@@ -410,7 +410,7 @@ class Converter
         $entry = '';
         foreach ($entryLines as $line) {
             $truncated = $this->uncomment($line);
-            $entry .= $line . (!$truncated ? ' ' : '');
+            $entry .= $line . (! $truncated ? ' ' : '');
         }
 
         if (!$entry) {
@@ -436,6 +436,13 @@ class Converter
         }
 
         if ($firstComponent == 'authors') {
+            // interpret string like [Arrow12] at start of entry as label
+            if (preg_match('/^(?P<label>\[[a-zA-Z0-9]{3,10}\]) (?P<entry>.*)$/', $entry, $matches)) {
+                if ($matches['label'] && preg_match('/[a-z]/', $matches['label'])) {
+                    $itemLabel = $matches['label'];
+                    $entry = $matches['entry'] ?? '';
+                }
+            }
             // Remove numbers and other symbols at start of entry, like '6.' or '[14]'.
             $entry = ltrim($entry, ' .0123456789[]()|*+:^');
 
@@ -940,7 +947,16 @@ class Converter
         $remainder = ltrim($remainder, ': ');
 
         $title = null;
+        $titleEndsInPeriod = false;
         $titleStyle = '';
+
+        // Does title start with "Doctoral thesis:" or something like that?
+        $containsThesis = false;
+        if (preg_match('/^' . $this->fullThesisRegExp . '(: | -)(?P<remainder>.*)$/', $remainder, $matches)) {
+            $containsThesis = true;
+            $remainder = $matches['remainder'] ?? '';
+        }
+
         // First deal with the (rare) case of a title in {...}
         // Exclude case in which remainder begins {\ ...
         if (isset($remainder[0]) && isset($remainder[1]) && $remainder[0] == '{' && $remainder[1] != '\\') {
@@ -1012,6 +1028,7 @@ class Converter
             }
 
             // The - is in case it is used as a separator
+            $titleEndsInPeriod = substr($title, -1) == '.';
             $title = rtrim($title, ' .,-');
             // Remove '[J]' at end of title (why does it appear?)
             if (preg_match('/\[J\]$/', $title)) {
@@ -1076,7 +1093,7 @@ class Converter
         $remainder = ltrim($remainder, '.,; ');
         $this->verbose("[type] Remainder: " . $remainder);
         
-        $inStart = $containsIn = $italicStart = $containsEditors = $containsThesis = false;
+        $inStart = $containsIn = $italicStart = $containsEditors = false;
         $containsNumber = $containsInteriorVolume = $containsCity = $containsPublisher = false;
         $containsEdition = $containsWorkingPaper = false;
         $containsNumberedWorkingPaper = $containsNumber = $pubInfoStartsWithForthcoming = $pubInfoEndsWithForthcoming = false;
@@ -1428,6 +1445,8 @@ class Converter
         if ($this->itemType) {
             $itemKind = $this->itemType;
         }
+
+        $this->verbose('Remainder: ' . $remainder);
 
         switch ($itemKind) {
 
@@ -2856,6 +2875,7 @@ class Converter
         // Fix up $remainder and $item //
         /////////////////////////////////
 
+        $remainderEndsInColon = substr($remainder, -1) == ':';
         $remainder = trim($remainder, '.,:;}{ ');
 
         if ($remainder && !in_array($remainder, ['pages', 'Pages', 'pp', 'pp.'])) {
@@ -2865,7 +2885,7 @@ class Converter
                 ) {
                 $this->addToField($item, 'note', $remainder, 'addToField 14');
             } elseif ($itemKind == 'online') {
-                if (preg_match('/^[a-zA-Z ]*$/', $remainder)) {
+                if (preg_match('/^[a-zA-Z ]*$/', $remainder) && ! $titleEndsInPeriod) {
                     // If remainder is all letters and spaces, assume it is part of title,
                     // which must have been ended prematurely.
                     $this->addToField($item, 'title', $remainder, 'addToField 16');
@@ -3185,11 +3205,11 @@ class Converter
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
-                        || preg_match('/^[Ii]n [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^[Ii]n [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
                         || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
-                        || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?,? ?(' . $this->numberRegExp . ')?[0-9, \-p\.()]*$/', $remainder)  // journal name, pub info? ('}' after volume # for \textbf{ (in $this->volumeRegExp))
+                        || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.()]*$/', $remainder)  // journal name, pub info? ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
                         || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
@@ -3361,11 +3381,15 @@ class Converter
                         } elseif (! isset($words[$key+2])) {
                             if ($this->isYear($nextWord)) {
                                 $year = $nextWord;
+                                $remainder = '';
+                            } elseif (substr($word, -1) == '.' && substr($nextWord, -1) == ':') {
+                                $title = implode(' ', $initialWords);
+                                $remainder = $nextWord;
                             } else {
                                 $this->verbose("Adding \$nextWord (" . $nextWord . "), last in string, and ending title (word '" . $word ."')");
                                 $title = implode(' ', $initialWords) . ' ' . $nextWord;
+                                $remainder = '';
                             }
-                            $remainder = '';
                             break;
                         } elseif (Str::endsWith($word, [',']) && preg_match('/[A-Z][a-z]+, [A-Z]\. /', $remainder)) {
                             // otherwise assume the punctuation ends the title.
@@ -3645,8 +3669,8 @@ class Converter
         } else {
             $isDates[1] = preg_match('/(' . $starts . $day . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ')?' . $year . $ends . ')/i' , $string, $matches[1]);
             $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $day . ',? '. $year . $ends . ')/i', $string, $matches[2]);
-            $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/ ]' . $of . $monthNumber . '[\-\/ ]'. $of . $year . $ends . ')/i', $string, $matches[3]);
-            $isDates[4] = preg_match('/(' . $starts . $monthNumber . '[\-\/ ]' . $day . '[\-\/ ]'. $year . $ends . ')/i', $string, $matches[4]);
+            $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/ ]' . $of . $monthNumber . ',?[\-\/ ]'. $of . $year . $ends . ')/i', $string, $matches[3]);
+            $isDates[4] = preg_match('/(' . $starts . $monthNumber . '[\-\/ ]' . $day . ',?[\-\/ ]'. $year . $ends . ')/i', $string, $matches[4]);
             $isDates[5] = preg_match('/(' . $starts . $year . '[\-\/, ]' . $day . '[\-\/ ]' . $monthNumber . $ends . ')/i', $string, $matches[5]);
             $isDates[6] = preg_match('/(' . $starts . $year . '[, ]' . $monthName . ' ' . $day . $ends . ')/i', $string, $matches[6]);
             $isDates[7] = preg_match('/(' . $starts . $year . '[, ]' . $day . ' ' . $monthName . $ends . ')/i', $string, $matches[7]);
@@ -4159,7 +4183,7 @@ class Converter
                     $fullName .= ' ' . $word;
                     $remainder = implode(" ", $remainingWords);
                     $this->addToAuthorString(6, $authorstring, ' ' . ltrim($this->formatAuthor($fullName)));
-                    if ($year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, true, true, $language)) {
+                    if ($year = $this->getYear($remainder, $remains, $month, $day, $date, true, true, true, $language)) {
                         $remainder = $remains;
                         $this->verbose("Year detected");
                     }
@@ -4829,7 +4853,8 @@ class Converter
                 ||
                 // (year, day month) 
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),? (?P<day>[0-9]{1,2}) (?P<month>' . $months . ') ?)[\)\]]?/i', $string, $matches1)
-                ||                // (day month year) or (month year) (or without parens or with brackets)
+                ||                
+                // (day month year) or (month year) (or without parens or with brackets)
                 // The optional "de" between day and month and between month and year is for Portuguese
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
                 ||
@@ -4840,6 +4865,9 @@ class Converter
                 // (year-monthNumber-day) (or without parens or with brackets)
                 // The optional "de" between day and month and between month and year is for Portuguese
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
+                ||
+                // (year,? monthNumber day) (or without parens or with brackets)
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),? (?P<month>[0-9]{1,2}) (?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
                 ) {
                 $year = $matches1['year'] ?? null;
                 $month = $matches1['month'] ?? null;

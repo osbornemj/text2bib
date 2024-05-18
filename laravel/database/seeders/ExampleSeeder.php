@@ -6364,9 +6364,12 @@ class ExampleSeeder extends Seeder
                     'author' => 'ECBTI',
                     'title' => 'Líneas de Investigación ECBTI Universidad Nacional Abierta y a Distancia UNAD',
 					'year' => '2023',
-					'month' => 'August',
+					'month' => '08',
 					'date' => '2023-08-28',
-                    ]
+					'urldate' => '2023, 08 28',
+                    'note' => 'UNAD',
+                ],
+                'char_encoding' => 'utf8leave',
             ],
 			// date not detected
 			[
@@ -6383,13 +6386,12 @@ class ExampleSeeder extends Seeder
 			// date not detected
 			 [
                 'source' => 'Perez, J. (n.d.). Spanish Word Embeddings. Retrieved 08 01, 2020, from https://github.com/dccuchile/spanish-word-embeddings ',
-                'type' => 'article',
+                'type' => 'online',
                 'bibtex' => [
                     'url' => 'https://github.com/dccuchile/spanish-word-embeddings',
                     'author' => 'Perez, J.',
                     'year' => 'n.d.',
                     'title' => 'Spanish Word Embeddings',
-                    'journal' => 'Retrieved',
                     'urldate' => '08 01, 2020',
                     ]
             ],
@@ -6420,6 +6422,90 @@ class ExampleSeeder extends Seeder
                     'volume' => '58',
                     ]
             ],
+  			// Interpret string in brackets that is not entirely numeric at start of entry as label
+			[
+                'source' => '[Ale17] Alexiadis, D.S., Chatzitofis, A., Zioulis, N., Zoidi, O., Louizis, G., Zarpalas, D., & Daras, P. (2017). An Integrated Platform for Live 3D Human Reconstruction and Motion Capturing. IEEE Transactions on Circuits and Systems for Video Technology, 27, 798-813. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Alexiadis, D. S. and Chatzitofis, A. and Zioulis, N. and Zoidi, O. and Louizis, G. and Zarpalas, D. and Daras, P.',
+                    'year' => '2017',
+                    'title' => 'An Integrated Platform for Live 3D Human Reconstruction and Motion Capturing',
+                    'journal' => 'IEEE Transactions on Circuits and Systems for Video Technology',
+                    'volume' => '27',
+                    'pages' => '798-813',
+                    ]
+            ],
+   			// type detected as unpublished
+			[
+                'source' => '[2] Duc E., Lartigue C., Tournier C., Bourdet P., A new concept for the design and the manufacturing of free-form surfaces: the machining surface, Annals of the CIRP, vol 48/1, pp 103-106, 1999. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Duc, E. and Lartigue, C. and Tournier, C. and Bourdet, P.',
+                    'title' => 'A new concept for the design and the manufacturing of free-form surfaces: the machining surface',
+                    'journal' => 'Annals of the CIRP',
+                    'year' => '1999',
+                    'volume' => '48',
+					'number' => '1',
+                    'pages' => '103-106',
+                    ]
+            ],
+			// detected as unpublished rather than article
+			[
+                'source' => 'Verhulst, Pierre-François. (1838). Notice sur la loi que la population suit dans son accroissement, Correspondance Mathematique et Physique 10: 113-121. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Verhulst, Pierre-François',
+                    'year' => '1838',
+                    'title' => 'Notice sur la loi que la population suit dans son accroissement',
+					'journal' => 'Correspondance Mathematique et Physique',
+					'volume' => '10',
+					'pages' => '113-121',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// detected as unpublished rather than article
+			[
+                'source' => 'Arrow, Kenneth J. (1964). Optimal capital policy, the cost of capital, and myopic decision rules, Annals of the Institute of Statistical Mathematics, 16: 21-30. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Arrow, Kenneth J.',
+                    'year' => '1964',
+                    'title' => 'Optimal capital policy, the cost of capital, and myopic decision rules',
+					'journal' => 'Annals of the Institute of Statistical Mathematics',
+					'volume' => '16',
+					'pages' => '21-30',
+                    ]
+            ],
+   			// Title ended early
+			[
+                'source' => 'Abdelraheem, N., Li, F., Guo, P., Sun, Y., Liu, Y., Cheng, Y. ...& Hou, F. (2023). Nutrient utilization of native herbage and oat forage as feed for Tibetan sheep (Ovis Aries). Grassland Science, 69(1), 12-22. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Abdelraheem, N. and Li, F. and Guo, P. and Sun, Y. and Liu, Y. and Cheng, Y. and others and Hou, F.',
+                    'year' => '2023',
+                    'title' => 'Nutrient utilization of native herbage and oat forage as feed for Tibetan sheep (Ovis Aries)',
+                    'journal' => 'Grassland Science',
+                    'volume' => '69',
+                    'number' => '1',
+                    'pages' => '12-22',
+                    ]
+            ],
+            [
+                'source' => '26. Akrouch, G.A. (2014). Doctoral thesis - Energy Piles in Cooling Dominated Climates. Texas A&M University. https://hdl.handle.net/1969.1/152552  ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'school' => 'Texas A&M University',
+                    'url' => 'https://hdl.handle.net/1969.1/152552',
+                    'author' => 'Akrouch, G. A.',
+                    'year' => '2014',
+                    'title' => 'Energy Piles in Cooling Dominated Climates',
+                    ]
+            ],
+
+
+
+
+
 
 
 
