@@ -73,6 +73,7 @@ class Converter
     var $oclcRegExp2;
     var $ordinals;
     var $pagesRegExp;
+    var $pageRange;
     var $startPagesRegExp;
     var $phdRegExp;
     var $phrases;
@@ -248,7 +249,8 @@ class Converter
         $this->numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ |[Ii]ssues? ?|Issue no. ?|Iss: ';
 
         // page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress".
-        $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})(?![a-zA-Z])';
+        $this->pageRange = '(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})(?![a-zA-Z])';
+        $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?' . $this->pageRange;
         // hlm.: Indonesian, ss: Turkish
         $this->startPagesRegExp = '/(^pages |^pp\.?|^p\. ?|^p |^стр\. |^hlm\. |^ss?\. )[0-9]/i';
 
@@ -1173,13 +1175,6 @@ class Converter
             $this->verbose("Replacing ':' with '-' in page range.  Remainder is now: " . $remainder);
         }
 
-        if (preg_match('/[ :][1-9][0-9]{0,3} ?-{1,2} ?[1-9][0-9]{0,3}([\.,\} ]|$)/', $remainder)
-                ||
-                preg_match('/([1-9][0-9]{0,3}|p\.)(, |\(| | \(|\.|: )([1-9][0-9]{0,3})(-[1-9][0-9]{0,3})?\)?/', $remainder)) {
-            $containsPageRange = true;
-            $this->verbose("Contains page range.");
-        }
-
         $regExp = '/' . $this->workingPaperRegExp . $this->workingPaperNumberRegExp . '/i';
         if (preg_match($regExp, $remainder, $workingPaperMatches, PREG_OFFSET_CAPTURE)) {
             if ($italicStart) {
@@ -1216,6 +1211,21 @@ class Converter
         if ($this->isProceedings($testString)) {
             $containsProceedings = true;
             $this->verbose("Contains a string suggesting conference proceedings.");
+        }
+
+        // if (preg_match('/[ :][1-9][0-9]{0,3} ?-{1,2} ?[1-9][0-9]{0,3}([\.,\} ]|$)/', $remainder)
+        //         ||
+        //         preg_match('/([1-9][0-9]{0,3}|p\.)(, |\(| | \(|\.|: )([1-9][0-9]{0,3})(-[1-9][0-9]{0,3})?\)?/', $remainder)) {
+        //     $containsPageRange = true;
+        //     $this->verbose("Contains page range.");
+        // }
+        if (
+            preg_match('/[ :]' . $this->pageRange . '([\.,\} ]|$)/', $remainder) 
+            ||
+            preg_match('/' . $this->pagesRegExp . '/', $remainder)
+           ) {
+            $containsPageRange = true;
+            $this->verbose("Contains page range.");
         }
 
         if (preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)) {
@@ -2659,6 +2669,12 @@ class Converter
                     $remainder = '';
                 }
 
+                // If remainder starts with pages, put them in Note and remove them from remainder
+                if (preg_match('/^(?P<note>pp?\.? [1-9][0-9]{0,3}(-[1-9][0-9]{0,3})?)/', $remainder, $matches)) {
+                    $this->setField($item, 'note', $matches['note'], 'setField 59a');
+                    $remainder = trim(substr($remainder, strlen($matches[0])), '() ');
+                }
+
                 $remainingWords = explode(" ", $remainder);
 
                 // If remainder contains word 'edition', take previous word as the edition number
@@ -2694,7 +2710,7 @@ class Converter
                         $newRemainder = $remainder = $result[7];
                     } else {
                         // Volume is part of series
-                        $this->verbose('Volume is part of series: assume format is <series> <publisherAndAddress>');
+                        $this->verbose('Volume is part of series: assume format is <series>? <publisherAndAddress>');
                         $this->setField($item, 'volume', $result[4], 'setField 109');
                         $this->verbose(['fieldName' => 'Volume', 'content' => $item->volume]);
                         $seriesAndPublisher = $result[7];
@@ -2774,9 +2790,12 @@ class Converter
                                     '(.*[^.,]*)\. (.*\.?)$'
                                 );
                                 if ($result2) {
-                                    $this->verbose('Series case 2: format is <publisher> (no address)');
+                                    $this->verbose('Series case 2a: format is <publisher> (no address)');
                                     $this->setField($item, 'series', $result2[1], 'setField 81');
                                     $this->setField($item, 'publisher', $result2[2], 'setField 82');
+                                } else {
+                                    $this->verbose('Series case 2b: format is <publisher>');
+                                    $this->setField($item, 'publisher', trim($seriesAndPublisher), 'setField 82a');
                                 }
                             }
                         }
@@ -2804,10 +2823,12 @@ class Converter
                     // If remainder contains a period following a lowercase letter, string before period is series name
                     $periodPos = strpos($remainderMinusPubInfo, '.');
                     if ($periodPos !== false && strtolower($remainderMinusPubInfo[$periodPos-1]) == $remainderMinusPubInfo[$periodPos-1]) {
-                        $series = trim(Str::before($remainderMinusPubInfo, '.'));
-                        $this->setField($item, 'series', $series, 'setField 110');
+                        $beforePeriod = trim(Str::before($remainderMinusPubInfo, '.'));
+                        if (Str::contains($beforePeriod, ['series', 'Series'])) {
+                            $this->setField($item, 'series', $beforePeriod, 'setField 110');
+                            $remainder = trim(Str::remove($beforePeriod, $remainder));
+                        }
                         //$this->setField($item, 'title', $item->title . $series, 'setField 110');
-                        $remainder = trim(Str::remove($series, $remainder));
                     }
 
                     // First use routine to find publisher and address, to catch cases where address
@@ -3161,12 +3182,18 @@ class Converter
                     ||
                     $word == '//'
                 ) {
-                $this->verbose("Ending title, case 1");
+                $this->verbose("Ending title, case 1a");
                 $title = rtrim(implode(' ', $initialWords), ',:;.');
                 break;
             }
 
             $initialWords[] = $word;
+
+            if (preg_match('/^vol(\.?|ume) [0-9]/', $remainder)) {
+                $this->verbose("Ending title, case 1b");
+                $title = rtrim(implode(' ', $initialWords), ',:;.');
+                break;
+            }
 
             if ($skipNextWord) {
                 $skipNextWord = false;
@@ -3229,6 +3256,7 @@ class Converter
                         || preg_match($this->startPagesRegExp, $remainder)
                         || preg_match('/^[Ii]n [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
+                        || preg_match('/^\(?pp?\.? [0-9]/', $remainder) // pages (e.g. within book)
                         || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
                         || in_array('Journal', $wordsToNextPeriod)  // 
@@ -3330,8 +3358,8 @@ class Converter
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
                     // elseif next sentence contains word 'series', terminate title
-                    } elseif (preg_match('/ series/i', $stringToNextPeriod)) {
-                        $this->verbose("Ending title, case 4b");
+                    } elseif (preg_match('/(?<!time) series/i', $stringToNextPeriod)) {
+                        $this->verbose("Ending title, case 4b (next sentence contains 'series' not preceded by 'time')");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
                     } elseif (preg_match('/edited by/i', $nextWord . ' ' . $nextButOneWord)) {
@@ -4166,7 +4194,7 @@ class Converter
                         $word = substr($word, 0, -1) . ',';
                         goto namePart0;
                     }
-                } else {
+                } elseif (! isset($remainingWords[0]) || ! $this->isInitials(trim($remainingWords[0], ', '))) {
                     // If $namePart > 0
                     $this->verbose('[convertToAuthors 9]');
                     $nameComponent = $this->trimRightBrace($this->spaceOutInitials(rtrim($word, '.')));
@@ -4174,6 +4202,10 @@ class Converter
                     $this->addToAuthorString(5, $authorstring, $this->formatAuthor($fullName));
                     $remainder = implode(" ", $remainingWords);
                     $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, and namePart is > 0';
+                } else {
+                    $warnings[] = "Unexpected period after \"" . substr($word, 0, -1) . "\" in source.  Typo?  Period was ignored.";
+                    $word = substr($word, 0, -1);
+                    goto namePart0;
                 }
                 $this->verbose("Remainder: " . $remainder);
                 $this->verbose('[c2a getYear 4]');
@@ -4380,26 +4412,6 @@ class Converter
                     $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                 }
 
-                // if (isset($bareWords[0]) && $bareWords[0] == 'Layer') {
-                //     dd($determineEnd, $remainingWords, $bareWords, 
-                //     $this->inDict(trim($remainingWords[0], ',')), 
-                //     ! $this->isInitials(trim($remainingWords[0], ',')),
-                //     ! in_array(trim($remainingWords[0], ','), $this->nameSuffixes),
-                //     ! preg_match('/[0-9]/', $remainingWords[0]),
-                //     ! empty($remainingWords[1]),
-                //     $this->inDict($remainingWords[1]),
-                //     ! $this->isInitials(trim($remainingWords[1], ',')),
-                //     ! in_array(trim($remainingWords[1], ','), $this->nameSuffixes),
-                //     ! preg_match('/[0-9]/', $remainingWords[1]),
-                //     $remainingWords[1] != '...', 
-                //     ! in_array($remainingWords[1][0], ["'", "`"]),
-                //     ! empty($remainingWords[2]), 
-                //     $this->inDict($remainingWords[2]),
-                //     ! $this->isInitials(trim($remainingWords[2], ',')),
-                //     ! in_array(trim($remainingWords[2], ','), $this->nameSuffixes),
-                //     ! preg_match('/[0-9]/', $remainingWords[2]));
-                // }
-
                 if ($determineEnd && $text = $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after, $style)) {
                     if (in_array($text, ['et al', 'et al.', 'et. al.'])) {
                         $this->verbose('[convertToAuthors 25]');
@@ -4432,6 +4444,15 @@ class Converter
                         &&
                         ! $this->isAnd($remainingWords[0], $language)
                         && 
+                        // don't stop if next word ends in a colon and is not in the dictionary
+                        // (to catch case in which author list is terminated by a colon, which is ignored when computing
+                        // bareWords (because colons often occur after the first or second word of a title))
+                        (
+                            substr($remainingWords[0], -1) != ':'
+                            ||
+                            $this->inDict($remainingWords[0])
+                        )
+                        &&
                         (
                             count($bareWords) > 3
                             ||
@@ -5192,7 +5213,8 @@ class Converter
             $endsWithPunc = false;
             $include = true;
 
-            if (Str::endsWith($word, ['.', ',', ')', ':', ';', '}'])) {
+            // Don't add : to this list (otherwise problems with titles that have : after first or second word)
+            if (Str::endsWith($word, ['.', ',', ')', ';', '}'])) {
                 $stop = true;
                 $endsWithPunc = true;
             }

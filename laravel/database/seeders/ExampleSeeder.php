@@ -6698,19 +6698,96 @@ class ExampleSeeder extends Seeder
                     'date' => '2022-09-09',
                     ]
             ],
+			// put pages in book in note
+			[
+                'source' => 'Ruozi, R., Ferrari, P., Ruozi, R., & Ferrari, P. (2013). Liquidity risk management in banks: economic and regulatory issues (pp. 1-54). Springer Berlin. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ruozi, R. and Ferrari, P. and Ruozi, R. and Ferrari, P.',
+                    'year' => '2013',
+                    'title' => 'Liquidity risk management in banks: economic and regulatory issues',
+                    'note' => 'pp. 1-54',
+                    'publisher' => 'Springer',
+                    'address' => 'Berlin',
+                    ]
+            ],
+			[
+                'source' => '[5] M. Fornasier, Theoretical Foundations and Numerical Methods for Sparse Recovery vol. 9: Walter de Gruyter, 2010. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'M. Fornasier',
+                    'title' => 'Theoretical Foundations and Numerical Methods for Sparse Recovery',
+					'volume' => '9',
+                    'year' => '2010',
+                    'publisher' => 'Walter de Gruyter',
+                    ]
+            ],
+			// string is too easily classified as "series"
+			[
+                'source' => 'Allen, M. J., & Yen, M. M. (1979). Introduction to measurement theory. Brooks/Cole Pub. Co.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Allen, M. J. and Yen, M. M.',
+                    'year' => '1979',
+                    'title' => 'Introduction to measurement theory',
+                    'publisher' => 'Brooks/Cole Pub. Co',
+                    ]
+            ],
+   			// title ended early
+			[
+                'source' => '[8] K. Choi and S. B. Thacker. An evaluation of influenza mortality surveillance, 1962–1979: I. Time series forecasts of expected pneumonia and influenza deaths. American journal of epidemiology, 113(3):215226, 1981.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'K. Choi and S. B. Thacker',
+                    'title' => 'An evaluation of influenza mortality surveillance, 1962--1979: I. Time series forecasts of expected pneumonia and influenza deaths',
+                    'year' => '1981',
+                    'journal' => 'American journal of epidemiology',
+                    'volume' => '113',
+                    'number' => '3',
+                    'pages' => '215226',
+                    ]
+            ],
+			// problem with quotes embedded in title
+			[
+                'source' => '\bibitem{FU5rN} Bayamlıoğlu E (2022) The right to contest automated decisions under the General Data Protection Regulation : Beyond the so‐called ``right to explanation.\'\' Regul Gov 16:1058–1078 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bayamlıoğlu, E.',
+                    'year' => '2022',
+                    'title' => 'The right to contest automated decisions under the General Data Protection Regulation : Beyond the so-called ``right to explanation.\'\'',
+					'journal' => 'Regul Gov',
+					'volume' => '16',
+					'pages' => '1058-1078',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// phrase at start of title ending in colon included in authors
+			// Case of colon at end of authors is rare?
+			[
+                'source' => 'Thomas, J.E.; Ekanem, A.M.; George, N.J.; Akpan, A.E. Ionospheric perturbations: A case study of 2007 five major earthquakes using DEMETER data. Acta Geophys. 2023, 71, 1607–1618. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Thomas, J. E. and Ekanem, A. M. and George, N. J. and Akpan, A. E.',
+                    'title' => 'Ionospheric perturbations: A case study of 2007 five major earthquakes using DEMETER data',
+                    'year' => '2023',
+                    'journal' => 'Acta Geophys',
+                    'volume' => '71',
+                    'pages' => '1607-1618',
+                    ]
+            ],
+			// Authors ended early (erroneous period after Peter); part of title detected as series
+			[
+                'source' => 'Richerson, Peter. J., and Robert Boyd. 2005. Not By Genes Alone: How Culture Transformed Human Evolution. Chicago/London: University of Chicago Press ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Richerson, Peter J. and Robert Boyd',
+                    'year' => '2005',
+                    'title' => 'Not By Genes Alone: How Culture Transformed Human Evolution',
+                    'address' => 'Chicago/London',
+                    'publisher' => 'University of Chicago Press',
+                    ]
+            ],
 
-
-
-
-
-
-
-
-
-
-
-
-			
         ];
 
         DB::statement('DELETE FROM examples');
