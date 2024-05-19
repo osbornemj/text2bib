@@ -12,11 +12,6 @@
             </p>
             <p>
                 <x-link href="/admin/runExampleCheck">Check all conversions</x-link>
-                {{--
-                <div class="inline">
-                    <livewire:admin-seed-examples />
-                </div>
-                --}}
                 &nbsp;&bull;&nbsp;
                 <x-link href="/admin/seedExamples">Run seeder</x-link>
             </p>
