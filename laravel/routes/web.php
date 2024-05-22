@@ -41,6 +41,7 @@ Route::controller(IndexController::class)->group(function () {
     Route::get('/', 'index')->name('public.index');
     Route::get('/about', 'about')->name('about');
     Route::get('/examples', 'examples')->name('examples');
+    Route::get('/admin/phpinfo', 'phpinfo')->name('admin.phpinfo');
 });
 
 Route::controller(StatisticsController::class)->group(function () {
@@ -114,7 +115,6 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::controller(AdminController::class)->group(function () {
         Route::get('/admin/index', 'index')->name('admin.index');
-        Route::get('/admin/phpinfo', 'phpinfo')->name('admin.phpinfo');
         Route::get('/admin/addVersion', 'addVersion')->name('admin.addVersion');
         Route::get('/admin/addExistingStarts', 'addExistingStarts')->name('admin.startJournalAbbreviations.addExistingStarts');
     });
