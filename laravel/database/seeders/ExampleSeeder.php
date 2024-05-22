@@ -6800,7 +6800,7 @@ class ExampleSeeder extends Seeder
                 'type' => $example['type'],
                 'language' => $example['language'] ?? 'en',
                 'char_encoding' => $example['char_encoding'] ?? 'utf8',
-                'use' => $example['use'] ?? 'en',
+                'use' => $example['use'] ?? 'latex',
             ]);
             foreach ($example['bibtex'] as $key => $value) {
                 ExampleField::create([

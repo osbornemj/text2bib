@@ -115,6 +115,15 @@
                 </x-link>
                 (strings that are names but are in the dictionary as words starting with a lowercase letter)
             </p>
+
+            <h3 class="font-semibold text-l mt-2">
+                phpinfo
+            </h3>
+            <p>
+                <x-link :href="route('admin.phpinfo')" :active="request()->routeIs('admin.phpinfo')">
+                    phpinfo
+                </x-link>
+            </p>
         </div>
     </div>
 </x-app-layout>

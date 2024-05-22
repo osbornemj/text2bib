@@ -49,4 +49,9 @@ class AdminController extends Controller
 
         return redirect()->route('startJournalAbbreviations.index');
     }
+
+    public function phpinfo()
+    {
+        return view('admin.phpinfo');
+    }
 }    
