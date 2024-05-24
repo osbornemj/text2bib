@@ -93,8 +93,6 @@ Route::middleware(['auth', 'verified', 'noRequiredResponses'])->group(function (
     });
 
     Route::get('/downloadBibtex/{conversionId}', DownloadBibtexController::class)->name('conversion.downloadBibtex');
-
-    Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
 });
 
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
