@@ -3147,7 +3147,15 @@ class Converter
             $lastWord = $matches['lastWord'];
             // Last word has to be in the dictionary (proper nouns allowed) and not an excluded word, OR start with a lowercase letter
             // That excludes cases in which the period ends an abbreviation in a journal name (like "A theory of something, Bull. Amer.").
-            if (! in_array($lastWord, ['J']) && (($this->inDict($lastWord, false) && ! in_array($lastWord, $this->excludedWords)) || mb_strtolower($lastWord[0]) == $lastWord[0])) {
+            if (
+                ! in_array($lastWord, ['J'])
+                &&
+                (
+                    ($this->inDict($lastWord, false) && ! in_array($lastWord, $this->excludedWords))
+                    ||
+                    mb_strtolower($lastWord[0]) == $lastWord[0]
+                )
+               ) {
                 $title = $matches['title'];
                 $remainder = $matches['remainder'];
                 $this->verbose('Taking title to be string preceding period.');
@@ -3229,10 +3237,11 @@ class Converter
                     }
                 }
 
-                $upcomingYear = false;
+                $upcomingYear = $upcomingVolumePageYear = false;
                 if ($stringToNextPeriod) {
                     $followingRemainder = mb_substr($remainder, mb_strlen($stringToNextPeriod));
                     $upcomingYear = $this->isYear(trim($followingRemainder));
+                    $upcomingVolumePageYear = preg_match('/^[0-9\(\)\., p\-]{2,}$/', $followingRemainder);
                 }
 
                 // When a word ending in punctuation or preceding a word starting with ( is encountered, check whether
@@ -3260,6 +3269,7 @@ class Converter
                         || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
                         || in_array('Journal', $wordsToNextPeriod)  // 
+                        || (Str::endsWith(rtrim($word, "'\""), [',']) && $upcomingVolumePageYear)  // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
                         || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.()]*$/', $remainder)  // journal name, pub info? ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
@@ -3443,7 +3453,6 @@ class Converter
                             }
                             break;
                         } elseif (Str::endsWith($word, [',']) && preg_match('/[A-Z][a-z]+, [A-Z]\. /', $remainder)) {
-                            // otherwise assume the punctuation ends the title.
                             $this->verbose("Ending title, case 6a (word '" . $word ."')");
                             $title = rtrim(implode(' ', $initialWords), '.,');
                             break;

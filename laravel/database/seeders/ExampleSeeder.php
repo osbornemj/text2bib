@@ -3957,7 +3957,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '4',
                     'number' => '4',
                     'pages' => '7-24',
-                    'doi' => '10.1300/J154v04n04_02',
+                    'doi' => '10.1300/J154v04n04\_02',
                     ]
             ],
             [
@@ -6264,7 +6264,7 @@ class ExampleSeeder extends Seeder
                 'source' => '[6]	S. Firdous, G. A. Wagai, and K. Sharma, "A survey on diabetes risk prediction using machine learning approaches," J. Family Med. Prim. Care, vol. 11, no. 11, pp. 6929–6934, Nov. 2022. doi: 10.4103/jfmpc.jfmpc_502_22. [Online]. Available: https://doi.org/10.4103/jfmpc.jfmpc_502_22. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'doi' => '10.4103/jfmpc.jfmpc_502_22',
+                    'doi' => '10.4103/jfmpc.jfmpc\_502\_22',
                     'url' => 'https://doi.org/10.4103/jfmpc.jfmpc_502_22',
                     'author' => 'S. Firdous and G. A. Wagai and K. Sharma',
                     'title' => 'A survey on diabetes risk prediction using machine learning approaches',
@@ -6787,6 +6787,212 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'University of Chicago Press',
                     ]
             ],
+   			// journal not detected
+			[
+                'source' => 'Zhang X., Bai X., Incentive policies from 2006 to 2016 and new energy vehicle adoption in 2010-2020 in China, Renewable Sustainable Energy Rev., 70, pp. 24-43, (2017) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Zhang, X. and Bai, X.',
+                    'title' => 'Incentive policies from 2006 to 2016 and new energy vehicle adoption in 2010-2020 in China',
+					'journal' => 'Renewable Sustainable Energy Rev.',
+					'volume' => '70',
+                    'year' => '2017',
+                    'pages' => '24-43',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => 'Yuan X., Liu X., Zuo J., The development of new energy vehicles for a sustainable future: a review, Renewable Sustainable Energy Rev., 42, pp. 298-305, (2015) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Yuan, X. and Liu, X. and Zuo, J.',
+                    'title' => 'The development of new energy vehicles for a sustainable future: a review',
+					'journal' => 'Renewable Sustainable Energy Rev.',
+					'volume' => '42',
+                    'year' => '2015',
+                    'pages' => '298-305',
+                    ]
+            ],
+			// journal detected correctly
+			 [
+                'source' => 'Yang K., Hiteva R.P., Schot J., Expectation dynamics and niche acceleration in china\'s wind and solar power development, Environ. Innov. Soc. Transit., 36, pp. 177-196, (2020) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Yang, K. and Hiteva, R. P. and Schot, J.',
+                    'title' => 'Expectation dynamics and niche acceleration in china\'s wind and solar power development',
+                    'year' => '2020',
+                    'journal' => 'Environ. Innov. Soc. Transit.',
+                    'volume' => '36',
+                    'pages' => '177-196',
+                    ]
+            ],
+			// journal detected correctly
+			 [
+                'source' => 'Sun Y., Cao C., The evolving relations between government agencies of innovation policymaking in emerging economies: a policy network approach and its application to the Chinese case, Res. Policy, 47, 3, pp. 592-605, (2018) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Sun, Y. and Cao, C.',
+                    'title' => 'The evolving relations between government agencies of innovation policymaking in emerging economies: a policy network approach and its application to the Chinese case',
+                    'year' => '2018',
+                    'journal' => 'Res. Policy',
+                    'volume' => '47',
+                    'number' => '3',
+                    'pages' => '592-605',
+                    ]
+            ],
+			// journal detected correctly
+			[
+                'source' => 'Rogge K.S., Reichardt K., Policy mixes for sustainability transitions: an extended concept and framework for analysis, Res. Policy, 45, 8, pp. 1620-1635, (2016) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Rogge, K. S. and Reichardt, K.',
+                    'title' => 'Policy mixes for sustainability transitions: an extended concept and framework for analysis',
+                    'year' => '2016',
+                    'journal' => 'Res. Policy',
+                    'volume' => '45',
+                    'number' => '8',
+                    'pages' => '1620-1635',
+                    ]
+            ],
+			// journal not detected correctly
+			 [
+                'source' => 'Schmidt T.S., Sewerin S., Measuring the temporal dynamics of policy mixes -- an empirical analysis of renewable energy policy mixes\' balance and design features in nine countries, Res. Policy, 48, 10, (2019) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Schmidt, T. S. and Sewerin, S.',
+                    'title' => 'Measuring the temporal dynamics of policy mixes -- an empirical analysis of renewable energy policy mixes\' balance and design features in nine countries',
+                    'year' => '2019',
+                    'journal' => 'Res. Policy',
+                    'volume' => '48',
+                    'pages' => '10',
+                    ]
+            ],
+			// journal not detected correctly
+			[
+                'source' => 'Trencher G., Truong N., Temocin P., Duygan M., Top-down sustainability transitions in action: how do incumbent actors drive electric mobility diffusion in China, Japan, and California?, Energy Res. Soc. Sci., 79, (2021) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Trencher, G. and Truong, N. and Temocin, P. and Duygan, M.',
+                    'title' => 'Top-down sustainability transitions in action: how do incumbent actors drive electric mobility diffusion in China, Japan, and California?',
+					'journal' => 'Energy Res. Soc. Sci.',
+                    'year' => '2021',
+                    'volume' => '79',
+                    ]
+            ],
+			// journal not detected correctly
+			[
+                'source' => 'Svara J.H., The myth of the dichotomy: complementarity of politics and administration in the past and future of public administration, Public Adm. Rev., 61, 2, pp. 176-183, (2001) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Svara, J. H.',
+                    'title' => 'The myth of the dichotomy: complementarity of politics and administration in the past and future of public administration',
+                    'year' => '2001',
+                    'journal' => 'Public Adm. Rev.',
+                    'volume' => '61',
+                    'number' => '2',
+                    'pages' => '176-183',
+                    ]
+            ],
+			// journal not detected correctly
+			[
+                'source' => 'Schmid N., Sewerin S., Schmidt T.S., Explaining advocacy coalition change with policy feedback, Policy Stud. J., 48, 4, pp. 1109-1134, (2020) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Schmid, N. and Sewerin, S. and Schmidt, T. S.',
+                    'title' => 'Explaining advocacy coalition change with policy feedback',
+                    'year' => '2020',
+                    'journal' => 'Policy Stud. J.',
+                    'volume' => '48',
+                    'number' => '4',
+                    'pages' => '1109-1134',
+                    ]
+            ],
+			// journal not detected correctly
+			[
+                'source' => 'Pierson P., When effect becomes cause: policy feedback and political change, World Polit., 45, 4, pp. 595-628, (1993) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Pierson, P.',
+                    'title' => 'When effect becomes cause: policy feedback and political change',
+					'journal' => 'World Polit.',
+					'volume' => '45',
+					'number' => '4',
+                    'year' => '1993',
+                    'pages' => '595-628',
+                    ]
+            ],
+			// journal detected correctly
+			[
+                'source' => 'Normann H.E., Policy networks in energy transitions: the cases of carbon capture and storage and offshore wind in Norway, Technol. Forecast. Soc. Change, 118, pp. 80-93, (2017) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Normann, H. E.',
+                    'title' => 'Policy networks in energy transitions: the cases of carbon capture and storage and offshore wind in Norway',
+                    'year' => '2017',
+                    'journal' => 'Technol. Forecast. Soc. Change',
+                    'volume' => '118',
+                    'pages' => '80-93',
+                    ]
+            ],
+			// journal detected correctly
+			[
+                'source' => 'Liu F.C., Simon D.F., Sun Y.T., Cao C., China\'s innovation policies: evolution, institutional structure, and trajectory, Res. Policy, 40, 7, pp. 917-931, (2011) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Liu, F. C. and Simon, D. F. and Sun, Y. T. and Cao, C.',
+                    'title' => 'China\'s innovation policies: evolution, institutional structure, and trajectory',
+                    'year' => '2011',
+                    'journal' => 'Res. Policy',
+                    'volume' => '40',
+                    'number' => '7',
+                    'pages' => '917-931',
+                    ]
+            ],
+			// journal detected correctly
+            [
+                'source' => 'Kern F., Howlett M., Implementing transition management as policy reforms: a case study of the Dutch energy sector, Policy Sci., 42, 4, pp. 391-408, (2009) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kern, F. and Howlett, M.',
+                    'title' => 'Implementing transition management as policy reforms: a case study of the Dutch energy sector',
+                    'year' => '2009',
+                    'journal' => 'Policy Sci.',
+                    'volume' => '42',
+                    'number' => '4',
+                    'pages' => '391-408',
+                    ]
+            ],
+			// title ended early
+			[
+                'source' => 'Kivimaa P., Kern F., Creative destruction or mere niche support? Innovation policy mixes for sustainability transitions, Res. Policy, 45, 1, pp. 205-217, (2016) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kivimaa, P. and Kern, F.',
+                    'title' => 'Creative destruction or mere niche support? Innovation policy mixes for sustainability transitions',
+                    'year' => '2016',
+                    'journal' => 'Res. Policy',
+                    'volume' => '45',
+                    'number' => '1',
+                    'pages' => '205-217',
+                    ]
+            ],
+			// title ended early
+			[
+                'source' => 'Meadowcroft J., Who is in charge here? Governance for sustainable development in a complex world, J. Environ. Plann. Policy Manage., 9, 3-4, pp. 299-314, (2007) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Meadowcroft, J.',
+                    'title' => 'Who is in charge here? Governance for sustainable development in a complex world',
+                    'year' => '2007',
+                    'journal' => 'J. Environ. Plann. Policy Manage.',
+                    'volume' => '9',
+                    'number' => '3-4',
+                    'pages' => '299-314',
+                    ]
+            ],
+
+
+
 
         ];
 
