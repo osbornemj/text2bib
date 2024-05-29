@@ -251,8 +251,8 @@ class Converter
         // page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress".
         $this->pageRange = '(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})(?![a-zA-Z])';
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?' . $this->pageRange;
-        // hlm.: Indonesian, ss: Turkish
-        $this->startPagesRegExp = '/(^pages |^pp\.?|^p\. ?|^p |^стр\. |^hlm\. |^ss?\. )[0-9]/i';
+        // hlm., hal.: Indonesian, ss: Turkish
+        $this->startPagesRegExp = '/(^pages |^pp\.?|^p\. ?|^p |^стр\. |^hlm\. |^hal\. |^ss?\. )[0-9]/i';
 
         // en for Spanish (and French?), em for Portuguese
         $this->inRegExp1 = '/^[iIeE]n:? /';
@@ -1091,6 +1091,8 @@ class Converter
             }
         }
 
+        $yearIsForthcoming = isset($item->year) && in_array($item->year, ['forthcoming', 'Forthcoming', 'in press', 'In press', 'In Press']);
+
         $remainder = ltrim($newRemainder, ' ');
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -1411,7 +1413,7 @@ class Converter
             } elseif ($pubInfoEndsWithForthcoming || $pubInfoStartsWithForthcoming) {
                 $this->verbose("Item type case 16");
                 $itemKind = 'article';
-            } elseif ($titleStyle == 'quoted') {
+            } elseif ($titleStyle == 'quoted' || $yearIsForthcoming) {
                 $this->verbose("Item type case 17a");
                 $itemKind = 'article';
             } else {
@@ -1530,6 +1532,7 @@ class Converter
                     //     $lastJournalWord = substr($lastJournalWord, 0, -1);
                     //     $journal = substr($journal, 0, -1);
                     // }
+                    $journal = trim($journal, '_');
                     $this->setField($item, 'journal', trim($journal, '*'), 'setField 19');
                 } else {
                     $warnings[] = "Item seems to be article, but journal not found.  Setting type to unpublished.";
@@ -3216,7 +3219,9 @@ class Converter
                     break;
                 }
 
-                //$stringToNextPeriod = strtok($remainder, '.?!');
+                $stringToNextCommaOrPeriod = strtok($remainder, '.,');
+                $wordAfterNextCommaOrPeriod = strtok(substr($remainder, 1 + strlen($stringToNextCommaOrPeriod)), ' ');
+
                 // String up to next ?, !, or . not preceded by ' J'.
                 $chars = mb_str_split($remainder, 1, 'UTF-8');
                 $stringToNextPeriod = '';
@@ -3315,6 +3320,9 @@ class Converter
                     // ||
                     // ($nextWord && $nextWord[0] == '(' && substr($nextWord, -1) != ')')
                     ) {
+                        $this->verbose('$stringToNextPeriod: ' . $stringToNextPeriod);
+                        $this->verbose('$stringToNextCommaOrPeriod: ' . $stringToNextCommaOrPeriod);
+                        $this->verbose('$wordAfterNextCommaOrPeriod: ' . $wordAfterNextCommaOrPeriod);
                     // if first character of next word is lowercase letter and does not end in period
                     // OR $word and $nextWord are A. and D. or B. and C.
                     // OR following string starts with a part designation, continue, skipping next word,
@@ -3436,7 +3444,7 @@ class Converter
                             && ! Str::contains($modStringToNextPeriod, ['pp.']) 
                             && substr_count($modStringToNextPeriod, ',') == 0
                             && substr_count($modStringToNextPeriod, ':') == 0
-                            && (! preg_match('/^[0-9;:\.\- ]*$/', $followingRemainder)  || $containsUrlAccessInfo)
+                            && (! preg_match('/^[0-9;:\.\- ]*$/', $followingRemainder) || $containsUrlAccessInfo)
                         ) {
                             $this->verbose("Not ending title, case 6 (word '" . $word ."')");
                         } elseif (! isset($words[$key+2])) {
@@ -3457,7 +3465,10 @@ class Converter
                             $title = rtrim(implode(' ', $initialWords), '.,');
                             break;
                         } elseif (Str::endsWith($word, [','])) {
-                            $this->verbose("Not ending title, case 7 (word '" . $word ."')");
+                            $this->verbose("Not ending title, case 7a (word '" . $word ."')");
+                        } elseif (in_array(rtrim($wordAfterNextCommaOrPeriod, '.'), $this->startJournalAbbreviations)) {
+                            // Word after next comma or period is a start journal abbreviation
+                            $this->verbose("Not ending title, case 7b");
                         } else {
                             // otherwise assume the punctuation ends the title.
                             $this->verbose("Ending title, case 6b (word '" . $word ."')");
@@ -3765,8 +3776,9 @@ class Converter
     private function isAnd(string $string, $language = 'en'): bool
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
-        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian, 'v' for Turkish
-        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и', 've']) || $string == 'with';
+        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian, 'v' for Turkish,
+        // 'dan' for Indonesian
+        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и', 've', 'dan']) || $string == 'with';
     }
 
     /*
@@ -4889,7 +4901,7 @@ class Converter
         $centuries = $allowEarlyYears ? '13|14|15|16|17|18|19|20' : '18|19|20';
 
         // en => n.d., es => 's.f.', pt => 's.d.'?
-        if (preg_match('/^(?P<year>[\(\[](n\. ?d\.|s\. ?f\.|s\. ?d\.)[\)\]]|forthcoming)(?P<remains>.*)$/i', $remains, $matches0)) {
+        if (preg_match('/^(?P<year>[\(\[](n\. ?d\.|s\. ?f\.|s\. ?d\.)[\)\]]|[\(\[]?forthcoming[\)\]]?|[\(\[]?in press[\)\]]?)(?P<remains>.*)$/i', $remains, $matches0)) {
             $remains = $matches0['remains'];
             $year = trim($matches0['year'], '[]()');
             return $year;

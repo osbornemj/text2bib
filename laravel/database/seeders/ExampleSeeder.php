@@ -6990,6 +6990,79 @@ class ExampleSeeder extends Seeder
                     'pages' => '299-314',
                     ]
             ],
+            // Use of underscores to delimit journal name, "dan" = "and" in Indonesian
+			[
+                'source' => 'F. Hassan dan R. Gupta, "Technology\'s Role in Education: A Review of Serious Games," _Journal of Educational Technology_, vol. 17, no. 2, pp. 65-78, 2022. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'F. Hassan and R. Gupta',
+                    'title' => 'Technology\'s Role in Education: A Review of Serious Games',
+                    'year' => '2022',
+                    'journal' => 'Journal of Educational Technology',
+                    'volume' => '17',
+                    'number' => '2',
+                    'pages' => '65-78',
+                    ]
+            ],
+			// allow 'in press' for year
+			[
+                'source' => 'Stephan, Y., Sutin, A. R., & Terracciano, A. (in press). Personality traits and polypharmacy: Meta-analysis of five samples. Psychology & Health. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Stephan, Y. and Sutin, A. R. and Terracciano, A.',
+                    'title' => 'Personality traits and polypharmacy: Meta-analysis of five samples',
+					'year' => 'in press',
+                    'journal' => 'Psychology & Health',
+                    ]
+            ],
+			// allow 'in press' for year
+			[
+                'source' => 'Sutin, A. R., Luchetti, M., Stephan, Y., & Terracciano, A. (in press). Purpose in life and cognitive health: A 28-year prospective study. International Psychogeriatrics. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Sutin, A. R. and Luchetti, M. and Stephan, Y. and Terracciano, A.',
+                    'title' => 'Purpose in life and cognitive health: A 28-year prospective study',
+					'year' => 'in press',
+                    'journal' => 'International Psychogeriatrics',
+                    ]
+            ],
+			// type detected?
+			[
+                'source' => 'W. Xiao, H. Zhao, H. Pan, Y. Song, V.W. Zheng, Q. Yang, Beyond personalization: Social content recommendation for creator equality and consumer satisfaction, in: Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery \& Data Mining, 2019, pp. 235–245. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'W. Xiao and H. Zhao and H. Pan and Y. Song and V. W. Zheng and Q. Yang',
+                    'title' => 'Beyond personalization: Social content recommendation for creator equality and consumer satisfaction',
+                    'booktitle' => 'Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery \& Data Mining, 2019',
+                    'year' => '2019',
+                    'pages' => '235-245',
+                    ]
+            ],
+			// detected as article
+			[
+                'source' => 'H. Ma, H. Yang, M.R. Lyu, I. King, Sorec: social recommendation using probabilistic matrix factorization, in: Proceedings of the 17th ACM conference on Information and knowledge management, 2008, pp. 931–940. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'H. Ma and H. Yang and M. R. Lyu and I. King',
+                    'title' => 'Sorec: social recommendation using probabilistic matrix factorization',
+					'booktitle' => 'Proceedings of the 17th ACM conference on Information and knowledge management, 2008',
+                    'year' => '2008',
+                    'pages' => '931-940',
+                    ]
+            ],
+			// detected as article
+			 [
+                'source' => 'X. He, L. Liao, H. Zhang, L. Nie, X. Hu, T.S. Chua, Neural collaborative filtering, in: Proceedings of the 26th international conference on world wide web, 2017, pp. 173–182. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'X. He and L. Liao and H. Zhang and L. Nie and X. Hu and T. S. Chua',
+                    'title' => 'Neural collaborative filtering',
+					'booktitle' => 'Proceedings of the 26th international conference on world wide web, 2017',
+                    'year' => '2017',
+                    'pages' => '173-182',
+                    ]
+            ],
+
 
 
 
