@@ -2923,7 +2923,7 @@ class Converter
         $remainderEndsInColon = substr($remainder, -1) == ':';
         $remainder = trim($remainder, '.,:;}{ ');
 
-        if ($remainder && !in_array($remainder, ['pages', 'Pages', 'pp', 'pp.'])) {
+        if ($remainder && ! in_array($remainder, ['pages', 'Pages', 'pp', 'pp.'])) {
             if (preg_match('/^' . $this->endForthcomingRegExp . '/i', $remainder)
                 ||
                 preg_match('/^' . $this->startForthcomingRegExp . '/i', $remainder)
@@ -2937,6 +2937,8 @@ class Converter
                 } else {
                     $this->addToField($item, 'note', $remainder, 'addToField 15');
                 }
+            } elseif (preg_match('/^Paper no\. [0-9]+\.?$/i', $remainder)) {
+                $this->addToField($item, 'note', $remainder, 'addToField 17');
             } else {
                 $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
             }
@@ -3270,6 +3272,7 @@ class Converter
                         || preg_match($this->startPagesRegExp, $remainder)
                         || preg_match('/^[Ii]n [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
+                        || ($nextWord && $nextButOneWord && Str::endsWith($nextWord, range('a', 'z')) && Str::endsWith($nextButOneWord, '.') && in_array(substr($nextButOneWord,0,-1), $this->startJournalAbbreviations))
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder) // pages (e.g. within book)
                         || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?

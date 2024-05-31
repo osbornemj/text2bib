@@ -7062,6 +7062,48 @@ class ExampleSeeder extends Seeder
                     'pages' => '173-182',
                     ]
             ],
+			// title includes part of journal name
+			[
+                'source' => '	10	Dimitrov, George; Katzarkov, Ludmil, Some new categorical invariants, Selecta Math. (N.S.) 25 (2019), no. 3, Paper No. 45',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Dimitrov, George and Katzarkov, Ludmil',
+                    'title' => 'Some new categorical invariants',
+					'journal' => 'Selecta Math. (N. S.)',
+                    'year' => '2019',
+                    'volume' => '25',
+                    'number' => '3',
+					'note' => 'Paper No. 45',
+                    ]
+            ],
+			// title includes part of journal name
+			[
+                'source' => '	36	Favero, David; Iliev, Atanas; Katzarkov, Ludmil, On the Griffiths groups of Fano manifolds of Calabi-Yau Hodge type, Pure Appl. Math. Q. 10 (2014), no. 1, 1–55.',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Favero, David and Iliev, Atanas and Katzarkov, Ludmil',
+                    'title' => 'On the Griffiths groups of Fano manifolds of Calabi-Yau Hodge type',
+                    'year' => '2014',
+                    'journal' => 'Pure Appl. Math. Q.',
+                    'volume' => '10',
+                    'number' => '1',
+                    'pages' => '1-55',
+                    ]
+            ],
+			// title includes part of journal name
+			[
+                'source' => '	50	Alexeev, V.; Katzarkov, L., On K-stability of reductive varieties, Geom. Funct. Anal. 15 (2005), no. 2, 297–310.',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Alexeev, V. and Katzarkov, L.',
+                    'title' => 'On K-stability of reductive varieties',
+                    'year' => '2005',
+                    'journal' => 'Geom. Funct. Anal.',
+                    'volume' => '15',
+                    'number' => '2',
+                    'pages' => '297-310',
+                    ]
+            ],
 
 
 
