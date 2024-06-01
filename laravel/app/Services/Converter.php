@@ -1725,6 +1725,8 @@ class Converter
             case 'inproceedings':
                 $leftover = '';
                 $this->verbose("[in1a] Remainder: " . $remainder);
+                $wordsBeforeEds = [];
+                
                 // If year is in parens, it is not part of booktitle
                 if (isset($year) && Str::contains($remainderWithMonthYear, '(' . $year . ')')) {
                     $remainderWithMonthYear = Str::replace('(' . $year . ')', '', $remainderWithMonthYear);
@@ -2060,7 +2062,7 @@ class Converter
                         $updateRemainder = false;
                     }
 
-                    if (!isset($item->editor)) {
+                    if (! isset($item->editor)) {
                         if ($remainderContainsEds) {
                             $wordsBeforeAllNames = true;
                             foreach ($wordsBeforeEds as $word) {
@@ -3221,14 +3223,11 @@ class Converter
                     break;
                 }
 
-                $stringToNextCommaOrPeriod = strtok($remainder, '.,');
-                $wordAfterNextCommaOrPeriod = strtok(substr($remainder, 1 + strlen($stringToNextCommaOrPeriod)), ' ');
-
                 // String up to next '?', '!', ',', or '.' not preceded by ' J'.
                 $chars = mb_str_split($remainder, 1, 'UTF-8');
-                $stringToNextPeriod = '';
+                $stringToNextPeriodOrComma = '';
                 foreach ($chars as $i => $char) {
-                    $stringToNextPeriod .= $char;
+                    $stringToNextPeriodOrComma .= $char;
                     if (
                             in_array($char, ['?', '!', ','])
                             ||
@@ -3244,9 +3243,11 @@ class Converter
                     }
                 }
 
+                $wordAfterNextCommaOrPeriod = strtok(substr($remainder, 1 + strlen($stringToNextPeriodOrComma)), ' ');
+
                 $upcomingYear = $upcomingVolumePageYear = false;
-                if ($stringToNextPeriod) {
-                    $followingRemainder = mb_substr($remainder, mb_strlen($stringToNextPeriod));
+                if ($stringToNextPeriodOrComma) {
+                    $followingRemainder = mb_substr($remainder, mb_strlen($stringToNextPeriodOrComma));
                     $upcomingYear = $this->isYear(trim($followingRemainder));
                     $upcomingVolumePageYear = preg_match('/^[0-9\(\)\., p\-]{2,}$/', trim($followingRemainder));
                     $upcomingVolume = preg_match('/^Vol\.? /', trim($followingRemainder));
@@ -3267,7 +3268,7 @@ class Converter
                 // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
                 // of the cases ``<word>.'' and "<word>."
                 if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && in_array($nextWord[0], ['(', '[']))) {
-                    $wordsToNextPeriod = explode(' ', $stringToNextPeriod);
+                    $wordsToNextPeriod = explode(' ', $stringToNextPeriodOrComma);
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
@@ -3324,8 +3325,8 @@ class Converter
                     // ||
                     // ($nextWord && $nextWord[0] == '(' && substr($nextWord, -1) != ')')
                     ) {
-                        $this->verbose('$stringToNextPeriod: ' . $stringToNextPeriod);
-                        $this->verbose('$stringToNextCommaOrPeriod: ' . $stringToNextCommaOrPeriod);
+                        $this->verbose('$stringToNextPeriodOrComma: ' . $stringToNextPeriodOrComma);
+//                        $this->verbose('$stringToNextCommaOrPeriod: ' . $stringToNextCommaOrPeriod);
                         $this->verbose('$wordAfterNextCommaOrPeriod: ' . $wordAfterNextCommaOrPeriod);
                     // if first character of next word is lowercase letter and does not end in period
                     // OR $word and $nextWord are A. and D. or B. and C.
@@ -3375,12 +3376,12 @@ class Converter
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
                     // elseif next sentence starts with a thesis designation, terminate title
-                    } elseif (preg_match('/^[\(\[]' . $this->fullThesisRegExp . '[\)\]]/', $stringToNextPeriod)) {
+                    } elseif (preg_match('/^[\(\[]' . $this->fullThesisRegExp . '[\)\]]/', $stringToNextPeriodOrComma)) {
                         $this->verbose("Ending title, case 4a");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
                     // elseif next sentence contains word 'series', terminate title
-                    } elseif (preg_match('/(?<!time) series/i', $stringToNextPeriod)) {
+                    } elseif (preg_match('/(?<!time) series/i', $stringToNextPeriodOrComma)) {
                         $this->verbose("Ending title, case 4b (next sentence contains 'series' not preceded by 'time')");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
@@ -3394,13 +3395,13 @@ class Converter
                     // and is followed by at least 30 characters or 37 if it contains pages (for the publication info),
                     // assume it is part of the title,
                     } elseif (
-                            preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriod,0,-1))
-                            //preg_match('/[a-zA-Z -]+/', substr($stringToNextPeriod,0,-1))
+                            preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriodOrComma,0,-1))
+                            //preg_match('/[a-zA-Z -]+/', substr($stringToNextPeriodOrComma,0,-1))
                             && !preg_match($this->inRegExp1, $remainder)
-                            && strlen($remainder) > strlen($stringToNextPeriod) + ($containsPages ? 37 : 30)
+                            && strlen($remainder) > strlen($stringToNextPeriodOrComma) + ($containsPages ? 37 : 30)
                             && ! $upcomingYear
                             ) {
-                        $this->verbose("Not ending title, case 2 (next word is '" . $nextWord . "', followed by '" . $stringToNextPeriod . "')");
+                        $this->verbose("Not ending title, case 2 (next word is '" . $nextWord . "', followed by '" . $stringToNextPeriodOrComma . "')");
                     // else if working paper string occurs later in remainder,
                     } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/i', $remainder, $matches)) {
                         // if no intervening punctuation, end title
@@ -3432,7 +3433,7 @@ class Converter
                         // AND (the rest of the remainder is not all-numebers and punctuation (has to include publication info) OR
                         // entry contains url access info (which has been removed))
                         // Treat hyphens in words as spaces
-                        $modStringToNextPeriod = preg_replace('/([a-z])-([a-z])/', '$1 $2', $stringToNextPeriod);
+                        $modStringToNextPeriod = preg_replace('/([a-z])-([a-z])/', '$1 $2', $stringToNextPeriodOrComma);
                         $wordsToNextPeriod = explode(' ',  $modStringToNextPeriod);
                         // $lcWordCount = 0;
                         // foreach ($wordsToNextPeriod as $remainingWord) {
