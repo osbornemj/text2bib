@@ -1726,7 +1726,11 @@ class Converter
                 $leftover = '';
                 $this->verbose("[in1a] Remainder: " . $remainder);
                 $wordsBeforeEds = [];
-                
+                $beforeEds = '';
+                $afterEds = '';
+                $publisherPosition = false;
+                $remainderContainsEds = false;
+                                
                 // If year is in parens, it is not part of booktitle
                 if (isset($year) && Str::contains($remainderWithMonthYear, '(' . $year . ')')) {
                     $remainderWithMonthYear = Str::replace('(' . $year . ')', '', $remainderWithMonthYear);
