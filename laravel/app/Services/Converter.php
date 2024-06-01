@@ -252,7 +252,7 @@ class Converter
         $this->pageRange = '(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})(?![a-zA-Z])';
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?( )?' . $this->pageRange;
         // hlm., hal.: Indonesian, ss: Turkish
-        $this->startPagesRegExp = '/(^pages |^pp\.?|^p\. ?|^p |^стр\. |^hlm\. |^hal\. |^ss?\. )[0-9]/i';
+        $this->startPagesRegExp = '/(^pages |^pp\.? ?|^p\. ?|^p |^стр\. |^hlm\. |^hal\. |^ss?\. )[0-9]/i';
 
         // en for Spanish (and French?), em for Portuguese
         $this->inRegExp1 = '/^[iIeE]n:? /';
@@ -3224,13 +3224,13 @@ class Converter
                 $stringToNextCommaOrPeriod = strtok($remainder, '.,');
                 $wordAfterNextCommaOrPeriod = strtok(substr($remainder, 1 + strlen($stringToNextCommaOrPeriod)), ' ');
 
-                // String up to next ?, !, or . not preceded by ' J'.
+                // String up to next '?', '!', ',', or '.' not preceded by ' J'.
                 $chars = mb_str_split($remainder, 1, 'UTF-8');
                 $stringToNextPeriod = '';
                 foreach ($chars as $i => $char) {
                     $stringToNextPeriod .= $char;
                     if (
-                            in_array($char, ['?', '!'])
+                            in_array($char, ['?', '!', ','])
                             ||
                             (
                                 $char == '.' &&
@@ -3248,7 +3248,8 @@ class Converter
                 if ($stringToNextPeriod) {
                     $followingRemainder = mb_substr($remainder, mb_strlen($stringToNextPeriod));
                     $upcomingYear = $this->isYear(trim($followingRemainder));
-                    $upcomingVolumePageYear = preg_match('/^[0-9\(\)\., p\-]{2,}$/', $followingRemainder);
+                    $upcomingVolumePageYear = preg_match('/^[0-9\(\)\., p\-]{2,}$/', trim($followingRemainder));
+                    $upcomingVolume = preg_match('/^Vol\.? /', trim($followingRemainder));
                 }
 
                 // When a word ending in punctuation or preceding a word starting with ( is encountered, check whether
@@ -3277,7 +3278,7 @@ class Converter
                         || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
                         || in_array('Journal', $wordsToNextPeriod)  // 
-                        || (Str::endsWith(rtrim($word, "'\""), [',']) && $upcomingVolumePageYear)  // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
+                        || (Str::endsWith(rtrim($word, "'\""), [',', '.']) && ($upcomingVolumePageYear || $upcomingVolume))  // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
                         || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.()]*$/', $remainder)  // journal name, pub info? ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)

@@ -7104,6 +7104,49 @@ class ExampleSeeder extends Seeder
                     'pages' => '297-310',
                     ]
             ],
+			// journal not detected
+			[
+                'source' => 'Han, M. Y., Özyilmaz, B., Zhang, Y., & Kim, P. (2007). Energy Band-gap engineering of Graphene Nanoribbons. Physical Review Letters, 98(20). https://doi.org/10.1103/physrevlett.98.206805 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Han, M. Y. and Özyilmaz, B. and Zhang, Y. and Kim, P.',
+                    'title' => 'Energy Band-gap engineering of Graphene Nanoribbons',
+                    'year' => '2007',
+                    'volume' => '98',
+					'journal' => 'Physical Review Letters',
+					'number' => '20',
+                    'doi' => '10.1103/physrevlett.98.206805',
+                ],
+				'char_encoding' => 'utf8leave',
+            ],
+			// pp included in journal name
+			[
+                'source' => '[144]	L. Hoelting et al., “Stem Cell-Derived Immature Human Dorsal Root Ganglia Neurons to Identify Peripheral Neurotoxicants,” Stem Cells Transl Med, pp. 505–509, 2016. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'L. Hoelting and others',
+                    'title' => 'Stem Cell-Derived Immature Human Dorsal Root Ganglia Neurons to Identify Peripheral Neurotoxicants',
+                    'year' => '2016',
+                    'journal' => 'Stem Cells Transl Med',
+                    'pages' => '505-509',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => 'Lei Tian, Qiang Cao, Hong Jiang, Dan Feng, Changsheng Xie, and Qin Xin. Online Availability Upgrades for Parity-based RAIDs through Supplementary Parity Augmentations. ACM Transactions on Storage, Vol. 6, No. 4, Article 17, May 2011, Pages: 17:1-17:23 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'Article 17',
+                    'author' => 'Lei Tian and Qiang Cao and Hong Jiang and Dan Feng and Changsheng Xie and Qin Xin',
+                    'title' => 'Online Availability Upgrades for Parity-based RAIDs through Supplementary Parity Augmentations',
+					'journal' => 'ACM Transactions on Storage',
+                    'year' => '2011',
+                    'month' => 'May',
+                    'pages' => '1-17',
+                    'volume' => '6',
+                    'number' => '4',
+                    ]
+            ],
 
 
 
