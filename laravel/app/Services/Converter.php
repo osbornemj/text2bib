@@ -5095,7 +5095,7 @@ class Converter
             preg_match_all($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
         }
 
-        // Using labels for matches seems non-straightforward because the patterns are using more than once in each
+        // Using labels for matches seems non-straightforward because the patterns are used more than once in each
         // regular expression.
         // These are the indexes of the matches for the subpatterns of the regular expression:
         if ($allowMonth) {

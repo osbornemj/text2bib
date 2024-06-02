@@ -7436,6 +7436,36 @@ class ExampleSeeder extends Seeder
 					'urldate' => 'May 21, 2024',
                     ]
             ],
+			// number and page numbers not picked up
+			[
+                'source' => 'Tham YC, Li X, Wong TY, Quigley HA, Aung T, Cheng CY. Global prevalence of glaucoma and projections of glaucoma burden through 2040: A systematic review and meta-analysis. Ophthalmology. 2014;121(11):2081- 2090. doi:10.1016/j.ophtha.2014.05.013 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Tham, Y. C. and Li, X. and Wong, T. Y. and Quigley, H. A. and Aung, T. and Cheng, C. Y.',
+                    'title' => 'Global prevalence of glaucoma and projections of glaucoma burden through 2040: A systematic review and meta-analysis',
+                    'journal' => 'Ophthalmology.',
+                    'year' => '2014',
+                    'volume' => '121',
+                    'number' => '11',
+                    'pages' => '2081-2090',
+                    'doi' => '10.1016/j.ophtha.2014.05.013',
+                    ]
+            ],
+            // number, pages, year (no spaces)
+            [
+                'source' => 'Jonas JB, Aung T, Bourne RR, Bron AM, Ritch R, Panda-Jonas S. Glaucoma. Lancet. 2017;390(10108):2183-2193. doi:10.1016/S0140-6736(17)31469-1 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Jonas, J. B. and Aung, T. and Bourne, R. R. and Bron, A. M. and Ritch, R. and Panda-Jonas S. Glaucoma',
+                    'title' => 'Glaucoma',
+                    'journal' => 'Lancet',
+                    'year' => '2017',
+                    'volume' => '390',
+                    'number' => '10108',
+                    'pages' => '2183-2193',
+                    'doi' => '10.1016/S0140-6736(17)31469-1',
+                    ]
+            ],
 
         ];
 
