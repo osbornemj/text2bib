@@ -66,6 +66,7 @@ class Converter
     var $journalNames;
     var $masterRegExp;
     var $monthsRegExp;
+    var $monthsAbbreviations;
     var $names;
     var $nameSuffixes;
     var $numberRegExp;
@@ -366,6 +367,16 @@ class Converter
                 . '(?P<m9>september|sep' . $p . ')|(?P<m10>oktober|okt' . $p . ')|(?P<m11>november|nov' . $p . ')|(?P<m12>december|dec' . $p . ')',
         ];
 
+        $this->monthsAbbreviations = [
+            'en' => ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Sept', 'Oct', 'Nov', 'Dec'],
+            'cz' => ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Sept', 'Oct', 'Nov', 'Dec'],
+            'fr' => ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Sept', 'Oct', 'Nov', 'Dec'],
+            'es' => ['feb', 'mar', 'abr', 'jun', 'jul', 'set', 'sept', 'oct', 'nov', 'dec'],
+            'pt' => ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dez'],
+            'my' => ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Sept', 'Oct', 'Nov', 'Dec'],
+            'nl' => ['jan', 'febr', 'mrt', 'apr', 'aug', 'sep', 'Okt', 'nov', 'dec'],
+        ];
+
         $this->vonNames = VonName::all()->pluck('name')->toArray();
 
         // Codes are ended by } EXCEPT \em, \it, and \sl, which have to be ended by something like \normalfont.  Code
@@ -514,7 +525,7 @@ class Converter
 
         $doi = $this->extractLabeledContent(
             $remainder,
-            ' [\[\)]?doi:? | [\[\(]?doi: ?|(\\\href\{)?https?://dx\.doi\.org/|(\\\href\{)?https?://doi\.org/|doi\.org',
+            ' [\[\)]?doi:? | [\[\(]?doi: ?|(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(\\\href\{|\\\url{)?https?://doi\.org/|doi\.org',
             '[^ ]+'
         );
 
@@ -1730,7 +1741,7 @@ class Converter
                 $afterEds = '';
                 $publisherPosition = false;
                 $remainderContainsEds = false;
-                                
+
                 // If year is in parens, it is not part of booktitle
                 if (isset($year) && Str::contains($remainderWithMonthYear, '(' . $year . ')')) {
                     $remainderWithMonthYear = Str::replace('(' . $year . ')', '', $remainderWithMonthYear);
@@ -1859,7 +1870,7 @@ class Converter
                 $this->verbose('[in3] Remainder: ' . $remainder);
                 $updateRemainder = false;
 
-                // If $remainder starts with [a-zA-Z]*: and has no more occurrences of this pattern,
+                // If $remainder starts with '[a-zA-Z]*:' and has no more occurrences of this pattern,
                 // it is consistent with its being publisher: address, without any editors.
                 if (preg_match_all('/[a-zA-Z]*:/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
                     // Next line to stop VSCode complaining
@@ -1886,10 +1897,11 @@ class Converter
                     // If type is inproceedings and there is a period that is not preceded by any of the $bookTitleAbbrevs
                     // and $remainder does not contain a string for editors, take booktitle to be $remainder up to period.
                     if (
-                        $itemKind == 'inproceedings' &&
-                        $periodPosition !== false &&
-                        ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->bookTitleAbbrevs) &&
-                        ! preg_match('/ edited |[ \(]eds?\.|[ \(]pp\./i', $remainder)
+                        $itemKind == 'inproceedings'
+                        && $periodPosition !== false
+                        && ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->bookTitleAbbrevs)
+                        && ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->monthsAbbreviations[$language])
+                        && ! preg_match('/ edited |[ \(]eds?\.|[ \(]pp\./i', $remainder)
                        ) {
                         if ($periodPosition > $datePos) {
                             $booktitle = substr($remainder, 0, $periodPosition);
@@ -3341,7 +3353,7 @@ class Converter
                             (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.' && $nextWord != 'in')
                                     || ($word == 'A.' && $nextWord == 'D.')
                                     || ($word == 'B.' && $nextWord == 'C.')
-                                    || Str::startsWith($remainder, ['I. ', 'II. ', 'III. '])
+                                    || preg_match('/^(Part )?II?I?[:.] /', $remainder)
                                 )
                         ) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
@@ -4183,6 +4195,7 @@ class Converter
                 }
             } elseif ($determineEnd && substr($word, -1) == '.' && strlen($lettersOnlyWord) > 3
                     && mb_strtolower(substr($word, -2, 1)) == substr($word, -2, 1)) {
+                        //dd($word, $remainingWords, $namePart);
                 // If $determineEnd and word ends in period and word has > 3 chars (hence not "St.") and previous letter
                 // is lowercase (hence not string of initials without spaces):
                 if ($namePart == 0) {
@@ -4232,10 +4245,28 @@ class Converter
                     $this->addToAuthorString(5, $authorstring, $this->formatAuthor($fullName));
                     $remainder = implode(" ", $remainingWords);
                     $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, and namePart is > 0';
-                } else {
+                } elseif (
+                        isset($remainingWords[0])
+                        && isset($remainingWords[1])
+                        && (
+                            (substr(trim($remainingWords[0], ', '), -1) == '.' && $this->isInitials(trim($remainingWords[0], ', ')))
+                            ||
+                             $this->isAnd($remainingWords[0])
+                           )
+                        ) {
+                    // case like "Richerson, Peter. J., and ..."
                     $warnings[] = "Unexpected period after \"" . substr($word, 0, -1) . "\" in source.  Typo?  Period was ignored.";
                     $word = substr($word, 0, -1);
                     goto namePart0;
+                } else {
+                    // period at end of list of authors
+                    $this->verbose('[convertToAuthors 7a]');
+                    $nameComponent = $word;
+                    $fullName .= " " . trim($nameComponent, '.');
+                    $this->addToAuthorString(18, $authorstring, $fullName);
+                    $reason = 'Word ends in period, namePart is 1, and next word is not initials or "and", so ending author list.';
+                    $done = true;
+                    $remainder = substr($remainder, strpos($remainder, '.'));
                 }
                 $this->verbose("Remainder: " . $remainder);
                 $this->verbose('[c2a getYear 4]');
@@ -4431,7 +4462,9 @@ class Converter
 
                 // $bareWords is array of words at start of $remainingWords that don't end end in ','
                 // or '.' or ')' or ':' or is a year in parens or brackets or starts with quotation mark
-                $bareWords = $this->bareWords($remainingWords, false, $language);
+                $bareWordsResult = $this->bareWords($remainingWords, false, $language);
+                $bareWords = $bareWordsResult['barewords'];
+                $wordAfterBareWords = $bareWordsResult['nextword'];
                 // If 'and' has not already occurred ($hasAnd is false), its occurrence in $barewords is compatible
                 // with $barewords being part of the authors' names OR being part of the title, so should be ignored.
                 $nameScore = $this->nameScore($bareWords, ! $hasAnd);
@@ -4441,6 +4474,8 @@ class Converter
                     $this->verbose('[convertToAuthors 24]');
                     $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                 }
+
+                //dump($bareWords, $wordAfterBareWords);
 
                 if ($determineEnd && $text = $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after, $style)) {
                     if (in_array($text, ['et al', 'et al.', 'et. al.'])) {
@@ -4487,6 +4522,15 @@ class Converter
                             count($bareWords) > 3
                             ||
                             (
+                                $wordAfterBareWords
+                                && ctype_alpha($wordAfterBareWords)
+                                && $wordAfterBareWords == mb_strtolower($wordAfterBareWords)
+                                && ! $this->isAnd($wordAfterBareWords, $language) 
+                                && ! in_array($wordAfterBareWords, $this->vonNames)
+                                && ! in_array($wordAfterBareWords, ['al.'])
+                            )
+                           ||
+                            (
                                 $this->inDict(trim($remainingWords[0], ',;')) 
                                 && ! $this->isInitials(trim($remainingWords[0], ',;'))
                                 && ! in_array(trim($remainingWords[0], '.,'), $this->nameSuffixes)
@@ -4512,9 +4556,10 @@ class Converter
                         )
                         &&
                         (
-                            $nameScore['count'] == 0 ||
-                            $nameScore['score'] / $nameScore['count'] < 0.26 ||
-                            (isset($bareWords[1]) && mb_strtolower($bareWords[1]) == $bareWords[1] && ! $this->isAnd($bareWords[1], $language) && ! in_array($bareWords[1], $this->vonNames))
+                            $nameScore['count'] == 0
+                            || $nameScore['score'] / $nameScore['count'] < 0.26
+                            || (isset($bareWords[1]) && mb_strtolower($bareWords[1]) == $bareWords[1] && ! $this->isAnd($bareWords[1], $language) && ! in_array($bareWords[1], $this->vonNames))
+                            || (ctype_alpha($wordAfterBareWords) && $wordAfterBareWords == mb_strtolower($wordAfterBareWords))
                         )
                         &&
                         (
@@ -5238,6 +5283,7 @@ class Converter
     private function bareWords(array $words, bool $stopAtAnd, string $language = 'en'): array
     {
         $barewords = [];
+        $j = 0;
         foreach ($words as $j => $word) {
             $stop = false;
             $endsWithPunc = false;
@@ -5252,7 +5298,8 @@ class Converter
                 $stop = true;
                 $include = false;
             }
-            if (Str::startsWith($word, ['`', '"', "'"])) {
+
+            if (Str::startsWith($word, ['`', '"', "'", '\emph{'])) {
                 $stop = true;
             }
 
@@ -5274,7 +5321,8 @@ class Converter
                 $barewords[] = $word;
             }
         }
-        return $barewords;
+
+        return ['barewords' => $barewords, 'nextword' => $words[$j+1] ?? null];
     }
 
     /*
@@ -5783,7 +5831,7 @@ class Converter
                             $numberOfMatches = preg_match('/([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:)*(.*)/', $remainder, $matches, PREG_OFFSET_CAPTURE);
                             if ($numberOfMatches) {
                                 $this->verbose('[p2d]');
-                                if (Str::startsWith($matches[3][0], ['Article', 'article'])) {
+                                if (Str::startsWith($matches[3][0], ['Article', 'article', 'Paper', 'paper'])) {
                                     $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $matches[3][0], 'getVolumeAndNumberForArticle 9');
                                     $this->setField($item, 'volume', $matches[1][0], 'getVolumeAndNumberForArticle 10');
                                 } elseif (preg_match('/^([0-9]*) *([0-9]*)[ ]*$/', $remainder, $matches)) {

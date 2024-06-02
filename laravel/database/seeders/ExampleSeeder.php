@@ -6059,8 +6059,8 @@ class ExampleSeeder extends Seeder
                 'source' => 'Wencong Xiao, Romil Bhardwaj, Ramachandran Ramjee, Muthian Sivathanu, Nipun Kwatra, Zhenhua Han, Pratyush Patel, Xuan Peng, Hanyu Zhao, Quanlu Zhang, Fan Yang, and Lidong Zhou. Gandiva: Introspective cluster scheduling for deep learning. In Proceedings of 13th USENIX Symposium on Operating Systems Design and Implementation (OSDI 18) , pages 595–610, Carlsbad, CA, 2018. ',
                 'type' => 'inproceedings',
                 'bibtex' => [
-                    'author' => 'Wencong Xiao and Romil Bhardwaj and Ramachandran Ramjee and Muthian Sivathanu and Nipun Kwatra and Zhenhua Han and Pratyush Patel and Xuan Peng and Hanyu Zhao and Quanlu Zhang',
-                    'title' => 'Fan Yang, and Lidong Zhou. Gandiva: Introspective cluster scheduling for deep learning',
+                    'author' => 'Wencong Xiao and Romil Bhardwaj and Ramachandran Ramjee and Muthian Sivathanu and Nipun Kwatra and Zhenhua Han and Pratyush Patel and Xuan Peng and Hanyu Zhao and Quanlu Zhang and Fan Yang and Lidong Zhou',
+                    'title' => 'Gandiva: Introspective cluster scheduling for deep learning',
                     'year' => '2018',
                     'pages' => '595-610',
                     'booktitle' => 'Proceedings of 13th USENIX Symposium on Operating Systems Design and Implementation (OSDI 18), Carlsbad, CA',
@@ -7147,8 +7147,110 @@ class ExampleSeeder extends Seeder
                     'number' => '4',
                     ]
             ],
-
-
+   			// last author included in title
+			[
+                'source' => '\bibitem {Ganju et al.} Karan Ganju, Qi Wang, Wei Yang, Carl A. Gunter, Nikita Borisov: \emph{Property Inference Attacks on Fully Connected Neural Networks using Permutation Invariant Representations}, in CCS \'18: 2018 ACM SIGSAC Conference on Computer \& Communications Security Oct. 15-19, Toronto, ON, Canada, pp. 619-633. \url{https://doi.org/10.1145/3243734.3243834} ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Karan Ganju and Qi Wang and Wei Yang and Carl A. Gunter and Nikita Borisov',
+                    'title' => 'Property Inference Attacks on Fully Connected Neural Networks using Permutation Invariant Representations',
+                    'year' => '2018',
+                    'pages' => '619-633',
+                    'doi' => '10.1145/3243734.3243834',
+                    'booktitle' => 'CCS \'18: 2018 ACM SIGSAC Conference on Computer \& Communications Security Oct. 15-19, Toronto, ON, Canada',
+                    ]
+            ],
+   			// Names included in title
+			[
+                'source' => 'Ling Chen, Donghui Chen, Fan Yang, and Jianling Sun. A deep multi-task representation learning method for time series classification and retrieval. Inf. Sci., 555:17–32, 2021. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Ling Chen and Donghui Chen and Fan Yang and Jianling Sun',
+                    'title' => 'A deep multi-task representation learning method for time series classification and retrieval',
+                    'year' => '2021',
+                    'journal' => 'Inf. Sci.',
+                    'volume' => '555',
+                    'pages' => '17-32',
+                    ]
+            ],
+			// "A" included at end of author list
+			[
+                'source' => 'George Zerveas, Srideepika Jayaraman, Dhaval Patel, Anuradha Bhamidipaty, and Carsten Eickhoff. A transformerbased framework for multivariate time series representation learning. In KDD, pages 2114–2124, 2021. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'George Zerveas and Srideepika Jayaraman and Dhaval Patel and Anuradha Bhamidipaty and Carsten Eickhoff',
+                    'title' => 'A transformerbased framework for multivariate time series representation learning',
+                    'year' => '2021',
+                    'journal' => 'KDD',
+                    'pages' => '2114-2124',
+                    ]
+            ],
+			// second author included in title
+			[
+                'source' => 'Ling Yang and Shenda Hong. Unsupervised time-series representation learning with iterative bilinear temporalspectral fusion. In ICML, pages 25038–25054, 2022. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Ling Yang and Shenda Hong',
+                    'title' => 'Unsupervised time-series representation learning with iterative bilinear temporalspectral fusion',
+                    'year' => '2022',
+                    'journal' => 'ICML',
+                    'pages' => '25038-25054',
+                    ]
+            ],
+			// title ended early
+			[
+                'source' => 'Song, C., Kenis, G., van Gastel,A., Bosmans, E., Lin, A., de Jong, R., et al. (1999). Influence of psychological stress on immune-inflammatory variables in normal humans. Part II: Altered serum concentrations of natural antiinflammatory agents and soluble membrane antigens of monocytes and T lymphocytes. Psychiatry Research, 85(3), 293–303 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Song, C. and Kenis, G. and van Gastel, A. and Bosmans, E. and Lin, A. and de Jong, R. and others',
+                    'year' => '1999',
+                    'title' => 'Influence of psychological stress on immune-inflammatory variables in normal humans. Part II: Altered serum concentrations of natural antiinflammatory agents and soluble membrane antigens of monocytes and T lymphocytes',
+					'journal' => 'Psychiatry Research',
+                    'volume' => '85',
+                    'number' => '3',
+                    'pages' => '293-303',
+                    ]
+            ],
+			// authors includes first word of title (other examples in conversion 4729)
+			 [
+                'source' => '	3	Haiden, F.; Katzarkov, L.; Kontsevich, M.; Pandit, P., Semistability, modular lattices, and iterated logarithms, J. Differential Geom. 123 (2023), no. 1, 21–66. IF: 2.5 (Q1)   ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Haiden, F. and Katzarkov, L. and Kontsevich, M. and Pandit, P.',
+                    'title' => 'Semistability, modular lattices, and iterated logarithms',
+                    'year' => '2023',
+                    'journal' => 'J. Differential Geom.',
+                    'volume' => '123',
+                    'number' => '1',
+                    'pages' => '21-66',
+                    ]
+            ],
+			// authors includes first word of title
+			[
+                'source' => '	6	Katzarkov, Ludmil; Pandit, Pranav; Spaide, Theodore, Calabi-Yau structures, spherical functors, and shifted symplectic structures, Adv. Math. 392 (2021), Paper No. 108037',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Katzarkov, Ludmil and Pandit, Pranav and Spaide, Theodore',
+                    'title' => 'Calabi-Yau structures, spherical functors, and shifted symplectic structures',
+                    'year' => '2021',
+                    'journal' => 'Adv. Math.',
+                    'volume' => '392',
+					'note' => 'Paper No. 108037',
+                    ]
+            ],
+			// authors includes first word of title
+			[
+                'source' => '	7	Katzarkov, Ludmil; Lupercio, Ernesto; Meersseman, Laurent; Verjovsky, Alberto, Quantum (non-commutative) toric geometry: foundations, Adv. Math. 391 (2021), Paper No. 107945, 110 pp. IF: 1.530 (Q1) Cited 4 times 	8	Fan, Yu-Wei; Filip, Simion; Haiden, Fabian; Katzarkov, Ludmil; Liu, Yijia, On pseudo-Anosov autoequivalences, Adv. Math. 384 (2021), Paper No. 107732, 37 pp. IF: 1.530 (Q1)  Cited 7 times  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Katzarkov, Ludmil and Lupercio, Ernesto and Meersseman, Laurent and Verjovsky, Alberto',
+                    'title' => 'Quantum (non-commutative) toric geometry: foundations',
+                    'year' => '2021',
+                    'journal' => 'Adv. Math.',
+                    'volume' => '391',
+                    'number' => '2021',
+                    ]
+            ],
 
 
 
