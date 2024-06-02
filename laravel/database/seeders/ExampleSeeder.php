@@ -1686,7 +1686,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2001',
                     'title' => 'Robust Mechanism Design',
                     'author' => 'Bergemann, D. and S. Morris',
-                    'note' => 'http://www.princeton.edu/\symbol{126}smorris/pdfs/robustmechanism2001.pdf',
+                    'url' => 'http://www.princeton.edu/\symbol{126}smorris/pdfs/robustmechanism2001.pdf',
                     ]
             ],
             [
@@ -2867,7 +2867,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'archiveprefix' => 'arXiv',
                     'eprint' => 'math/0507473',
-                    'note' => 'https://arxiv.org/abs/math/0507473',
+                    'url' => 'https://arxiv.org/abs/math/0507473',
                     'author' => 'Arteaga, J. R. B. and Malakhaltsev, M. A.',
                     'title' => 'A remark on Ricci flow on left invariant metrics',
                     ]
@@ -2967,7 +2967,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Ackerman, M. S. and Davis, D. T.',
                     'year' => 'n.d.',
                     'title' => 'Privacy and security issues in e-commerce',
-                    'note' => 'https://web.eecs.umich.edu/~ackerm/pub/03e05/EC-privacy.ackerman.pdf',
+                    'url' => 'https://web.eecs.umich.edu/~ackerm/pub/03e05/EC-privacy.ackerman.pdf',
                     ]
             ],
             [
@@ -3810,13 +3810,14 @@ class ExampleSeeder extends Seeder
             ],
             [
                 'source' => 'Abenavoli, L., Larussa, T., Corea, A., Procopio, A., Boccuto, L., Dallio, M., . . . Luzza, F. (3 de Feb. de 2021). Polyphenols and Non-Alcoholic Fatty Liver Disease. Nutrients. doi:10.3390/nu13020494. ',
-                'type' => 'unpublished',
+                'type' => 'article',
                 'bibtex' => [
                     'doi' => '10.3390/nu13020494',
                     'year' => '2021',
                     'month' => 'febrero',
                     'date' => '2021-02-03',
-                    'title' => 'Polyphenols and Non-Alcoholic Fatty Liver Disease. Nutrients',
+                    'title' => 'Polyphenols and Non-Alcoholic Fatty Liver Disease',
+                    'journal' => 'Nutrients',
                     'author' => 'Abenavoli, L. and Larussa, T. and Corea, A. and Procopio, A. and Boccuto, L. and Dallio, M. and others and Luzza, F.',
                 ],
                 'language' =>'es',
@@ -4576,17 +4577,6 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'University of Minnesota Press',
                     'address' => 'Minneapolis; London',
                     'editor' => 'Andrzej Piotrowski and Julia Williams Robinson',
-                    ]
-            ],
-            [
-                'source' => 'CIA. (2024). The 20 countries with the highest unemployment rate in 2023. Statista. Accessed: April 09, 2024. https://www-statista-com.ezproxy.herts.ac.uk/statistics/264656/countries-with-the-highest-unemployment-rate/ ',
-                'type' => 'online',
-                'bibtex' => [
-                    'url' => 'https://www-statista-com.ezproxy.herts.ac.uk/statistics/264656/countries-with-the-highest-unemployment-rate/',
-                    'author' => 'CIA',
-                    'year' => '2024',
-                    'title' => 'The 20 countries with the highest unemployment rate in 2023. Statista',
-                    'urldate' => 'April 09, 2024',
                     ]
             ],
             [
@@ -7251,8 +7241,201 @@ class ExampleSeeder extends Seeder
                     'number' => '2021',
                     ]
             ],
-
-
+   			// problem with von name
+			[
+                'source' => 'Attard-Frost, B., De los Ríos, A., & Walters, D. R. (2023). The ethics of AI business practices: a review of 47 AI ethics guidelines. AI and Ethics, 3, 389–406. https://doi.org/10.1007/s43681-022-00156-6. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1007/s43681-022-00156-6',
+                    'author' => 'Attard-Frost, B. and De los Ríos, A. and Walters, D. R.',
+                    'year' => '2023',
+                    'title' => 'The ethics of AI business practices: a review of 47 AI ethics guidelines',
+                    'pages' => '389-406',
+                    'volume' => '3',
+					'journal' => 'AI and Ethics',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+            // year format
+			[
+                'source' => 'Althusser, L. (2008 (1971)). On Ideology. London: Verso. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Althusser, L.',
+                    'year' => '2008 (1971)',
+                    'title' => 'On Ideology',
+                    'publisher' => 'Verso',
+                    'address' => 'London',
+                    ]
+            ],
+   			// \textsc used for authors
+			[
+                'source' => '\bibitem{A+M+P-2006}  \textsc{Aban IB, Meerschaert MM \& Panorska AK} (2006). Parameter estimation for the truncated Pareto distribution. {\it Journal of the American Statistical Association} {\bf 101}:473, 270--277. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Aban, I. B. and Meerschaert, M. M. and Panorska, A. K.',
+					'year' => '2006',
+					'title' => 'Parameter estimation for the truncated Pareto distribution',
+                    'journal' => 'Journal of the American Statistical Association',
+                    'pages' => '270-277',
+                    'volume' => '101',
+					'number' => '473',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => 'Mengya Lei, Fan Li, Fang Wang, Dan Feng, Xiaomin Zou, Renzhi Xiao. SecNVM: An Eﬀicient and Write-Friendly Metadata Crash Consistency Scheme for Secure NVM. ACM Transactions on Architecture and Code Optimization, Vol.19 Issue 1, March 2022, Article No.8, Pages: 1–26 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'Article',
+                    'author' => 'Mengya Lei and Fan Li and Fang Wang and Dan Feng and Xiaomin Zou and Renzhi Xiao',
+                    'title' => 'SecNVM: An Efficient and Write-Friendly Metadata Crash Consistency Scheme for Secure NVM',
+                    'year' => '2022',
+                    'month' => 'March',
+                    'journal' => 'ACM Transactions on Architecture and Code Optimization',
+                    'pages' => '1-26',
+                    'volume' => '19',
+                    'number' => '1',
+					'note' => 'Article No. 8',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => 'Dan Feng, Hai Jin , Jiangling Zhang, Performance Analysis of RAID for Different Communication Mechanism Between RAID Controller and String Controllers, IEEE Trans. on Magnetics, Vol. 32, No.5, September, 1996, Pages:3890-3892. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Dan Feng and Hai Jin and Jiangling Zhang',
+                    'title' => 'Performance Analysis of RAID for Different Communication Mechanism Between RAID Controller and String Controllers',
+					'journal' => 'IEEE Trans. on Magnetics',
+                    'year' => '1996',
+                    'month' => 'September',
+                    'pages' => '3890-3892',
+                    'volume' => '32',
+                    'number' => '5',
+                    ]
+            ],
+			// journal not detected 
+			[
+                'source' => 'Yu Hua, Yifeng Zhu, Hong Jiang, Dan Feng and Lei Tian. Supporting Scalable and Adaptive Metadata Management in Ultra Large-scale File Systems. IEEE Transactions on Parallel and Distributed Systems (TPDS), Vol.22, No.4, April 2011, Pages: 580-593. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Yu Hua and Yifeng Zhu and Hong Jiang and Dan Feng and Lei Tian',
+                    'title' => 'Supporting Scalable and Adaptive Metadata Management in Ultra Large-scale File Systems',
+					'journal' => 'IEEE Transactions on Parallel and Distributed Systems (TPDS)',
+                    'year' => '2011',
+                    'month' => 'April',
+                    'pages' => '580-593',
+                    'volume' => '22',
+                    'number' => '4',
+                    ]
+            ],
+            // journal (newspaper) not detected
+			[
+                'source' => 'Belton, C., Mekhennet, S. and Harris, S. (2023, April 21). Kremlin tries to build antiwar coalition in Germany, documents show. The Washington Post. Retrieved April 24 from https://www.washingtonpost.com/world/2023/04/21/germany-russia-interference-afd-wagenknecht/. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Belton, C. and Mekhennet, S. and Harris, S.',
+                    'title' => 'Kremlin tries to build antiwar coalition in Germany, documents show',
+                    'journal' => 'The Washington Post',
+                    'year' => '2023',
+                    'month' => 'April',
+					'date' => '2023-04-21',
+					'urldate' => 'April 24',
+                    'url' => 'https://www.washingtonpost.com/world/2023/04/21/germany-russia-interference-afd-wagenknecht/',
+                    ]
+            ],
+			// journal (newspaper) not detected
+			 [
+                'source' => 'Gumenyuk, N. (2024, April 19). Brave new Ukraine. Foreign Affairs. Retrieved April 21 from https://www.foreignaffairs.com/ukraine/brave-new-ukraine. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Gumenyuk, N.',
+                    'title' => 'Brave new Ukraine',
+                    'journal' => 'Foreign Affairs',
+                    'year' => '2024',
+                    'month' => 'April',
+					'date' => '2024-04-19',
+					'urldate' => 'April 21',
+                    'url' => 'https://www.foreignaffairs.com/ukraine/brave-new-ukraine',
+                    ]
+            ],
+			// journal (newspaper) not detected
+			[
+                'source' => 'Kroet, C. (2016, February 1). German far-right slammed for ‘shoot refugees’ remark. Politico. Retrieved April 24 from https://www.politico.eu/article/afd-petry-german-far-right-slammed-for-shoot-refugees-remark/. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kroet, C.',
+                    'title' => '{G}erman far-right slammed for `shoot refugees\' remark',
+                    'journal' => 'Politico',
+                    'year' => '2016',
+                    'month' => 'February',
+					'date' => '2016-02-01',
+					'urldate' => 'April 24',
+                    'url' => 'https://www.politico.eu/article/afd-petry-german-far-right-slammed-for-shoot-refugees-remark/',
+                    ]
+            ],
+			// journal (newspaper) not detected
+			[
+                'source' => 'Motyl, A. J. (2023, May 27). Putin needs a geography lesson. The Hill. Retrieved April 24 from https://thehill.com/opinion/international/4022705-putin-needs-a-geography-lesson/. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Motyl, A. J.',
+                    'title' => 'Putin needs a geography lesson',
+                    'journal' => 'The Hill',
+                    'year' => '2023',
+                    'month' => 'May',
+					'date' => '2023-05-27',
+					'urldate' => 'April 24',
+                    'url' => 'https://thehill.com/opinion/international/4022705-putin-needs-a-geography-lesson/',
+                    ]
+            ],
+			// url access date not picked up
+			[
+                'source' => '\bibitem{Feedback GAN (FBGAN) for DNA}A. Gupta and J. Zou, "Feedback GAN (FBGAN) for DNA: a Novel Feedback-Loop Architecture for Optimizing Protein Functions." arXiv, Apr. 05, 2018. doi: 10.48550/arXiv.1804.01694. Available: \url{https://arxiv.org/abs/1804.01694}. [Accessed: May 21, 2024] ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => 'A. Gupta and J. Zou',
+                    'title' => 'Feedback GAN (FBGAN) for DNA: a Novel Feedback-Loop Architecture for Optimizing Protein Functions',
+                    'year' => '2018',
+                    'doi' => '10.48550/arXiv.1804.01694',
+                    'url' => 'https://arxiv.org/abs/1804.01694',
+                    'archiveprefix' => 'arXiv',
+                    'urldate' => 'May 21, 2024',
+					'date' => '2018-04-05',
+                    ]
+            ],
+			// url access date not picked up
+			[
+                'source' => '\bibitem{Gradient Descent}S. Ruder, "An overview of gradient descent optimization algorithms." arXiv, Jun. 15, 2017. Available: \url{http://arxiv.org/abs/1609.04747}. [Accessed: May 21, 2024] ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => 'S. Ruder',
+                    'title' => 'An overview of gradient descent optimization algorithms',
+                    'year' => '2017',
+                    'url' => 'http://arxiv.org/abs/1609.04747',
+                    'archiveprefix' => 'arXiv',
+                    'urldate' => 'May 21, 2024',
+					'date' => '2017-06-15',
+                    ]
+            ],
+			// url access date not picked up
+			[
+                'source' => '\bibitem{deep learning in genomics}J. Liu, J. Li, H. Wang, and J. Yan, "Application of deep learning in genomics," Sci. China Life Sci., vol. 63, no. 12, pp. 1860-1878, Dec. 2020, doi: 10.1007/s11427-020-1804-5. Available: \url{https://doi.org/10.1007/s11427-020-1804-5}. [Accessed: May 21, 2024] ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'J. Liu and J. Li and H. Wang and J. Yan',
+                    'title' => 'Application of deep learning in genomics',
+                    'journal' => 'Sci. China Life Sci.',
+                    'year' => '2020',
+                    'month' => 'December',
+                    'volume' => '63',
+                    'number' => '12',
+                    'pages' => '1860-1878',
+                    'doi' => '10.1007/s11427-020-1804-5',
+                    'url' => 'https://doi.org/10.1007/s11427-020-1804-5',
+					'urldate' => 'May 21, 2024',
+                    ]
+            ],
 
         ];
 
