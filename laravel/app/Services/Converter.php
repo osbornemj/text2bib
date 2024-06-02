@@ -5046,6 +5046,11 @@ class Converter
                 // <day>? <month> <year>
                 // The optional "de" between day and month and between month and year is for Spanish
                 preg_match('/[ \(](?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                ||
+                // <year> followed by volume, number, pages
+                // volume, number, pages pattern may need to be relaxed
+                // (pages might look like years, so this case should not be left to the routine below, which takes the last year-like string)
+                preg_match('/(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}))[.,;] ?[0-9]{1,4} ?\([0-9]{1,4}\)[:,.] ?[0-9]{1,5} ?- ?[0-9]{1,5}/i', $string, $matches2, PREG_OFFSET_CAPTURE)
                 ) {
                 $year = $matches2['year'][0] ?? null;
                 $month = $matches2['month'][0] ?? null;
@@ -5704,7 +5709,7 @@ class Converter
         if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
                 $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
             $this->setField($item, 'number', str_replace(['---', '--', ' - '], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
-            $this->setField($item, 'pages', str_replace(['---', '--', ' - ', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
+            $this->setField($item, 'pages', str_replace(['---', '--', ' - ', '- ', ' -', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
             $remainder = '';
         // e.g. Volume 6, 41-75$ OR 6 41-75$
        } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/J', $remainder, $matches)) {
