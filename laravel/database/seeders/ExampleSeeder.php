@@ -4055,7 +4055,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Strauss, Leo',
                     'title' => 'Leo Strauss on Maimonides: The Complete Writings',
                     'year' => '2013',
-                    'editor' => 'Kenneth Green Hart',
+                    'note' => 'Edited by Kenneth Green Hart.',
                     'address' => 'Chicago',
                     'publisher' => 'University of Chicago Press',
                     ]
@@ -4235,7 +4235,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'The Concept of Teshuvah in the Teachings of Maimonides and Rav Kook',
                     'year' => '1991',
                     'pages' => '282-304',
-                    'note' => 'translated by Shalom Carmy.',
+                    'note' => 'Translated by Shalom Carmy.',
                     'editor' => 'Benjamin Ish Shalom and Shalom Rosenberg',
                     'address' => 'Jerusalem',
                     'publisher' => 'Avi Chai',
@@ -6643,7 +6643,7 @@ class ExampleSeeder extends Seeder
                 'source' => '3: Abi Habib W, Brioude F, Edouard T, Bennett JT, Lienhardt-Roussie A, Tixier F, Salem J, Yuen T, Azzi S, Le Bouc Y, Harbison MD, Netchine I. Genetic disruption of the oncogenic HMGA2-PLAG1-IGF2 pathway causes fetal growth restriction. Genet Med. 2018 Feb;20(2):250-258. doi: 10.1038/gim.2017.105. PMID: 28796236; PMCID: PMC5846811. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'note' => 'PMID: 28796236',
+                    'note' => 'PMID: 28796236. PMCID: PMC5846811',
                     'doi' => '10.1038/gim.2017.105',
                     'author' => 'Abi Habib, W. and Brioude, F. and Edouard, T. and Bennett, J. T. and Lienhardt-Roussie, A. and Tixier, F. and Salem, J. and Yuen, T. and Azzi, S. and Le Bouc, Y. and Harbison, M. D. and Netchine, I.',
                     'title' => 'Genetic disruption of the oncogenic HMGA2-PLAG1-IGF2 pathway causes fetal growth restriction',
@@ -7456,7 +7456,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Jonas JB, Aung T, Bourne RR, Bron AM, Ritch R, Panda-Jonas S. Glaucoma. Lancet. 2017;390(10108):2183-2193. doi:10.1016/S0140-6736(17)31469-1 ',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => 'Jonas, J. B. and Aung, T. and Bourne, R. R. and Bron, A. M. and Ritch, R. and Panda-Jonas S. Glaucoma',
+                    'author' => 'Jonas, J. B. and Aung, T. and Bourne, R. R. and Bron, A. M. and Ritch, R. and Panda-Jonas, S.',
                     'title' => 'Glaucoma',
                     'journal' => 'Lancet',
                     'year' => '2017',
@@ -7466,6 +7466,86 @@ class ExampleSeeder extends Seeder
                     'doi' => '10.1016/S0140-6736(17)31469-1',
                     ]
             ],
+			// translators not detected correctly
+			[
+                'source' => 'Barth, Karl. 2004. Church Dogmatics 2:1. Edited by G. W. Bromiley and T. F. Torrance. Translated by T. H. L. Parker, W. B. Johnston, Harold Knight, and J. L. M. Haire. London/New York: T&T Clark. First published 1957.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Barth, Karl',
+                    'title' => 'Church Dogmatics 2:1',
+                    'year' => '2004',
+                    'note' => 'Translated by T. H. L. Parker, W. B. Johnston, Harold Knight, and J. L. M. Haire. First published 1957. Edited by G. W. Bromiley and T. F. Torrance.',
+                    'address' => 'London/New York',
+                    'publisher' => 'T&T Clark',
+                    ]
+            ],
+			// "translated by" example
+			[
+                'source' => 'Leibniz, Gottfried Wilhelm. 1952. Theodicy. Edited by Austin Farrer and translated by E. M. Huggard. New Haven: Yale University Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Leibniz, Gottfried Wilhelm',
+                    'title' => 'Theodicy',
+                    'year' => '1952',
+                    'note' => 'Translated by E. M. Huggard. Edited by Austin Farrer.',
+                    'address' => 'New Haven',
+                    'publisher' => 'Yale University Press',
+                    ]
+            ],
+			// "translated by" example
+			[
+                'source' => 'Saadia Gaon. 1988. The Book of Theodicy: Translation and Commentary on the Book of Job. Translated by L. E. Goodman. New Haven: Yale University Press.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Saadia Gaon',
+                    'title' => 'The Book of Theodicy: Translation and Commentary on the Book of Job',
+                    'year' => '1988',
+                    'note' => 'Translated by L. E. Goodman.',
+                    'address' => 'New Haven',
+                    'publisher' => 'Yale University Press',
+                    ]
+            ],
+			// authors ended early
+			[
+                'source' => ' Germans Savcisens , Tina Eliassi-Rad, Lars Kai Hansen, Laust Hvas Mortensen, Lau Lilleholt, Anna Rogers, Ingo Robert Zettler and Sune Lehmann \emph{Using sequences of life-events to predict human lives}, 2023, nature computational science ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Germans Savcisens and Tina Eliassi-Rad and Lars Kai Hansen and Laust Hvas Mortensen and Lau Lilleholt and Anna Rogers and Ingo Robert Zettler and Sune Lehmann',
+                    'title' => 'Using sequences of life-events to predict human lives',
+					'year' => '2023',
+					'journal' => 'nature computational science',
+                    ]
+            ],
+			// authors ended early
+			[
+                'source' => ' Jindong Xie, Xiyuan Luo, Xinpei Deng, Yuhui Tang, Wenwen Tian, Hui Cheng, Junsheng Zhang, Yutian Zou, Zhixing Guo and Xiaoming Xie \emph{Advances in artificial intelligence to predict cancer immunotherapy efficacy}, 2023, Frontiers in Immunology ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Jindong Xie and Xiyuan Luo and Xinpei Deng and Yuhui Tang and Wenwen Tian and Hui Cheng and Junsheng Zhang and Yutian Zou and Zhixing Guo and Xiaoming Xie',
+                    'title' => 'Advances in artificial intelligence to predict cancer immunotherapy efficacy',
+					'year' => '2023',
+					'journal' => 'Frontiers in Immunology',
+                    ]
+            ],
+			// detect PMCID?
+			[
+                'source' => 'Laubenbacher R, Sluka JP, Glazier JA. \emph{Using digital twins in viral infection.} Science, 2021 Mar 12;371(6534):1105-1106. doi: 10.1126/science.abf3370. PMID: 33707255; PMCID: PMC8170388. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'PMID: 33707255. PMCID: PMC8170388',
+                    'doi' => '10.1126/science.abf3370',
+                    'author' => 'Laubenbacher, R. and Sluka, J. P. and Glazier, J. A.',
+                    'title' => 'Using digital twins in viral infection',
+                    'year' => '2021',
+                    'month' => 'March',
+                    'date' => '2021-03-12',
+                    'journal' => 'Science',
+					'pages' => '1105-1106',
+					'number' => '6534',
+                    'volume' => '371',
+                    ]
+            ],
+
 
         ];
 

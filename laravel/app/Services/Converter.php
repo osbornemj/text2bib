@@ -575,12 +575,18 @@ class Converter
             $this->verbose("No doi found.");
         }
 
-        /////////////////////
-        // Get PMID if any //
-        /////////////////////
+        //////////////////////////////
+        // Get PMID and PMCIDif any //
+        //////////////////////////////
 
         if (preg_match('/pmid: [0-9]{6,9}/i', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-            $this->addToField($item, 'note', $matches[0][0], 'addToField 1');
+            $this->addToField($item, 'note', $matches[0][0], 'addToField 1a');
+            $remainder = substr($remainder, 0, $matches[0][1]) . substr($remainder, $matches[0][1] + strlen($matches[0][0]));
+            $remainder = trim($remainder, ' .');
+        }
+
+        if (preg_match('/pmcid: [A-Z]{1,4}[0-9]{6,9}/i', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+            $this->addToField($item, 'note', $matches[0][0], 'addToField 1b');
             $remainder = substr($remainder, 0, $matches[0][1]) . substr($remainder, $matches[0][1] + strlen($matches[0][0]));
             $remainder = trim($remainder, ' .');
         }
@@ -752,10 +758,13 @@ class Converter
         // Put "Translated by ..." in note //
         /////////////////////////////////////
 
-        $result = $this->findRemoveAndReturn($remainder, 'translated by [^.,)]*[.,)]');
+        //$result = $this->findRemoveAndReturn($remainder, 'translated by [^.,)]*[.,)]');
+        // Translators: string up to first period preceded by a lowercase letter.
+        $result = $this->findRemoveAndReturn($remainder, '[Tt]ranslated by .*?[a-z]\.', false);
         if ($result) {
-            $this->addToField($item, 'note', $result[0], 'addToField 3');
-            $remainder = $result['before'] . $result['after'];
+            $this->addToField($item, 'note', ucfirst($result[0]), 'addToField 3');
+            $before = Str::replaceEnd(' and ', '', $result['before']);
+            $remainder = $before . '.' . $result['after'];
         }
 
         ///////////////////////////////////////
@@ -861,7 +870,7 @@ class Converter
             }
         }
 
-        if (! $containsJournalName && Str::contains($wordString, ' ' . $this->journalWord . ' ')) {
+        if (! $containsJournalName && Str::contains($wordString, [' ' . $this->journalWord . ' ', 'Frontiers in ', 'Annals of '])) {
             $containsJournalName = true;
         }
 
@@ -1229,7 +1238,12 @@ class Converter
             $this->verbose("Contains number sign (\\#).");
         }
 
-        if (preg_match('/ edition(,|.|:|;| )/i', $remainder)) {
+        $regExp = '/(';
+        foreach ($this->ordinals[$language] as $i => $ordinal) {
+            $regExp .= ($i ? '|' : '') . $ordinal;
+        }
+        $regExp .= ') ed(ition)?(\.| )/i';
+        if (preg_match('/ edition(,|.|:|;| )/i', $remainder) || preg_match($regExp, $remainder)) {
             $containsEdition = true;
             $this->verbose("Contains word \"edition\".");
         }
@@ -1276,6 +1290,15 @@ class Converter
             $this->verbose("Starts with or ends with 'in review' string.");
         }
 
+        if (! $hasSecondaryDate) {
+            preg_match('/[Ff]irst published (18|19|20)[0-9]{2}/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+            if (isset($matches[0][0])) {
+                $hasSecondaryDate = true;
+                $this->addToField($item, 'note', $matches[0][0]);
+                $remainder = substr($remainder, 0, $matches[0][1]) . '.' . substr($remainder, $matches[0][1] + strlen($matches[0][0]));
+            }
+        }
+
         $remainderMinusPubInfo = $remainder;
         $publisher = '';
         foreach ($this->publishers as $pub) {
@@ -1312,11 +1335,6 @@ class Converter
             $startsAddressPublisher = true;
             $this->verbose("Remainder has address: publisher format.");
         }
-
-        // if (preg_match('/' . $this->isbnRegExp1 . $this->isbnRegExp2 . '/', $remainder)) {
-        //     $containsIsbn = true;
-        //     $this->verbose("Contains an ISBN string.");
-        // }
 
         $commaCount = substr_count($remainder, ',');
         $this->verbose("Number of commas: " . $commaCount);
@@ -1395,9 +1413,6 @@ class Converter
             } else {
                 $this->verbose("Item type case 5b");
                 $itemKind = 'incollection';
-                if (!$this->itemType && !$itemKind) {
-                    $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [1]";
-                }
             }
         } elseif (($containsPageRange || $containsInteriorVolume) && ! $containsProceedings && ! $containsPublisher && ! $containsCity) {
             $this->verbose("Item type case 6");
@@ -2657,6 +2672,12 @@ class Converter
                     } else {
                         // Change item type to book
                         $itemKind = 'book';
+                        $this->verbose(['fieldName' => 'Item type', 'content' => 'changed to ' . $itemKind]);
+                        $this->verbose('Both author and editor set, so editor moved to note field.');
+                        if (! empty($item->author) && ! empty($item->editor)) {
+                            $this->addToField($item, 'note', 'Edited by ' . $item->editor . '.');
+                            unset($item->editor);
+                        }
                     }
                 }
                 
@@ -2850,8 +2871,7 @@ class Converter
                 if (! $done) {
                     $remainder = $newRemainder ?? implode(" ", $remainingWords);
                     $remainder = trim($remainder, ' .');
-
-                    if (preg_match('/(?P<editorString>Edited by [^.]*\.)/', $remainder, $matches)) {
+                    if (preg_match('/(?P<editorString>Edited by .*?[a-z]\.)/', $remainder, $matches)) {
                         $this->addToField($item, 'note', $matches['editorString'], 'setField 110a');
                         $remainder = preg_replace('/' . $matches['editorString'] . '/', '', $remainder);
                     }
@@ -3604,10 +3624,10 @@ class Converter
      * and remove entire match for $regExp from $string after trimming ',. ' from substring preceding match.
      * If no match, return false (and do not alter $string).
      */
-    private function findRemoveAndReturn(string &$string, string $regExp): false|string|array
+    private function findRemoveAndReturn(string &$string, string $regExp, bool $caseInsensitive = true): false|string|array
     {
         $matched = preg_match(
-            '%' . $regExp . '%i',
+            '%' . $regExp . '%' . ($caseInsensitive ? 'i' : ''),
             $string,
             $matches,
             PREG_OFFSET_CAPTURE
@@ -4509,7 +4529,7 @@ class Converter
                     $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                 }
 
-                //dump($bareWords, $wordAfterBareWords);
+                //dump($word, $nextWord, $bareWords, $wordAfterBareWords, $remainingWords);
 
                 if ($determineEnd && $text = $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after, $style)) {
                     if (in_array($text, ['et al', 'et al.', 'et. al.'])) {
@@ -4556,6 +4576,13 @@ class Converter
                             count($bareWords) > 3
                             ||
                             (
+                                // next word ends in '.' or ',', then there is another word, and then numbers
+                                // Two words seems to be the minimum (e.g. one-word article title and one-word journal name),
+                                // so terminate authors.
+                                in_array(substr($nextWord, -1), ['.', ',']) && isset($remainingWords[2]) && preg_match('/^[0-9.,;:\-()]*$/', $remainingWords[2])
+                            )
+                            ||
+                            (
                                 $wordAfterBareWords
                                 && ctype_alpha($wordAfterBareWords)
                                 && $wordAfterBareWords == mb_strtolower($wordAfterBareWords)
@@ -4563,7 +4590,7 @@ class Converter
                                 && ! in_array($wordAfterBareWords, $this->vonNames)
                                 && ! in_array($wordAfterBareWords, ['al.'])
                             )
-                           ||
+                            ||
                             (
                                 $this->inDict(trim($remainingWords[0], ',;')) 
                                 && ! $this->isInitials(trim($remainingWords[0], ',;'))
@@ -4585,15 +4612,28 @@ class Converter
                                     && ! preg_match('/[0-9]/', $remainingWords[2])
                                     )
                                 )
-//                                && strtolower($remainingWords[2][0]) == $remainingWords[2][0]
                             )
                         )
                         &&
                         (
                             $nameScore['count'] == 0
                             || $nameScore['score'] / $nameScore['count'] < 0.26
-                            || (isset($bareWords[1]) && mb_strtolower($bareWords[1]) == $bareWords[1] && ! $this->isAnd($bareWords[1], $language) && ! in_array($bareWords[1], $this->vonNames))
-                            || (ctype_alpha($wordAfterBareWords) && $wordAfterBareWords == mb_strtolower($wordAfterBareWords))
+                            || (
+                                isset($bareWords[1])
+                                && mb_strtolower($bareWords[1]) == $bareWords[1]
+                                && ! $this->isAnd($bareWords[1], $language)
+                                && ! in_array($bareWords[1], $this->vonNames)
+                                && ! in_array($remainingWords[1], ['et', 'et.', 'al', 'al.'])
+                               )
+                            || (
+                                // title cannot start with lowercase letter
+                                isset($remainingWords[1])
+                                && preg_match('/^[a-z]/', $remainingWords[1])
+                                && ! $this->isAnd($remainingWords[1])
+                                && ! in_array($remainingWords[1], $this->vonNames)
+                                && ! in_array($remainingWords[1], ['et', 'et.', 'al', 'al.'])
+                               )
+//                            || (ctype_alpha($wordAfterBareWords) && $wordAfterBareWords == mb_strtolower($wordAfterBareWords))
                         )
                         &&
                         (

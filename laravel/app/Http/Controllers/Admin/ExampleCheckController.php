@@ -94,7 +94,7 @@ class ExampleCheckController extends Controller
                 $result['result'] = 'incorrect';
             }
 
-            if (!$correctType) {
+            if (! $correctType) {
                 $result['typeError']['content'] = $output['itemType'];
                 $result['typeError']['correct'] = $example->type;
             }
