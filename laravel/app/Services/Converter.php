@@ -89,6 +89,7 @@ class Converter
     var $volRegExp0;
     var $volRegExp1;
     var $volRegExp2;
+    var $volRegExp3;
     var $volumeRegExp;
     var $vonNames;
     var $workingPaperRegExp;
@@ -216,19 +217,19 @@ class Converter
 
         $this->ordinals = [
             'en' =>
-                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'],
             'cz' =>
-                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'],
             'fr' =>
-                ['1er', '2e', '3e', '4e', '5e', '6e', '7e'],
+                ['1er', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e', '10e'],
             'es' =>
-                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'],
             'pt' =>
-                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '1ª', '2ª', '3ª', '4ª', '5ª', '6ª', '7ª', '8ª', '9ª'],
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '1ª', '2ª', '3ª', '4ª', '5ª', '6ª', '7ª', '8ª', '9ª'],
             'my' =>
-                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th'],
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'],
             'nl' =>
-                ['1e', '2e', '3e', '4e', '5e', '6e', '7e'],
+                ['1e', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e', '10e'],
         ];
 
         $this->articleRegExp = 'article (id |no\.? ?)?[0-9]*';
@@ -246,6 +247,7 @@ class Converter
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
         $this->volRegExp2 = '/^\(?vol(\.|ume)? ?|^\(?v\. /i';
         $this->volumeRegExp = '[Vv]olume ?|[Vv]ol ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{';
+        $this->volRegExp3 = '[Vv]olume ?|[Vv]ol ?\.? ?|VOL ?\.? ?|[Vv]\. ';
 
         $this->numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ |[Ii]ssues? ?|Issue no. ?|Iss: ';
 
@@ -253,7 +255,7 @@ class Converter
         $this->pageRange = '(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})(?![a-zA-Z])';
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?)?:?( )?' . $this->pageRange;
         // hlm., hal.: Indonesian, ss: Turkish
-        $this->startPagesRegExp = '/(^pages |^pp\.? ?|^p\. ?|^p |^стр\. |^hlm\. |^hal\. |^ss?\. )[0-9]/i';
+        $this->startPagesRegExp = '/(^pages |^pp\.? ?|^p\. ?|^p |^стр\. ?|^hlm\. ?|^hal\. ?|^S.\.|^ss?\. ?)[0-9]/i';
 
         // en for Spanish (and French?), em for Portuguese
         $this->inRegExp1 = '/^[iIeE]n:? /';
@@ -262,11 +264,11 @@ class Converter
         $this->startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
         $this->forthcomingRegExp = 'forthcoming( at| in)?|in press|accepted( at)?|to appear in';
         $this->endForthcomingRegExp = ' (forthcoming|in press|accepted|to appear)\.?\)?$';
-        $this->forthcomingRegExp1 = '/^[Ff]orthcoming/';
         $this->forthcomingRegExp2 = '/^[Ii]n [Pp]ress/';
         $this->forthcomingRegExp3 = '/^[Aa]ccepted/';
         $this->forthcomingRegExp4 = '/[Ff]orthcoming\.?\)?$/';
         $this->forthcomingRegExp5 = '/[Ii]n [Pp]ress\.?\)?$/';
+        $this->forthcomingRegExp1 = '/^[Ff]orthcoming/';
         $this->forthcomingRegExp6 = '/[Aa]ccepted\.?\)?$/';
         $this->forthcomingRegExp7 = '/^[Tt]o appear in/';
 
@@ -339,7 +341,8 @@ class Converter
         ];
 
         // Month abbreviations in many languages: https://web.library.yale.edu/cataloging/months
-        $p = '[.,;]?';
+        // Do not add ';' to following list of punctuation marks
+        $p = '[.,]?';
         $this->monthsRegExp = [
             'en' => '(?P<m1>January|Jan' . $p . ')|(?P<m2>February|Feb' . $p . ')|(?P<m3>March|Mar' . $p . ')|(?P<m4>April|Apr' . $p . ')|'
                 . '(?P<m5>May)|(?P<m6>June|Jun' . $p . ')|(?P<m7>July|Jul' . $p . ')|(?P<m8>August|Aug' . $p . ')|'
@@ -963,7 +966,7 @@ class Converter
         if ($isEditor === false && ! Str::contains($authorstring, $editorPhrases)) {
             $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 7');
         } else {
-            $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' .,'), 'setField 8');
+            $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' ,'), 'setField 8');
         }
 
         $hasSecondaryDate = false;
@@ -1040,7 +1043,7 @@ class Converter
             }
 
             if (! $title) {
-                $title = $this->getTitle($remainder, $edition, $volume, $isArticle, $year, $note, $journal, $containsUrlAccessInfo);
+                $title = $this->getTitle($remainder, $edition, $volume, $isArticle, $year, $note, $journal, $containsUrlAccessInfo, false, $language);
                 if (! isset($item->year) && $year) {
                     $this->setField($item, 'year', $year, 'setField 10a');
                     $remainder = str_replace($year, '', $remainder);
@@ -1097,9 +1100,9 @@ class Converter
         $containsMonth = false;
         if (! isset($item->year)) {
             if (! $year) {
-                // Space prepended to $remainder in case it starts with year, because getYear requires space 
+                // Space prepended to $remainder in case it starts with year, because getDate requires space 
                 // (but perhaps could be rewritten to avoid it).
-                $year = $this->getYear(' '. $remainder, $newRemainder, $month, $day, $date, false, true, false, $language);
+                $year = $this->getDate(' '. $remainder, $newRemainder, $month, $day, $date, false, true, false, $language);
             }
 
             if ($year) {
@@ -1717,7 +1720,7 @@ class Converter
                     $this->setField($item, 'urldate', $itemDate, 'setField 116');
                 }
 
-                $result = $this->getYear($remainder, $remains, $month, $day, $date, true, true, false, $language);
+                $result = $this->getDate($remainder, $remains, $month, $day, $date, true, true, false, $language);
                 if ($result) {
                     // $remainder is date, so set it to be date of item (even if date was set earlier on basis
                     // of urldate).
@@ -2078,7 +2081,7 @@ class Converter
                         } else {
                             $trash2 = false;
                             // Include edition in title (because no BibTeX field for edition for incollection)
-                            $booktitle = $this->getTitle($tempRemainder, $edition, $trash1, $trash2, $year, $note, $journal, false, true);
+                            $booktitle = $this->getTitle($tempRemainder, $edition, $trash1, $trash2, $year, $note, $journal, false, true, $language);
                             if (substr($booktitle, -3) != 'ed.') {
                                 $booktitle = rtrim($booktitle, '.');
                             }
@@ -2922,6 +2925,10 @@ class Converter
                     }
 
                     if ($address) {
+                        if (isset($item->year)) {
+                            $address = Str::replace($item->year, '', $address);
+                            $address = rtrim($address, ', ');
+                        }
                         $this->setField($item, 'address', $address, 'setField 86');
                     }
 
@@ -3167,7 +3174,7 @@ class Converter
 
     // Get title from a string that starts with title and then has publication information.
     // Case in which title is in quotation marks or italics is dealt with separately.
-    private function getTitle(string &$remainder, string|null &$edition, string|null &$volume, bool &$isArticle, string|null &$year = null, string|null &$note, string|null $journal, bool $containsUrlAccessInfo, bool $includeEdition = false): string|null
+    private function getTitle(string &$remainder, string|null &$edition, string|null &$volume, bool &$isArticle, string|null &$year = null, string|null &$note, string|null $journal, bool $containsUrlAccessInfo, bool $includeEdition = false, string $language = 'en'): string|null
     {
         $title = null;
         $originalRemainder = $remainder;
@@ -3306,12 +3313,15 @@ class Converter
 
                 $wordAfterNextCommaOrPeriod = strtok(substr($remainder, 1 + strlen($stringToNextPeriodOrComma)), ' ');
 
-                $upcomingYear = $upcomingVolumePageYear = false;
+                $upcomingYear = $upcomingVolumePageYear = $upcomingVolumeNumber = false;
                 if ($stringToNextPeriodOrComma) {
                     $followingRemainder = mb_substr($remainder, mb_strlen($stringToNextPeriodOrComma));
                     $upcomingYear = $this->isYear(trim($followingRemainder));
                     $upcomingVolumePageYear = preg_match('/^[0-9\(\)\., p\-]{2,}$/', trim($followingRemainder));
-                    $upcomingVolume = preg_match('/^Vol\.? /', trim($followingRemainder));
+                    $upcomingVolumeNumber = preg_match('/^(' . $this->volRegExp3 . ')[0-9]{1,4},? (' . $this->numberRegExp . ')? ?\(?[0-9]{1,4}\)?/', trim($followingRemainder));
+                    $upcomingRoman = preg_match('/^[IVXLCD]{1,6}[.,; ] ?/', trim($followingRemainder));
+                    $followingRemainderMinusMonth = preg_replace('/' . $this->monthsRegExp[$language] . '/', '', $followingRemainder);
+                    $upcomingArticlePubInfo = preg_match('/^[0-9.,;:\-() ]{8,}$/', $followingRemainderMinusMonth);
                 }
 
                 // When a word ending in punctuation or preceding a word starting with ( is encountered, check whether
@@ -3333,15 +3343,15 @@ class Converter
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
-                        || preg_match('/^[Ii]n [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^[Ii]n:? [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
                         || ($nextWord && $nextButOneWord && (Str::endsWith($nextWord, range('a', 'z')) || in_array($nextWord, ['IEEE', 'ACM'])) && Str::endsWith($nextButOneWord, '.') && in_array(substr($nextButOneWord,0,-1), $this->startJournalAbbreviations))
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder) // pages (e.g. within book)
                         || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
                         || in_array('Journal', $wordsToNextPeriod)  // 
-                        || (Str::endsWith(rtrim($word, "'\""), [',', '.']) && ($upcomingVolumePageYear || $upcomingVolume))  // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
-                        || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.()]*$/', $remainder)  // journal name, pub info? ('}' after volume # for \textbf{ (in $this->volumeRegExp))
+                        || (Str::endsWith(rtrim($word, "'\""), [',', '.']) && ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo))  // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
+                        || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():]*$/', $remainder)  // journal name, pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
                         || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
@@ -3395,7 +3405,7 @@ class Converter
                     if (
                         $nextWord 
                             && (
-                            (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.' && $nextWord != 'in')
+                            (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.' && rtrim($nextWord, ':') != 'in')
                                     || ($word == 'A.' && $nextWord == 'D.')
                                     || ($word == 'B.' && $nextWord == 'C.')
                                     || preg_match('/^(Part )?II?I?[:.] /', $remainder)
@@ -3403,6 +3413,16 @@ class Converter
                         ) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
                         $skipNextWord = true;
+                    // } elseif (
+                    //     // journal name, then word for volume
+                    //     preg_match('/^' . $this->volRegExp3 . '$/', $wordAfterNextCommaOrPeriod)
+                    //     ||
+                    //     // journal name, then roman volume number
+                    //     preg_match('/^[IVXLCD]{1,6}$/', $wordAfterNextCommaOrPeriod)
+                    //     ) {
+                    //     $this->verbose("Ending title, case 4d");
+                    //     $title = rtrim(implode(' ', $initialWords), ' ,');
+                    //     break;
                     // else if next word is short and ends with period, and either $word does not end in a comma, or $nextWord
                     // is the last one or $nextWord is not
                     // in the dictionary or $nextWord is initials or the following word starts with a lowercase letter,
@@ -4003,7 +4023,7 @@ class Converter
                 if (ctype_alpha((string) $xword) && $this->inDict($xword) && in_array(substr($word, -1), ['.'])) {
                     if ($i >= 2 && $i <= 5) {
                         $remainder = implode(' ', array_slice($words, $i+1));
-                        $year = $this->getYear($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language);
+                        $year = $this->getDate($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language);
                         return [
                             'authorstring' => $name . ' ' . $xword,
                             'warnings' => [],
@@ -4015,7 +4035,7 @@ class Converter
                     }
                 } elseif ($i >= 3 && $i <= 6) {
                     $remainder = implode(' ', array_slice($words, $i));
-                    $year = $this->getYear($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language);
+                    $year = $this->getDate($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language);
                     return [
                         'authorstring' => $name,
                         'warnings' => [],
@@ -4175,7 +4195,7 @@ class Converter
                     $warnings[] = "String for editors detected after only one part of name.";
                 }
                 // Check for year following editors
-                if ($year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, false, true, $language)) {
+                if ($year = $this->getDate($remainder, $remains, $trash1, $trash2, $trash3, true, false, true, $language)) {
                     $remainder = $remains;
                     $this->verbose("Year detected, so ending name string (word: " . $word .")");
                 } else {
@@ -4206,11 +4226,11 @@ class Converter
                     array_shift($remainingWords);
                     if (count($remainingWords)) {
                         $remainder = implode(" ", $remainingWords);
-                        $this->verbose('[c2a getYear 2]');
+                        $this->verbose('[c2a getDate 2]');
                         if (preg_match('/^(18|19|20)[0-9]{2}$/', $remainingWords[0])) {
                             // If first remaining word is a year **with no punctuation**, assume it starts title
                         } else {
-                            $year = $this->getYear($remainder, $remains, $trash1, $trash2, $trash3, true, true, true, $language);
+                            $year = $this->getDate($remainder, $remains, $trash1, $trash2, $trash3, true, true, true, $language);
                             $remainder = trim($remains);
                         }
                     }
@@ -4257,8 +4277,8 @@ class Converter
                     // a single name.  If string is followed by year or quotedOrItalic, that seems right,
                     // in which case we may have an entry like "Economist. 2005. ..."
                     $remainder = implode(" ", $remainingWords);
-                    $this->verbose('[c2a getYear 3]');
-                    if ($year = $this->getYear($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language)) {
+                    $this->verbose('[c2a getDate 3]');
+                    if ($year = $this->getDate($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language)) {
                         $this->verbose('[convertToAuthors 6]');
                         // Don't use spaceOutInitials in this case, because string is not initials.  Could be
                         // something like autdiogames.net, in which case don't want to put space before period.
@@ -4323,10 +4343,10 @@ class Converter
                     $remainder = substr($remainder, strpos($remainder, '.'));
                 }
                 $this->verbose("Remainder: " . $remainder);
-                $this->verbose('[c2a getYear 4]');
+                $this->verbose('[c2a getDate 4]');
                 $this->verbose('[convertToAuthors 10]');
                 if (! isset($year) || ! $year) {
-                    if ($year = $this->getYear($remainder, $remains, $month, $day, $trash3, true, true, true, $language)) {
+                    if ($year = $this->getDate($remainder, $remains, $month, $day, $trash3, true, true, true, $language)) {
                         $remainder = $remains;
                         $this->verbose("Remains: " . $remains);
                     }
@@ -4354,7 +4374,7 @@ class Converter
                     $fullName .= ' ' . $word;
                     $remainder = implode(" ", $remainingWords);
                     $this->addToAuthorString(6, $authorstring, ' ' . ltrim($this->formatAuthor($fullName)));
-                    if ($year = $this->getYear($remainder, $remains, $month, $day, $date, true, true, true, $language)) {
+                    if ($year = $this->getDate($remainder, $remains, $month, $day, $date, true, true, true, $language)) {
                         $remainder = $remains;
                         $this->verbose("Year detected");
                     }
@@ -4436,8 +4456,8 @@ class Converter
                             $namePart++;
                         }
                         // Following occurs in case of name that is a single string, like "IMF"
-                        if ($year = $this->getYear(implode(" ", $remainingWords), $remains, $trash1, $trash2, $trash3, true, true, true, $language)) {
-                            $this->verbose('[c2a getYear 6]');
+                        if ($year = $this->getDate(implode(" ", $remainingWords), $remains, $trash1, $trash2, $trash3, true, true, true, $language)) {
+                            $this->verbose('[c2a getDate 6]');
                             $this->verbose('[convertToAuthors 19]');
                             $remainder = $remains;
                             $done = true;
@@ -4550,7 +4570,7 @@ class Converter
                         $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
                         $case = 7;
                     }
-                } elseif ($determineEnd && $year = $this->getYear(implode(" ", $remainingWords), $remainder, $month, $day, $date, true, true, true, $language)) {
+                } elseif ($determineEnd && $year = $this->getDate(implode(" ", $remainingWords), $remainder, $month, $day, $date, true, true, true, $language)) {
                     $this->verbose('[convertToAuthors 14a] Ending author string: word is "'. $word . '", year is next.');
                     $done = true;
                     $fullName = ($fullName[0] != ' ' ? ' ' : '') . $fullName;
@@ -4626,7 +4646,8 @@ class Converter
                                 && ! in_array($remainingWords[1], ['et', 'et.', 'al', 'al.'])
                                )
                             || (
-                                // title cannot start with lowercase letter
+                                // title cannot start with lowercase letter (assumes that only words in author string that
+                                // can begin with lowercase letters are 'and', a von name, and 'et' or 'al').
                                 isset($remainingWords[1])
                                 && preg_match('/^[a-z]/', $remainingWords[1])
                                 && ! $this->isAnd($remainingWords[1])
@@ -4637,7 +4658,7 @@ class Converter
                         )
                         &&
                         (
-                            ! $this->isInitials($remainingWords[0])
+                            ! $this->isInitials(rtrim($remainingWords[0], ', '))
                             ||
                             ($remainingWords[0] == 'A' && isset($remainingWords[1]) && $remainingWords[1][0] == strtolower($remainingWords[1][0]))
                         )
@@ -4684,8 +4705,8 @@ class Converter
                             &&
                             (
                                 $this->isInitials($words[$i + 1])
-                                || $this->getYear($words[$i + 2], $trash, $trash1, $trash2, $trash3, true, true, true, $language)
-                                || ($this->isInitials($words[$i + 2]) && $this->getYear($words[$i + 3], $trash, $trash1, $trash2, $trash3, true, true, true, $language))
+                                || $this->getDate($words[$i + 2], $trash, $trash1, $trash2, $trash3, true, true, true, $language)
+                                || ($this->isInitials($words[$i + 2]) && $this->getDate($words[$i + 3], $trash, $trash1, $trash2, $trash3, true, true, true, $language))
                             )
                         ) {
                             $fullName .= ',';
@@ -4706,10 +4727,10 @@ class Converter
                         // If so, add back comma and continue.
                         // (Of course this routine won't do the trick if there are more authors after this one.  In
                         // that case, you need to look further ahead.)
-                        $this->verbose('[c2a getYear 9]');
+                        $this->verbose('[c2a getDate 9]');
                         if (! $prevWordHasComma && $i + 2 < count($words)
                                 && (
-                                    $this->getYear($words[$i + 2], $trash, $trash1, $trash2, $trash3, true, true, true, $language)
+                                    $this->getDate($words[$i + 2], $trash, $trash1, $trash2, $trash3, true, true, true, $language)
                                     ||
                                     $this->getQuotedOrItalic($words[$i + 2], true, false, $before, $after, $style)
                                 )) {
@@ -5011,7 +5032,7 @@ class Converter
     }
 
     /**
-     * getYear: get *last* substring in $string that is a year, unless $start is true, in which case restrict to 
+     * getDate: get *last* substring in $string that is a date, unless $start is true, in which case restrict to 
      * start of string and take only first match
      * @param string $string 
      * @param string|null $remains what is left of the string after the substring is removed
@@ -5020,7 +5041,7 @@ class Converter
      * @param boolean $allowMonth = false (allow string like "(April 1998)" or "(April-May 1998)" or "April 1998:"
      * @return string year
      */
-    private function getYear(string $string, string|null &$remains, string|null &$month, string|null &$day, string|null &$date, bool $start = true, bool $allowMonth = false, bool $allowEarlyYears = false, string $language = 'en'): string
+    private function getDate(string $string, string|null &$remains, string|null &$month, string|null &$day, string|null &$date, bool $start = true, bool $allowMonth = false, bool $allowEarlyYears = false, string $language = 'en'): string
     {
         $year = '';
         $remains = $string;
@@ -5082,6 +5103,10 @@ class Converter
                 // <year> <month> <day>?
                 // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug;9(8):473-480'
                 preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>' . $months . ')( (?P<day>[0-9]{1,2}))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                ||
+                // <month> <day> <year>
+                // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug;9(8):473-480'
+                preg_match('/[ \(](?P<date>(?P<month>' . $months . ') (?P<day>[0-9]{1,2}) (?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
                 ||
                 // <day>? <month> <year>
                 // The optional "de" between day and month and between month and year is for Spanish
@@ -5747,7 +5772,7 @@ class Converter
         // e.g. Volume 6, No. 3, pp. 41-75 OR 6(3) 41-75
         // if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . '( ?' . $monthRange . ' ?)?' . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
         if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
-                $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
+            $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
             $this->setField($item, 'number', str_replace(['---', '--', ' - '], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
             $this->setField($item, 'pages', str_replace(['---', '--', ' - ', '- ', ' -', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
             $remainder = '';

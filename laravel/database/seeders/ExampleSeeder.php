@@ -7507,17 +7507,6 @@ class ExampleSeeder extends Seeder
             ],
 			// authors ended early
 			[
-                'source' => ' Germans Savcisens , Tina Eliassi-Rad, Lars Kai Hansen, Laust Hvas Mortensen, Lau Lilleholt, Anna Rogers, Ingo Robert Zettler and Sune Lehmann \emph{Using sequences of life-events to predict human lives}, 2023, nature computational science ',
-                'type' => 'article',
-                'bibtex' => [
-                    'author' => 'Germans Savcisens and Tina Eliassi-Rad and Lars Kai Hansen and Laust Hvas Mortensen and Lau Lilleholt and Anna Rogers and Ingo Robert Zettler and Sune Lehmann',
-                    'title' => 'Using sequences of life-events to predict human lives',
-					'year' => '2023',
-					'journal' => 'nature computational science',
-                    ]
-            ],
-			// authors ended early
-			[
                 'source' => ' Jindong Xie, Xiyuan Luo, Xinpei Deng, Yuhui Tang, Wenwen Tian, Hui Cheng, Junsheng Zhang, Yutian Zou, Zhixing Guo and Xiaoming Xie \emph{Advances in artificial intelligence to predict cancer immunotherapy efficacy}, 2023, Frontiers in Immunology ',
                 'type' => 'article',
                 'bibtex' => [
@@ -7545,6 +7534,123 @@ class ExampleSeeder extends Seeder
                     'volume' => '371',
                     ]
             ],
+            // All fields confused
+			[
+                'source' => 'Lange, N. A., Ed., 1961. Handbook of chemistry, 10th ed. McGraw-Hill Book Co., New York, 1961. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'editor' => 'Lange, N. A.',
+                    'title' => 'Handbook of chemistry',
+                    'year' => '1961',
+                    'edition' => '10th',
+                    'publisher' => 'McGraw-Hill Book Co',
+                    'address' => 'New York',
+                    ]
+            ],
+			// journal included in title
+			[
+                'source' => 'Narayan S, Ramamurthy A. Health and Safety Aspects of Beryllium Operations. Mineral Processing and Extractive Metallurgy Review. 1995 Jan;14(1):301–18.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Narayan, S. and Ramamurthy, A.',
+                    'title' => 'Health and Safety Aspects of Beryllium Operations',
+					'journal' => 'Mineral Processing and Extractive Metallurgy Review.',
+                    'year' => '1995',
+                    'month' => 'January',
+                    'volume' => '14',
+					'number' => '1',
+                    'pages' => '301-18',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => 'Saha S., The treatments of effluents in Beryllium production, Indian Chemical Engineer, XXXIII (2), 62-64, 1991. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Saha, S.',
+                    'title' => 'The treatments of effluents in Beryllium production',
+					'journal' => 'Indian Chemical Engineer',
+                    'year' => '1991',
+                    'volume' => 'XXXIII',
+                    'pages' => '62-64',
+                    'number' => '2',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => '\bibitem {Beltran2023} Beltr\\\'an, E. T. M., P\\\'erez, M. Q., S\\\'anchez, P. M. S., Bernal, S. L., Bovet, G., P\\\'erez, M. G., P\\\'erez, G. M., \& Celdr\\\'an, A. H. Decentralized federated learning: Fundamentals, state of the art, frameworks, trends, and challenges. IEEE Communications Surveys \& Tutorials. vol. 25, no. 2, pp. 2983-3013, September 2023 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Beltr\\\'an, E. T. M. and P\\\'erez, M. Q. and S\\\'anchez, P. M. S. and Bernal, S. L. and Bovet, G. and P\\\'erez, M. G. and P\\\'erez, G. M. and Celdr\\\'an, A. H.',
+                    'title' => 'Decentralized federated learning: Fundamentals, state of the art, frameworks, trends, and challenges',
+					'journal' => 'IEEE Communications Surveys \& Tutorials.',
+                    'year' => '2023',
+                    'month' => 'September',
+                    'volume' => '25',
+                    'number' => '2',
+                    'pages' => '2983-3013',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => 'Bhat P. N., Ghosh D. K., Desai M. V. M., Beryllium: an easily scavenged metal ion in the environment, Science of The Total Environment, 297(1–3):119-125, 2002. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bhat, P. N. and Ghosh, D. K. and Desai, M. V. M.',
+                    'title' => 'Beryllium: an easily scavenged metal ion in the environment',
+					'journal' => 'Science of The Total Environment',
+                    'year' => '2002',
+                    'volume' => '297',
+					'number' => '1-3',
+					'pages' => '119-125',
+                    ]
+            ],
+			// date not picked up
+			[
+                'source' => '2.	Slimani M, Chamari K, Miarka B, Del Vecchio FB, Chéour F. Effects of Plyometric Training on Physical Fitness in Team Sport Athletes: A Systematic Review. J Hum Kinet. Dec 01 2016;53:231-247. doi:10.1515/hukin-2016-0026 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1515/hukin-2016-0026',
+                    'author' => 'Slimani, M. and Chamari, K. and Miarka, B. and Del Vecchio, F. B. and Chéour, F.',
+                    'title' => 'Effects of Plyometric Training on Physical Fitness in Team Sport Athletes: A Systematic Review',
+                    'year' => '2016',
+					'date' => '2016-12-01',
+                    'month' => 'December',
+                    'journal' => 'J Hum Kinet.',
+                    'pages' => '231-247',
+                    'volume' => '53',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// month and year picked up correctly
+			 [
+                'source' => '3.	Sáez-Sáez de Villarreal E, Requena B, Newton RU. Does plyometric training improve strength performance? A meta-analysis. J Sci Med Sport. Sep 2010;13(5):513-22. doi:10.1016/j.jsams.2009.08.005 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.jsams.2009.08.005',
+                    'author' => 'Sáez-Sáez de Villarreal, E. and Requena, B. and Newton, R. U.',
+                    'title' => 'Does plyometric training improve strength performance? A meta-analysis',
+                    'year' => '2010',
+                    'month' => 'September',
+                    'journal' => 'J Sci Med Sport.',
+                    'volume' => '13',
+                    'number' => '5',
+                    'pages' => '513-22',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+            // inproceedings not detected
+            [
+                'source' => '[111]Leonard Petnga, Huan Xu, Security of unmanned aerial vehicles: Dynamic state estimation under cyber-physical attacks, in: 2016 International Conference on Unmanned Aircraft Systems, ICUAS, 2016. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Leonard Petnga and Huan Xu',
+                    'title' => 'Security of unmanned aerial vehicles: Dynamic state estimation under cyber-physical attacks',
+                    'year' => '2016',
+                    'booktitle' => '2016 International Conference on Unmanned Aircraft Systems, ICUAS',
+                    ]
+            ],
+            
 
 
         ];

@@ -9,6 +9,10 @@
         <div class="sm:mx-4">
             None so far.
         </div>
+    @else
+        <div class="sm:mx-4 mb-2">
+            "Waiting" = waiting for the poster of the report to respond to a clarifactory question.
+        </div>
     @endif
 
     @foreach ($errorReports as $errorReport)
