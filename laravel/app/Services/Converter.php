@@ -280,7 +280,7 @@ class Converter
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?|M\.?A\.?|M\.?Sc\.?';
         $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral';
-        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]issertation))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de maestría|Tese de doutorado|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce)';
+        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]issertation))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce)';
         // pt: Dissertação de Mestrado | Tese de mestrado
         // es: Tesis de maestría
         // nl: Masterproef | Doctoraal proefschrift
@@ -994,7 +994,7 @@ class Converter
 
         // Does title start with "Doctoral thesis:" or something like that?
         $containsThesis = false;
-        if (preg_match('/^' . $this->fullThesisRegExp . '(: | -)(?P<remainder>.*)$/', $remainder, $matches)) {
+        if (preg_match('/^' . $this->fullThesisRegExp . '(: | -)(?P<remainder>.*)$/i', $remainder, $matches)) {
             $containsThesis = true;
             $remainder = $matches['remainder'] ?? '';
         }
@@ -1142,7 +1142,7 @@ class Converter
         
         $inStart = $containsIn = $italicStart = $containsEditors = $allLettersInitialCaps = false;
         $containsNumber = $containsInteriorVolume = $containsCity = $containsPublisher = false;
-        $containsEdition = $containsWorkingPaper = false;
+        $containsEdition = $containsWorkingPaper = $containsFullThesis = false;
         $containsNumberedWorkingPaper = $containsNumber = $pubInfoStartsWithForthcoming = $pubInfoEndsWithForthcoming = false;
         $endsWithInReview = false;
         $containsDigitOutsideVolume = true;
@@ -1198,15 +1198,23 @@ class Converter
         }
 
         // Test for 1st, 2nd etc. in third preg_match is to exclude a string like '1st ed.' (see Exner et al. in examples)
-        $regExp = '/^eds?\.|(?<!';
+        // Would be more natural to write "$ordinal . '\.?'" in the $regExp and use only one preg_match, but an optional
+        // character is not supported for negative lookbehind.
+        $regExpStart = '/^eds?\.|(?<!';
+        $regExpEnd = '|rev\.)[ \(}](eds?\.|editors?)/i';
+
+        $regExp1 = $regExp2 = $regExpStart;
         foreach ($this->ordinals[$language] as $i => $ordinal) {
-            $regExp .= ($i ? '|' : '') . $ordinal;
+            $add = ($i ? '|' : '') . $ordinal;
+            $regExp1 .= $add;
+            $regExp2 .= $add . '\.';
         }
-        $regExp .= '|rev\.)[ \(}](eds?\.|editors?)/i';
+        $regExp1 .= $regExpEnd;
+        $regExp2 .= $regExpEnd;
 
         if (preg_match($this->edsRegExp1, $remainder)
                 || preg_match($this->edsRegExp2, $remainder)
-                || preg_match($regExp, $remainder, $matches)
+                || (preg_match($regExp1, $remainder, $matches) && preg_match($regExp2, $remainder, $matches))
         ) {
             $containsEditors = true;
             $this->verbose("Contains editors.");
@@ -1243,12 +1251,17 @@ class Converter
 
         $regExp = '/(';
         foreach ($this->ordinals[$language] as $i => $ordinal) {
-            $regExp .= ($i ? '|' : '') . $ordinal;
+            $regExp .= ($i ? '|' : '') . $ordinal . '\.?';
         }
-        $regExp .= ') ed(ition)?(\.| )/i';
-        if (preg_match('/ edition(,|.|:|;| )/i', $remainder) || preg_match($regExp, $remainder)) {
+        $regExp .= ') ed(ition|ição)?(\.| )/i';
+        if (preg_match('/ ed(ition|ição)(,|.|:|;| )/i', $remainder) || preg_match($regExp, $remainder)) {
             $containsEdition = true;
             $this->verbose("Contains word \"edition\".");
+        }
+
+        if (preg_match('/' . $this->fullThesisRegExp . '/i', $remainder)) {
+            $containsFullThesis = true;
+            $this->verbose("Contains full thesis.");
         }
 
         if (preg_match('/' . $this->thesisRegExp . '/', $remainder)) {
@@ -1380,6 +1393,9 @@ class Converter
         ) {
             $this->verbose("Item type case 0");
             $itemKind = 'online';
+        } elseif ($containsFullThesis) {
+            $this->verbose("Item type case 0a");
+            $itemKind = 'thesis';
         } elseif (
             $isArticle
             ||
@@ -1449,10 +1465,10 @@ class Converter
                 $this->verbose("Item type case 13");
                 $itemKind = 'incollection';
             }
-            if (!$this->itemType && !$itemKind) {
+            if (! $this->itemType && !$itemKind) {
                 $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [3]";
             }
-        } elseif (!$containsNumber && !$containsPageRange) {
+        } elseif (! $containsNumber && ! $containsPageRange) {
             // Condition used to have 'or', which means that an article with a single page number is classified as a book
             if ($containsThesis) {
                 $this->verbose("Item type case 14");
@@ -1474,19 +1490,19 @@ class Converter
         } elseif ($containsEdition) {
             $this->verbose("Item type case 18");
             $itemKind = 'book';
-            if (!$this->itemType) {
+            if (! $this->itemType) {
                 $warnings[] = "Not sure of type; contains \"edition\", so set to " . $itemKind . ".";
             }
         } elseif ($containsDigitOutsideVolume) {
             $this->verbose("Item type case 19");
             $itemKind = 'article';
-            if (!$this->itemType) {
+            if (! $this->itemType) {
                 $warnings[] = "Not sure of type; set to " . $itemKind . ".";
             }
         } else {
             $this->verbose("Item type case 20");
             $itemKind = 'book';
-            if (!$this->itemType) {
+            if (! $this->itemType) {
                 $warnings[] = "Not sure of type; set to " . $itemKind . ".";
             }
         }
@@ -2747,7 +2763,7 @@ class Converter
                 // If remainder contains word 'edition', take previous word as the edition number
                 $this->verbose('Looking for edition');
                 foreach ($remainingWords as $key => $word) {
-                    if ($key && in_array(mb_strtolower(trim($word, ',. ()')), ['edition', 'ed'])) {
+                    if ($key && in_array(mb_strtolower(trim($word, ',. ()')), ['edition', 'ed', 'edição', 'édition', 'edición'])) {
                         $this->setField($item, 'edition', trim($remainingWords[$key - 1], ',. )('), 'setField 59');
                         array_splice($remainingWords, $key - 1, 2);
                         break;
@@ -2967,9 +2983,15 @@ class Converter
                 $this->verbose(['fieldName' => 'Item type', 'content' => $itemKind]);
 
                 $remainder = $this->findAndRemove($remainder, $this->fullThesisRegExp);
-                $remainder = trim($remainder, ' .,)[]');
+                $remainder = trim($remainder, ' -.,)[]');
+                // if remainder contains number of pages, put them in note
+                $result = $this->findRemoveAndReturn($remainder, '(\()?[Pp]p?\.? [0-9]{2,4}(\))?');
+                if ($result) {
+                    $this->setField($item, 'note', $result[0], 'setField 87a');
+                    $remainder = trim($remainder, '., ');
+                }
                 if (strpos($remainder, ':') === false) {
-                    $this->setField($item, 'school', $remainder, 'setField 87');
+                    $this->setField($item, 'school', $remainder, 'setField 87b');
                 } else {
                     $remArray = explode(':', $remainder);
                     $this->setField($item, 'school', trim($remArray[1], ' .,'), 'setField 88');
@@ -3338,7 +3360,7 @@ class Converter
                 // If so, the title is $remainder up to the punctuation.
                 // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
                 // of the cases ``<word>.'' and "<word>."
-                if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && in_array($nextWord[0], ['(', '[']))) {
+                if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && in_array($nextWord[0], ['(', '['])) || ($nextWord && $nextWord == '-')) {
                     $wordsToNextPeriod = explode(' ', $stringToNextPeriodOrComma);
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
@@ -3356,7 +3378,7 @@ class Converter
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
                         || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
                         || (preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) && in_array(trim($matches['city']), $this->cities))
-                        || preg_match('/^[\(\[]?' . $this->fullThesisRegExp . '/', $remainder)
+                        || preg_match('/^[\(\[\-]? ?' . $this->fullThesisRegExp . '/i', $remainder)
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
                         || Str::startsWith(ltrim($remainder, '('), $this->cities)
                         ) {
@@ -4159,7 +4181,7 @@ class Converter
                 array_shift($remainingWords);
                 $skip = true;
             }
-            
+
             if (in_array($word, [" ", "{\\sc", "\\sc"])) {
                 //
             } elseif (in_array($word, ['...', '…'])) {
@@ -4170,12 +4192,6 @@ class Converter
                 } else {
                     $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
                 }
-                // if (isset($words[$i+1]) && $this->isAnd($words[$i+1], $language)) {
-                //     $this->addToAuthorString(3, $authorstring, ' and others');
-                // } else {
-                //     $this->addToAuthorString(3, $authorstring, $this->formatAuthor($fullName) . ' and others');
-                // }
-                //array_shift($remainingWords);
                 $fullName = '';
                 $namePart = 0;
                 $this->verbose("\$namePart set to 0");
@@ -4352,6 +4368,35 @@ class Converter
                     }
                 }
                 $done = true;
+            } elseif (
+                // next word starts with uppercase letter and next word but one starts with lowercase letter, so cannot start title.
+                // So $words[$i+1] is first word of title.  So terminate name string now.
+                $type == 'authors'
+                && $this->isInitials($word)
+                && isset($words[$i+1])
+                && ! in_array($words[$i+1], ['et', 'et.', 'al', 'al.'])
+                && isset($words[$i+2])
+                && isset($words[$i+2][0])
+                && ! preg_match('/^eds?/', $words[$i+2])
+                && preg_match('/[A-Z]/', $words[$i+1][0])
+                && preg_match('/[a-z]/', $words[$i+2][0])
+                && (
+                    ! $this->isAnd($words[$i+2], $language)
+                    ||
+                    (isset($words[$i+3][0]) && preg_match('/[a-z]/', $words[$i+3][0]) && ! in_array($words[$i+3], $this->vonNames))
+                   )
+                && (
+                    ! in_array($words[$i+2], $this->vonNames)
+                    ||
+                    (isset($words[$i+3][0]) && preg_match('/[a-z]/', $words[$i+3][0]) && ! in_array($words[$i+3], $this->vonNames))
+                   )
+                && ! in_array($words[$i+2], ['et', 'et.', 'al', 'al.'])
+                ) {
+                $this->verbose('[convertToAuthors 14a]');
+                $fullName .= ' ' . $word;
+                $remainder = implode(" ", $remainingWords);
+                $done = true;
+                $this->addToAuthorString(29, $authorstring, $this->formatAuthor($fullName));
             } elseif ($namePart == 0) {
                 namePart0:
                 if (isset($words[$i+1]) && $this->isAnd($words[$i+1], $language)) {
@@ -4398,7 +4443,7 @@ class Converter
                     $this->verbose("\$namePart set to 0");
                     $authorIndex++;
                 } elseif (
-                    // $word is publication city and either it ends in a color or next word is two-letter state abbreviation followed by colon
+                    // $word is publication city and either it ends in a colon or next word is two-letter state abbreviation followed by colon
                     $type == 'editors'
                     && in_array(trim($word, ',: '), $this->cities)
                     && 
@@ -4423,7 +4468,20 @@ class Converter
                     $name = $this->spaceOutInitials($word);
                     // If part of name is all uppercase and 3 or more letters long, convert it to ucfirst(mb_strtolower())
                     // For component with 1 or 2 letters, assume it's initials and leave it uc (to be processed by formatAuthor)
-                    $nameComponent = (strlen($name) > 2 && strtoupper($name) == $name && strpos($name, '.') === false) ? ucfirst(mb_strtolower($name)) : $name;
+                    if (strlen($name) > 2 && strtoupper($name) == $name && strpos($name, '.') === false) {
+                        $nameComponent = ucfirst(mb_strtolower($name));
+                        // Simpler version of following code, without check for hyphen, produces strange result ---
+                        // the *next* word has a period replaced by a comma
+                        if (str_contains($nameComponent, '-')) {
+                            $nameChars = mb_str_split($nameComponent);
+                            $nameComponent = '';
+                            foreach ($nameChars as $i => $char) {
+                                $nameComponent .= ($i > 0 && $nameChars[$i-1] == '-') ? mb_strtoupper($char) : $char;
+                            }
+                        }
+                    } else {
+                        $nameComponent = $name;
+                    }
                     $oldFullName = $fullName;
                     $fullName .= ' ' . $nameComponent;
                     if ($wordIsVon) {

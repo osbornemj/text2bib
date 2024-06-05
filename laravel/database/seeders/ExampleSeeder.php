@@ -7650,6 +7650,80 @@ class ExampleSeeder extends Seeder
                     'booktitle' => '2016 International Conference on Unmanned Aircraft Systems, ICUAS',
                     ]
             ],
+   			// should not lowercase first letter of name following -
+			[
+                'source' => 'YORK-BARR, J.; DUKE, K. What do we know about teacher leadership? Findings from two decades of scholarship. Review of Educational Research, 74, n. 3, 2004. 255-316. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'York-Barr, J. and Duke, K.',
+                    'title' => 'What do we know about teacher leadership? Findings from two decades of scholarship',
+                    'year' => '2004',
+                    'journal' => 'Review of Educational Research',
+                    'volume' => '74',
+                    'number' => '3',
+                    'pages' => '255-316',
+                    ]
+            ],
+			// first word of title in author list
+			[
+                'source' => 'AMADO, J. Manual de investigação qualitativa em educação. 3ª. ed. Coimbra: Universidade de Coimbra, 2017. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Amado, J.',
+                    'title' => 'Manual de investigação qualitativa em educação',
+                    'year' => '2017',
+                    'publisher' => 'Universidade de Coimbra',
+                    'address' => 'Coimbra',
+                    'edition' => '3ª',
+                    ],
+					'language' => 'pt',
+					'char_encoding' => 'utf8leave',
+            ],
+			// part of title included in author list.  PhD thesis not detected
+			[
+                'source' => 'ARAÚJO, K. S. S. Dispositivos e diapositivos da educação científica: o TPACK e a constituição de práticas inovadoras na educação básica - Tese (Doutorado). Universidade do Estado da Bahia, Salvador, p. 202. 2019. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Araújo, K. S. S.',
+                    'title' => 'Dispositivos e diapositivos da educação científica: o TPACK e a constituição de práticas inovadoras na educação básica',
+					'school' => 'Universidade do Estado da Bahia, Salvador',
+                    'year' => '2019',
+                    'note' => 'p. 202',
+                    ],
+					'language' => 'pt',
+					'char_encoding' => 'utf8leave',
+            ],
+			// part of title included in authors
+			[
+                'source' => 'GIMENO SACRISTÁN, J. Poderes instáveis em educação. Porto Alegre: ArtMed, 1999. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Gimeno Sacristán, J.',
+					'title' => 'Poderes instáveis em educação',
+                    'address' => 'Porto Alegre',
+                    'year' => '1999',
+                    'publisher' => 'ArtMed',
+                    ],
+					'language' => 'pt',
+					'char_encoding' => 'utf8leave',
+            ],
+			// edition not identified
+			[
+                'source' => 'MANKIW, N. G. Principles of Microeconomics. 5ª Edição. Mason, Ohio: South-Western Cengage Learning, 2008. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Mankiw, N. G.',
+                    'title' => 'Principles of Microeconomics',
+                    'year' => '2008',
+					'edition' => '5ª',
+                    'publisher' => 'South-Western Cengage Learning',
+                    'address' => 'Mason, Ohio',
+                    ],
+					'language' => 'pt',
+					'char_encoding' => 'utf8leave',
+            ],
+
+
             
 
 
