@@ -7722,6 +7722,47 @@ class ExampleSeeder extends Seeder
 					'language' => 'pt',
 					'char_encoding' => 'utf8leave',
             ],
+			// journal not identified
+			[
+                'source' => 'Kister, M. J. 1980. ‘Labbayka, Allāhumma, Labbayka… On a Monotheistic Aspect of a Jāhiliyya Practice’, Jerusalem Studies in Arabic and Islam 2: 33–57. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kister, M. J.',
+                    'title' => 'Labbayka, All{\=a}humma, Labbayka… On a Monotheistic Aspect of a J{\=a}hiliyya Practice',
+                    'journal' => 'Jerusalem Studies in Arabic and Islam',
+                    'year' => '1980',
+                    'volume' => '2',
+                    'pages' => '33-57',
+                    ]
+            ],
+			// publisher address not identified
+			[
+                'source' => 'Åžeyhun, Ahmet. 2014. Islamist Thinkers in the Late Ottoman Empire and Early Turkish Republic. Leiden: Brill. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Åžeyhun, Ahmet',
+                    'title' => 'Islamist Thinkers in the Late Ottoman Empire and Early Turkish Republic',
+                    'year' => '2014',
+                    'address' => 'Leiden',
+                    'publisher' => 'Brill',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+            // first word of journal name is included in title
+			[
+                'source' => 'Berhe, H. H. (2022). Application of kaizen philosophy for enhancing manufacturing industries performance: Exploratory study of Ethiopian chemical industries. The International Journal of Quality & Reliability Management, 39(1), 204-235. https://doi.org/10.1108/IJQRM-09-2020-0328 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1108/IJQRM-09-2020-0328',
+                    'author' => 'Berhe, H. H.',
+                    'year' => '2022',
+                    'title' => 'Application of kaizen philosophy for enhancing manufacturing industries performance: Exploratory study of Ethiopian chemical industries',
+                    'journal' => 'The International Journal of Quality & Reliability Management',
+                    'volume' => '39',
+                    'number' => '1',
+                    'pages' => '204-235',
+                    ]
+            ],
 
 
             

@@ -3,9 +3,28 @@
         <h2 class="font-semibold text-xl leading-tight">
             Conversions
         </h2>
+        @if ($user)
+            by {{ $user->fullName() }}
+        @endif
     </x-slot>
 
-    <div class="sm:px-0 lg:px-0 space-y-6">
+    <div class="m-4 -mt-2">
+        <form method="POST" action="{{ route('admin.search.conversions') }}">
+            @csrf
+    
+            <div>
+                <x-input-label for="search_string" :value="__('Words in source')" class="mt-4 mb-1"/>
+                <div class="flex">
+                    <x-text-input id="search_string" name="search_string" class="block mt-1 max-w-xl w-full" type="text" autofocus />
+                    <x-primary-button class="ml-4 py-0">
+                        {{ __('Search all conversions') }}
+                    </x-primary-button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="sm:px-0 lg:px-0">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
             <ul>
             @foreach ($conversions as $conversion)

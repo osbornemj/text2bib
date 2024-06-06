@@ -30,7 +30,7 @@
             <!-- Page Heading -->
             @if (isset($header))
                 <header>
-                    <div class="py-4 px-4">
+                    <div class="pt-4 pb-2 px-4">
                         {{ $header }}
                     </div>
                 </header>

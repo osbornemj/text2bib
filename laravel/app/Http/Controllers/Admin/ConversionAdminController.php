@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Conversion;
 use App\Models\ItemType;
 use App\Models\Output;
+use App\Models\User;
 use App\Models\UserFile;
 use App\Models\Version;
 use App\Traits\AddLabels;
@@ -30,14 +31,23 @@ class ConversionAdminController extends Controller
         $this->converter = new Converter;
     }
 
-    public function index(): View
+    public function index($userId): View
     {
-        $conversions = Conversion::orderByDesc('created_at')
+        $conversions = Conversion::orderByDesc('created_at');
+
+        $user = null;
+
+        if ($userId) {
+            $conversions = $conversions->where('user_id', $userId);
+            $user = User::find($userId);
+        }
+
+        $conversions = $conversions
             ->with('user')
             ->withCount('outputs')
             ->paginate(50);
 
-        return view('admin.conversions.index', compact('conversions'));
+        return view('admin.conversions.index', compact('conversions', 'user'));
     }
 
     public function showConversion(int $conversionId, int $page): View
@@ -190,4 +200,20 @@ class ConversionAdminController extends Controller
 
         return view('admin.formatExample', compact('output', 'itemType'));
     }
+
+    public function search(): View
+    {
+        $searchString = request()->search_string;
+        $searchTerms = explode(' ', $searchString);
+
+        $outputs = Output::with('itemType')
+            ->with('conversion');
+        foreach ($searchTerms as $searchTerm) {
+            $outputs = $outputs->where('source', 'like', '%' . $searchTerm .'%');
+        }
+        $outputs = $outputs->get();
+
+        return view('admin.conversions.showOutputs', compact('outputs', 'searchString'));
+    }
+
 }

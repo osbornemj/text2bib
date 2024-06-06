@@ -7,25 +7,45 @@
 
     <div class="px-4 mb-2">
         {{ $users->total() }} found
+        @if ($searchString)
+            &nbsp;&bull;&nbsp;
+            <x-link href="{{ url('admin/users') }}">All users</x-link>
+        @endif
+    </div>
+
+    <div class="m-4 -mt-2">
+        <form method="POST" action="{{ route('admin.search.users') }}">
+            @csrf
+    
+            <div>
+                <x-input-label for="search_string" :value="__('String in name')" class="mt-4 mb-1"/>
+                <div class="flex">
+                    <x-text-input id="search_string" name="search_string" class="block mt-1 max-w-xl w-full" type="text" value="{{ $searchString }}" autofocus />
+                    <x-primary-button class="ml-4 py-0">
+                        {{ __('Search') }}
+                    </x-primary-button>
+                </div>
+            </div>
+        </form>
     </div>
 
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="px-4 sm:px-4 sm:rounded-lg">
             <!-- Grid wrapper -->
             <div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 xl:grid-cols-12 2xl:grid-cols-12">
-                <div class="hidden md:col-span-4 md:block lg:col-span-3 lg:border-b-2">
+                <div class="hidden md:col-span-4 md:block lg:col-span-3 lg:border-b-2 mb-2">
                     Name
                 </div>
-                <div class="hidden md:col-span-5 md:block lg:col-span-4 lg:border-b-2">
+                <div class="hidden md:col-span-5 md:block lg:col-span-4 lg:border-b-2 mb-2">
                     Email
                 </div>
-                <div class="hidden md:col-span-1 md:block lg:col-span-2 md:border-b-2">
+                <div class="hidden md:col-span-1 md:block lg:col-span-2 md:border-b-2 mb-2">
                     Registered
                 </div>
-                <div class="hidden md:col-span-1 md:block lg:col-span-2 md:border-b-2">
+                <div class="hidden md:col-span-1 md:block lg:col-span-2 md:border-b-2 mb-2">
                     Last login
                 </div>
-                <div class="hidden md:col-span-1 md:block lg:col-span-1 md:border-b-2">
+                <div class="hidden md:col-span-1 md:block lg:col-span-1 md:border-b-2 mb-2">
                     # conv
                 </div>
                 @foreach ($users as $user)
@@ -55,10 +75,16 @@
                         {{ $user->date_last_login ? $user->date_last_login->toDateString() : '' }}
                     </div>
                     <div class="mb-4 md:col-span-1 lg:mb-0 lg:col-span-1 lg:text-right">
+                        @if ($user->conversions_count)
+                            <x-link href="{{ url('admin/conversions/' . $user->id) }}">
+                        @endif
                         {{ $user->conversions_count }}
                         <span class="lg:hidden">
                             conversions
                         </span>
+                        @if ($user->conversions_count)
+                            </x-link>
+                        @endif
                     </div>
                 @endforeach
             </div>
