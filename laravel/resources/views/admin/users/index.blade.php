@@ -113,7 +113,9 @@
                 @endforeach
             </div>
 
-            {{ $users->links() }}
+            <div class="mt-2">
+                {{ $users->links() }}
+            </div>
         </div>
     </div>
 </x-app-layout>
