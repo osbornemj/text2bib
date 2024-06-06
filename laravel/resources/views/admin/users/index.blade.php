@@ -34,19 +34,43 @@
             <!-- Grid wrapper -->
             <div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 xl:grid-cols-12 2xl:grid-cols-12">
                 <div class="hidden md:col-span-4 md:block lg:col-span-3 lg:border-b-2 mb-2">
-                    Name
+                    @if ($sortBy == 'name')
+                        <div class="bg-slate-100 dark:bg-slate-700">
+                    @endif
+                    <x-link href="{{ url('admin/users/name') }}">Name</x-link>
+                    @if ($sortBy == 'name')
+                        </div>
+                    @endif
                 </div>
                 <div class="hidden md:col-span-5 md:block lg:col-span-4 lg:border-b-2 mb-2">
                     Email
                 </div>
                 <div class="hidden md:col-span-1 md:block lg:col-span-2 md:border-b-2 mb-2">
-                    Registered
+                    @if ($sortBy == 'registered')
+                        <div class="bg-slate-100 dark:bg-slate-700">
+                    @endif
+                    <x-link href="{{ url('admin/users/registered') }}">Registered</x-link>
+                    @if ($sortBy == 'registered')
+                        </div>
+                    @endif
                 </div>
                 <div class="hidden md:col-span-1 md:block lg:col-span-2 md:border-b-2 mb-2">
-                    Last login
+                    @if ($sortBy == 'lastLogin')
+                        <div class="bg-slate-100 dark:bg-slate-700">
+                    @endif
+                    <x-link href="{{ url('admin/users/lastLogin') }}">Last login</x-link>
+                    @if ($sortBy == 'lastLogin')
+                        </div>
+                    @endif
                 </div>
                 <div class="hidden md:col-span-1 md:block lg:col-span-1 md:border-b-2 mb-2">
-                    # conv
+                    @if ($sortBy == 'conversionCount')
+                        <div class="bg-slate-100 dark:bg-slate-700">
+                    @endif
+                    <x-link href="{{ url('admin/users/conversionCount') }}"># conv</x-link>
+                    @if ($sortBy == 'conversionCount')
+                        </div>
+                    @endif
                 </div>
                 @foreach ($users as $user)
                     <div class="md:col-span-4 lg:col-span-3">

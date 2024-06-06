@@ -161,7 +161,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     });
 
     Route::controller(UsersController::class)->group(function () {
-        Route::get('/admin/users', 'index')->name('admin.users');
+        Route::get('/admin/users/{sortBy?}', 'index')->name('admin.users');
         Route::delete('/admin/users/{id}', 'destroy')->name('admin.user.destroy');
         Route::post('/admin/searchUsers', 'index')->name('admin.search.users');
     });
