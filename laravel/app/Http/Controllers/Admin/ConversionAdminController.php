@@ -31,7 +31,7 @@ class ConversionAdminController extends Controller
         $this->converter = new Converter;
     }
 
-    public function index($userId): View
+    public function index(int $userId = 0): View
     {
         $conversions = Conversion::orderByDesc('created_at');
 
