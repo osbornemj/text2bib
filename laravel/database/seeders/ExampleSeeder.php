@@ -7763,6 +7763,46 @@ class ExampleSeeder extends Seeder
                     'pages' => '204-235',
                     ]
             ],
+   			// Translator abbreviated "Trans"
+			[
+                'source' => 'Koselleck, Reinhart. (2002). The Practice of Conceptual History: Timing History, Spacing Concepts. Trans. Todd Samuel Presner et al. Stanford: Stanford University Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Koselleck, Reinhart',
+                    'title' => 'The Practice of Conceptual History: Timing History, Spacing Concepts',
+                    'year' => '2002',
+                    'note' => 'Trans. Todd Samuel Presner et al.',
+                    'address' => 'Stanford',
+                    'publisher' => 'Stanford University Press',
+                    ]
+            ],
+			// access date and pages confused
+			[
+                'source' => 'World Cocoa Foundation. (2024). Improving farmer income through sustainable practices. World Cocoa Foundation. Accessed 25-05-2024.  ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'World Cocoa Foundation',
+                    'year' => '2024',
+                    'title' => 'Improving farmer income through sustainable practices',
+                    'note' => 'World Cocoa Foundation',
+					'urldate' => '2024-05-25',
+                    ]
+            ],
+            // remove colon before doi
+            [
+                'source' => 'Garlock, T. et al. Aquaculture: The missing contributor in the food security agenda. Global Food Security 32, 100620 (2022). https://doi.org:10.1016/j.gfs.2022.100620 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Garlock, T. and others',
+                    'title' => 'Aquaculture: The missing contributor in the food security agenda',
+                    'journal' => 'Global Food Security',
+                    'year' => '2022',
+                    'volume' => '32',
+                    'note' => 'Article 100620',
+                    'doi' => '10.1016/j.gfs.2022.100620',
+                    ]
+            ],
+
 
 
             

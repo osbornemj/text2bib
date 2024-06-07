@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
             'unpublished' => ['author', 'title', 'year', 'month', 'note', 'url', 'archiveprefix', 'eprint', 'doi'],
             'mastersthesis' => ['author', 'title', 'school', 'year', 'month', 'note', 'url', 'doi'],
             'phdthesis' => ['author', 'title', 'school', 'year', 'month', 'note', 'url', 'doi'],
-            'online' => ['author', 'title', 'year', 'url', 'urldate', 'month'],
+            'online' => ['author', 'title', 'year', 'url', 'urldate', 'month', 'date', 'note'],
         ];
 
         foreach($itemTypeItemFields as $name => $fields) {

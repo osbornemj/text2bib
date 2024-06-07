@@ -684,6 +684,15 @@ class Converter
             );
         }
 
+        // accessed <date> [no url]
+        if (! count($matches)) {
+            preg_match(
+                '%' . $accessedRegExp1 . '\.?$%i',
+                $remainder,
+                $matches,
+            );
+        }
+
         // <url> <note>
         if (! count($matches)) {
             preg_match(
@@ -2932,6 +2941,15 @@ class Converter
                                 $remainder = $cityString . ':' . $publisherString;
                             }
                         }
+                    }
+
+                    // Cannot put this earlier, before type has been determined, because "Trans." is an abbreviation
+                    // used in journal names.  ("Translated by" is heandled earlier.)
+                    $result = $this->findRemoveAndReturn($remainder, '[Tt]rans\. .*?[a-z]\.', false);
+                    if ($result) {
+                        $this->addToField($item, 'note', ucfirst($result[0]), 'addToField 3');
+                        $before = Str::replaceEnd(' and ', '', $result['before']);
+                        $remainder = $before . '.' . $result['after'];
                     }
 
                     $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString);
