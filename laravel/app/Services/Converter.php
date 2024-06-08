@@ -109,11 +109,20 @@ class Converter
         // Journals with distinctive names (not single words like Science and Nature)
         // The names are ordered by string length, longest first, so that if one journal name
         // is a subset of another, the longer name is detected 
-        $this->journalNames = Journal::where('distinctive', 1)
-            ->where('checked', 1)
-            ->orderByRaw('CHAR_LENGTH(name) DESC')
-            ->pluck('name')
-            ->toArray();
+        // $this->journalNames = Journal::where('distinctive', 1)
+        //     ->where('checked', 1)
+        //     ->orderByRaw('CHAR_LENGTH(name) DESC')
+        //     ->pluck('name')
+        //     ->toArray();
+        /*
+         * The number of journals is huge, and an array of all of them is unweildy.
+         * Further, if a journal name is in the database and an item contains a journal 
+         * with a name that is not in the database but is a superset of the one that is,
+         * the shorter name gets assigned to the item.  Checking for that seems like it
+         * is pretty much equivalent to determining what part of the string is the journal
+         * name, which means the array of existing journal names is not useful.
+         */
+        $this->journalNames = [];
 
         // Abbreviations used as the first words of journal names (like "J." or "Bull.")
         $this->startJournalAbbreviations = StartJournalAbbreviation::where('distinctive', 1)
@@ -263,7 +272,7 @@ class Converter
 
         $this->startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
         $this->forthcomingRegExp = 'forthcoming( at| in)?|in press|accepted( at)?|to appear in';
-        $this->endForthcomingRegExp = ' (forthcoming|in press|accepted|to appear)\.?\)?$';
+        $this->endForthcomingRegExp = '( |\()(forthcoming|in press|accepted|to appear)\.?\)?$';
         $this->forthcomingRegExp2 = '/^[Ii]n [Pp]ress/';
         $this->forthcomingRegExp3 = '/^[Aa]ccepted/';
         $this->forthcomingRegExp4 = '/[Ff]orthcoming\.?\)?$/';
@@ -275,7 +284,7 @@ class Converter
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
         // Could add "symposium" to list of words
         $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference|symposium on | meeting |congress of the | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop|^actas del )';
-        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc.? Natl.? Acad|^Proc. National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc. R. Soc.|^Proc. Roy. Soc. A|^Proc. Roy. Soc.|^Proceedings of the International Association of Hydrological Sciences|^Proc. IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! Conference)|^Proceedings of the IRE|^Proc. Inst. Mech. Eng.';
+        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! Conference)|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?|M\.?A\.?|M\.?Sc\.?';
@@ -461,6 +470,9 @@ class Converter
                 }
             }
             // Remove numbers and other symbols at start of entry, like '6.' or '[14]'.
+            if (substr($entry, 0, 1) == '"' && substr($entry, -1) == '"') {
+                $entry = substr($entry, 1, strlen($entry) - 2);
+            }
             $entry = ltrim($entry, ' .0123456789[]()|*+:^');
 
             // If entry starts with '\bibitem [abc] {<label>}', get <label> and remove '\bibitem' and arguments
@@ -562,7 +574,7 @@ class Converter
         $doi = Str::replaceStart('https://doi.org/', '', $doi);
         $doi = Str::replaceStart('doi.', '', $doi);
         $doi = rtrim($doi, ']');
-        $doi = ltrim($doi, '/');
+        $doi = ltrim($doi, '/:');
         if (in_array($use, ['latex', 'biblatex'])) {
             $doi = preg_replace('/([^\\\])_/', '$1\_', $doi);
         }
@@ -1555,7 +1567,7 @@ class Converter
                 $remainder = preg_replace('/([^0-9]),([^ 0-9])/', '$1, $2', $remainder);
 
                 // if starts with "in", remove it and check whether what is left starts with italics
-                if (preg_match($this->inRegExp1, $remainder)) {
+                if (preg_match($this->inRegExp1, $remainder) && ! Str::startsWith($remainder, 'in press')) {
                     $remainder = preg_replace($this->inRegExp1, '', $remainder);
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
                         $italicStart = true;
@@ -1609,7 +1621,7 @@ class Converter
                     //     $journal = substr($journal, 0, -1);
                     // }
                     $journal = trim($journal, '_');
-                    $this->setField($item, 'journal', trim($journal, '*'), 'setField 19');
+                    $this->setField($item, 'journal', trim($journal, '"*'), 'setField 19');
                 } else {
                     $warnings[] = "Item seems to be article, but journal not found.  Setting type to unpublished.";
                     $itemKind = 'unpublished';  // but continue processing as if journal
@@ -2085,15 +2097,18 @@ class Converter
                     if (! isset($tempRemainder)) {
                         $tempRemainder = $remainder;
                     }
+
                     $tempRemainderWords = explode(' ', $tempRemainder);
                     $wordCount = count($tempRemainderWords);
+
                     if ($wordCount >= 3) {
                         $lastTwoWordsHaveDigits = preg_match('/[0-9]/', $tempRemainderWords[$wordCount - 2] . $tempRemainderWords[$wordCount - 3]); 
                     } else {
                         $lastTwoWordsHaveDigits = false;
                     }
-                    if (!$lastTwoWordsHaveDigits && preg_match('/(.*)' . $this->editorEndRegExp . '/i', $tempRemainder, $matches)) {
-                        $this->verbose('Remainder minus pub info ends with \'eds\' or similar, so format it <booktitle> <editor>');
+
+                    if (! $lastTwoWordsHaveDigits && preg_match('/(.*)' . $this->editorEndRegExp . '/i', $tempRemainder, $matches)) {
+                        $this->verbose('Remainder minus pub info ends with \'eds\' or similar, so format is <booktitle> <editor>');
                         // Remove "eds" at end
                         $tempRemainderMinusEds = Str::beforeLast($tempRemainder, ' ');
                         // If remaining string contains '(', take preceding string to be booktitle and following string to be editors.
@@ -2106,12 +2121,13 @@ class Converter
                         } else {
                             $trash2 = false;
                             // Include edition in title (because no BibTeX field for edition for incollection)
-                            $booktitle = $this->getTitle($tempRemainder, $edition, $trash1, $trash2, $year, $note, $journal, false, true, $language);
+                            //dump($tempRemainder);
+                            $booktitle = $this->getTitlePrecedingAuthor($tempRemainder, $language);
                             if (substr($booktitle, -3) != 'ed.') {
                                 $booktitle = rtrim($booktitle, '.');
                             }
                             $this->setField($item, 'booktitle', $booktitle);
-                            if ($note) {
+                            if (! empty($note)) {
                                 $this->addToField($item, 'note', $note, 'addToField 11');
                             }
                             $isEditor = true;
@@ -3214,6 +3230,8 @@ class Converter
 
     // Get title from a string that starts with title and then has publication information.
     // Case in which title is in quotation marks or italics is dealt with separately.
+    // Case in which title is followed by authors (editors), as in <booktitle> <editor> format, is handled by
+    // getTitlePrecedingAuthor method.
     private function getTitle(string &$remainder, string|null &$edition, string|null &$volume, bool &$isArticle, string|null &$year = null, string|null &$note, string|null $journal, bool $containsUrlAccessInfo, bool $includeEdition = false, string $language = 'en'): string|null
     {
         $title = null;
@@ -3379,7 +3397,7 @@ class Converter
                 // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
                 // of the cases ``<word>.'' and "<word>."
                 if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && in_array($nextWord[0], ['(', '['])) || ($nextWord && $nextWord == '-')) {
-                    $wordsToNextPeriod = explode(' ', $stringToNextPeriodOrComma);
+                    $wordsToNextPeriodOrComma = explode(' ', $stringToNextPeriodOrComma);
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
@@ -3389,13 +3407,14 @@ class Converter
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder) // pages (e.g. within book)
                         || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
                         || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
-                        || in_array('Journal', $wordsToNextPeriod)  // 
+                        || in_array('Journal', $wordsToNextPeriodOrComma)  // 
                         || (Str::endsWith(rtrim($word, "'\""), [',', '.']) && ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo))  // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
                         || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():]*$/', $remainder)  // journal name, pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
                         || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
                         || (preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) && in_array(trim($matches['city']), $this->cities))
+                        || (preg_match('/^[A-Z][a-z]+, (?P<city>[A-Za-z ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) && in_array(trim($matches['city']), $this->cities))
                         || preg_match('/^[\(\[\-]? ?' . $this->fullThesisRegExp . '/i', $remainder)
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
                         || Str::startsWith(ltrim($remainder, '('), $this->cities)
@@ -3522,7 +3541,7 @@ class Converter
                             && strlen($remainder) > strlen($stringToNextPeriodOrComma) + ($containsPages ? 37 : 30)
                             && ! $upcomingYear
                             ) {
-                        $this->verbose("Not ending title, case 2 (next word is '" . $nextWord . "', followed by '" . $stringToNextPeriodOrComma . "')");
+                        $this->verbose("Not ending title, case 2 (next word is '" . $nextWord . "', and string to next period or comma is '" . $stringToNextPeriodOrComma . "')");
                     // else if working paper string occurs later in remainder,
                     } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/i', $remainder, $matches)) {
                         // if no intervening punctuation, end title
@@ -3551,13 +3570,13 @@ class Converter
                         // (word ends with period or comma and there are 4 or more words till next punctuation, which is a period)
                         // OR entry contains url access info [in which case there is no more publication info to come]
                         // AND ... AND stringToNextPeriod doesn't start with In or pp and doesn't contain commas or colons
-                        // AND (the rest of the remainder is not all-numebers and punctuation (has to include publication info) OR
+                        // AND (the rest of the remainder is not all-numbers and punctuation (has to include publication info) OR
                         // entry contains url access info (which has been removed))
                         // Treat hyphens in words as spaces
                         $modStringToNextPeriod = preg_replace('/([a-z])-([a-z])/', '$1 $2', $stringToNextPeriodOrComma);
-                        $wordsToNextPeriod = explode(' ',  $modStringToNextPeriod);
+                        $wordsToNextPeriodOrComma = explode(' ',  $modStringToNextPeriod);
                         // $lcWordCount = 0;
-                        // foreach ($wordsToNextPeriod as $remainingWord) {
+                        // foreach ($wordsToNextPeriodOrComma as $remainingWord) {
                         //     if (! in_array($remainingWord, $this->stopwords) && isset($remainingWord[0]) && ctype_alpha($remainingWord[0]) && mb_strtolower($remainingWord) == $remainingWord) {
                         //         $lcWordCount++;
                         //     }
@@ -3590,10 +3609,12 @@ class Converter
                                 $remainder = '';
                             }
                             break;
-                        } elseif (Str::endsWith($word, [',']) && preg_match('/[A-Z][a-z]+, [A-Z]\. /', $remainder)) {
-                            $this->verbose("Ending title, case 6a (word '" . $word ."')");
-                            $title = rtrim(implode(' ', $initialWords), '.,');
-                            break;
+                        // Next case was intended for title followed by authors (as is <booktitle> <editors>) ---
+                        // but that case is now handled separately
+                        // } elseif (Str::endsWith($word, [',']) && preg_match('/[A-Z][a-z]+, [A-Z]\. /', $remainder)) {
+                        //     $this->verbose("Ending title, case 6a (word '" . $word ."')");
+                        //     $title = rtrim(implode(' ', $initialWords), '.,');
+                        //     break;
                         } elseif (Str::endsWith($word, [','])) {
                             $this->verbose("Not ending title, case 7a (word '" . $word ."')");
                         } elseif (in_array(rtrim($wordAfterNextCommaOrPeriod, '.'), $this->startJournalAbbreviations)) {
@@ -3627,6 +3648,30 @@ class Converter
             $remainder = substr($remainder, 1);
         }
 
+        return $title;
+    }
+
+    // Get title from a string that starts with title and then has authors (e.g. editors, in <booktitle> <editor> format)
+    private function getTitlePrecedingAuthor(string &$remainder, string $language = 'en'): string|null
+    {
+        $title = null;
+
+        $remainder = str_replace('  ', ' ', $remainder);
+        $words = explode(' ', $remainder);
+        $initialWords = [];
+        $remainingWords = $words;
+
+        foreach ($words as $word) {
+            array_shift($remainingWords);
+            $remainder = implode(' ', $remainingWords);
+            $initialWords[] = $word;
+
+            if (Str::endsWith($word, ['.', ',']) && $this->isNameString($remainder)) {
+                $title = rtrim(implode(' ', $initialWords), ',');
+                break;
+            }
+        }
+ 
         return $title;
     }
 
@@ -5765,7 +5810,7 @@ class Converter
             // forthcoming at start
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
             $journal = $this->getQuotedOrItalic($result['content'], true, false, $before, $after, $style);
-            if (!$journal) {
+            if (! $journal) {
                 $journal = $result['content'];
             }
             $label = $result['label'];
@@ -5778,7 +5823,7 @@ class Converter
             // forthcoming at end
             $result = $this->extractLabeledContent($remainder, '.*', $this->endForthcomingRegExp, true);
             $journal = $result['label'];
-            $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . rtrim($result['content'], ')'), 'getJournal 2');
+            $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . trim($result['content'], '()'), 'getJournal 2');
         } else {
             $words = $remainingWords = explode(' ', $remainder);
             $initialWords = [];

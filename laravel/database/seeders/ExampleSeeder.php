@@ -1082,7 +1082,7 @@ class ExampleSeeder extends Seeder
                     ]
             ],
             [
-                'source' => '\bibitem{duff1} Darrell Duffie and Wayne Shafer, Equilibrium in Incomplete Markets: I {\em Journal of Mathematical Economics} 14(1985), 285-300. ',
+                'source' => '\bibitem{duff1} Darrell Duffie and Wayne Shafer, Equilibrium in Incomplete Markets: I. {\em Journal of Mathematical Economics} 14(1985), 285-300. ',
                 'type' => 'article',
                 'bibtex' => [
                     'journal' => 'Journal of Mathematical Economics',
@@ -2546,7 +2546,7 @@ class ExampleSeeder extends Seeder
                     ]
             ],
             [
-                'source' => '\bibitem{K2-108} Bleiler, S. A. \& Scharlemann, M. G. (1986). Tangles, property $P$ and a problem of J. Martin. Math. Ann. Vol. 273, 215-225.  ',
+                'source' => '\bibitem{K2-108} Bleiler, S. A. \& Scharlemann, M. G. (1986). Tangles, property $P$ and a problem of J. Martin, Math. Ann. Vol. 273, 215-225.  ',
                 'type' => 'article',
                 'bibtex' => [
                     'year' => '1986',
@@ -2940,7 +2940,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'url' => 'https://www.bloomberg.com/news/articles/2022-12-11/saudi-arabia-says-50-billion-investments-agreed-at-china-summit?leadSource=uverify',
                     'author' => 'Abuljadayel, F. and Omar, A. A.',
-                    'title' => 'Saudi Arabia Says $50 Billion Investments Agreed With China',
+                    'title' => 'Saudi Arabia Says $50 Billion Investments Agreed With {C}hina',
                     'year' => '2022',
                     'month' => 'December',
                     'urldate' => '2022, December 12',
@@ -6783,7 +6783,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'article',
                 'bibtex' => [
                     'author' => 'Zhang, X. and Bai, X.',
-                    'title' => 'Incentive policies from 2006 to 2016 and new energy vehicle adoption in 2010-2020 in China',
+                    'title' => 'Incentive policies from 2006 to 2016 and new energy vehicle adoption in 2010-2020 in {C}hina',
 					'journal' => 'Renewable Sustainable Energy Rev.',
 					'volume' => '70',
                     'year' => '2017',
@@ -7802,6 +7802,18 @@ class ExampleSeeder extends Seeder
                     'doi' => '10.1016/j.gfs.2022.100620',
                     ]
             ],
+			//
+			[
+				'source' => '"Olson ME, Rosell JA, Martínez-Pérez C, León-Gómez C, Fajardo A, Isnard S, Cervantes-Alcayde M-A, Echeverría A, Figueroa-Abúndiz A, Segovia-Rivas A, et al. in press. Xylem vessel diameter-shoot length scaling: ecological significance of porosity types and other traits. Ecological Monographs"',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Olson, M. E. and Rosell, J. A. and Martínez-Pérez, C. and León-Gómez, C. and Fajardo, A. and Isnard, S. and Cervantes-Alcayde, M.-A. and Echeverría, A. and Figueroa-Abúndiz, A. and Segovia-Rivas, A. and others',
+                    'title' => 'Xylem vessel diameter-shoot length scaling: ecological significance of porosity types and other traits',
+                    'journal' => 'Ecological Monographs',
+                    'year' => 'in press',
+                    ],
+				'char_encoding' => 'utf8leave',
+			],
 
 
 
