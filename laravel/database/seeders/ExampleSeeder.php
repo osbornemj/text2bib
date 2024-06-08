@@ -658,7 +658,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Andr\\\'{e} B. Chadwick, P. Oblo{\\v z}insk{\\\' y}, M. Herman, N. M. Greene, R. D. McKnight, D. L. Smith, P. G. Young, R. E. MacFarlane, G. M. Hale, S. C. Frankle, A. C. Kahler, T. Kawano, R. C. Little, D. G. Madland, P. Moller, R. D. Mosteller, P. R. Page, P. Talou, H. Trellue, M. C. White, W. B. Wilson, R. Arcilla, C. L. Dunford, S. F. Mughabghab, B. Pritychenko, D. Rochman, A. A. Sonzogni, C. R. Lubitz, T. H. Trumbull, J. P. Weinman, D. A. Br, D. E. Cullen, D. P. Heinrichs, D. P. McNabb, H. Derrien, M. E. Dunn, N. M. Larson, L. C. Leal, A. D. Carlson, R. C. Block, J. B. Briggs, E. T. Cheng, H. C. Huria, M. L. Zerkle, K. S. Kozier, A. Courcelle, V. Pronyaev, and S. C. van der Marck, ``ENDF/B-VII.0: Next Generation Evaluated Nuclear Data Library for Nuclear Science and Technology," Nuclear Data Sheets {\\bf 107}, 2931 (2006).',
                 'type' => 'article', '2023-08-01 23:39:03', '2023-08-03 00:09:27',
                 'bibtex' => [
-                    'author' => 'Andr\\\'{e} B. Chadwick and P. Oblo{\\v z}insk{\\\' y} and M. Herman and N. M. Greene and R. D. McKnight and D. L. Smith and P. G. Young and R. E. MacFarlane and G. M. Hale and S. C. Frankle and A. C. Kahler and T. Kawano and R. C. Little and D. G. Madland and P. Moller and R. D. Mosteller and P. R. Page and P. Talou and H. Trellue and M. C. White and W. B. Wilson and R. Arcilla and C. L. Dunford and S. F. Mughabghab and B. Pritychenko and D. Rochman and A. A. Sonzogni and C. R. Lubitz and T. H. Trumbull and J. P. Weinman and D. A. Br and D. E. Cullen and D. P. Heinrichs and D. P. McNabb and H. Derrien and M. E. Dunn and N. M. Larson and L. C. Leal and A. D. Carlson and R. C. Block and J. B. Briggs and E. T. Cheng and H. C. Huria and M. L. Zerkle and K. S. Kozier and A. Courcelle and V. Pronyaev and S. C. van der Marck',
+                    'author' => 'Andr\\\'{e} B. Chadwick and P. Oblo{\\v z}insk{\\\'y} and M. Herman and N. M. Greene and R. D. McKnight and D. L. Smith and P. G. Young and R. E. MacFarlane and G. M. Hale and S. C. Frankle and A. C. Kahler and T. Kawano and R. C. Little and D. G. Madland and P. Moller and R. D. Mosteller and P. R. Page and P. Talou and H. Trellue and M. C. White and W. B. Wilson and R. Arcilla and C. L. Dunford and S. F. Mughabghab and B. Pritychenko and D. Rochman and A. A. Sonzogni and C. R. Lubitz and T. H. Trumbull and J. P. Weinman and D. A. Br and D. E. Cullen and D. P. Heinrichs and D. P. McNabb and H. Derrien and M. E. Dunn and N. M. Larson and L. C. Leal and A. D. Carlson and R. C. Block and J. B. Briggs and E. T. Cheng and H. C. Huria and M. L. Zerkle and K. S. Kozier and A. Courcelle and V. Pronyaev and S. C. van der Marck',
                     'title' => 'ENDF/B-VII.0: Next Generation Evaluated Nuclear Data Library for Nuclear Science and Technology',
                     'journal' => 'Nuclear Data Sheets',
                     'year' => '2006',
@@ -2173,7 +2173,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Anelastic Earth structure from the coherency of the Ambient seismic field',
                     'author' => 'Prieto, G. A. and J. F. Lawrence and G. C. Beroza',
                     'volume' => '114',
-                    'note' => 'Article B07202',
+                    'pages' => 'B07202',
                     'journal' => 'J. Geophys. Res.',
                     ]
             ],
@@ -3275,7 +3275,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Mapping Australia\'s dynamic coastline at mean sea level using three decades of Landsat imagery',
                     'journal' => 'Remote Sensing of Environment',
                     'volume' => '267',
-                    'note' => 'Article 112734',
+                    'pages' => '112734',
                     ]
             ],
             [
@@ -4417,7 +4417,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Acheampong, A.O., Amponsah, M., Boateng, E., 2020. Does financial development mitigate carbon emissions? Evidence from heterogeneous financial economies. Energy Econ. 88, 104768. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'note' => 'Article 104768',
+                    'pages' => '104768',
                     'author' => 'Acheampong, A. O. and Amponsah, M. and Boateng, E.',
                     'year' => '2020',
                     'title' => 'Does financial development mitigate carbon emissions? Evidence from heterogeneous financial economies',
@@ -4855,7 +4855,7 @@ class ExampleSeeder extends Seeder
                     'journal' => 'J. Comput. Appl. Math.',
                     'year' => '2020',
                     'volume' => '374',
-                    'note' => 'Article 112758',
+                    'pages' => '112758',
                     ]
             ],
             [
@@ -6329,7 +6329,7 @@ class ExampleSeeder extends Seeder
                     'journal' => 'J. Chem. Phys',
                     'year' => '2015',
                     'volume' => '142',
-                    'note' => 'Article 021101',
+                    'pages' => '021101',
                     ]
             ],
 			// remove dash at end of title
@@ -7776,16 +7776,17 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Stanford University Press',
                     ]
             ],
-			// access date and pages confused
+			// access date and pages confused.  Probably it is online rather than article, but there seems to be no way
+            // for the script to determine that.
 			[
                 'source' => 'World Cocoa Foundation. (2024). Improving farmer income through sustainable practices. World Cocoa Foundation. Accessed 25-05-2024.  ',
-                'type' => 'online',
+                'type' => 'article',
                 'bibtex' => [
                     'author' => 'World Cocoa Foundation',
                     'year' => '2024',
                     'title' => 'Improving farmer income through sustainable practices',
-                    'note' => 'World Cocoa Foundation',
-					'urldate' => '2024-05-25',
+                    'journal' => 'World Cocoa Foundation',
+					'urldate' => '25-05-2024',
                     ]
             ],
             // remove colon before doi
@@ -7798,7 +7799,7 @@ class ExampleSeeder extends Seeder
                     'journal' => 'Global Food Security',
                     'year' => '2022',
                     'volume' => '32',
-                    'note' => 'Article 100620',
+                    'pages' => '100620',
                     'doi' => '10.1016/j.gfs.2022.100620',
                     ]
             ],
@@ -7814,6 +7815,96 @@ class ExampleSeeder extends Seeder
                     ],
 				'char_encoding' => 'utf8leave',
 			],
+   			// remove comma before journal name
+			[
+                'source' => 'A. Wachter and L. T. Biegler, \textit{ On the implementation of a primal-dual interior point filter line search algorithm for large-scale nonlinear programming.}‚  Mathematical Programming, 106(1):25-57, 2006.   ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'A. Wachter and L. T. Biegler',
+                    'title' => 'On the implementation of a primal-dual interior point filter line search algorithm for large-scale nonlinear programming',
+                    'year' => '2006',
+                    'journal' => 'Mathematical Programming',
+                    'volume' => '106',
+                    'number' => '1',
+                    'pages' => '25-57',
+                    ]
+            ],
+			// volume not detected
+			[
+                'source' => 'Boyraz, G., Legros, D. N., & Tigershtrom, A. (2020). COVID-19 and traumatic stress: The role of perceived vulnerability, COVID-19-related worries, and social isolation. Journal of Anxiety Disorders, 76(July), 102307. https://doi.org/10.1016/j.janxdis.2020.102307 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Boyraz, G. and Legros, D. N. and Tigershtrom, A.',
+                    'title' => 'COVID-19 and traumatic stress: The role of perceived vulnerability, COVID-19-related worries, and social isolation',
+                    'journal' => 'Journal of Anxiety Disorders',
+                    'year' => '2020',
+                    'month' => 'July',
+                    'volume' => '76',
+                    'pages' => '102307',
+                    'doi' => '10.1016/j.janxdis.2020.102307',
+                    ]
+            ],
+			// date not picked up
+			 [
+                'source' => 'Centers for Disease Control and Prevention. (2023, December 14). CDC respiratory virus updates. Centers for Disease Control and Prevention. https://www.cdc.gov/respiratory-viruses/whats-new/index.html ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'Centers for Disease Control and Prevention',
+                    'title' => 'CDC respiratory virus updates. Centers for Disease Control and Prevention',
+                    'year' => '2023',
+					'month' => 'December',
+					'date' => '2023-12-14',
+                    'urldate' => '2023, December 14',
+                    'url' => 'https://www.cdc.gov/respiratory-viruses/whats-new/index.html',
+                    ]
+            ],
+			// spaces after \' in names cause problems; also arXiv for published article
+			// (more in conversion 5245)
+			[
+                'source' => '\bibitem{PRDYM} M. Huerta-Leal, H. Novales-S\\\' anchez, J. J. Toscano, \textit{A gauge-invariant approach to beta function in Yang-Mills theories with universal extra dimensions}, Phys. Rev. D \textbf{101}, 9, 095038 (2020),  arXiv:1704.07339v3 [hep-ph]. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'title' => 'A gauge-invariant approach to beta function in Yang-Mills theories with universal extra dimensions',
+					'journal' => 'Phys. Rev. D',
+					'volume' => '101',
+					'number' => '9',
+					'pages' => '095038',
+                    'archiveprefix' => 'arXiv',
+                    'eprint' => '1704.07339v3',
+                    'author' => 'M. Huerta-Leal and H. Novales-S\\\'anchez and J. J. Toscano',
+                    'year' => '2020',
+                    ]
+            ],
+			// Example with period within title
+			[
+                'source' => '  \bibitem{AbGal1} Abellanas L and Galindo A, Conserved densities for nonlinear evolution equations I. Even order Case, {\it J. Math. Phys.} 20(6), 1239--1243, (1979). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Abellanas, L. and Galindo, A.',
+                    'title' => 'Conserved densities for nonlinear evolution equations I. Even order Case',
+                    'year' => '1979',
+                    'journal' => 'J. Math. Phys.',
+                    'volume' => '20',
+                    'number' => '6',
+                    'pages' => '1239-1243',
+                    ]
+            ],
+			// Part of journal included in title
+			[
+                'source' => ' Acharjee, S. A., Bharali, P., Gogoi, B., Sorhie, V., Walling, B., & Alemtoshi. (2023). PHA-Based Bioplastic: a Potential Alternative to Address Microplastic Pollution. Water, Air, & Soil Pollution, 234(1), 21. https://doi.org/10.1007/s11270-022-06029-2 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Acharjee, S. A. and Bharali, P. and Gogoi, B. and Sorhie, V. and Walling, B. and Alemtoshi',
+                    'title' => 'PHA-Based Bioplastic: a Potential Alternative to Address Microplastic Pollution',
+                    'journal' => 'Water, Air, & Soil Pollution',
+                    'year' => '2023',
+                    'volume' => '234',
+                    'number' => '1',
+                    'pages' => '21',
+                    'doi' => '10.1007/s11270-022-06029-2',
+                    ]
+            ],
+
 
 
 

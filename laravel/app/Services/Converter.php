@@ -453,6 +453,9 @@ class Converter
         // Note that cleanText translates « and », and „ and ”, to `` and ''.
         $entry = $this->cleanText($entry, $charEncoding, $language);
 
+        // Replace "\' " with "\'" because "\' abc" is equivalent to "\'abc", and the space causes problems if it is within a name.
+        $entry = str_replace("\' ", "\'", $entry);
+
         $firstComponent = 'authors';
         // If entry starts with year, extract it.
         if (preg_match('/^(?P<year>[1-9][0-9]{3})\*? (?P<remainder>.*)$/', $entry, $matches)) {
@@ -610,9 +613,11 @@ class Converter
         // Get arXiv or bioRxiv info if any //
         //////////////////////////////////////
 
+        $hasArxiv = false;
+
         preg_match('/ arxiv[:,] ?(?P<afterArxiv>.*)$/i', $remainder, $matches, PREG_OFFSET_CAPTURE);
         if (isset($matches['afterArxiv'])) {
-            $itemKind = 'unpublished';
+            $hasArxiv = true;
             $dateResult = $this->isDate($matches['afterArxiv'][0], $language, 'starts');
             if ($dateResult) {
                 $this->setField($item, 'archiveprefix', 'arXiv', 'setField 2b');
@@ -637,7 +642,7 @@ class Converter
         if ($eprint) {
             $this->setField($item, 'archiveprefix', 'bioRxiv', 'setField 2a');
             $this->setField($item, 'eprint', trim($eprint, '()'), 'setField 3a');
-            $itemKind = 'unpublished';
+            $hasArxiv = true;
         }
 
         ////////////////////////////////////
@@ -738,15 +743,17 @@ class Converter
         $containsUrlAccessInfo = false;
         $urlHasPdf = false;
 
+        // Write access date even if there is no URL.  (Presumably "accessed ..." means it is in fact an online item.)
+        if (! empty($accessDate)) {
+            $this->setField($item, 'urldate', rtrim($accessDate, '., '), 'setField 5a');
+            $containsUrlAccessInfo = true;
+        }
+
         if (! empty($url)) {
             $url = trim($url, '{)}],. ');
             $this->setField($item, 'url', $url, 'setField 4');
             if (Str::endsWith($url, ['.pdf'])) {
                 $urlHasPdf = true;
-            }
-            if (! empty($accessDate)) {
-                $this->setField($item, 'urldate', rtrim($accessDate, '., '), 'setField 5a');
-                $containsUrlAccessInfo = true;
             }
             if (! empty($year)) {
                 $this->setField($item, 'year', $year, 'setField 5b');
@@ -962,13 +969,6 @@ class Converter
             $monthResult = $this->fixMonth($month, $language);
             $this->setField($item, 'month', $monthResult['months'], 'setField 112');
             if ($day) {
-            // try {
-            //     $parsedDate = @Carbon::parse(str_replace(',', '', $date));
-            // } catch (InvalidFormatException $e) {
-            //     $parsedDate = false;
-            // }
-            // if ($parsedDate) {
-//                $this->setField($item, 'date', $parsedDate->format('Y-m-d'), 'setField 112a');
                 $this->setField($item, 'date', $year . '-' . $monthResult['month1number'] . '-' . (strlen($day) == 1 ? '0' : '') . $day, 'setField 112a');
             }
         }
@@ -1198,7 +1198,7 @@ class Converter
         }
 
         // Contains volume designation, but not at start of $remainder
-        if (preg_match($this->volRegExp1, substr($remainder, 3))) {
+        if (preg_match('/[ \(\[](' . $this->volumeRegExp . ') ?\d/', substr($remainder, 3))) {
             $containsInteriorVolume = true;
             $this->verbose("Contains a volume, but not at start.");
         }
@@ -1386,36 +1386,45 @@ class Converter
 
         if ($itemKind) {
             // $itemKind is already set
-        } elseif (
+        } elseif (! $hasArxiv &&
             (
-                $onlineFlag &&
-                ! $containsInteriorVolume &&
-                ! $containsPageRange &&
-                ! $containsJournalName &&
-                ! $allLettersInitialCaps
-            )
-            ||
-            (
-                isset($item->url) &&
-                ! $containsWorkingPaper &&
-                ($oneWordAuthor || ! $urlHasPdf || $containsUrlAccessInfo) &&
-                ! $inStart &&
-                ! $italicStart &&
-                ! $containsInteriorVolume &&
-                ! $containsPageRange &&
-                ! $containsJournalName &&
-                ! $containsThesis &&
-                ! Str::contains($item->url, ['journal']) &&
-                // if remainder has address: publisher format, item is book unless author is organization
-                (! $startsAddressPublisher || $authorIsOrganization) &&
-                ! $allLettersInitialCaps
-                // && $itemYear && $itemMonth && $itemDay))
+                (
+                    $onlineFlag &&
+                    ! $containsInteriorVolume &&
+                    ! $containsPageRange &&
+                    ! $containsJournalName &&
+                    ! $allLettersInitialCaps
+                )
+                ||
+                (
+                    isset($item->url) &&
+                    ! $containsWorkingPaper &&
+                    ($oneWordAuthor || ! $urlHasPdf || $containsUrlAccessInfo) &&
+                    ! $inStart &&
+                    ! $italicStart &&
+                    ! $containsInteriorVolume &&
+                    ! $containsPageRange &&
+                    ! $containsJournalName &&
+                    ! $containsThesis &&
+                    ! Str::contains($item->url, ['journal']) &&
+                    // if remainder has address: publisher format, item is book unless author is organization
+                    (! $startsAddressPublisher || $authorIsOrganization) &&
+                    ! $allLettersInitialCaps
+                    // && $itemYear && $itemMonth && $itemDay))
+                )
             )
         ) {
             $this->verbose("Item type case 0");
             $itemKind = 'online';
-        } elseif ($containsFullThesis) {
+        } elseif ($hasArxiv &&
+            ! $containsInteriorVolume &&
+            ! $containsPageRange &&
+            ! $containsJournalName
+        ) {
             $this->verbose("Item type case 0a");
+            $itemKind = 'unpublished';
+        } elseif ($containsFullThesis) {
+            $this->verbose("Item type case 0b");
             $itemKind = 'thesis';
         } elseif (
             $isArticle
@@ -1501,7 +1510,7 @@ class Converter
                 $this->verbose("Item type case 16");
                 $itemKind = 'article';
             } elseif ($titleStyle == 'quoted' || $yearIsForthcoming || $allLettersInitialCaps) {
-                // If $allLetters, $remainder is journal/newspaper name (although there are no page numbers etc.)
+                // If $allLettersInitialCaps, $remainder could be journal/newspaper name (although there are no page numbers etc.)
                 $this->verbose("Item type case 17a");
                 $itemKind = 'article';
             } else {
@@ -1674,13 +1683,15 @@ class Converter
                             $month = trim($matches[0][0][0], '();');
                             $monthResult = $this->fixMonth($month, $language);
                             $this->setField($item, 'month', $monthResult['months'], 'setField 21');
-                            $remainder = substr($remainder, 0, $matches[0][0][1]) . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
+                            $remainder = substr($remainder, 0, $matches[0][0][1]) . ' ' . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
                             $this->verbose('Remainder: ' . $remainder);
                         }
 
-                        // Get volume and number
-                        $numberInParens = false;
-                        $this->getVolumeAndNumberForArticle($remainder, $item, $containsNumberDesignation, $numberInParens);
+                        if (! isset($item->volume) && ! isset($item->number)) {
+                            // Get volume and number
+                            $numberInParens = false;
+                            $this->getVolumeAndNumberForArticle($remainder, $item, $containsNumberDesignation, $numberInParens);
+                        }
 
                         $result = $this->findRemoveAndReturn($remainder, $this->articleRegExp);
                         if ($result) {
@@ -3404,12 +3415,19 @@ class Converter
                         || preg_match('/^[Ii]n:? [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
                         || ($nextWord && $nextButOneWord && (Str::endsWith($nextWord, range('a', 'z')) || in_array($nextWord, ['IEEE', 'ACM'])) && Str::endsWith($nextButOneWord, '.') && in_array(substr($nextButOneWord,0,-1), $this->startJournalAbbreviations))
-                        || preg_match('/^\(?pp?\.? [0-9]/', $remainder) // pages (e.g. within book)
-                        || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder) // e.g. SIAM J. ...
-                        || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)  // journal name, pub info?
+                        // pages (e.g. within book)
+                        || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
+                        // e.g. SIAM J. ...
+                        || preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder)
+                        // journal name, pub info?
+                        || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)
                         || in_array('Journal', $wordsToNextPeriodOrComma)  // 
-                        || (Str::endsWith(rtrim($word, "'\""), [',', '.']) && ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo))  // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
-                        || preg_match('/^[A-Z][A-Za-z ]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():]*$/', $remainder)  // journal name, pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
+                        // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
+                        || (Str::endsWith(rtrim($word, "'\""), [',', '.']) && ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo))
+                        // journal name, pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
+                        || preg_match('/^[A-Z][A-Za-z &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():]*$/', $remainder) 
+                        // $word ends in period && journal name (can include commma), pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
+                        || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():]*$/', $remainder))
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
                         || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
@@ -4108,7 +4126,7 @@ class Converter
                 if (ctype_alpha((string) $xword) && $this->inDict($xword) && in_array(substr($word, -1), ['.'])) {
                     if ($i >= 2 && $i <= 5) {
                         $remainder = implode(' ', array_slice($words, $i+1));
-                        $year = $this->getDate($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language);
+                        $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                         return [
                             'authorstring' => $name . ' ' . $xword,
                             'warnings' => [],
@@ -4120,7 +4138,7 @@ class Converter
                     }
                 } elseif ($i >= 3 && $i <= 6) {
                     $remainder = implode(' ', array_slice($words, $i));
-                    $year = $this->getDate($remainder, $remainder, $trash1, $trash2, $trash3, true, false, true, $language);
+                    $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                     return [
                         'authorstring' => $name,
                         'warnings' => [],
@@ -5215,6 +5233,7 @@ class Converter
                 $day = $matches1['day'] ?? null;
                 $date = $matches1['date'] ?? null;
                 $remains = substr($remains, strlen($matches1[0]));
+
                 return $year;
             }
         }
@@ -5887,7 +5906,7 @@ class Converter
         $volumeWordLetterRx = '('. $this->volumeRegExp . ')(?P<vol>' . $letterNumber . ')';
         $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRangeWithSlash . ')';
         $pagesRx = '(?P<pageWord>'. $pages . ')?(?P<pp>' . $letterNumberRange . ')';
-        $punc1 = '(}? |, ?| ?: ?|,? ?\(\(?)';
+        $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?\(\(?)';
         $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
 
         // e.g. Volume 6, No. 3, pp. 41-75 OR 6(3) 41-75
@@ -5896,12 +5915,12 @@ class Converter
             $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
             $this->setField($item, 'number', str_replace(['---', '--', ' - '], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
             $this->setField($item, 'pages', str_replace(['---', '--', ' - ', '- ', ' -', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
-            $remainder = '';
+            $remainder = trim(substr($remainder, strlen($matches[0])));
         // e.g. Volume 6, 41-75$ OR 6 41-75$
        } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/J', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
-            if (Str::contains($matches['pp'], ['-', '_', '?']) || strlen($matches['pp']) < 6 || (isset($matches['pageWord']) && $matches['pageWord'])) {
-                $this->setField($item, 'pages', str_replace(['---', '--', '_', '?'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5a');
+            if (Str::contains($matches['pp'], ['-', '_', '?']) || strlen($matches['pp']) < 7 || (isset($matches['pageWord']) && $matches['pageWord'])) {
+                $this->setField($item, 'pages', str_replace(['---', '--', '_', ' - ', '?'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5a');
             } else {
                 $this->addToField($item, 'note', 'Article ' . $matches['pp'], 'getVolumeNumberPagesForArticle 5b');
             }
@@ -6039,7 +6058,7 @@ class Converter
                     if ($numberOfMatches) {
                         $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : '') . (isset($matches[8][0]) ? ', 8: ' . $matches[8][0] : ''));
                         $this->setField($item, 'volume', $matches['volume'][0], 'getVolumeAndNumberForArticle 14');
-                        if (strlen($matches['number'][0]) < 5) {
+                        if (strlen($matches['number'][0]) < 7) {
                             $this->setField($item, 'number', $matches['number'][0], 'getVolumeAndNumberForArticle 5');
                             if ($matches['numberDesignation'][0]) {
                                 $containsNumberDesignation = true;
@@ -6172,6 +6191,10 @@ class Converter
             // ‘ and ’
             $string = str_replace("\xE2\x80\x98", "``", $string);
             $string = str_replace("\xE2\x80\x99", "''", $string);
+            // ‚ [single low quotation mark, but here translated to comma, which it looks like]
+            // If it is ever used as an opening quote, may need to make translation depend on
+            // whether it is preceded or followed by a space
+            $string = str_replace("\xE2\x80\x9A", ",", $string);
 
             $string = str_replace("\xEF\xBC\x81", "!", $string);
             $string = str_replace("\xEF\xBC\x82", '"', $string);
