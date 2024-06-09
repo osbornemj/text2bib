@@ -8237,13 +8237,233 @@ class ExampleSeeder extends Seeder
                     'volume' => '6',
                     'number' => '2',
                     ]
-            ],	
-
-
-
-
-            
-
+            ],
+            // page numbers not picked up; problem with journal name because The Lancet is in the db
+            [
+                'source' => 'Allegranzi, B., Tartari, E., Loftus, M. J., Pires, D., Pittet, D., & Stall, N. (2020). Global infection prevention and control priorities 2018–22: a call for action. The Lancet Global Health, 8(4), e536-e537. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Allegranzi, B. and Tartari, E. and Loftus, M. J. and Pires, D. and Pittet, D. and Stall, N.',
+                    'year' => '2020',
+                    'title' => 'Global infection prevention and control priorities 2018--22: a call for action',
+                    'journal' => 'The Lancet Global Health',
+                    'volume' => '8',
+                    'number' => '4',
+					'pages' => 'e536-e537',
+                    ]
+            ],
+			// en-dash in year needs to be processed correctly
+			[
+                'source' => 'Elman Yaakov. 1990–1991. ‘Righteousness As Its Own Reward: An Inquiry Into the Theologies of the Stam’, Proceedings of the American Academy for Jewish Research 57: 35–67. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Elman Yaakov',
+                    'title' => 'Righteousness As Its Own Reward: An Inquiry Into the Theologies of the Stam',
+                    'journal' => 'Proceedings of the American Academy for Jewish Research',
+                    'year' => '1990--1991',
+                    'volume' => '57',
+                    'pages' => '35-67',
+                    ]
+            ],
+            // string for "edited by" (Italian)
+            [
+                'source' => 'Rossi, P.G. (2016). Progettazione didattica e professionalità docente. PROPIT: l’artefatto progettuale come mediatore didattico. In P.G. Rossi, C. Giaconi (a cura di). Micro-progettazione: pratiche didattiche a confronto PROPIT, EAS, Flipped Classroom. Milano: Franco Angeli.  ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Rossi, P. G.',
+                    'title' => 'Progettazione didattica e professionalità docente. PROPIT: l\'artefatto progettuale come mediatore didattico',
+                    'year' => '2016',
+                    'editor' => 'P. G. Rossi and C. Giaconi',
+                    'address' => 'Milano',
+                    'publisher' => 'Franco Angeli',
+                    'booktitle' => 'Micro-progettazione: pratiche didattiche a confronto PROPIT, EAS, Flipped Classroom',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+            // editors not detected
+            [
+                'source' => 'Conejo da Pena, A., Bridgewater Mateu, P. (eds.) (2023). The Medieval and  Early Modern Hospital: A Physical and Symbolic Space. Roma: Viella. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'title' => 'The Medieval and Early Modern Hospital: A Physical and Symbolic Space',
+                    'year' => '2023',
+                    'editor' => 'Conejo da Pena, A. and Bridgewater Mateu, P.',
+                    'address' => 'Roma',
+                    'publisher' => 'Viella',
+                    ]
+            ],
+            // editors not detected
+            [
+                'source' => 'Conejo da Pena, A., Bridgewater Mateu, P. (eds.) (2023). The Medieval and  Early Modern Hospital: A Physical and Symbolic Space. Roma: Viella. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'title' => 'The Medieval and Early Modern Hospital: A Physical and Symbolic Space',
+                    'year' => '2023',
+                    'editor' => 'Conejo da Pena, A. and Bridgewater Mateu, P.',
+                    'address' => 'Roma',
+                    'publisher' => 'Viella',
+                    ]
+            ],
+			// working paper not identified
+			[
+                'source' => 'Silva, S. P. (2017). A organização coletiva de catadores de material reciclável no brasil: Dilemas e potencialidades sob a ótica da economia solidária (Texto para discussão 2268; p. 56). IPEA - Instituto de Pesquisa Econômica Aplicada. https://repositorio.ipea.gov.br/bitstream/11058/7413/1/td_2268.PDF ',
+                'type' => 'techreport',
+                'bibtex' => [
+                    'author' => 'Silva, S. P.',
+                    'title' => 'A organização coletiva de catadores de material reciclável no brasil: Dilemas e potencialidades sob a ótica da economia solidária',
+                    'year' => '2017',
+                    'number' => '2268',
+                    'note' => 'p. 56',
+                    'url' => 'https://repositorio.ipea.gov.br/bitstream/11058/7413/1/td_2268.PDF',
+                    'institution' => 'IPEA - Instituto de Pesquisa Econômica Aplicada',
+                    'type' => 'Texto para discussão',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// journal not detected
+			[
+                'source' => 'Varela, D. G., & Fedynich, L. (2020). Leading Schools From a Social Distance: Surveying South Texas School District Leadership During the COVID-19 Pandemic. National Forum of Educational, Administration and Supervision Journal, 38(4), Article 3. https://www.nationalforum.com/Electronic',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Varela, D. G. and Fedynich, L.',
+                    'title' => 'Leading Schools From a Social Distance: Surveying South Texas School District Leadership During the COVID-19 Pandemic',
+                    'journal' => 'National Forum of Educational, Administration and Supervision Journal',
+                    'year' => '2020',
+                    'volume' => '38',
+                    'number' => '4',
+                    'note' => 'Article 3',
+                    'url' => 'https://www.nationalforum.com/Electronic',
+                    ]
+            ],
+			// abbreviation for PhD dissertation
+			[
+                'source' => 'Kolpacoff, D. J. (2000). Papal Schism, Archiepiscopal Politics, and Waldensian Persecution (1378–1396): The Ecclesiopolitical Landscape of Late Fourteenth-Century Mainz. Ph.D. diss. Northwestern University. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Kolpacoff, D. J.',
+                    'title' => 'Papal Schism, Archiepiscopal Politics, and Waldensian Persecution (1378--1396): The Ecclesiopolitical Landscape of Late Fourteenth-Century Mainz',
+                    'year' => '2000',
+                    'school' => 'Northwestern University',
+                    ]
+            ],
+            // journal included in title
+			[
+                'source' => 'D.J. France, R.G. Shiavi, S. Silverman, M. Silverman, M. Wilkes, Acoustical properties of speech as indicators of depression and suicidal risk, IEEE Transactions on Biomedical Engineering. 47 (2000) 829?837. https://doi.org/10.1109/10.846676. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1109/10.846676',
+                    'author' => 'D. J. France and R. G. Shiavi and S. Silverman and M. Silverman and M. Wilkes',
+                    'title' => 'Acoustical properties of speech as indicators of depression and suicidal risk',
+					'journal' => 'IEEE Transactions on Biomedical Engineering.',
+                    'year' => '2000',
+                    'volume' => '47',
+                    'pages' => '829-837',
+                    ]
+            ],
+			// first word of journal in title, full page number not detected.
+			[
+                'source' => 'Trindade, S. P., Camargo, R. A., Torres, P. L., & Kowalski, R. P. G. (2022). Escolarização aberta e as práticas pedagógicas de aprendizagem articuladas com o projeto CONNECT na educação básica. Research, Society and Development, 11(12), e393111234449. https://doi.org/10.33448/rsd-v11i12.34449 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Trindade, S. P. and Camargo, R. A. and Torres, P. L. and Kowalski, R. P. G.',
+                    'title' => 'Escolarização aberta e as práticas pedagógicas de aprendizagem articuladas com o projeto CONNECT na educação básica',
+                    'journal' => 'Research, Society and Development',
+                    'year' => '2022',
+                    'volume' => '11',
+                    'number' => '12',
+                    'pages' => 'e393111234449',
+                    'doi' => '10.33448/rsd-v11i12.34449',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// very partial conversion
+			 [
+                'source' => 'Elias, M. J., Leverett, L., Duffel, J. C., Humphrey, & C., Ferrito, J. (2015). Integrating SEL with Related Prevention and Youth Development Approaches. In J.A. Durlak, C.E. Domitrovich, R.P. Weissberg & T.P. Gullotta (Eds.), Handbook of Social and Emotional Learning, Research and Practice (pp. 39–45). New York-London: The Guilford Press. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Elias, M. J. and Leverett, L. and Duffel, J. C. Humphrey and C. Ferrito, J.',
+                    'title' => 'Integrating SEL with Related Prevention and Youth Development Approaches',
+                    'year' => '2015',
+                    'pages' => '39-45',
+                    'editor' => 'J. A. Durlak and C. E. Domitrovich and R. P. Weissberg and T. P. Gullotta',
+                    'address' => 'New York-London',
+                    'publisher' => 'The Guilford Press',
+                    'booktitle' => 'Handbook of Social and Emotional Learning, Research and Practice',
+                    ]
+            ],
+			// replace ? with - in page range
+			[
+                'source' => 'Franklin, M. C., Carey, K. D., Vajdos, F. F., Leahy, D. J., de Vos, A. M., & Sliwkowski, M. X. (2004). Insights into ErbB signaling from the structure of the ErbB2-pertuzumab complex. Cancer Cell, 5(4), 317?328.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Franklin, M. C. and Carey, K. D. and Vajdos, F. F. and Leahy, D. J. and de Vos, A. M. and Sliwkowski, M. X.',
+                    'year' => '2004',
+                    'title' => 'Insights into ErbB signaling from the structure of the ErbB2-pertuzumab complex',
+                    'journal' => 'Cancer Cell',
+                    'volume' => '5',
+                    'number' => '4',
+                    'pages' => '317-328',
+                    ]
+            ],
+			// booktitle truncated
+			[
+                'source' => 'Dziób, A., Piasecki, M., & Rudnicka, E. (2019). plWordNet 4.1–a Linguistically Motivated, Corpus-based Bilingual Resource. In: Fellbaum, C., Vossen, P., Rudnicka, E., Maziarz, M., & Piasecki, M. (Eds.), Proceedings of the 10th Global WordNet Conference: July 23-27, 2019, Wrocław (Poland), 352-362. Wrocław: Oficyna Wydawnicza Politechniki Wrocławskiej.  ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Dziób, A. and Piasecki, M. and Rudnicka, E.',
+                    'year' => '2019',
+                    'title' => 'plWordNet 4.1--a Linguistically Motivated, Corpus-based Bilingual Resource',
+                    'pages' => '352-362',
+                    'editor' => 'Fellbaum, C. and Vossen, P. and Rudnicka, E. and Maziarz, M. and Piasecki, M.',
+                    'booktitle' => 'Proceedings of the 10th Global WordNet Conference: July 23-27, 2019, Wrocław (Poland)',
+					'publisher' => 'Oficyna Wydawnicza Politechniki Wrocławskiej',
+					'address' => 'Wrocław',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// comma after year in date
+			[
+                'source' => 'AFP. (2021, September 20). US blasts \'dangerous\' rhetoric by ally of Ethiopia PM. AFP. Mailonline. Available at: https://www.dailymail.co.uk/wires/afp/article-10010089/US-blasts-dangerous-rhetoric-ally-Ethiopia-PM.html (Accessed 17 January 2021). ',
+                'type' => 'online',
+                'bibtex' => [
+                    'note' => 'AFP. Mailonline',
+                    'url' => 'https://www.dailymail.co.uk/wires/afp/article-10010089/US-blasts-dangerous-rhetoric-ally-Ethiopia-PM.html',
+                    'urldate' => '17 January 2021',
+                    'month' => 'September',
+                    'date' => '2021-09-20',
+                    'author' => 'AFP',
+                    'year' => '2021',
+                    'title' => 'US blasts \'dangerous\' rhetoric by ally of Ethiopia PM',
+                    ]
+            ],
+			// remove 'retrived from' from note
+			 [
+                'source' => 'Addis Standard. (2020, September 11). Tigray election: beyond defying the central government. Addis Standard. Retrieved from: https://addisstandard.com/analysis-tigray-election-beyond-defying-the-central-government/ (Accessed 17 September 2023) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'journal' => 'Addis Standard',
+                    'url' => 'https://addisstandard.com/analysis-tigray-election-beyond-defying-the-central-government/',
+                    'urldate' => '17 September 2023',
+                    'month' => 'September',
+                    'date' => '2020-09-11',
+                    'author' => 'Addis Standard',
+                    'year' => '2020',
+                    'title' => 'Tigray election: beyond defying the central government',
+                    ]
+            ],
+			// edition not detected
+			 [
+                'source' => '\bibitem[Kosiur(2001)]{Kosiur01}Kosiur, D., 2001. Understanding Policy-Based Networking. Wiley, New York, NY, 2nd edition. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Kosiur, D.',
+                    'year' => '2001',
+                    'title' => 'Understanding Policy-Based Networking',
+                    'publisher' => 'Wiley',
+					'address' => 'New York, NY',
+                    'edition' => '2nd',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');

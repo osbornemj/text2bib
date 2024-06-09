@@ -249,7 +249,8 @@ class Converter
 
         $this->articleRegExp = 'article (id |no\.? ?)?[0-9]*';
 
-        $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|[Ee]ditors?)[\)\]]/';
+        // 'a cura di': Italian
+        $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|[Ee]ditors?|a cura di)[\)\]]/';
         $this->edsRegExp2 = '/ed(\.|ited) by/i';
         $this->edsRegExp4 = '/( [Ee]ds?[\. ]|[\(\[][Ee]ds?\.?[\)\]]| [Ee]ditors?| [\(\[][Ee]ditors?[\)\]])/';
         $this->editorStartRegExp = '/^[\(\[]?[Ee]dited by|^[\(\[]?[Ee]ds?\.?|^[\(\[][Ee]ditors?/';
@@ -291,12 +292,12 @@ class Converter
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
         // Could add "symposium" to list of words
         $this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference|symposium on | meeting |congress of the | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop|^actas del )';
-        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! Conference)|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?';
+        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! Conference)|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?|M\.?A\.?|M\.?Sc\.?';
         $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral';
-        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]issertation))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce)';
+        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce)';
         // pt: Dissertação de Mestrado | Tese de mestrado
         // es: Tesis de maestría
         // nl: Masterproef | Doctoraal proefschrift
@@ -318,7 +319,8 @@ class Converter
 
         $this->bookTitleAbbrevs = ['Proc', 'Amer', 'Conf', 'Cont', 'Sci', 'Int', "Auto", 'Symp'];
 
-        $this->workingPaperRegExp = '(preprint|arXiv preprint|bioRxiv|working paper|discussion paper|technical report|report no.|'
+        $this->workingPaperRegExp = '(preprint|arXiv preprint|bioRxiv|working paper|texto para discussão|discussion paper|'
+                . 'technical report|report no.|'
                 . 'research paper|mimeo|unpublished paper|unpublished manuscript|manuscript|'
                 . 'under review|submitted|in preparation)';
         // Working paper number can contain letters and dashes, but must contain at least one digit
@@ -326,7 +328,7 @@ class Converter
         $this->workingPaperNumberRegExp = ' (\\\\#|number|no\.?)? ?(?=.*[0-9])([a-zA-Z0-9\-]+),?';
 
         $this->retrievedFromRegExp1 = [
-            'en' => '(Retrieved from |Available( at)?:? )',
+            'en' => '(Retrieved from:? |Available( at)?:? )',
             'cz' => '(Dostupné z:? |načteno z:? )',
             'fr' => '(Récupéré sur |Disponible( à)?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
@@ -1470,7 +1472,8 @@ class Converter
             ||
             $containsJournalName
             || 
-            ($italicStart
+            (
+                $italicStart
                 &&
                 ($containsPageRange || $containsInteriorVolume)
                 &&
@@ -1851,7 +1854,13 @@ class Converter
                 } else {
                     // No chars before 'Working paper'---so take string after number to be institution
                     $n = $workingPaperMatches[3][1] ?? 0;
-                    $this->setField($item, 'institution', trim(substr($remainder, $n + strlen($number)), ' .,'), 'setField 30');
+                    $remainder = trim(substr($remainder, $n + strlen($number)), ' .,;');
+                    // Are pages referred to next?  If so, put them in a note.
+                    if (preg_match('/^(?P<note>[Pp]p?\.? [0-9]+( ?--? ?[0-9]+)?)(?P<remainder>.*)/', $remainder, $matches)) {
+                        $this->addToField($item, 'note', $matches['note']);
+                        $remainder = trim($matches['remainder'], '()., ');
+                    }
+                    $this->setField($item, 'institution', $remainder, 'setField 30');
                     $remainder = '';
                 }
                 if (!$item->institution) {
@@ -2251,7 +2260,7 @@ class Converter
                                 // CASE 1
                                 // $remainder starts with names, and so
                                 // $remainder is <editors> (Eds.) <booktitle> <publicationInfo>
-                                $this->verbose("Remainder contains \"(Eds.)\" or similar and starts with string that looks like a name");
+                                $this->verbose("Remainder format is <editors> (Eds.) <booktitle> <publicationInfo>");
                                 $editorStart = true;
                                 $editorString = substr($remainder, 0, $matches[0][1]);
                                 $determineEnd = false;
@@ -3465,16 +3474,23 @@ class Converter
                 // of the cases ``<word>.'' and "<word>."
                 if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && in_array($nextWord[0], ['(', '['])) || ($nextWord && $nextWord == '-')) {
 
+                    $remainderMinusArticle = preg_replace('/[\( ][Aa]rticle /', '', $remainder);
+
                     if (
-                        // e.g. SIAM J. ...
-                        preg_match('/^[a-zA-Z]+ (J\.|Journal)/', $remainder)
-                        // journal name, pub info?
-                        || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)
-                        || in_array('Journal', $wordsToNextPeriodOrComma)
-                        // journal name, pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
-                        || preg_match('/^[A-Z][A-Za-z &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():]*$/', $remainder) 
-                        // $word ends in period && journal name (can include commma), pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
-                        || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():]*$/', $remainder))
+                        ! Str::endsWith($word, ':')
+                        &&
+                        (
+                            // e.g. SIAM J. ... (Don't generalize too much, because 'J.' can be an editor's initial.)
+                            preg_match('/^SIAM (J\.|Journal)/', $remainder)
+                            // journal name, pub info?
+                            || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)
+                            || in_array('Journal', $wordsToNextPeriodOrComma)
+                            // journal name, pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
+                            // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
+                            || preg_match('/^[A-Z][A-Za-z &]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
+                            // $word ends in period && journal name (can include commma), pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
+                            || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?([0-9, \-p\.():]*$|\([0-9]{2,4}\))/', $remainderMinusArticle))
+                        )
                     ) {
                         $upcomingJournalAndPubInfo = true;
                         $isArticle = true;
@@ -3496,7 +3512,7 @@ class Converter
                         || $translatorNext
                         // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
                         || (Str::endsWith(rtrim($word, "'\""), [',', '.']) && ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo))
-                        || preg_match('/^' . $this->workingPaperRegExp . '/i', $remainder)
+                        || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
                         || preg_match('/^[Ii]n:? [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vol\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
@@ -4578,9 +4594,22 @@ class Converter
                     $fullName .= ' ' . $word;
                     $remainder = implode(" ", $remainingWords);
                     $this->addToAuthorString(6, $authorstring, ' ' . ltrim($this->formatAuthor($fullName)));
+                    $origRemainder = $remainder;
+                    $origRemainingWords = $remainingWords;
+                    if ($type == 'authors' && $this->isEd($remainingWords[0])) {
+                        $isEditor = true;
+                        array_shift($remainingWords);
+                        $remainder = implode(" ", $remainingWords);
+                        $this->verbose("Editors detected");
+                    }
                     if ($year = $this->getDate($remainder, $remains, $month, $day, $date, true, true, true, $language)) {
                         $remainder = $remains;
                         $this->verbose("Year detected");
+                    }
+                    if (! $year) {
+                        // eds will be detected on next round
+                        $remainder = $origRemainder;
+                        $remainingWords = $origRemainingWords;
                     }
                     $done = true;
                 } elseif ($this->isInitials($word) && isset($words[$i+1]) && 
@@ -5356,7 +5385,7 @@ class Converter
         // In following line, [1-2]?[0-9]? added to allow second year to have four digits.  Should be (18|19|20), but that
         // would mean adding a group, which would require the recalculation of all the indices ...
         // Year should not be preceded by 'pp. ', which would mean it is in fact a page number/page range.
-        $yearRegExp = '((?<!pp\. )(' . $centuries . ')([0-9]{2})(-[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
+        $yearRegExp = '((?<!pp\. )(' . $centuries . ')([0-9]{2})(--?[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
         $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
 
         // Require space or ',' in front of year if search is not restricted to start or in parens or brackets,
@@ -5976,7 +6005,7 @@ class Converter
         $months = $this->monthsRegExp[$language];
 
         // First check for some common patterns
-        $number = '[a-z]?[0-9][0-9]{0,6}[A-Za-z]?';
+        $number = '[a-z]?[0-9][0-9]{0,12}[A-Za-z]?';
         $numberWithRoman = '([1-9][0-9]{0,3}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
         $numberRange = $number . '(( ?--?-? ?|_|\?)' . $number . ')?';
@@ -6004,7 +6033,7 @@ class Converter
         if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
             $this->setField($item, 'number', str_replace(['---', '--', ' - '], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
-            $this->setField($item, 'pages', str_replace(['---', '--', ' - ', '- ', ' -', '_', 'Ð'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
+            $this->setField($item, 'pages', str_replace(['---', '--', ' - ', '- ', ' -', '_', 'Ð', '?'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
             $remainder = trim(substr($remainder, strlen($matches[0])));
         // e.g. Volume 6, 41-75$ OR 6 41-75$
        } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/J', $remainder, $matches)) {
