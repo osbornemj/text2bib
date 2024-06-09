@@ -7904,12 +7904,345 @@ class ExampleSeeder extends Seeder
                     'doi' => '10.1007/s11270-022-06029-2',
                     ]
             ],
+			// 'translation by' rather than 'translated by'
+			[
+                'source' => 'Abiy, A. (2018, April 3) Full English Transcript of Ethiopian Prime Minister Abiy Ahmed’s Inaugural Address. Translation by Hassen Hussein. Published at: OPride. Available at: https://www.opride.com/2018/04/03/english-partial-transcript-of-ethiopian-prime-minister-abiy-ahmeds-inaugural-address/ (Accessed 2 January 2024) ',
+                'type' => 'online',
+                'bibtex' => [
+                    'note' => 'Translation by Hassen Hussein. Published at: OPride',
+                    'url' => 'https://www.opride.com/2018/04/03/english-partial-transcript-of-ethiopian-prime-minister-abiy-ahmeds-inaugural-address/',
+                    'urldate' => '2 January 2024',
+                    'month' => 'April',
+                    'date' => '2018-04-03',
+                    'author' => 'Abiy, A.',
+                    'year' => '2018',
+                    'title' => 'Full English Transcript of Ethiopian Prime Minister Abiy Ahmed\'s Inaugural Address',
+					'note' => 'Translation by Hassen Hussein. Published at: OPride',
+                    ]
+            ],
+			// use of \textendash{} (also \textendash ) --- replace with --.
+			[
+                'source' => '\bibitem[Lentz(1995)]{Lentz95}Lentz, S.J. 1995. Sensitivity of the inner-shelf circulation to the eddy-viscosity profile. J. Phys. Oceanogr. 25:19\textendash{} 28. https://doi.org/10.1175/1520-0485(1995)025\%3C0019:SOTISC\%3E2.0.CO;2 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Lentz, S. J.',
+                    'title' => 'Sensitivity of the inner-shelf circulation to the eddy-viscosity profile',
+                    'journal' => 'J. Phys. Oceanogr.',
+                    'year' => '1995',
+                    'volume' => '25',
+                    'pages' => '19-28',
+                    'doi' => '10.1175/1520-0485(1995)025\%3C0019:SOTISC\%3E2.0.CO;2',
+                    ]
+            ],
+			// use of \textquoteright --- replace with '
+			[
+                'source' => '\bibitem[Fewings and Lentz (2010)]{Fewings10}Fewings, M.R., Lentz, S.J. 2010. Momentum balances on the inner continental shelf at Martha\textquoteright s Vineyard Coastal Observatory. J. Geophys. Res. 115:C12023. https://doi.org/10.1029/2009JC005578 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Fewings, M. R. and Lentz, S. J.',
+                    'title' => 'Momentum balances on the inner continental shelf at Martha\'s Vineyard Coastal Observatory',
+                    'journal' => 'J. Geophys. Res.',
+                    'year' => '2010',
+                    'volume' => '115',
+                    'pages' => 'C12023',
+                    'doi' => '10.1029/2009JC005578',
+                    ]
+            ],
+   			// n.d. not interpreted as "no date"
+			[
+                'source' => 'Valohai. n.d. What Is a Machine Learning Pipeline? https://valohai.com/machine-learning-pipeline/. ',
+                'type' => 'online',
+                'bibtex' => [
+                    'title' => 'What Is a Machine Learning Pipeline?',
+                    'url' => 'https://valohai.com/machine-learning-pipeline/',
+                    'author' => 'Valohai',
+                    'year' => 'n.d.',
+                    ]
+            ],
+			// detected as article
+			[
+                'source' => 'Earl, L. M. (2013). Assessment as Learning: Using classroom assessment to maximize student learning (2nd ed.). Corwin. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Earl, L. M.',
+                    'title' => 'Assessment as Learning: Using classroom assessment to maximize student learning',
+                    'year' => '2013',
+                    'edition' => '2nd',
+                    'publisher' => 'Corwin',
+                    ]
+            ],
+			// last word of title, a country, included in journal
+			[
+                'source' => '[27] Patel, N., Bhattacharjee, B., Mohammed, A., Tanupriya, B., Saha, S., 2006. Remote sensing of regional yield assessment of wheat in Haryana, India. International Journal of Remote Sensing, 27(19): 4071-4090.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Patel, N. and Bhattacharjee, B. and Mohammed, A. and Tanupriya, B. and Saha, S.',
+                    'year' => '2006',
+                    'title' => 'Remote sensing of regional yield assessment of wheat in Haryana, India',
+                    'journal' => 'International Journal of Remote Sensing',
+                    'volume' => '27',
+                    'number' => '19',
+                    'pages' => '4071-4090',
+                    ]
+            ],
+			// journal not detected --- detected as online rather than article (Andrea Mattia Marcelli)
+			[
+                'source' => 'Andreatta, C., Rossi, L., & Cianfriglia, M. C. (2024). Principals and the fragile balance between organizational, educational, and vocational training: Insights for an impactful post-pandemic school. Formazione & Insegnamento, 22(1). https://ojs.pensamultimedia.it/index.php/siref/article/view/6979 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Andreatta, C. and Rossi, L. and Cianfriglia, M. C.',
+                    'title' => 'Principals and the fragile balance between organizational, educational, and vocational training: Insights for an impactful post-pandemic school',
+                    'journal' => 'Formazione & Insegnamento',
+                    'year' => '2024',
+                    'volume' => '22',
+                    'number' => '1',
+                    'url' => 'https://ojs.pensamultimedia.it/index.php/siref/article/view/6979',
+                    ]
+            ],
+			// authors ended early
+			[
+                'source' => 'Singh, A. S., Saliasi, E., van den Berg, V., Uijtdewilligen, L., de Groot, R. H. M., Jolles, J., Andersen, L. B., Bailey, R., Chang, Y. K., Diamond, A., Ericsson, I., Etnier, J. L., Fedewa, A. L., Hillman, C. H., McMorris, T., Pesce, C., Pühse, U., Tomporowski, P. D., & Chinapaw, M. J. M. (2019). Effects of physical activity interventions on cognitive and academic performance in children and adolescents: a novel combination of a systematic review and recommendations from an expert panel. British journal of sports medicine, 53(10), 640–647. https://doi.org/10.1136/bjsports-2017-098136 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Singh, A. S. and Saliasi, E. and van den Berg, V. and Uijtdewilligen, L. and de Groot, R. H. M. and Jolles, J. and Andersen, L. B. and Bailey, R. and Chang, Y. K. and Diamond, A. and Ericsson, I. and Etnier, J. L. and Fedewa, A. L. and Hillman, C. H. and McMorris, T. and Pesce, C. and Pühse, U. and Tomporowski, P. D. and Chinapaw, M. J. M.',
+                    'title' => 'Effects of physical activity interventions on cognitive and academic performance in children and adolescents: a novel combination of a systematic review and recommendations from an expert panel',
+                    'journal' => 'British journal of sports medicine',
+                    'year' => '2019',
+                    'volume' => '53',
+                    'number' => '10',
+                    'pages' => '640-647',
+                    'doi' => '10.1136/bjsports-2017-098136',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// authors ended early; detected as unpublished, not article
+			[
+                'source' => '\bibitem{ADD}N. Arkani-Hamed, S. Dimopoulos, and G. R. Dvali, \textit{The Hierarchy problem and new dimensions at a millimeter}, Phys. Lett. B \textbf{429}, 263 (1998), arXiv:hep-ph/9803315 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'journal' => 'Phys. Lett. B',
+					'volume' => '429',
+					'pages' => '263',
+                    'archiveprefix' => 'arXiv',
+                    'eprint' => 'hep-ph/9803315',
+                    'author' => 'N. Arkani-Hamed and S. Dimopoulos and G. R. Dvali',
+                    'title' => 'The Hierarchy problem and new dimensions at a millimeter',
+                    'year' => '1998',
+                    ]
+            ],
+            // use of Ð in page range
+			[
+                'source' => '7.	Freeman C, Todd C, Camilleri-Ferrant... C, Laxton C, Murrell P, Palmer C, et al. Quality improvement for patients with hip fracture: experience from a multi-site audit. Qual Saf Health Care. 2002 Sep;11(3):239Ð45.Ê ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Freeman, C. and Todd, C. andCamilleri-Ferrant and others C. Laxton, C. and Murrell, P. and Palmer, C. and others',
+                    'title' => 'Quality improvement for patients with hip fracture: experience from a multi-site audit',
+                    'year' => '2002',
+                    'month' => 'September',
+                    'journal' => 'Qual Saf Health Care.',
+                    'volume' => '11',
+                    'number' => '3',
+                    'pages' => '239-45',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// detected as article
+			[
+                'source' => 'Santos, B. de S. (2015). O direito dos oprimidos. Cortez. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Santos, B. de S.',
+                    'title' => 'O direito dos oprimidos',
+                    'year' => '2015',
+                    'publisher' => 'Cortez',
+                    ]
+            ],
+			// author string truncated
+			[
+                'source' => '\bibitem{Hillen1981} W.~Hillen, T.C.~Goodman, and R.D.~Wells, {\em  Salt dependence and thermodynamic interpretation of the thermal-denaturation of small dna restriction fragments},  Nucleic Acids Res., 9 (1981), pp.~415--436.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'W. Hillen and T. C. Goodman and R. D. Wells',
+                    'title' => 'Wells',
+                    'year' => '1981',
+                    'title' => 'Salt dependence and thermodynamic interpretation of the thermal-denaturation of small dna restriction fragments',
+                    'pages' => '415-436',
+                    'journal' => 'Nucleic Acids Res.',
+					'volume' => '9',
+                    ]
+            ],
+			// author string truncated
+			 [
+                'source' => '\bibitem{Poland1966} D.~Poland and H.A.~Scheraga {\em Occurrence of a Phase Transition in Nucleic Acid Models}, J. Chem. Phys. 45, 1464 (1966), pp.~1464-1469 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'D. Poland and H. A. Scheraga',
+                    'title' => 'Occurrence of a Phase Transition in Nucleic Acid Models',
+                    'year' => '1966',
+                    'journal' => 'J. Chem. Phys.',
+                    'volume' => '45',
+                    'number' => '1464',
+                    'pages' => '1464-1469',
+                    ]
+            ],
+            // classified as incollection instead of article
+			[
+                'source' => '\bibitem{He2016} G.~He, J.~Li, H.~Ci, C.~Qi, and X.~Guo, {\em Direct measurement of single-molecule dna hybridization dynamics with single-base resolution}, Angew. Chem. Int. Ed. Engl., 55 (2016), pp.~9036--9040. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'G. He and J. Li and H. Ci and C. Qi and X. Guo',
+                    'title' => 'Direct measurement of single-molecule dna hybridization dynamics with single-base resolution',
+                    'year' => '2016',
+                    'pages' => '9036-9040',
+                    'journal' => 'Angew. Chem. Int. Ed. Engl.',
+                    'volume' => '55',
+                    ]
+            ],
+   			// ISBN-13
+			[
+                'source' => 'Escolano Benito, A. (2023). Etnografia della scuola: La cultura materiale dell’educazione. Bergamo: Junior. 160 pp. € 24.00. ISBN-13: 978 8884349538. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Escolano Benito, A.',
+                    'title' => 'Etnografia della scuola: La cultura materiale dell\'educazione',
+                    'year' => '2023',
+                    'address' => 'Bergamo',
+                    'publisher' => 'Junior',
+                    'isbn' => '9788884349538',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// title ended early
+			[
+                'source' => 'Han, B.-C. (2015). Nello sciame. Visioni del digitale. Roma: Nottetempo. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Han, B.-C.',
+                    'title' => 'Nello sciame. Visioni del digitale',
+                    'year' => '2015',
+                    'address' => 'Roma',
+                    'publisher' => 'Nottetempo',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// volume, translator
+			[
+                'source' => 'Ricoeur, P. (1997). Tempo e narrativa (Tomo III, R. L. Ferreira trans.). Papirus. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ricoeur, P.',
+                    'title' => 'Tempo e narrativa',
+                    'year' => '1997',
+                    'note' => 'Tomo III, R. L. Ferreira trans.',
+                    'publisher' => 'Papirus',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// translator
+			[
+                'source' => 'Ricoeur, P. (2014). O si-mesmo como outro (I. C. Benedetti trans.). São Paulo: Martins Fontes. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ricoeur, P.',
+                    'title' => 'O si-mesmo como outro',
+                    'year' => '2014',
+                    'note' => 'I. C. Benedetti trans.',
+                    'address' => 'São Paulo',
+                    'publisher' => 'Martins Fontes',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// translator not detected
+			[
+                'source' => 'Ricœur, P. (2005). Percorsi del riconoscimento: Tre Studi (F. Polidori, Trans.). Raffaello Cortina. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ricœur, P.',
+                    'title' => 'Percorsi del riconoscimento: Tre Studi',
+                    'year' => '2005',
+                    'note' => 'F. Polidori, Trans.',
+                    'publisher' => 'Raffaello Cortina',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// year range confused with pages
+			[
+                'source' => 'Foucault, M. (1984). L’etica della cura di sé come pratica della libertà. In A. Pandolfi (Ed.), Archivio Foucault. Interventi, colloqui, interviste. 3, 1878-1985. Estetica dell’esistenza, etica, politica (pp. 273‍–‍294). Milano: Feltrinelli.  ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Foucault, M.',
+                    'title' => 'L\'etica della cura di sé come pratica della libertà',
+                    'year' => '1984',
+                    'pages' => '273-294',
+                    'editor' => 'A. Pandolfi',
+                    'address' => 'Milano',
+                    'publisher' => 'Feltrinelli',
+                    'booktitle' => 'Archivio Foucault. Interventi, colloqui, interviste. 3, 1878-1985. Estetica dell\'esistenza, etica, politica',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// year range confused with pages
+			 [
+                'source' => 'Foucault, M. (2001). Les techniques de soi. In M. Foucault, Dits et écrits II, 1976–1988 (pp. 1602–1632). Paris: Gallimard.  ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Foucault, M.',
+                    'title' => 'Les techniques de soi',
+                    'year' => '2001',
+                    'pages' => '1602-1632',
+                    'editor' => 'M. Foucault',
+                    'address' => 'Paris',
+                    'publisher' => 'Gallimard',
+                    'booktitle' => 'Dits et écrits II, 1976--1988',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// ending page number not detected
+			[
+                'source' => 'Gilligan, C. (1982). New maps of development: New visions of maturity. American Journal of Orthopsychiatry, 52(2), 199‍–‍212. https://doi.org/10.1111/j.1939-0025.1982.tb02682.x  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Gilligan, C.',
+                    'title' => 'New maps of development: New visions of maturity',
+                    'journal' => 'American Journal of Orthopsychiatry',
+                    'year' => '1982',
+                    'volume' => '52',
+                    'number' => '2',
+                    'pages' => '199-212',
+                    'doi' => '10.1111/j.1939-0025.1982.tb02682.x',
+                    ]
+            ],
+			// school not detected
+			[
+                'source' => 'Walubwa, J. (2010). Kenya Slum Upgrading Programme: An Analysis of Kibera Integrated Water, Sanitation and Waste Management Project [Master’s Thesis, University of Nairobi]. http://erepository.uonbi.ac.ke/handle/11295/4615 ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+                    'author' => 'Walubwa, J.',
+                    'title' => 'Kenya Slum Upgrading Programme: An Analysis of Kibera Integrated Water, Sanitation and Waste Management Project',
+                    'year' => '2010',
+                    'url' => 'http://erepository.uonbi.ac.ke/handle/11295/4615',
+                    'school' => 'University of Nairobi',
+                    ]
+            ],
+			// Title was not detected, because Phytochemistry is a journal.  But now that journal names in db are not used, the conversion is correct
+			[
+                'source' => 'Goyal, A.K., 2014. Phytochemistry and in vitro studies on anti-fertility effect of Ficus religiosa fruits extract on uterine morphology of goat (Capra hircus). Int J Drug Dev Res, 6(2), pp.141-158.‎ ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Goyal, A. K.',
+                    'year' => '2014',
+                    'title' => 'Phytochemistry and in vitro studies on anti-fertility effect of Ficus religiosa fruits extract on uterine morphology of goat (Capra hircus)',
+                    'journal' => 'Int J Drug Dev Res',
+                    'pages' => '141-158',
+                    'volume' => '6',
+                    'number' => '2',
+                    ]
+            ],	
 
 
 
 
             
-
 
         ];
 
