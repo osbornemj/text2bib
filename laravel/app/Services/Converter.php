@@ -1313,10 +1313,10 @@ class Converter
             $regExp .= ($i ? '|' : '') . $ordinal . '\.?';
         }
         $regExp .= ') ed(ition|ição)?(\.| )/i';
-        if (preg_match('/ ed(ition|ição)(,|.|:|;| )/i', $remainder) || preg_match($regExp, $remainder)) {
+        if (preg_match('/ ed(ition|ição)([,.:; )]|$)/i', $remainder) || preg_match($regExp, $remainder)) {
             $containsEdition = true;
-            $this->verbose("Contains string for an edition.");
         }
+
         if ($containsEdition) {
             $this->verbose("Contains string for an edition.");
         }
