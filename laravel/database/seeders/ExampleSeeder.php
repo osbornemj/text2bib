@@ -8683,6 +8683,33 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Mount Holyoke College',
                     ]
             ],
+   			// remove [Google Scholar] etc. at end of reference (or put it in note)
+			[
+                'source' => '    Kim, S.H.; Lord, C. Restricted and repetitive behaviors in toddlers and preschoolers with autism spectrum disorders based on the Autism Diagnostic Observation Schedule (ADOS). Autism Res. 2010, 3, 162–173. [Google Scholar] [CrossRef] [Green Version] ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kim, S. H. and Lord, C.',
+                    'title' => 'Restricted and repetitive behaviors in toddlers and preschoolers with autism spectrum disorders based on the Autism Diagnostic Observation Schedule (ADOS)',
+                    'year' => '2010',
+                    'journal' => 'Autism Res',
+                    'pages' => '162-173',
+                    'volume' => '3',
+                    ]
+            ],
+			// remove [Google Scholar] etc. at end of reference (or put it in note)
+			[
+                'source' => '    Morgan, L.; Wetherby, A.M.; Barber, A. Repetitive and stereotyped movements in children with autism spectrum disorders late in the second year of life. J. Child Psychol. Psychiatry 2008, 49, 826–837. [Google Scholar] [CrossRef] [PubMed] [Green Version] ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Morgan, L. and Wetherby, A. M. and Barber, A.',
+                    'title' => 'Repetitive and stereotyped movements in children with autism spectrum disorders late in the second year of life',
+                    'year' => '2008',
+                    'journal' => 'J. Child Psychol. Psychiatry',
+                    'pages' => '826-837',
+                    'volume' => '49',
+                    ]
+            ],
+
 
 
 

@@ -463,6 +463,8 @@ class Converter
         // Note that cleanText translates « and », and „ and ”, to `` and ''.
         $entry = $this->cleanText($entry, $charEncoding, $language);
 
+        $entry = str_replace(['[Google Scholar]', '[PubMed]', '[Green Version]', '[CrossRef]'], '', $entry);
+
         // Replace "\' " with "\'" because "\' abc" is equivalent to "\'abc", and the space causes problems if it is within a name.
         $entry = str_replace("\' ", "\'", $entry);
 
