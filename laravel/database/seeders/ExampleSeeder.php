@@ -8464,6 +8464,231 @@ class ExampleSeeder extends Seeder
                     'edition' => '2nd',
                     ]
             ],
+			// name truncated, journal not detected 
+			[
+                'source' => 'Carmo, M. S. do. (2009). A Semântica ‘Negativa’ do Lixo como Aspecto ‘Positivo’—Um Estudo de Caso sobre uma Associação de Recicladores na Cidade do Rio de Janeiro, Brasil. Administração Pública e Gestão Social, 1(2), 121–150. https://periodicos.ufv.br/apgs/article/view/4001 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Carmo, M. S. do',
+                    'title' => 'A Semântica `Negativa\' do Lixo como Aspecto `Positivo\'---Um Estudo de Caso sobre uma Associação de Recicladores na Cidade do Rio de Janeiro, Brasil',
+                    'journal' => 'Administração Pública e Gestão Social',
+                    'year' => '2009',
+                    'volume' => '1',
+                    'number' => '2',
+                    'pages' => '121-150',
+                    'url' => 'https://periodicos.ufv.br/apgs/article/view/4001',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// journal included in title; issue not parsed correctly
+			[
+                'source' => 'Chengning Wang, Dan Feng, Wei Tong, Yu Hua, Jingning Liu, Bing Wu, Wei Zhao, Linghao Song, Yang Zhang, Jie Xu, Xueliang Wei, Yiran Chen. Improving Multilevel Writes on Vertical 3-D Cross-Point Resistive Memory. IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems. Vol. 40, Issue: 4, April 2021, pages: 762-775 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Chengning Wang and Dan Feng and Wei Tong and Yu Hua and Jingning Liu and Bing Wu and Wei Zhao and Linghao Song and Yang Zhang and Jie Xu and Xueliang Wei and Yiran Chen',
+                    'title' => 'Improving Multilevel Writes on Vertical 3-D Cross-Point Resistive Memory',
+					'journal' => 'IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems.',
+                    'year' => '2021',
+                    'month' => 'April',
+                    'pages' => '762-775',
+                    'volume' => '40',
+					'number' => '4',
+                    ]
+            ],
+			// letter before issue and page numbers
+			[
+                'source' => 'McGee Z.A., Jones B.D., Reconceptualizing the policy subsystem: integration with complexity theory and social network analysis, Policy Studies Journal, 47, S1, pp. S138-S158, (2019) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'McGee, Z. A. and Jones, B. D.',
+                    'title' => 'Reconceptualizing the policy subsystem: integration with complexity theory and social network analysis',
+                    'year' => '2019',
+					'volume' => '47',
+					'number' => 'S1',
+                    'journal' => 'Policy Studies Journal',
+					'pages' => 'S138-S158',
+                    ]
+            ],
+			// number range not detected
+			[
+                'source' => '\bibitem{So} V.\ Sordoni. \emph{Reduction scheme for semiclassical operator-valued Schr\"{o}dinger type equation and application to scattering}, Comm. Partial Differential Equations \textbf{28}, no. 7-8, 1221--1236 (2003).  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'V. Sordoni',
+                    'title' => 'Reduction scheme for semiclassical operator-valued Schr\"{o}dinger type equation and application to scattering',
+                    'journal' => 'Comm. Partial Differential Equations',
+                    'year' => '2003',
+                    'volume' => '28',
+                    'number' => '7-8',
+                    'pages' => '1221-1236',
+                    ]
+            ],
+			// editor's name was repeated in result
+			[
+                'source' => 'Hotelling H. A generalized T test and measure of multivariate dispersion. In: Neyman J, ed. Proceedings of the Second Berkeley Symposium on Mathematical Statistics and Probability. Berkeley: University of California Press; 1951:23-41. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Hotelling, H.',
+                    'title' => 'A generalized T test and measure of multivariate dispersion',
+                    'year' => '1951',
+                    'pages' => '23-41',
+                    'editor' => 'Neyman, J.',
+                    'publisher' => 'University of California Press',
+                    'address' => 'Berkeley',
+                    'booktitle' => 'Proceedings of the Second Berkeley Symposium on Mathematical Statistics and Probability',
+                    ]
+            ],
+			// First word of title included in authors
+			[
+                'source' => 'Baker, M. P., Reynolds, H. M., Lumicisi, B. & Bryson, C. J. Immunogenicity of protein therapeutics: The key causes, consequences and challenges. Self Nonself 1, 314–322 (2010). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Baker, M. P. and Reynolds, H. M. and Lumicisi, B. and Bryson, C. J.',
+                    'title' => 'Immunogenicity of protein therapeutics: The key causes, consequences and challenges',
+                    'year' => '2010',
+                    'journal' => 'Self Nonself',
+                    'volume' => '1',
+                    'pages' => '314-322',
+                    ]
+            ],
+			// detected as article
+			[
+                'source' => 'Bouckaert, Luk; Hendrik Opdebeeck; and Laszlo Zsolnai. 2008. ‘Why frugality?’, in Frugality: Rebalancing Material and Spiritual Values in Economic Life. Bern: Peter Lang, 3–23. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Bouckaert, Luk and Hendrik Opdebeeck and Laszlo Zsolnai',
+                    'title' => 'Why frugality?',
+                    'year' => '2008',
+                    'pages' => '3-23',
+                    'address' => 'Bern',
+                    'publisher' => 'Peter Lang',
+                    'booktitle' => 'Frugality: Rebalancing Material and Spiritual Values in Economic Life',
+                    ]
+            ],
+			// detected as incollection
+			[
+                'source' => 'Gutiérrez, Gustavo. 1988. A Theology of Liberation: History, Politics, and Salvation. Revised ed. Maryknoll, NY: Orbis Books. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Guti{\\\'e}rrez, Gustavo',
+                    'title' => 'A Theology of Liberation: History, Politics, and Salvation',
+                    'year' => '1988',
+                    'address' => 'Maryknoll, NY',
+                    'publisher' => 'Orbis Books',
+                    'edition' => 'Revised',
+                    ]
+            ],
+			// detected as incollection
+			[
+                'source' => '[261]	E. Imani and H.-R. Pourreza, "A novel method for retinal exudate segmentation using signal separation algorithm," Computer Methods and Programs in Biomedicine, vol. 133, pp. 195-205, 2016/09/01/ 2016, doi: https://doi.org/10.1016/j.cmpb.2016.05.016. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.cmpb.2016.05.016',
+                    'author' => 'E. Imani and H.-R. Pourreza',
+                    'title' => 'A novel method for retinal exudate segmentation using signal separation algorithm',
+                    'year' => '2016',
+                    'pages' => '195-205',
+                    'journal' => 'Computer Methods and Programs in Biomedicine',
+					'volume' => '133',
+					'date' => '2016-09-01',
+                    ]
+            ],
+			// remove parens around volume
+			[
+                'source' => 'Inaraja, M. (2003). Fuerzas Armadas y sociedad en México: hacia un proyecto integrado para el siglo XXI. Cuadernos de estrategia, (123), 59-83. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Inaraja, M.',
+                    'year' => '2003',
+                    'title' => 'Fuerzas Armadas y sociedad en México: hacia un proyecto integrado para el siglo XXI',
+                    'journal' => 'Cuadernos de estrategia',
+                    'pages' => '59-83',
+                    'volume' => '123',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// use of [C] at end of title
+			[
+                'source' => 'Ahmed A., Shervashidze N., Narayanamurthy S., Josifovski V., Smola A.J. Distributed large-scale natural graph factorization[C]. Proceedings of the 22nd International Conference on World Wide Web, 2013: 37--48. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Ahmed, A. and Shervashidze, N. and Narayanamurthy, S. and Josifovski, V. and Smola, A. J.',
+                    'title' => 'Distributed large-scale natural graph factorization',
+                    'year' => '2013',
+                    'pages' => '37-48',
+                    'booktitle' => 'Proceedings of the 22nd International Conference on World Wide Web',
+                    ]
+            ],
+			// use of [C] at end of title, and also //
+			[
+                'source' => '[34]Ashish Vaswani, Noam Shazeer, Niki Parmar, et al.  Attention is all you need[C]// Proceedings of the International Conference on Neural Information Processing Systems (NIPS). 2017: 6000-6010. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Ashish Vaswani and Noam Shazeer and Niki Parmar and others',
+                    'title' => 'Attention is all you need',
+					'booktitle' => 'Proceedings of the International Conference on Neural Information Processing Systems (NIPS)',
+                    'year' => '2017',
+                    'pages' => '6000-6010',
+                    ]
+            ],
+			// detected as online rather than book
+			[
+                'source' => 'Barr, D. A. (2019). Health disparities in the United States: Social class, race, ethnicity, and health (3rd ed.). Johns Hopkins University Press. https://jhupbooks.press.jhu.edu/title/health-disparities-united-states ',
+                'type' => 'book',
+                'bibtex' => [
+                    'url' => 'https://jhupbooks.press.jhu.edu/title/health-disparities-united-states',
+                    'author' => 'Barr, D. A.',
+                    'year' => '2019',
+                    'edition' => '3rd',
+                    'title' => 'Health disparities in the United States: Social class, race, ethnicity, and health',
+					'publisher' => 'Johns Hopkins University Press',
+                    ]
+            ],
+			// tesis de grado
+			[
+                'source' => 'Aguilar, E. (2019). La reformulación del sentido de vida en personas de la tercera edad a partir de la jubilación. [Tesis de grado, Instituto Tecnológico y de Estudios Superiores de Occidente] https://rei.iteso.mx/bitstream/handle/11117/7513/TOG',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'url' => 'https://rei.iteso.mx/bitstream/handle/11117/7513/TOG',
+                    'author' => 'Aguilar, E.',
+                    'year' => '2019',
+                    'title' => 'La reformulación del sentido de vida en personas de la tercera edad a partir de la jubilación',
+                    'school' => 'Instituto Tecnológico y de Estudios Superiores de Occidente',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// 'available' should not be included in Note
+			[
+                'source' => '\bibitem{RNN} M. I. Jordan, "Serial order: A parallel distributed processing approach", in \textit{Advances in Psychology}, Elsevier, 1997, pp. 471-495. Available: \url{http://faculty.otterbein.edu/dstucki/COMP4230/Jordan-TR-8604-OCRed.pdf} ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'M. I. Jordan',
+                    'title' => 'Serial order: A parallel distributed processing approach',
+                    'year' => '1997',
+                    'pages' => '471-495',
+                    'url' => 'http://faculty.otterbein.edu/dstucki/COMP4230/Jordan-TR-8604-OCRed.pdf',
+                    'publisher' => 'Elsevier',
+                    'booktitle' => 'Advances in Psychology',
+                    ]
+            ],
+            // publisher and address interchanged
+			[
+                'source' => 'Ferraro, Vincent. 1996. Dependency Theory: An Introduction. Mount Holyoke College: South Hadley, MA. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ferraro, Vincent',
+                    'title' => 'Dependency Theory: An Introduction',
+                    'year' => '1996',
+                    'address' => 'South Hadley, MA',
+                    'publisher' => 'Mount Holyoke College',
+                    ]
+            ],
+
+
+
+
+
+
         ];
 
         DB::statement('DELETE FROM examples');
