@@ -717,7 +717,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'online',
                 'bibtex' => [
                     'author' => 'Echoxiii',
-                    'title' => 'How to Make a Sound Map: Cartographic, Compositional, Performative. Acoustic Ecology @ The University of Hull, Scarborough Campus',
+                    'title' => 'How to Make a Sound Map: Cartographic, Compositional, Performative',
+                    'note' => 'Acoustic Ecology @ The University of Hull, Scarborough Campus',
                     'year' => '2013',
                     'url' => 'https://acousticecologyuoh.wordpress.com/2013/12/04/how-to-make-a-sound-map/',
                     'urldate' => '29 May 2018',
@@ -2616,7 +2617,8 @@ class ExampleSeeder extends Seeder
                     'urldate' => '11 March 2024',
                     'author' => 'Aerospace.org',
                     'year' => '2023',
-                    'title' => 'Brief history of GPS. El Segundo, Ca: Aerospace Corporation',
+                    'title' => 'Brief history of GPS',
+                    'note' => 'El Segundo, Ca: Aerospace Corporation',
                     ]
             ],
             [
@@ -4672,12 +4674,13 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'doi' => '10.1016/B978-0-323-85455-9.00011-4',
                     'author' => 'Chatterjee, S. and Kumari, S. and Rath, S. and Das, S.',
-                    'title' => 'Chapter 1 - Prospects and scope of microbial bioremediation for the restoration of the contaminated sites',
+                    'title' => 'Prospects and scope of microbial bioremediation for the restoration of the contaminated sites',
                     'year' => '2022',
                     'pages' => '3-31',
                     'editor' => 'Das, S. and Dash, H. R.',
                     'publisher' => 'Elsevier',
                     'booktitle' => 'Microbial Biodegradation and Bioremediation (Second Edition)',
+                    'chapter' => '1',
                     ]
             ],
             [
@@ -8709,11 +8712,205 @@ class ExampleSeeder extends Seeder
                     'volume' => '49',
                     ]
             ],
-
-
-
-
-
+            // von name "i"?
+            [
+                'source' => '	K. Hawton, C. C. i Comabella, C. Haw, and K. Saunders, Risk factors for suicide in individuals with depression: a systematic review, Journal of affective disorders, vol. 147, no. 1-3, pp. 17-28, 2013. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'K. Hawton and C. C. i Comabella and C. Haw and K. Saunders',
+                    'title' => 'Risk factors for suicide in individuals with depression: a systematic review',
+                    'year' => '2013',
+                    'journal' => 'Journal of affective disorders',
+                    'pages' => '17',
+                    'volume' => '147',
+                    'number' => '1-3',
+                    'pages' => '17-28',
+                    ]
+            ],
+            //
+            [
+                'source' => '	A. T. Beck, R. A. Steer, and G. K. Brown, Beck depression inventory-II, San Antonio, vol. 78, no. 2, pp. 490-498, 1996. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'A. T. Beck and R. A. Steer and G. K. Brown',
+                    'title' => 'Beck depression inventory-II',
+                    'year' => '1996',
+                    'journal' => 'San Antonio',
+                    'volume' => '78',
+                    'number' => '2',
+                    'pages' => '490-498',
+                    ]
+            ],
+            // master's degree thesis
+            [
+                'source' => 'Ashenati, C. (2015). Aging and retirement among Ethiopian Elderly, adjustment, challenges and policy, Master’s Degree Thesis, Addis Ababa University, Ethiopia. ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+                    'author' => 'Ashenati, C.',
+                    'year' => '2015',
+                    'title' => 'Aging and retirement among Ethiopian Elderly, adjustment, challenges and policy',
+                    'school' => 'Addis Ababa University, Ethiopia',
+                    ]
+            ],
+            // master's degree thesis
+            [
+                'source' => 'Mboga, S. M., (2014). Social and Cultural dynamics of the after retirement from public service in Kenya: A case of study of retirees from Kenyatta National Hospital, Nairobi Kenya, Master’s Degree Thesis, University of Nairobi. ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+                    'author' => 'Mboga, S. M.',
+                    'year' => '2014',
+                    'title' => 'Social and Cultural dynamics of the after retirement from public service in Kenya: A case of study of retirees from Kenyatta National Hospital, Nairobi Kenya',
+                    'school' => 'University of Nairobi',
+                    ]
+            ],
+            // masters thesis
+            [
+                'source' => 'Nyaboke, G. (2016). Challenges affecting the livelihood of teachers after retirement in Kenya: A case study of Kisii central sub- country in Kisii country, Kenya. Masters, Thesis, University of Nairobi Kenya. ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+                    'author' => 'Nyaboke, G.',
+                    'year' => '2016',
+                    'title' => 'Challenges affecting the livelihood of teachers after retirement in Kenya: A case study of Kisii central sub- country in Kisii country, Kenya',
+                    'school' => 'University of Nairobi Kenya',
+                    ]
+            ],
+			// two-part name not parsed correctly
+			[
+                'source' => 'Jiang Yong, Zhang Yugeng, Liang Wenju, et al. (2003). Spatial variability of exchangeable magnesium in arable land. Journal of Shenyang Agricultural University, 181-184. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Jiang Yong and Zhang Yugeng and Liang Wenju and others',
+                    'year' => '2003',
+                    'title' => 'Spatial variability of exchangeable magnesium in arable land',
+                    'journal' => 'Journal of Shenyang Agricultural University',
+                    'pages' => '181-184',
+                    ]
+            ],
+			// organization name not detected correctly
+			[
+                'source' => '[7] CDC. CDC Fluview weekly report national, regional, and state/jurisdiction level outpatient illness and viral surveillance application quick reference guide, October 2017.  ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => 'CDC',
+                    'title' => 'CDC Fluview weekly report national, regional, and state/jurisdiction level outpatient illness and viral surveillance application quick reference guide',
+                    'year' => '2017',
+                    'month' => 'October',
+                    ]
+            ],
+            // author should not be preceded by 'and'
+            [
+                'source' => 'Microsoft. "Dynamic Host Configuration Protocol (DHCP)." Microsoft, n.d. [Online]. Available: https://docs.microsoft.com/en-us/windows-server/networking/technologies/dhcp/dhcp-top ',
+                'type' => 'online',
+                'bibtex' => [
+                    'url' => 'https://docs.microsoft.com/en-us/windows-server/networking/technologies/dhcp/dhcp-top',
+                    'author' => 'Microsoft',
+                    'title' => 'Dynamic Host Configuration Protocol (DHCP)',
+                    'note' => 'Microsoft, n.d',
+                    ]
+            ],
+            // Author CDC
+            [
+                'source' => 'CDC, “Heart Disease Facts,” Centers for Disease Control and Prevention, May 15, 2023. https://www.cdc.gov/heartdisease/facts.htm#:~:text=Heart',
+                'type' => 'online',
+                'bibtex' => [
+                    'url' => 'https://www.cdc.gov/heartdisease/facts.htm#:~:text=Heart',
+                    'author' => 'CDC',
+                    'title' => 'Heart Disease Facts',
+                    'year' => '2023',
+                    'note' => 'Centers for Disease Control and Prevention, May 15',
+                    ]
+            ],
+			// booktitle truncated
+			[
+                'source' => '\bibitem[Andler(1979)]{Andler79}Andler, S., 1979. Predicate Path expressions. Proceedings of the 6th. ACM SIGACT-SIGPLAN symposium on Principles of Programming Languages, POPL \'79. ACM Press, New York, NY, pp. 226--236. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Andler, S.',
+                    'year' => '1979',
+                    'title' => 'Predicate Path expressions',
+                    'pages' => '226-236',
+                    'publisher' => 'ACM Press',
+                    'address' => 'New York, NY',
+                    'booktitle' => 'Proceedings of the 6th. ACM SIGACT-SIGPLAN symposium on Principles of Programming Languages, POPL \'79',
+                    ]
+            ],
+			// try to deal with lack of spaces
+			[
+                'source' => '8. 	Brandon ML, Haynes PT, Bonamo JR, Flynn MII, Barrett GR, Sherman MF. The Association Between Posterior-Inferior Tibial Slope and Anterior Cruciate Ligament Insufficiency. Arthrosc - J Arthrosc Relat Surg. 2006;22(8):894-899. doi:10.1016/j.arthro.2006.04.098 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.arthro.2006.04.098',
+                    'author' => 'Brandon, M. L. and Haynes, P. T. and Bonamo, J. R. and Flynn Mii and Barrett, G. R. and Sherman, M. F.',
+                    'year' => '2006',
+					'volume' => '22',
+					'number' => '8',
+					'pages' => '894-899',
+                    'title' => 'The Association Between Posterior-Inferior Tibial Slope and Anterior Cruciate Ligament Insufficiency',
+					'journal' => 'Arthrosc - J Arthrosc Relat Surg.',
+                    ]
+            ],
+			// need to detect "Chapter N in ..."
+			[
+                'source' => 'Koopmans, T. and W. Hood (1953), “The Estimation of Simultaneous Linear Economic Relationships,” Chapter 6 in Hood, W. and T. Koopmans (editors) Studies in Econometric Method, Cowles Commission Monograph No. 14. New York: Wiley, 112-199. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Koopmans, T. and W. Hood',
+                    'year' => '1953',
+                    'title' => 'The Estimation of Simultaneous Linear Economic Relationships',
+                    'pages' => '112-199',
+                    'editor' => 'Hood, W. and T. Koopmans',
+                    'publisher' => 'Wiley',
+                    'booktitle' => 'Studies in Econometric Method, Cowles Commission Monograph No. 14.',
+					'address' => 'New York',
+                    'chapter' => '6',
+                    ]
+            ],
+			// Chapter + other problems
+			[
+                'source' => 'Barrett, C.B. 2002. "Food Security and Food Assistance Programs." Chapter 40 in B. Gardner and G. Rausser, eds. Handbook of Agricultural Economics, Volume 2. Amsterdam: Elsevier. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Barrett, C. B.',
+                    'year' => '2002',
+                    'title' => 'Food Security and Food Assistance Programs',
+                    'booktitle' => 'Handbook of Agricultural Economics, Volume 2',
+                    'publisher' => 'Elsevier',
+                    'address' => 'Amsterdam',
+                    'editor' => 'B. Gardner and G. Rausser',
+					'chapter' => '40',
+                    ]
+            ],
+			// detect chapter?
+			[
+                'source' => 'Archetti, C., Speranza, M.G., and Vigo, D. 2014. Vehicle Routing Problems with Profits. In  Paolo Toth and Daniele Vigo (eds.), Vehicle Routing: Problems, Methods, and Applications, Second Edition. Society for Industrial and Applied Mathematics, chapter 10, 273–297. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Archetti, C. and Speranza, M. G. and Vigo, D.',
+                    'title' => 'Vehicle Routing Problems with Profits',
+					'booktitle' => 'Vehicle Routing: Problems, Methods, and Applications, Second Edition',
+					'editor' => 'Paolo Toth and Daniele Vigo',
+                    'publisher' => 'Society for Industrial and Applied Mathematics',
+                    'year' => '2014',
+                    'chapter' => '10',
+                    'pages' => '273-297',
+                    ]
+            ],
+   			// Use of 'Geopend' for 'opened'/'viewed'.
+			[
+                'source' => '[2] 	A. Levido, „NTC Thermistor Linearization,” circuit cellar, 4 Augustus 2021. [Online]. Available: https://circuitcellar.com/resources/quickbits/ntc-thermistor linearization-2/. [Geopend 1 11 2023]. ',
+                'type' => 'online',
+                'bibtex' => [
+                    'url' => 'https://circuitcellar.com/resources/quickbits/ntc-thermistor',
+                    'urldate' => '1 11 2023',
+                    'author' => 'A. Levido',
+                    'title' => 'NTC Thermistor Linearization',
+                    'note' => 'circuit cellar',
+                    'year' => '2021',
+                    'month' => 'augustus',
+                    'date' => '2021-08-04',
+                ],
+                'language' => 'nl',
+            ],
 
 
         ];

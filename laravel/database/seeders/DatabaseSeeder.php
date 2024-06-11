@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             'techreport' => ['author', 'title', 'year', 'month', 'number', 'institution', 'note', 'type', 'url',
                  'archiveprefix', 'eprint'],
             'incollection' => ['author', 'title', 'booktitle', 'volume', 'series', 'year', 'publisher', 'address', 'editor', 'pages',
-                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'volume', 'series', 'isbn'],
+                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'volume', 'series', 'isbn', 'chapter'],
             'inproceedings' => ['author', 'title', 'booktitle', 'year', 'month', 'publisher', 'address', 'editor',
                  'pages', 'note', 'archiveprefix', 'eprint', 'doi'],
             'unpublished' => ['author', 'title', 'year', 'month', 'note', 'url', 'archiveprefix', 'eprint', 'doi'],

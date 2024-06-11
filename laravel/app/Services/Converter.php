@@ -19,6 +19,7 @@ use App\Models\VonName;
 
 use App\Traits\MakeScholarTitle;
 use App\Traits\Stopwords;
+use App\Traits\Countries;
 
 use PhpSpellcheck\Spellchecker\Aspell;
 use stdClass;
@@ -32,7 +33,6 @@ class Converter
     var $boldCodes;
     var $bookTitleAbbrevs;
     var $cities;
-    var $countries;
     var $detailLines;
     var $dictionaryNames;
     var $editionRegExp;
@@ -98,6 +98,9 @@ class Converter
     var $workingPaperNumberRegExp;
 
     use Stopwords;
+    // Countries used to check last word of title, following a comma and followed by a period --- country
+    // names that are not abbreviations used at the start of journal names or other publication info
+    use Countries;
     use MakeScholarTitle;
 
     public function __construct()
@@ -147,10 +150,6 @@ class Converter
             ->toArray();
         
         $this->names = Name::all()->pluck('name')->toArray();
-
-        // Used to check last word of title, following a comma and followed by a period --- country
-        // names that are not abbreviations used at the start of journal names.
-        $this->countries = ['Brasil', 'Brazil', 'France', 'Germany', 'India', 'Spain'];
 
         $this->nameSuffixes = ['Jr', 'Sr', 'III'];
 
@@ -295,7 +294,7 @@ class Converter
         $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! Conference)|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
-        $this->masterRegExp = '[Mm]aster(\'?s)?|M\.?A\.?|M\.?Sc\.?';
+        $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.?A\.?|M\.?Sc\.?';
         $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral';
         $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce)';
         // pt: Dissertação de Mestrado | Tese de mestrado
@@ -332,6 +331,7 @@ class Converter
             'cz' => '(Dostupné z:? |načteno z:? )',
             'fr' => '(Récupéré sur |Disponible( à)?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
+//            'id' => '(Diambil kembali dari )',
             'pt' => '(Disponível( em)?:? |Obtido de:? )',
             'my' => '(Retrieved from |Available( at)?:? )',
             'nl' => '(Opgehaald van |Verkrijgbaar( bij)?:? |Available( at)?:? )',
@@ -796,7 +796,16 @@ class Converter
 
         $match = $this->extractLabeledContent($remainder, ' ' . $this->oclcRegExp1, $this->oclcRegExp2);
         if ($match) {
-            $this->setField($item, 'oclc', $match, 'setField 17');
+            $this->setField($item, 'oclc', $match, 'setField 17a');
+        }
+
+        ////////////////////////
+        // Get chapter if any //
+        ////////////////////////
+
+        $match = $this->extractLabeledContent($remainder, ' chapter ', '[1-9][0-9]?');
+        if ($match) {
+            $this->setField($item, 'chapter', $match, 'setField 17b');
         }
 
         /////////////////////////////////////
@@ -931,7 +940,7 @@ class Converter
         if ($language == 'my') {
             preg_match('/^(?P<author>[^,]*, ?[^,]*), ?(?P<remainder>.*)$/', $remainder, $matches);
             //$this->setField($item, 'author', rtrim($words[0], ',') ?? '', 'setField m1');
-            $authorConversion = ['authorstring' => $matches['author'], 'warnings' => [], 'oneWordAuthor' => false];
+            $authorConversion = ['authorstring' => $matches['author'], 'warnings' => []];
             array_shift($words);
             //$authorTitle = rtrim($words[0], ',') ?? '';
             array_shift($words);
@@ -943,7 +952,7 @@ class Converter
             $remainder = implode(' ', $words);
         // Entry starts ______ [i.e. author from previous entry]
         } elseif (isset($words[0]) && preg_match('/^_+\.?$/', $words[0])) {
-            $authorConversion = ['authorstring' => $previousAuthor, 'warnings' => [], 'oneWordAuthor' => false];
+            $authorConversion = ['authorstring' => $previousAuthor, 'warnings' => []];
             $month = $day = $date = null;
             $isEditor = false;
             array_shift($words);
@@ -968,7 +977,6 @@ class Converter
         $itemDate = $date;
 
         $authorstring = $authorConversion['authorstring'];
-        $oneWordAuthor = $authorConversion['oneWordAuthor'];
 
         foreach ($authorConversion['warnings'] as $warning) {
             $warnings[] = $warning;
@@ -1047,6 +1055,7 @@ class Converter
             }
         }
         
+        $style = '';
         if (! $title) {
             $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
             $titleStyle = $style;
@@ -1073,11 +1082,11 @@ class Converter
             }
 
             // Website
-            if (isset($item->url) && $oneWordAuthor) {
-                $itemKind = 'online';
-                $title = trim($remainder);
-                $newRemainder = '';
-            }
+            // if (! $title && isset($item->url) && $oneWordAuthor) {
+            //     $itemKind = 'online';
+            //     $title = trim($remainder);
+            //     $newRemainder = '';
+            // }
 
             if (! $title) {
                 $title = $this->getTitle($remainder, $edition, $volume, $isArticle, $year, $note, $journal, $containsUrlAccessInfo, false, $language);
@@ -1115,7 +1124,7 @@ class Converter
                 $title = substr($title, 0, -3);
             }
 
-            $title = trim($title, '_');
+            $title = trim($title, '_- ');
 
             if (substr($title, 0, 1) == '{' && substr($title, -1) == '}') {
                 $title = trim($title, '{}');
@@ -1124,6 +1133,7 @@ class Converter
             if (substr($title, 0, 1) == '?' && substr($title, -1) == '?') {
                 $title = trim($title, '?., ');
             }
+
             $title = trim($title);
             $title = Str::replaceEnd('[C]', '', $title);
             $this->setField($item, 'title', $title, 'setField 12');
@@ -1452,7 +1462,7 @@ class Converter
                 (
                     isset($item->url) &&
                     ! $containsWorkingPaper &&
-                    ($oneWordAuthor || ! $urlHasPdf || $containsUrlAccessInfo) &&
+                    (! $urlHasPdf || $containsUrlAccessInfo) &&
                     ! $inStart &&
                     ! $italicStart &&
                     ! $containsInteriorVolume &&
@@ -2060,6 +2070,11 @@ class Converter
                 // be replaced by } else {.
                 if ($remainder && ! isset($item->editor)) {
                     $periodPosition = strpos($remainder, '.');
+                    // if period is preceded by an ordinal (e.g. 1st., 2nd.) then go to NEXT period
+                    if (Str::endsWith(substr($remainder, 0, $periodPosition), $this->ordinals[$language])) {
+                        $periodPosition = $periodPosition + strpos(substr($remainder, $periodPosition+1), '.') + 1;
+                    }
+
                     // If type is inproceedings and there is a period that is not preceded by any of the $bookTitleAbbrevs
                     // and $remainder does not contain a string for editors, take booktitle to be $remainder up to period.
                     if (
@@ -3164,7 +3179,7 @@ class Converter
                 ) {
                 $this->addToField($item, 'note', $remainder, 'addToField 14');
             } elseif ($itemKind == 'online') {
-                if (preg_match('/^[a-zA-Z ]*$/', $remainder) && ! $titleEndsInPeriod) {
+                if (preg_match('/^[a-zA-Z ]*$/', $remainder) && ! $titleEndsInPeriod && $style != 'quoted') {
                     // If remainder is all letters and spaces, assume it is part of title,
                     // which must have been ended prematurely.
                     $this->addToField($item, 'title', $remainder, 'addToField 16');
@@ -4233,7 +4248,7 @@ class Converter
      * @param string|null $date
      * @param boolean $determineEnd: if true, figure out where authors end; otherwise take whole string to be authors
      * @param string $type: 'authors' or 'editors'
-     * @return array, with author string, warnings, and oneWordAuthor flag
+     * @return array, with author string and warnings
      */
     private function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
     {
@@ -4249,7 +4264,7 @@ class Converter
             $words[0] = substr($words[0], 8);
         }
 
-        $wordHasComma = $prevWordHasComma = $oneWordAuthor = false;
+        $wordHasComma = $prevWordHasComma = false;
 
         // First check for organization name
         // If first 3-6 words are all letters and in the dictionary except possibly last one, which is letters with a period at the end
@@ -4261,6 +4276,14 @@ class Converter
         foreach ($words as $i => $word) {
             if ($this->isInitials($word)) {
                 break;
+            } elseif ($i == 0 && strlen($word) > 3 && substr($word, -1) == '.') {
+                $remainder = implode(' ', array_slice($words, 1));
+                $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
+                return [
+                    'authorstring' => substr($word, 0, -1),
+                    'warnings' => [],
+                    'organization' => true,
+                ];
             } elseif (ctype_alpha((string) $word) && $this->inDict($word)) {
                 $name .= ($i ? ' ' : '') . $word;
             } else {
@@ -4273,7 +4296,6 @@ class Converter
                         return [
                             'authorstring' => $name . ' ' . $xword,
                             'warnings' => [],
-                            'oneWordAuthor' => $oneWordAuthor,
                             'organization' => true,
                         ];
                     } else {
@@ -4285,7 +4307,6 @@ class Converter
                     return [
                         'authorstring' => $name,
                         'warnings' => [],
-                        'oneWordAuthor' => $oneWordAuthor,
                         'organization' => true,
                     ];
                 } else {
@@ -4528,17 +4549,15 @@ class Converter
                         }
                         $this->addToAuthorString(4, $authorstring, $fullName);
                         $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, namePart is 0, and remaining string starts with year';
-                        $oneWordAuthor = true;
                         $itemYear = $year; // because $year is recalculated below
                         $done = true;
                     } elseif ($this->getQuotedOrItalic($remainder, true, false, $before, $after, $style)) {
                         $this->verbose('[convertToAuthors 7]');
                         $nameComponent = $word;
-                        $fullName .= ' and ' . trim($nameComponent, '.');
+                        $fullName .= ($fullName ? ' and ' : '') . trim($nameComponent, '.');
                         $this->addToAuthorString(18, $authorstring, $fullName);
                         $reason = 'Word ends in period, namePart is 0, and remaining string starts with quoted or italic';
                         $done = true;
-                        $oneWordAuthor = true;
                     } else {
                         $this->verbose('[convertToAuthors 8]');
                         // Case like: "Arrow, K. J., Hurwicz. L., and ..." [note period at end of Hurwicz]
@@ -5066,7 +5085,6 @@ class Converter
         return [
             'authorstring' => $authorstring,
             'warnings' => $warnings,
-            'oneWordAuthor' => $oneWordAuthor,
             'organization' => false,
         ];
     }
