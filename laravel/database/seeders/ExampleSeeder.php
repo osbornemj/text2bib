@@ -8911,6 +8911,133 @@ class ExampleSeeder extends Seeder
                 ],
                 'language' => 'nl',
             ],
+			// pp not removed; detected as article not inproceedings
+			[
+                'source' => 'Banerjee, I., Nguyen, B. D., & Robbins, R. (2013). GUI testing of mobile applications: Challenges and future research directions. In Proceedings of the IEEE International Conference on Software Testing, Verification and Validation (pp. 119-128). ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Banerjee, I. and Nguyen, B. D. and Robbins, R.',
+                    'year' => '2013',
+                    'title' => 'GUI testing of mobile applications: Challenges and future research directions',
+                    'booktitle' => 'Proceedings of the IEEE International Conference on Software Testing, Verification and Validation',
+                    'pages' => '119-128',
+                    ]
+            ],
+			// space before closing parens for year
+			[
+                'source' => 'Amabile, T., & Kramer, S. (2011 ). The progress principle: Using small wins to ignite joy, engagement, and creativity at work. Harvard Business Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Amabile, T. and Kramer, S.',
+					'year' => '2011',
+                    'title' => 'The progress principle: Using small wins to ignite joy, engagement, and creativity at work',
+                    'publisher' => 'Harvard Business Press',
+                    ]
+            ],
+			// spaces around parens for year
+			[
+                'source' => 'Benedek, M., Karstendiek, M., Ceh, S. M., Grabner, R. H., Krammer, G., Lebuda, I., & Kaufman, J. C. ( 2021 ). Creativity myths: Prevalence and correlates of misconceptions on creativity. Personality and Individual Differences, 182, 111068. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Benedek, M. and Karstendiek, M. and Ceh, S. M. and Grabner, R. H. and Krammer, G. and Lebuda, I. and Kaufman, J. C.',
+                    'year' => '2021',
+                    'title' => 'Creativity myths: Prevalence and correlates of misconceptions on creativity',
+                    'journal' => 'Personality and Individual Differences',
+					'volume' => '182',
+					'pages' => '111068',
+                    ]
+            ],
+			// should report "journal missing"
+			[
+                'source' => '[4]	J. K. Bambara, V. Wadley, C. Owsley, R. C. Martin, C. Porter, and L. E. Dreer, "Family functioning and low vision: A systematic review," vol. 103, no. 3, pp. 137-149, 2009. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'J. K. Bambara and V. Wadley and C. Owsley and R. C. Martin and C. Porter and L. E. Dreer',
+                    'title' => 'Family functioning and low vision: A systematic review',
+                    'year' => '2009',
+                    'volume' => '103',
+                    'number' => '3',
+                    'pages' => '137-149',
+                    ]
+            ],
+            // Title includes journal; classified as online, not article
+            [
+                'source' => 'Pitts NB, Zero DT, Marsh PD, Ekstrand K, Weintraub JA, Ramos-Gomez F, et al. Dental caries. Nat Rev Dis Prim [Internet]. 2017;3(1):17030. Available from: https://doi.org/10.1038/nrdp.2017.30 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'volume' => '3',
+                    'number' => '1',
+                    'pages' => '17030',
+                    'doi' => '10.1038/nrdp.2017.30',
+                    'author' => 'Pitts, N. B. and Zero, D. T. and Marsh, P. D. and Ekstrand, K. and Weintraub, J. A. and Ramos-Gomez, F. and others',
+                    'title' => 'Dental caries',
+                    'journal' => 'Nat Rev Dis Prim',
+                    'year' => '2017',
+                    ]
+            ],
+			// phrases in Georgian
+			[
+                'source' => 'Armbruster, B. B. (1989). Metacognition in creativity. R. R. J. A. Glorver (რედ.), Handbook of creativity (გვ. 177–182). New York, NY: Springer',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Armbruster, B. B.',
+                    'year' => '1989',
+                    'title' => 'Metacognition in creativity',
+                    'pages' => '177-182',
+                    'editor' => 'R. R. J. A. Glorver',
+                    'publisher' => 'Springer',
+                    'address' => 'New York, NY',
+                    'booktitle' => 'Handbook of creativity',
+                    ]
+            ],
+			// pp. in Georgian
+			[
+                'source' => 'Zhou, J., & Shalley, C. E. (2003). Employee Creativity: A Critical Review and Directions for Future Research. Research in Personnel and Human Resources Management (გვ. 165–217). doi:10.1016/s0742-7301(03)22004-1  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/s0742-7301(03)22004-1',
+                    'author' => 'Zhou, J. and Shalley, C. E.',
+                    'year' => '2003',
+                    'title' => 'Employee Creativity: A Critical Review and Directions for Future Research',
+                    'journal' => 'Research in Personnel and Human Resources Management',
+					'pages' => '165-217',
+                    ]
+            ],
+            //
+            [
+                'source' => ' 	M.KABORI, «Problématique de la gestion des stocks dans les secteurs hotéliers. Cas de l\'hôtel Lac Kivu Lodge de 2009 à 2011,» Université Libre des Pays des Grands Lacs - Graduat 2012, [En ligne]. Available: https://www.memoireonline.com/07/12/6012/m_Problematique-de-la-gestion-des-stocks-dans-les-secteurs-hoteliers-Cas-de-lhtel-Lac-Kivu-Lod4.html. [Accès le 11 04 2024]. ',
+                'type' => 'online',
+                'bibtex' => [
+                    'note' => 'Université Libre des Pays des Grands Lacs - Graduat',
+                    'url' => 'https://www.memoireonline.com/07/12/6012/m_Problematique-de-la-gestion-des-stocks-dans-les-secteurs-hoteliers-Cas-de-lhtel-Lac-Kivu-Lod4.html',
+                    'author' => 'M. Kabori',
+                    'title' => 'Problématique de la gestion des stocks dans les secteurs hotéliers. Cas de l\'hôtel Lac Kivu Lodge de 2009 à 2011',
+                    'year' => '2012',
+					'urldate' => '11 04 2024',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// editors not identified
+            [
+                'source' => 'PASSOS, E.; BARROS, R. B. D. A cartografia como método de pesquisa-intervenção. In: PASSOS, E.; VIRGÍNIA, K.; ESCÓSSIA, L. D. Pistas do método da cartografia: pesquisa-intervenção e produção de subjetividade. Porto Alegre: Sulina, 2009. p. 207. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Passos, E. and Barros, R. B. D.',
+                    'title' => 'A cartografia como método de pesquisa-intervenção',
+                    'year' => '2009',
+                    'editor' => 'Passos, E. and Virgínia, K. and Escóssia, L. D.',
+					'booktitle' => 'Pistas do método da cartografia: pesquisa-intervenção e produção de subjetividade',
+					'address' => 'Porto Alegre',
+					'publisher' => 'Sulina',
+					'pages' => '207',
+                    ],
+					'language' => 'pt',
+					'char_encoding' => 'utf8leave',
+            ],
+
+
+
+
 
 
         ];
