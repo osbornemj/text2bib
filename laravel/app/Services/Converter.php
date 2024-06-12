@@ -4789,7 +4789,7 @@ class Converter
                         $prevWordVon = true;
                     } else {
                         $prevWordVon = false;
-                        if (!Str::endsWith($words[$i], ',') 
+                        if (isset($words[$i]) && ! Str::endsWith($words[$i], ',') 
                                 && isset($words[$i+1]) 
                                 && Str::endsWith($words[$i+1], [',', ';']) 
                                 && ! $this->isInitials(substr($words[$i+1], 0, -1)) 
