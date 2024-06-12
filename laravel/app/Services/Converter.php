@@ -3536,6 +3536,7 @@ class Converter
                 }
 
                 $wordAfterNextCommaOrPeriod = strtok(substr($remainder, 1 + strlen($stringToNextPeriodOrComma)), ' ');
+                $upcomingRoman = $upcomingArticlePubInfo = false;
 
                 $upcomingYear = $upcomingVolumePageYear = $upcomingVolumeNumber = false;
                 if ($stringToNextPeriodOrComma) {
