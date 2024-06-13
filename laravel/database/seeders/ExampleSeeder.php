@@ -9034,6 +9034,125 @@ class ExampleSeeder extends Seeder
 					'language' => 'pt',
 					'char_encoding' => 'utf8leave',
             ],
+			// When pages are removed, space should be added to separate items
+			[
+                'source' => 'Baron,M. et al. (2016) A Single-Cell Transcriptomic Map of the Human and Mouse Pancreas Reveals Inter- and Intra-cell Population Structure. Cell Syst, 3, 346–360 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Baron, M. and others',
+                    'year' => '2016',
+                    'title' => 'A Single-Cell Transcriptomic Map of the Human and Mouse Pancreas Reveals Inter- and Intra-cell Population Structure',
+                    'journal' => 'Cell Syst',
+                    'pages' => '346-360',
+                    'volume' => '3',
+                    ]
+            ],
+			// Spanish: "recuperado ..."
+			[
+                'source' => 'Caldeira, K., & Wickett, M. E. (25 de septiembre de 2003). Anthropogenic carbon and ocean pH. Nature. Recuperado el 20 de mayo de 2024, de https://doi.org/10.1038/425365a ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1038/425365a',
+                    'month' => 'mayo',
+                    'date' => '2003-09-25',
+                    'author' => 'Caldeira, K. and Wickett, M. E.',
+                    'year' => '2003',
+                    'title' => 'Anthropogenic carbon and ocean pH',
+                    'journal' => 'Nature',
+					'urldate' => '20 de mayo de 2024',
+                    ],
+                    'language' => 'es',
+            ],
+			// Spanish: "recuperado ..."
+			 [
+                'source' => 'Kind Designs. (20 de febrero de 2024). Parametric Architecture. Recuperado el 14 de mayo de 2024, de https://parametric-architecture.com/kind-designs-installed-the-worlds-first-3d-printed-living-seawall/ ',
+                'type' => 'online',
+                'bibtex' => [
+					'urldate' => '14 de mayo de 2024',
+                    'url' => 'https://parametric-architecture.com/kind-designs-installed-the-worlds-first-3d-printed-living-seawall/',
+                    'month' => 'febrero',
+                    'date' => '2024-02-20',
+                    'author' => 'Kind Designs',
+                    'year' => '2024',
+                    'title' => 'Parametric Architecture',
+                    ],
+                    'language' => 'es',
+            ],
+			// Correct dates
+			[
+                'source' => 'UNEP. (28 de febrero de 2020). Naciones Unidas Para el Medio Ambiente. Recuperado el 17 de mayo de 2024, de https://www.unep.org/es/noticias-y-reportajes/reportajes/siete-formas-en-las-que-estamos-conectados-con-los-arrecifes-de ',
+                'type' => 'online',
+                'bibtex' => [
+                    'url' => 'https://www.unep.org/es/noticias-y-reportajes/reportajes/siete-formas-en-las-que-estamos-conectados-con-los-arrecifes-de',
+                    'month' => 'febrero',
+                    'date' => '2020-02-28',
+                    'author' => 'UNEP',
+                    'year' => '2020',
+                    'title' => 'Naciones Unidas Para el Medio Ambiente',
+                    'urldate' => '17 de mayo de 2024',
+                ],
+                'language' => 'es',
+            ],
+			// no space after p for pages
+			[
+                'source' => 'Sulochana, S., Gayathri, Siddartha JR., & Fathima, J. (2022). Clinical Significance Of Erythrocyte Sedimen Rate In Tuberculosis. Research Journal of Pharmacy and Technology, 15(1), p245-249. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Sulochana, S. and Gayathri, Siddartha J. R. and Fathima, J.',
+                    'year' => '2022',
+                    'title' => 'Clinical Significance Of Erythrocyte Sedimen Rate In Tuberculosis',
+                    'journal' => 'Research Journal of Pharmacy and Technology',
+                    'volume' => '15',
+                    'number' => '1',
+                    'pages' => '245-249',
+                    ]
+            ],
+			// no space after p
+			[
+                'source' => 'Silvia, H., Mellysa, R., & Citra, T. (2018). Perbandingan Nilai Laju Endap Darah (LED) Antara Metode Westergren dengan Metode Mikro ESR Pada Penderita Tuberkulosis Paru. Jurnal Medikes, 5(2), p182. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Silvia, H. and Mellysa, R. and Citra, T.',
+                    'year' => '2018',
+                    'title' => 'Perbandingan Nilai Laju Endap Darah (LED) Antara Metode Westergren dengan Metode Mikro ESR Pada Penderita Tuberkulosis Paru',
+                    'journal' => 'Jurnal Medikes',
+                    'volume' => '5',
+                    'number' => '2',
+                    'pages' => '182',
+                    ]
+            ],
+			// several problems
+			 [
+                'source' => 'Tannenbaum, A. J. (1997). “The meaning and making of giftedness”. En N. Colangelo y G. Davis (Eds.). Handbook of gifted education. Boston: Allyn and Bacon. (2ed.). 27-42. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Tannenbaum, A. J.',
+                    'year' => '1997',
+                    'title' => 'The meaning and making of giftedness',
+                    'pages' => '27-42',
+                    'publisher' => 'Allyn and Bacon',
+					'address' => 'Boston',
+                    'booktitle' => 'Handbook of gifted education.',
+                    'editor' => 'N. Colangelo and G. Davis',
+                    ],
+					'language' => 'es',
+            ],
+			// doi format
+			[
+                'source' => 'Sharma, M., Kanekar, A., & Lakhan, R. (2018). Developing a scale for measuring perfection quotient (pq) to predict readiness to health behavior change. Journal of Medical Research and Innovation, 2(2), e000130. [https://doi.org/10.15419/jmri.130](https://doi.org/10.15419/jmri.130) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.15419/jmri.130',
+                    'author' => 'Sharma, M. and Kanekar, A. and Lakhan, R.',
+                    'year' => '2018',
+                    'title' => 'Developing a scale for measuring perfection quotient (pq) to predict readiness to health behavior change',
+                    'journal' => 'Journal of Medical Research and Innovation',
+                    'volume' => '2',
+                    'number' => '2',
+                    'pages' => 'e000130',
+                    ]
+            ],
+            
 
 
 

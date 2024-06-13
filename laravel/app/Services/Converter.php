@@ -77,6 +77,7 @@ class Converter
     var $pagesRegExp;
     var $pagesRegExpWithPp;
     var $pageRange;
+    var $pageWords;
     var $startPagesRegExp;
     var $phdRegExp;
     var $phrases;
@@ -269,10 +270,39 @@ class Converter
 
         // page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress".
         $this->pageRange = '(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})(?![a-zA-Z])';
+
+        // hlm., hal.: Indonesian, ss: Turkish, გვ: Georgian
+        $this->pageWords = [
+            '[Pp]ages? ',
+            '[Pp]p\.? ?',
+            'p\. ?',
+            'p ?',
+            'стр\. ?',
+            '[Hh]lm\. ?',
+            '[Hh]al\. ?',
+            'S.\.',
+            'ss?\. ?',
+            'გვ\. ?',
+        ];
+
+        $startPagesRegExp = '/(';
+        $pagesRegExp = '[ \(:^](';
+        foreach ($this->pageWords as $i => $pageWord) {
+            $startPagesRegExp .= ($i ? '|' : '') . '^' . $pageWord;
+            $pagesRegExp .= ($i ? '|' : '') . $pageWord;
+        }
+        $startPagesRegExp .= ')[0-9]/';
+        $pagesRegExpWithPp = $pagesRegExp . '):?( )?' . $this->pageRange;
+        $pagesRegExp .= ')?:?( )?' . $this->pageRange;
+
+        $this->startPagesRegExp = $startPagesRegExp;
+        // Not yet used
+        //$this->pagesRegExpWithPp = $pagesRegExpWithPp;
+        //$this->pagesRegExp = $pagesRegExp;
+
         $this->pagesRegExp = '([Pp]p\.?|[Pp]\.|[Pp]ages?|გვ\.)?:?( )?' . $this->pageRange;
         $this->pagesRegExpWithPp = '([Pp]p\.?|[Pp]\.|[Pp]ages?):?( )?' . $this->pageRange;
-        // hlm., hal.: Indonesian, ss: Turkish, გვ: Georgian
-        $this->startPagesRegExp = '/(^pages? |^pp\.? ?|^p\. ?|^p |^стр\. ?|^hlm\. ?|^hal\. ?|^S.\.|^ss?\. ?|^გვ\. ?)[0-9]/i';
+        //$this->startPagesRegExp = '/(^pages? |^pp\.? ?|^p\. ?|^p ?|^стр\. ?|^hlm\. ?|^hal\. ?|^S.\.|^ss?\. ?|^გვ\. ?)[0-9]/i';
 
         // en for Spanish (and French?), em for Portuguese
         $this->inRegExp1 = '/^[iIeE]n:? /';
@@ -338,13 +368,13 @@ class Converter
             'nl' => '(Opgehaald van |Verkrijgbaar( bij)?:? |Available( at)?:? )',
         ];
 
-        // Dates are between 8 and 18 characters long
-        $dateRegExp = '[a-zA-Z0-9,/\-\. ]{8,18}';
+        // Dates are between 8 and 23 characters long (13 de novembre de 2024,)
+        $dateRegExp = '[a-zA-Z0-9,/\-\. ]{8,23}';
         $this->retrievedFromRegExp2 = [
             'en' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
             'cz' => '[Dd]ostupné (?P<date1>' . $dateRegExp . ' )?(, )?z |[Zz]přístupněno (?P<date2>' . $dateRegExp . ' )?na ',
             'fr' => '[Rr]écupéré (le )?(?P<date1>' . $dateRegExp . ' )?,? ?(sur|de) |[Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?,? ?(à|sur|de) ',
-            'es' => '[Oo]btenido (?P<date1>' . $dateRegExp . ' )?de |[Aa]ccedido (?P<date2>' . $dateRegExp . ' )?en ',
+            'es' => '[Oo]btenido (el )?(?P<date1>' . $dateRegExp . ' )?de |[Rr]ecuperado (el )?(?P<date1>' . $dateRegExp . ' )?de |[Aa]ccedido (?P<date3>' . $dateRegExp . ' )?en ',
             'pt' => '[Oo]btido (?P<date1>' . $dateRegExp . ' )?de |[Aa]cesso (?P<date2>' . $dateRegExp . ' )?em ',
             'my' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
             'nl' => '[Oo]pgehaald (?P<date1>' . $dateRegExp . ' )?(, )?van |[Gg]eraadpleegd op (?P<date2>' . $dateRegExp . ' )?om ',
@@ -554,6 +584,10 @@ class Converter
         // Get doi if any //
         ////////////////////
 
+        $retrievedFromRegExp1 = $this->retrievedFromRegExp1[$language];
+        $retrievedFromRegExp2 = $this->retrievedFromRegExp2[$language];
+        $accessedRegExp1 = $this->accessedRegExp1[$language];
+
         $doi = $this->extractLabeledContent(
             $remainder,
             ' [\[\)]?doi:? | [\[\(]?doi: ?|(Available from:? )?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(Available from:? )?(\\\href\{|\\\url{)?https?://doi\.org/|doi\.org',
@@ -667,10 +701,6 @@ class Converter
         $remainder = preg_replace('/[\(\[](online|en ligne|internet)[\)\]]/i', '', $remainder, 1, $replacementCount);
         $onlineFlag = $replacementCount > 0;
 
-        $retrievedFromRegExp1 = $this->retrievedFromRegExp1[$language];
-        $retrievedFromRegExp2 = $this->retrievedFromRegExp2[$language];
-        $accessedRegExp1 = $this->accessedRegExp1[$language];
-
         $urlRegExp = '(\\\url{|\\\href{)?(?P<url>https?://\S+)(})?';
 
         // Retrieved from (site)? <url> accessed <date>
@@ -692,7 +722,7 @@ class Converter
         // Retrieved <date>? from <url> <note>?
         if (! count($matches)) {
             preg_match(
-                '%(?P<retrievedFrom> ' . $retrievedFromRegExp2 . ')\[?(?P<siteName>.*)? ?\[?' . $urlRegExp . '(?P<note> .*)?$%i',
+                '%(?P<retrievedFrom> ' . $retrievedFromRegExp2 . ')\[?(?P<siteName>.*)? ?\[?' . $urlRegExp . '(?P<note> .*)?$%iJ',
                 $remainder,
                 $matches,
             );
@@ -1862,7 +1892,7 @@ class Converter
                 }
 
                 if (empty($item->urldate) && $itemYear && $itemMonth && $itemDay && $itemDate) {
-                    $this->setField($item, 'urldate', $itemDate, 'setField 116');
+                    $this->setField($item, 'urldate', rtrim($itemDate, '., '), 'setField 116');
                 }
 
                 $result = $this->getDate($remainder, $remains, $month, $day, $date, true, true, false, $language);
@@ -4102,7 +4132,7 @@ class Converter
      */
     private function isDate(string $string, string $language = 'en', string $type = 'is', bool $allowRange = false): bool|array
     {
-        $ofs = ['en' => '', 'cz' => '', 'fr' => '', 'es' => '', 'my' => '', 'nl' => '', 'pt' => 'de '];
+        $ofs = ['en' => '', 'cz' => '', 'fr' => '', 'es' => 'de', 'my' => '', 'nl' => '', 'pt' => 'de '];
 
         $year = '(?P<year>(19|20)[0-9]{2})';
         $monthName = '(?P<monthName>' . $this->monthsRegExp[$language] . ')';
@@ -4125,10 +4155,10 @@ class Converter
         $matches = [];
         $isDates = [];
         if ($allowRange) {
-            $isDates[1] = preg_match('/(' . $starts . $dayRange . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ')?' . $year . '?' . $ends . ')/i' , $string, $matches[1]);
+            $isDates[1] = preg_match('/(' . $starts . $dayRange . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ' )?' . $year . '?' . $ends . ')/i' , $string, $matches[1]);
             $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $dayRange . ',? '. $year . '?' . $ends . ')/i', $string, $matches[2]);
         } else {
-            $isDates[1] = preg_match('/(' . $starts . $day . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ')?' . $year . $ends . ')/i' , $string, $matches[1]);
+            $isDates[1] = preg_match('/(' . $starts . $day . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ' )?' . $year . $ends . ')/i' , $string, $matches[1]);
             $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $day . '(,? ' . $year . ')?' . $ends . ')/i', $string, $matches[2]);
             $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/ ]' . $of . $monthNumber . ',?[\-\/ ]'. $of . $year . $ends . ')/i', $string, $matches[3]);
             $isDates[4] = preg_match('/(' . $starts . $monthNumber . '[\-\/ ]' . $day . ',?[\-\/ ]'. $year . $ends . ')/i', $string, $matches[4]);
@@ -6126,7 +6156,8 @@ class Converter
         $months = $this->monthsRegExp[$language];
 
         // First check for some common patterns
-        $number = '[A-Za-z]?[0-9][0-9]{0,12}[A-Za-z]?';
+        // p omitted from permitted starting letters, to all p100 to be interpreted as page 100.
+        $number = '[A-Za-oq-z]?[0-9][0-9]{0,12}[A-Za-z]?';
         $numberWithRoman = '([1-9][0-9]{0,3}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
         $numberRange = $number . '(( ?--?-? ?|_|\?)' . $number . ')?';
@@ -6137,7 +6168,7 @@ class Converter
         // Ð is for non-utf8 encoding of en-dash(?)
         $letterNumberRange = $letterNumber . '(( ?--?-? ?|_|\?|Ð)' . $letterNumber . ')?';
         $numberRangeWithRoman = $numberWithRoman . '((--?-?|_)' . $numberWithRoman . ')?';
-        $pages = '[Pp]p?( |\. )|[Pp]ages |s.\ ?|стр\. |Hlm\. ';
+        $pages = '[Pp]p?\.? ?|[Pp]ages |s.\ ?|стр\. |Hlm\. ';
         $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')';
         $volumeWithRomanRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')';
         $numberRx = '('. $this->numberRegExp . ')?(?P<num>' . $numberRangeWithSlash . ')';
@@ -6149,6 +6180,7 @@ class Converter
         $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?\(\(?)';
         $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
 
+        //dd('5(2), p182', preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', '5(2), p182'));
         // e.g. Volume 6, No. 3, pp. 41-75 OR 6(3) 41-75
         // if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . '( ?' . $monthRange . ' ?)?' . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
         if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
@@ -6200,7 +6232,7 @@ class Converter
                 $drop = 0;
             }
 
-            $remainder = rtrim(substr($remainder, 0, $take) . substr($remainder, $drop), ',.: ');
+            $remainder = rtrim(substr($remainder, 0, $take) . ' ' . substr($remainder, $drop), ',.: ');
             $remainder = trim($remainder, ',. ');
         }
     }
