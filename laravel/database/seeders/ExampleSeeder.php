@@ -5122,6 +5122,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '11',
                     'pages' => '16',
                     'doi' => '10.5430/ijhe.v11n5p153',
+                    'url' => 'https://doi.org/10.5430/ijhe.v11n5p153',
                     ]
             ],
             // doi not correctly identified, because of nonstandard URL
@@ -9053,12 +9054,13 @@ class ExampleSeeder extends Seeder
                 'type' => 'article',
                 'bibtex' => [
                     'doi' => '10.1038/425365a',
-                    'month' => 'mayo',
+                    'month' => 'septiembre',
                     'date' => '2003-09-25',
                     'author' => 'Caldeira, K. and Wickett, M. E.',
                     'year' => '2003',
                     'title' => 'Anthropogenic carbon and ocean pH',
                     'journal' => 'Nature',
+                    'url' => 'https://doi.org/10.1038/425365a',
 					'urldate' => '20 de mayo de 2024',
                     ],
                     'language' => 'es',
@@ -9132,7 +9134,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '27-42',
                     'publisher' => 'Allyn and Bacon',
 					'address' => 'Boston',
-                    'booktitle' => 'Handbook of gifted education.',
+                    'booktitle' => 'Handbook of gifted education',
                     'editor' => 'N. Colangelo and G. Davis',
                     ],
 					'language' => 'es',
@@ -9152,6 +9154,99 @@ class ExampleSeeder extends Seeder
                     'pages' => 'e000130',
                     ]
             ],
+			// correct inproceedings
+			[
+                'source' => 'H. Cho, J. -W. Kim, S. Kim, J. Lee, J. -I. Oh and J. -W. Yu, "Grating Lobe Suppression in Wide-Angle Scanning Phased Array with Large Inter Element Spacing by Subarray Rotation," 2022 IEEE International Symposium on Radio-Frequency Integration Technology (RFIT), Busan, Korea, Republic of, 2022, pp. 90-92, doi: 10.1109/RFIT54256.2022.9882462. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'doi' => '10.1109/RFIT54256.2022.9882462',
+                    'author' => 'H. Cho and J.-W. Kim and S. Kim and J. Lee and J.-I. Oh and J.-W. Yu',
+                    'title' => 'Grating Lobe Suppression in Wide-Angle Scanning Phased Array with Large Inter Element Spacing by Subarray Rotation',
+                    'year' => '2022',
+                    'pages' => '90-92',
+                    'booktitle' => '2022 IEEE International Symposium on Radio-Frequency Integration Technology (RFIT), Busan, Korea, Republic of',
+                    ]
+            ],
+			// correct inproceedings
+			[
+                'source' => 'M. S. Althaf, K. P. Ray, A. Divantgi, S. R. D. Prasad, K. A. Nethravathi and S. Elayaperumal, "Grating Lobe Suppression in Aperiodic Antenna for Large Phased Array using Genetic Algorithm," 2023 IEEE Microwaves, Antennas, and Propagation Conference (MAPCON), Ahmedabad, India, 2023, pp. 1-6, doi: 10.1109/MAPCON58678.2023.10464016. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'doi' => '10.1109/MAPCON58678.2023.10464016',
+                    'author' => 'M. S. Althaf and K. P. Ray and A. Divantgi and S. R. D. Prasad and K. A. Nethravathi and S. Elayaperumal',
+                    'title' => 'Grating Lobe Suppression in Aperiodic Antenna for Large Phased Array using Genetic Algorithm',
+                    'year' => '2023',
+                    'pages' => '1-6',
+                    'booktitle' => '2023 IEEE Microwaves, Antennas, and Propagation Conference (MAPCON), Ahmedabad, India',
+                    ]
+            ],
+			// correct inproceedings
+			[
+                'source' => 'L. Piattella, R. M. Rossi and I. Russo, "The vertigo array for grating lobe reduction," 2017 IEEE International Symposium on Antennas and Propagation & USNC/URSI National Radio Science Meeting, San Diego, CA, USA, 2017, pp. 1583-1584, doi: 10.1109/APUSNCURSINRSM.2017.8072834. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'doi' => '10.1109/APUSNCURSINRSM.2017.8072834',
+                    'author' => 'L. Piattella and R. M. Rossi and I. Russo',
+                    'title' => 'The vertigo array for grating lobe reduction',
+                    'year' => '2017',
+                    'pages' => '1583-1584',
+                    'booktitle' => '2017 IEEE International Symposium on Antennas and Propagation & USNC/URSI National Radio Science Meeting, San Diego, CA, USA',
+                    ]
+            ],
+   			// Not inproceedings
+			[
+                'source' => 'Bernanke, B. (1986). Alternative explanations of the money-income correlation. Carnegie-Rochester conference series on public policy, 25, 49-99. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bernanke, B.',
+                    'title' => 'Alternative explanations of the money-income correlation',
+                    'journal' => 'Carnegie-Rochester conference series on public policy',
+                    'year' => '1986',
+                    'volume' => '25',
+                    'pages' => '49-99',
+                    ]
+            ],
+			// edition version not picked up correctly
+			[
+                'source' => 'Cooper, John. 2000. Body, Soul and Life Everlasting. 2nd Revised Edition. Grand Rapids: Eerdmans. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Cooper, John',
+                    'title' => 'Body, Soul and Life Everlasting',
+                    'year' => '2000',
+                    'edition' => '2nd Revised',
+                    'address' => 'Grand Rapids',
+                    'publisher' => 'Eerdmans',
+                    ]
+            ],
+			// volumes should be part of title
+			[
+                'source' => 'Aquinas, Thomas. 1948. Summa Theologica, Vols. I-III. Translated by Fathers of the English Dominican Province. Allen, TX: Christian Classics. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Aquinas, Thomas',
+                    'title' => 'Summa Theologica',
+                    'volume' => 'I-III',
+                    'year' => '1948',
+                    'note' => 'Translated by Fathers of the English Dominican Province.',
+                    'address' => 'Allen, TX',
+                    'publisher' => 'Christian Classics',
+                    ]
+            ],
+            // label at start in braces
+            [
+                'source' => '{Wyth1907} W. Wythoff. A modification of the game of Nim. \textit{Nieuw Arch. Wisk.}, 7:199-202, 1907.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'W. Wythoff',
+                    'title' => 'A modification of the game of Nim',
+                    'journal' => 'Nieuw Arch. Wisk.',
+                    'year' => '1907',
+                    'volume' => '7',
+                    'pages' => '199-202',
+                    ]
+            ],
+
             
 
 
