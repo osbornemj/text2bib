@@ -263,7 +263,7 @@ class Converter
         // რედ: Georgian
         $this->editorRegExp = '( eds?[\. ]|[\(\[]eds?\.?[\)\]]|[\(\[ ]edits\.[\(\] ]| editors?| [\(\[]editors?[\)\]]|[\(\[]რედ?\.?[\)\]])';
 
-        $this->editionWords = ['edition', 'ed', 'edição', 'édition', 'edición'];
+        $this->editionWords = ['edition', 'ed', 'edn', 'edição', 'édition', 'edición'];
         $this->editionRegExp = '(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh) (rev\. |revised )?(ed\.|edition|vydání|édition|edición|edição|editie)';
 
         $this->volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
@@ -274,11 +274,12 @@ class Converter
 
         $this->numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ |[Ii]ssues?:? ?|Issue no. ?|Iss: ';
 
-        // page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress".
+        // page range
+        // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
         $this->pageRange = '(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})(?![a-zA-Z])';
+        // single page or page range
         $this->page = '(?P<pages>[A-Z]?[1-9][0-9]{0,4})( ?-{1,3} ?[A-Z]?[0-9]{1,5})?(?![a-zA-Z])';
 
-        // hlm., hal.: Indonesian, ss: Turkish, გვ: Georgian
         $this->pageWords = [
             '[Pp]ages? ',
             '[Pp]p\.? ?',
@@ -343,7 +344,7 @@ class Converter
         // Could add "symposium" to list of words
         //$this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference|symposium on | meeting |congress of the | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop|^actas del )';
         $this->proceedingsRegExp = '(^proceedings of |conference|symposium on | meeting |congress of the |^proc\.| workshop|^actas del )';
-        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! (International )?Conference)|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
+        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! (International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.?A\.?|M\.?Sc\.?';
@@ -1707,7 +1708,7 @@ class Converter
             if (! $this->itemType) {
                 $warnings[] = "Not sure of type; contains \"edition\", so set to " . $itemKind . ".";
             }
-        } elseif ($containsDigitOutsideVolume) {
+        } elseif ($containsDigitOutsideVolume && ! $startsAddressPublisher) {
             $this->verbose("Item type case 19");
             $itemKind = 'article';
             if (! $this->itemType) {
@@ -3200,7 +3201,7 @@ class Converter
                     // in $entry, string preceding $cityString
                     // and $publisherString must be part of title (which must have been ended prematurely). 
                     if ($itemKind == 'book' && ! empty($cityString) && !empty($publisherString)) {
-                        $afterTitle = Str::after($entry, $item->title);
+                        $afterTitle = Str::after($entry, $item->title ?? '');
                         if ($afterTitle[0] == ',') {
                             $beforeCity = Str::before($remainder, $cityString);
                             $beforePublisher = Str::before($remainder, $publisherString);
@@ -3660,6 +3661,9 @@ class Converter
                 $upcomingJournalAndPubInfo = $upcomingPageRange = false;
                 $wordsToNextPeriodOrComma = explode(' ', $stringToNextPeriodOrComma);
 
+                $upcomingBookVolume = preg_match('/(^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. )\S+ (?!of)/', $remainder);
+                $upcomingVolumeCount = preg_match('/^\(?(?P<note>[1-9][0-9]{0,1} ([Vv]ols?\.?|[Vv]olumes))\)?/', $remainder, $volumeCountMatches);
+
                 // When a word ending in punctuation or preceding a word starting with ( is encountered, check whether
                 // it is followed by
                 // italics
@@ -3723,7 +3727,7 @@ class Converter
                         || $upcomingPageRange
                         || $translatorNext
                         // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
-                        || (Str::endsWith(rtrim($word, "'\""), [',', '.']) && ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo))
+                        || (Str::endsWith(rtrim($word, "'\""), [',', '.']) && ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo || $upcomingBookVolume || $upcomingVolumeCount))
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
                         || preg_match('/^[Ii]n:? [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
@@ -3744,6 +3748,14 @@ class Converter
                         $title = rtrim(implode(' ', $initialWords), ',:;.');
                         if (preg_match('/^' . $this->journalWord . ' /', $remainder)) {
                             $isArticle = true;
+                        }
+                        if ($upcomingBookVolume) {
+                            $volume = trim($nextButOneWord, '.,) ');
+                            $remainder = implode(' ', array_splice($remainingWords, 2));
+                        }
+                        if ($upcomingVolumeCount) {
+                            $note = $volumeCountMatches['note'];
+                            $remainder = implode(' ', array_splice($remainingWords, 2));
                         }
                         break;
                     }
@@ -4671,7 +4683,7 @@ class Converter
                     $this->verbose('[convertToAuthors 5]');
                     $nameComponent = $word;
                     $fullName .= ' '. trim($nameComponent, '.');
-                    $this->addToAuthorString(17, $authorstring, $fullName);
+                    $this->addToAuthorString(17, $authorstring, $this->formatAuthor($fullName));
                     $remainder = implode(" ", $remainingWords);
                     $reason = 'Word ends in colon';
                     $done = true;
@@ -5010,8 +5022,13 @@ class Converter
                 $this->verbose("nameScore: " . $nameScore['score'] . ". Count: " . $nameScore['count']);
                 if ($nameScore['count']) {
                     $this->verbose('[convertToAuthors 24]');
+//                    dump($remainingWords, $this->getQuotedOrItalic(implode(" ", array_splice($r, 1)), true, false, $before, $after, $style));
                     $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                 }
+
+                $wordsRemainingAfterNext = $remainingWords;
+                array_shift($wordsRemainingAfterNext);
+                $upcomingQuotedText = $this->getQuotedOrItalic(implode(" ", $wordsRemainingAfterNext), true, false, $before, $after, $style);
 
                 if ($determineEnd && $text = $this->getQuotedOrItalic(implode(" ", $remainingWords), true, false, $before, $after, $style)) {
                     if (in_array($text, ['et al', 'et al.', 'et. al.'])) {
@@ -5026,7 +5043,7 @@ class Converter
                         $done = true;
                         $case = 19;
                     } else {
-                        $this->verbose('[convertToAuthors 26]');
+                        $this->verbose('[convertToAuthors 26a]');
                         $remainder = implode(" ", $remainingWords);
                         $done = true;
                         $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
@@ -5037,6 +5054,16 @@ class Converter
                     $done = true;
                     $fullName = ($fullName[0] != ' ' ? ' ' : '') . $fullName;
                     $this->addToAuthorString(10, $authorstring, $this->formatAuthor($fullName));
+                } elseif ($determineEnd && $upcomingQuotedText && $upcomingQuotedText != 'et al.') {
+                    $this->verbose('[convertToAuthors 26b]');
+                    $remainder = implode(" ", $wordsRemainingAfterNext);
+                    $done = true;
+                    if (Str::endsWith($word, ',') && ! $prevWordHasComma) {
+                        $fullName .= ',';
+                    }
+                    $fullName = $fullName . ' ' . rtrim($nextWord, ',. ');
+                    $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
+                    $case = 7;
                 } elseif (
                     // stop if ...
                         $determineEnd
@@ -5875,7 +5902,7 @@ class Converter
 
     /**
      * bareWords: in array $words of strings, report the elements at the start up until one ends
-     * in ',' or '.' or ')' or ':' or is a year in parens or brackets or starts with quotation mark
+     * in ',' or '.' or ')' or ';' or is a year in parens or brackets or starts with quotation mark
      * or, if $stopAtAnd is true, is 'and'.
      */
     private function bareWords(array $words, bool $stopAtAnd, string $language = 'en'): array
@@ -5892,6 +5919,11 @@ class Converter
                 $stop = true;
                 $endsWithPunc = true;
             }
+
+            if (preg_match('/[A-Z]\.:/', $word)) {
+                $stop = true;
+            }
+
             if (preg_match('/(\(|\[)?(18|19|20)([0-9][0-9])(\)|\])?/', $word)) {
                 $stop = true;
                 $include = false;
@@ -5991,7 +6023,7 @@ class Converter
         $this->verbose(['text' => 'Arguments of isNotName: ', 'words' => [$words[0], $words[1]]]);
         $result = false;
         // Following reg exp allows {\'A} and \'{A} and \'A (but also allows {\'{A}, which it shouldn't)
-        $accentRegExp = '/(^\{?(\\\"|\\\\\'|\\\`|\\\\\^|\\\H|\\\v|\\\~|\\\k|\\\c|\\\\\.)\{?[A-Z]\}?|^\{\\\O\})/';
+        $accentRegExp = '/(^\{?(\\\"|\\\\\'|\\\`|\\\\\^|\\\H|\\\v|\\\A|\\\~|\\\k|\\\c|\\\\\.)\{?[A-Z]\}?|^\{\\\O\})/';
         
         for ($i = 0; $i < 2; $i++) {
             if (preg_match($accentRegExp, $words[$i])) {

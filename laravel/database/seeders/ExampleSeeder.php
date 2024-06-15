@@ -9246,6 +9246,94 @@ class ExampleSeeder extends Seeder
                     'pages' => '199-202',
                     ]
             ],
+			// put '2 vols' in note
+			[
+                'source' => 'Lane, E. W. 2003. Arabic–English Lexicon. 2 vols. Cambridge: Islamic Texts Society. First published 1836. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Lane, E. W.',
+                    'title' => 'Arabic--English Lexicon',
+                    'year' => '2003',
+                    'note' => '2 vols. First published 1836',
+                    'address' => 'Cambridge',
+                    'publisher' => 'Islamic Texts Society',
+                    ]
+            ],
+			// last name included in title --- because it is in dictionary? 
+            [
+                'source' => 'M. C. Vigano, G. Toso, G. Caille, C. Mangenot and I. E. Lager, "Spatial density tapered sunflower antenna array," 2009 3rd European Conference on Antennas and Propagation, Berlin, Germany, 2009, pp. 778-782. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'M. C. Vigano and G. Toso and G. Caille and C. Mangenot and I. E. Lager',
+                    'title' => 'Spatial density tapered sunflower antenna array',
+					'booktitle' => '2009 3rd European Conference on Antennas and Propagation, Berlin, Germany',
+                    'year' => '2009',
+                    'pages' => '778-782',
+                    ]
+            ],
+			// misclassified as article
+			[
+                'source' => 'Nidorf, D.G.; Barone, L.; French, T. A comparative study of NEAT and XCS in Robocode. In Proceedings of the IEEE Congress on Evolutionary Computation, New Orleans, LA, USA, 5–8 June 2010; pp. 1–8. [CrossRef] ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Nidorf, D. G. and Barone, L. and French, T.',
+                    'title' => 'A comparative study of NEAT and XCS in Robocode',
+                    'year' => '2010',
+                    'booktitle' => 'Proceedings of the IEEE Congress on Evolutionary Computation, New Orleans, LA, USA, 5--8 June 2010',
+                    'pages' => '1-8',
+                    ]
+            ],
+			// misclassified as incollection
+			 [
+                'source' => 'Harper, R. Spatial co-evolution in age layered planes (SCALP). In Proceedings of the IEEE Congress on Evolutionary Computation, Barcelona, Spain, 18–23 July 2010; pp. 1–8. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Harper, R.',
+                    'title' => 'Spatial co-evolution in age layered planes (SCALP)',
+                    'year' => '2010',
+                    'pages' => '1-8',
+                    'booktitle' => 'Proceedings of the IEEE Congress on Evolutionary Computation, Barcelona, Spain, 18--23 July 2010',
+                    ]
+            ],
+            // Can refine address: publisher match to cover this case?
+			[
+                'source' => 'Abdel-Kader, Ali Hassan. 1962. The Life Personality and Writings of al-Junayd: A Study of a Third/Ninth Century Mystic with an Edition and Translation of his Writings. London: E. J. W. Gibb. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Abdel-Kader, Ali Hassan',
+                    'title' => 'The Life Personality and Writings of al-Junayd: A Study of a Third/Ninth Century Mystic with an Edition and Translation of his Writings',
+                    'year' => '1962',
+                    'address' => 'London',
+                    'publisher' => 'E. J. W. Gibb',
+                    ]
+            ],
+			// last author's name included in title
+			[
+                'source' => '\bibitem{RGO1990} Romeiras F. J., Grebogi C., and Ott E.: Multifractal properties of snapshot attractors of random maps, Phys. Rev. A {\bf 41}, 784 (1990) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Romeiras, F. J. and Grebogi, C. and Ott, E.',
+                    'title' => 'Multifractal properties of snapshot attractors of random maps',
+                    'year' => '1990',
+                    'journal' => 'Phys. Rev. A',
+                    'volume' => '41',
+                    'pages' => '784',
+                    ]
+            ],
+			// use of {\AA} at start of name
+			[
+                'source' => '\bibitem{farisDIS1996} F. Gel\'mukhanov and H. {\AA}gren, X-ray resonant scattering involving dissociative states, {\it Phys. Rev. A},  {\bf 54}, 379  (1996). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'F. Gel\'mukhanov and H. {\AA}gren',
+                    'title' => 'X-ray resonant scattering involving dissociative states',
+                    'year' => '1996',
+                    'journal' => 'Phys. Rev. A',
+                    'volume' => '54',
+					'pages' => '379',
+                    ]
+            ],
+
 
             
 
