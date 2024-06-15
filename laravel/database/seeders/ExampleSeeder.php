@@ -9348,6 +9348,21 @@ class ExampleSeeder extends Seeder
 					'number' => '2',
                     ]
             ],
+            // volume marked by * *
+            [
+                'source' => 'Zuo, X.-N., & Xing, X.-X. (2014). Test-retest reliabilities of resting-state FMRI measurements in human brain functional connectomics: A systems neuroscience perspective. *Neuroscience & Biobehavioral Reviews*, *45*, 100--118. https://doi.org/10.1016/j.neubiorev.2014.05.009  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.neubiorev.2014.05.009',
+                    'author' => 'Zuo, X.-N. and Xing, X.-X.',
+                    'year' => '2014',
+                    'title' => 'Test-retest reliabilities of resting-state FMRI measurements in human brain functional connectomics: A systems neuroscience perspective',
+                    'journal' => 'Neuroscience & Biobehavioral Reviews',
+                    'pages' => '100-118',
+                    'volume' => '45',
+                    ]
+            ],
+            
 
 
             
