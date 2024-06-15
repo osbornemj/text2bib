@@ -9333,6 +9333,21 @@ class ExampleSeeder extends Seeder
 					'pages' => '379',
                     ]
             ],
+			// volume marked by * *
+			[
+                'source' => 'Byrge, L., & Kennedy, D. P. (2019). High-accuracy individual identification using a "thin slice" of the functional connectome. *Network Neuroscience*, *3*(2), 363--383. https://doi.org/10.1162/netn_a_00068 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1162/netn\_a\_00068',
+                    'author' => 'Byrge, L. and Kennedy, D. P.',
+                    'year' => '2019',
+                    'title' => 'High-accuracy individual identification using a ``thin slice\'\' of the functional connectome',
+                    'journal' => 'Network Neuroscience',
+                    'pages' => '363-383',
+                    'volume' => '3',
+					'number' => '2',
+                    ]
+            ],
 
 
             

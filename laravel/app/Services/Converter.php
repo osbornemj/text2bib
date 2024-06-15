@@ -269,7 +269,7 @@ class Converter
         $this->volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
         $this->volRegExp2 = '/^\(?vol(\.|ume)? ?|^\(?v\. /i';
-        $this->volumeRegExp = '[Vv]olume ?|[Vv]ols? ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{';
+        $this->volumeRegExp = '[Vv]olume ?|[Vv]ols? ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{|\*';
         $this->volRegExp3 = '[Vv]olume ?|[Vv]ol ?\.? ?|VOL ?\.? ?|[Vv]\. ';
 
         $this->numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ |[Ii]ssues?:? ?|Issue no. ?|Iss: ';
@@ -6288,7 +6288,7 @@ class Converter
         $volumeWordLetterRx = '('. $this->volumeRegExp . ')(?P<vol>' . $letterNumber . ')';
         $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRangeWithSlash . ')';
         $pagesRx = '(?P<pageWord>'. $this->pageWordsRegExp . ')?(?P<pp>' . $letterNumberRange . ')';
-        $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?\(\(?)';
+        $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?\(\(?|\* ?\()';
         $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
 
         //dd('5(2), p182', preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', '5(2), p182'));
