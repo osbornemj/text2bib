@@ -3637,6 +3637,7 @@ class Converter
                 // String up to next '?', '!', ',', or '.' not preceded by ' J'.
                 $chars = mb_str_split($remainder, 1, 'UTF-8');
                 $stringToNextPeriodOrComma = '';
+
                 foreach ($chars as $i => $char) {
                     if ($char == '(') {
                         break;
@@ -3657,12 +3658,35 @@ class Converter
                     }
                 }
 
+                $stringToNextPeriod = '';
+
+                foreach ($chars as $i => $char) {
+                    if ($char == '(') {
+                        break;
+                    }
+                    $stringToNextPeriod .= $char;
+                    if (
+                            in_array($char, ['?', '!'])
+                            ||
+                            (
+                                $char == '.' &&
+                                    (
+                                        ($i == 1 && $chars[0] != 'J') 
+                                            || ($i >= 2 && ! ($chars[$i-1] == 'J' && $chars[$i-2] == ' '))
+                                    )
+                            )
+                        ) {
+                        break;
+                    }
+                }
+
                 $wordAfterNextCommaOrPeriod = strtok(substr($remainder, 1 + strlen($stringToNextPeriodOrComma)), ' ');
                 $upcomingRoman = $upcomingArticlePubInfo = false;
 
                 $upcomingYear = $upcomingVolumePageYear = $upcomingVolumeNumber = false;
                 if ($stringToNextPeriodOrComma) {
                     $remainderFollowingNextPeriodOrComma = mb_substr($remainder, mb_strlen($stringToNextPeriodOrComma));
+                    $remainderFollowingNextPeriod = mb_substr($remainder, mb_strlen($stringToNextPeriod));
                     $upcomingYear = $this->isYear(trim($remainderFollowingNextPeriodOrComma));
                     $upcomingVolumePageYear = preg_match('/^[0-9\(\)\., p\-]{2,}$/', trim($remainderFollowingNextPeriodOrComma));
                     $upcomingVolumeNumber = preg_match('/^(' . $this->volRegExp3 . ')[0-9]{1,4},? (' . $this->numberRegExp . ')? ?\(?[0-9]{1,4}\)?/', trim($remainderFollowingNextPeriodOrComma));
@@ -3740,22 +3764,55 @@ class Converter
                         || $upcomingPageRange
                         || $translatorNext
                         // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
-                        || (Str::endsWith(rtrim($word, "'\""), [',', '.']) && ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo || $upcomingBookVolume || $upcomingVolumeCount))
+                        || (
+                            Str::endsWith(rtrim($word, "'\""), [',', '.']) 
+                            && ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo || $upcomingBookVolume || $upcomingVolumeCount)
+                           )
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->startPagesRegExp, $remainder)
                         || preg_match('/^[Ii]n:? [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
-                        || ($nextWord && Str::endsWith($nextWord, '.') && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations))
-                        || ($nextWord && $nextButOneWord && (Str::endsWith($nextWord, range('a', 'z')) || in_array($nextWord, ['IEEE', 'ACM'])) && Str::endsWith($nextButOneWord, '.') && in_array(substr($nextButOneWord,0,-1), $this->startJournalAbbreviations))
+                        || (
+                            $nextWord 
+                            && Str::endsWith($nextWord, '.') 
+                            && in_array(substr($nextWord,0,-1), $this->startJournalAbbreviations)
+                           )
+                        || (
+                            $nextWord 
+                            && $nextButOneWord 
+                            && (Str::endsWith($nextWord, range('a', 'z')) || in_array($nextWord, ['IEEE', 'ACM'])) 
+                            && Str::endsWith($nextButOneWord, '.') 
+                            && in_array(substr($nextButOneWord,0,-1), $this->startJournalAbbreviations)
+                           )
                         // pages (e.g. within book)
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
-                        || (preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) && in_array(trim($matches['publisher']), $this->publishers))
-                        || (preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) && in_array(trim($matches['city']), $this->cities))
-                        || (preg_match('/^[A-Z][a-z]+, (?P<city>[A-Za-z ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) && in_array(trim($matches['city']), $this->cities))
-                        || preg_match('/^[\(\[\-]? ?' . $this->fullThesisRegExp . '/i', $remainder)
+                        // address [no spaces]: publisher in db
+                        || (
+                            preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) 
+                            && in_array(trim($matches['publisher']), $this->publishers)
+                           )
+                        // address (city in db): publisher
+                        || (
+                            preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) 
+                            && in_array(trim($matches['city']), $this->cities)
+                           )
+                        // publisher, address (city in db), <year>?
+                        || (
+                            preg_match('/^[A-Z][a-z]+, (?P<city>[A-Za-z ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
+                            && in_array(trim($matches['city']), $this->cities)
+                           )
+                        // . address: publisher$ [note that $word must end in .; , allowed]
+                        || (
+                            Str::endsWith($word, '.') 
+                            && preg_match('/^[\p{L}, ]+: [\p{L} ]+$/u', $remainder, $matches) 
+                           )
+                        // (<publisher> in db
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
+                        // (<city> in db
                         || Str::startsWith(ltrim($remainder, '('), $this->cities)
+                        // Thesis
+                        || preg_match('/^[\(\[\-]? ?' . $this->fullThesisRegExp . '/i', $remainder)
                         ) {
                         $this->verbose("Ending title, case 2 (word '" . $word . "')");
                         $title = rtrim(implode(' ', $initialWords), ',:;.');
@@ -3798,15 +3855,13 @@ class Converter
                     break;
                 }
 
-                // If end of title has not been detected and word ends in period-equivalent or comma, or next word starts with '('
+                // If end of title has not been detected and word ends in period-equivalent or comma
                 if (
                     Str::endsWith($word, ['.', '!', '?', ','])
-                    // ||
-                    // ($nextWord && $nextWord[0] == '(' && substr($nextWord, -1) != ')')
                     ) {
                         $this->verbose('$stringToNextPeriodOrComma: ' . $stringToNextPeriodOrComma);
-//                        $this->verbose('$stringToNextCommaOrPeriod: ' . $stringToNextCommaOrPeriod);
                         $this->verbose('$wordAfterNextCommaOrPeriod: ' . $wordAfterNextCommaOrPeriod);
+                        $this->verbose('$stringToNextPeriod: ' . $stringToNextPeriod);
                     // if first character of next word is lowercase letter and does not end in period
                     // OR $word and $nextWord are A. and D. or B. and C.
                     // OR following string starts with a part designation, continue, skipping next word,
@@ -3974,18 +4029,19 @@ class Converter
                             && preg_match('/^[A-Z][a-z]+: [A-Z][a-z]+$/', trim($remainderFollowingNextPeriodOrComma, '. '))
                             ) {
                             // one-word address: one-word publisher follow next period.  (Could intervening sentence be series in this case?)
-                            $this->verbose("Not ending title, case 7c (word '" . $word ."'): <address>: <publisher> follow next period");
+                            $this->verbose("Not ending title, case 7c (word '" . $word ."'): <address>: <publisher> follow next comma or period");
                         } elseif (
-                            isset($remainderFollowingNextPeriodOrComma) 
-                            && strlen($stringToNextPeriodOrComma) > 5 
-                            && preg_match('/[a-z][.,]$/', $stringToNextPeriodOrComma) 
-                            && ! Str::endsWith($stringToNextPeriodOrComma, 'Univ.') 
-                            && preg_match('/^[\p{L}. ]+: [A-Z][a-z]+$/u', trim($remainderFollowingNextPeriodOrComma, '. '))
+                            isset($remainderFollowingNextPeriod) 
+                            && strlen($stringToNextPeriod) > 5 
+                            && preg_match('/[a-z][.,]$/', $stringToNextPeriod) 
+                            && ! Str::endsWith($stringToNextPeriod, 'Univ.') 
+                            && preg_match('/^[\p{L}. ]+: [\p{L} ]+$/u', trim($remainderFollowingNextPeriod, '. '))
                             ) {
-                            // <address>: <publisher> follows string to next comma or period: If string to next comma or period
+                            // <address>: <publisher> follows string to next period: If string to next period
+                            // (note: comma not allowed, because comma may appear in address --- New York, NY)
                             // has at least 6 characters and a lowercase letter preceded the punctuation,
                             // allow spaces and periods (and any utf8 letter) in the <address> 
-                            $this->verbose("Not ending title, case 7d (word '" . $word ."'): <address>: <publisher> follow next period");
+                            $this->verbose("Not ending title, case 7d (word '" . $word ."'): <address>: <publisher> follow next comma or period");
                         } else {
                             // otherwise assume the punctuation ends the title.
                             $this->verbose("Ending title, case 6b (word '" . $word ."')");

@@ -9440,6 +9440,63 @@ class ExampleSeeder extends Seeder
                 'language' => 'es',
                 'char_encoding' => 'utf8leave',
             ],
+			// address: publisher error
+			[
+                'source' => 'Eckhart, M. (2007). El hombre noble. Guanajuato, Mexico: Fundación de Estudios Tradicionales. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Eckhart, M.',
+                    'title' => 'El hombre noble',
+                    'year' => '2007',
+                    'address' => 'Guanajuato, Mexico',
+                    'publisher' => 'Fundación de Estudios Tradicionales',
+                    ],
+					'language' => 'es',
+					'char_encoding' => 'utf8leave',
+            ],
+			// address: publisher error
+			[
+                'source' => 'Erickson, B. A., & Keeney, B. (2010). Milton H. Erickson un sanador americano. México D.F.: Alom. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Erickson, B. A. and Keeney, B.',
+                    'title' => 'Milton H. Erickson un sanador americano',
+                    'year' => '2010',
+                    'address' => 'México D. F.',
+                    'publisher' => 'Alom',
+                    ],
+					'language' => 'es',
+					'char_encoding' => 'utf8leave',
+            ],
+			// title ended early
+			[
+                'source' => 'Hellinger, B. (2010). Plenitud. La mirada del Nahual. México: Grupo CUDEC. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Hellinger, B.',
+                    'title' => 'Plenitud. La mirada del Nahual',
+                    'year' => '2010',
+                    'address' => 'México',
+                    'publisher' => 'Grupo CUDEC',
+                    ],
+					'language' => 'es',
+					'char_encoding' => 'utf8leave',
+            ],
+			// title ended early
+			[
+                'source' => 'Zeig, J. (1985). Un Seminario Didáctico con Milton H. Erickson. Buenos Aires: Amorrortu. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Zeig, J.',
+                    'title' => 'Un Seminario Didáctico con Milton H. Erickson',
+                    'year' => '1985',
+                    'address' => 'Buenos Aires',
+                    'publisher' => 'Amorrortu',
+                    ],
+					'language' => 'es',
+					'char_encoding' => 'utf8leave',
+            ],
+            
 
             
 
