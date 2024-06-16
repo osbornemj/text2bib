@@ -9362,6 +9362,85 @@ class ExampleSeeder extends Seeder
                     'volume' => '45',
                     ]
             ],
+   			// city in address not picked up; classified as incollection not book
+			[
+                'source' => 'Aquinas, Thomas. 2012. Commentary on the Letters of Saint Paul to the Corinthians. Translated by F.R. Larcher OP, B. Mortensen, and D. Keating. Edited by J. Mortensen and E. Alarcon. Lander, WY: The Aquinas Institute for the Study of Sacred Doctrine. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Aquinas, Thomas',
+                    'title' => 'Commentary on the Letters of Saint Paul to the Corinthians',
+                    'year' => '2012',
+                    'note' => 'Translated by F.R. Larcher OP, B. Mortensen, and D. Keating. Edited by J. Mortensen and E. Alarcon.',
+                    'address' => 'Lander, WY',
+                    'publisher' => 'The Aquinas Institute for the Study of Sacred Doctrine',
+                    ]
+            ],
+			// Note omitted
+			[
+                'source' => 'Macdonald, Paul. 2019. History of the Concept of Mind. London: Routledge. First published in 2003. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Macdonald, Paul',
+                    'title' => 'History of the Concept of Mind',
+                    'year' => '2019',
+                    'note' => 'First published in 2003',
+                    'address' => 'London',
+                    'publisher' => 'Routledge',
+                    ]
+            ],
+			// note omitted
+			[
+                'source' => 'Ryle, Gilbert. 2002. The Concept of Mind. Chicago: University of Chicago Press (originally published 1949). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ryle, Gilbert',
+                    'title' => 'The Concept of Mind',
+                    'year' => '2002',
+                    'note' => 'originally published 1949',
+                    'address' => 'Chicago',
+                    'publisher' => 'University of Chicago Press',
+                    ]
+            ],
+			// month not picked up
+			[
+                'source' => 'Swinburne, Richard. 2023. ‘Design for Living’, in Times Literary Supplement, December, 24–25. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Swinburne, Richard',
+                    'title' => 'Design for Living',
+                    'journal' => 'Times Literary Supplement',
+                    'year' => '2023',
+                    'month' => 'December',
+                    'pages' => '24-25',
+                    ]
+            ],
+			// don't add "in" to note field; 'et al.:' misinterpreted because of trailing :?
+			[
+                'source' => '\bibitem{curran} Curran S. et al.: Hallucination is the last thing you need. In: arXiv, 2023. \url{http://arxiv.org/abs/2306.11520} ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'archiveprefix' => 'arXiv',
+                    'year' => '2023',
+                    'url' => 'http://arxiv.org/abs/2306.11520',
+                    'author' => 'Curran, S. and others',
+                    'title' => 'Hallucination is the last thing you need',
+                    ]
+            ],
+            // title ended early
+            [
+                'source' => 'Cásula, C. (2006). Jardineros, princesas y puerco espines. Construyendo metáforas. México D.F.: Alom. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Cásula, C.',
+                    'title' => 'Jardineros, princesas y puerco espines. Construyendo metáforas',
+                    'year' => '2006',
+                    'address' => 'México D. F.',
+                    'publisher' => 'Alom',
+                ],
+                'language' => 'es',
+                'char_encoding' => 'utf8leave',
+            ],
+
             
 
 
