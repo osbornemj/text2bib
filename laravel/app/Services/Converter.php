@@ -6106,6 +6106,22 @@ class Converter
     private function isNotName(string $word1, string $word2): bool
     {
         $words = [$word1, $word2];
+
+        foreach ($words as $i => $word) {
+            // in case word is like {J}.-{P}.
+            $word = preg_replace('/\{([A-Z])\}/', '$1', $word);
+            $endsWithComma = false;
+            if (Str::endsWith($word, ',')) {
+                $word = rtrim($word, ',');
+                $endsWithComma = true;
+            }
+            if (Str::startsWith($word, '{') && Str::endsWith($word, '}')) {
+                $words[$i] = trim($word, '{}') . ($endsWithComma ? ',' : '');
+            } else {
+                $words[$i] = $word;
+            }
+        }
+
         $this->verbose(['text' => 'Arguments of isNotName: ', 'words' => [$words[0], $words[1]]]);
         $result = false;
         // Following reg exp allows {\'A} and \'{A} and \'A (but also allows {\'{A}, which it shouldn't)
