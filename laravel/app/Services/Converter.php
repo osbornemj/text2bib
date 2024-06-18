@@ -419,7 +419,7 @@ class Converter
             'en' => '(?P<m1>January|Jan' . $p . ')|(?P<m2>February|Feb' . $p . ')|(?P<m3>March|Mar' . $p . ')|(?P<m4>April|Apr' . $p . ')|'
                 . '(?P<m5>May)|(?P<m6>June|Jun' . $p . ')|(?P<m7>July|Jul' . $p . ')|(?P<m8>August|Aug' . $p . ')|'
                 . '(?P<m9>September|Sept?' . $p . ')|(?P<m10>October|Oct' . $p . ')|(?P<m11>November|Nov' . $p . ')|(?P<m12>December|Dec' . $p . ')',
-            'cz' => '(?P<m1>leden|led' . $p . ')|(?P<m1>únor|ún' . $p . ')|(?P<m3>březen|břez' . $p . ')|(?P<m4>duben|dub' . $p . ')|'
+            'cz' => '(?P<m1>leden|led' . $p . ')|(?P<m2>únor|ún' . $p . ')|(?P<m3>březen|břez' . $p . ')|(?P<m4>duben|dub' . $p . ')|'
                 . '(?P<m5>květen|květ' . $p . ')|(?P<m6>červen|červ' . $p . ')|(?P<m7>červenec|červen' . $p . ')|(?P<m8>srpen|srp' . $p . ')|'
                 . '(?P<m9>září|zář' . $p . ')|(?P<m10>říjen|říj' . $p . ')|(?P<m11>listopad|list' . $p . ')|(?P<m12>prosinec|pros' . $p . ')',
             'fr' => '(?P<m1>janvier|janv' . $p . ')|(?P<m2>février|févr' . $p . ')|(?P<m3>mars)|(?P<m4>avril|avr' . $p . ')|'
@@ -6110,6 +6110,7 @@ class Converter
         foreach ($words as $i => $word) {
             // in case word is like {J}.-{P}.
             $word = preg_replace('/\{([A-Z])\}/', '$1', $word);
+            // in case word is {Smith} or {Smith},
             $endsWithComma = false;
             if (Str::endsWith($word, ',')) {
                 $word = rtrim($word, ',');
