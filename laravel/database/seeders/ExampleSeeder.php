@@ -9550,6 +9550,19 @@ class ExampleSeeder extends Seeder
                     ],
                     'char_encoding' => 'utf8leave',
             ],
+			// label at start contains :
+			[
+                'source' => '[AnBr1:00] K.M. ANSTREICHER and N.W. BRIXIUS, A new bound for the quadratic assignment problem based on convex quadratic programming, Mathematical Programming 80:341-357, 2001. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'K. M. Anstreicher and N. W. Brixius',
+                    'title' => 'A new bound for the quadratic assignment problem based on convex quadratic programming',
+                    'journal' => 'Mathematical Programming',
+                    'year' => '2001',
+                    'volume' => '80',
+                    'pages' => '341-357',
+                    ]
+            ],
             
 
 

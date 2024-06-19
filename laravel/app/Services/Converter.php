@@ -349,7 +349,7 @@ class Converter
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.?A\.?|M\.?Sc\.?';
         $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral';
-        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|Doktora Tezi|Yüksek lisans tezi)';
+        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|Doktora Tezi|Yüksek lisans tezi|Yükseklisans Tezi)';
         // pt: Dissertação de Mestrado | Tese de mestrado
         // es: Tesis de maestría
         // nl: Masterproef | Doctoraal proefschrift
@@ -531,7 +531,7 @@ class Converter
 
         if ($firstComponent == 'authors') {
             // interpret string like [Arrow12] at start of entry as label
-            if (preg_match('/^(?P<label>[\[{][a-zA-Z0-9]{3,10}[\]}]) (?P<entry>.*)$/', $entry, $matches)) {
+            if (preg_match('/^(?P<label>[\[{][a-zA-Z0-9:]{3,10}[\]}]) (?P<entry>.*)$/', $entry, $matches)) {
                 if ($matches['label'] && preg_match('/[a-z]/', $matches['label'])) {
                     $itemLabel = $matches['label'];
                     $entry = $matches['entry'] ?? '';
