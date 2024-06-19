@@ -349,7 +349,7 @@ class Converter
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.?A\.?|M\.?Sc\.?';
         $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral';
-        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce)';
+        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|Doktora Tezi|Yüksek lisans tezi)';
         // pt: Dissertação de Mestrado | Tese de mestrado
         // es: Tesis de maestría
         // nl: Masterproef | Doctoraal proefschrift
@@ -2045,6 +2045,17 @@ class Converter
                 }
                 $this->verbose("[in1b] Remainder with month and year: " . $remainderWithMonthYear);
 
+                // If booktitle ends with period, not preceded by month abbreviations, then year, remove year.
+                $regExp = '';
+                foreach ($this->monthsAbbreviations[$language] as $month) {
+                    $regExp .= ($i ? '|' : '') . $month;
+                }
+                if (isset($year) && preg_match('/^(?P<remainder>.*)\. ' . $year . '$/', $remainderWithMonthYear, $matches)) {
+                    if (! preg_match('/ (' . $regExp . ')$/', $matches['remainder'])) {
+                        $remainderWithMonthYear = $matches['remainder'];
+                    }
+                }
+
                 // If $remainder starts with "in", remove it
                 // $remainderWithMonthYear is $remainder before month and year (if any) were removed.
                 if ($inStart) {
@@ -2979,10 +2990,6 @@ class Converter
                     }
                 }
                 
-                // if (! $item->booktitle) {
-                //     $warnings[] = "Book title not found.";
-                // }
-
                 if ($leftover) {
                     $leftover .= ';';
                 }
@@ -4375,7 +4382,7 @@ class Converter
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
         // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian, 'v' for Turkish,
         // 'dan' for Indonesian
-        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и', 've', 'dan']) || $string == 'with';
+        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['and', '\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и', 've', 'dan']) || $string == 'with';
     }
 
     /*
@@ -4389,7 +4396,6 @@ class Converter
         if (in_array(substr($word, -1), str_split($finalPunc))) {
             $word = substr($word, 0, -1);
         }
-//        if (ctype_alpha($word) && (ucfirst($word) == $word || strtoupper($word) == $word)) {
         if (preg_match('/^[a-z{}\\\"\']+$/i', $word) && (ucfirst($word) == $word || strtoupper($word) == $word)) {
             $result = true;
         }
@@ -6394,19 +6400,21 @@ class Converter
         $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?\(\(?|\* ?\()';
         $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
 
+        $dashEquivalents = ['---', '--', ' - ', '- ', ' -', '_', 'Ð', '?'];
+
         //dd('5(2), p182', preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', '5(2), p182'));
         // e.g. Volume 6, No. 3, pp. 41-75 OR 6(3) 41-75
         // if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . '( ?' . $monthRange . ' ?)?' . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
         if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
             $this->setField($item, 'number', str_replace(['---', '--', ' - '], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
-            $this->setField($item, 'pages', str_replace(['---', '--', ' - ', '- ', ' -', '_', 'Ð', '?'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
+            $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
             $remainder = trim(substr($remainder, strlen($matches[0])));
         // e.g. Volume 6, 41-75$ OR 6 41-75$
        } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/J', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
             if (Str::contains($matches['pp'], ['-', '_', '?']) || strlen($matches['pp']) < 7 || (isset($matches['pageWord']) && $matches['pageWord'])) {
-                $this->setField($item, 'pages', str_replace(['---', '--', '_', ' - ', '- ', ' -', '?'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5a');
+                $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5a');
             } else {
                 $this->addToField($item, 'note', 'Article ' . $matches['pp'], 'getVolumeNumberPagesForArticle 5b');
             }
@@ -6419,7 +6427,7 @@ class Converter
         // e.g. Volume A6, 41-75$
         } elseif (preg_match('/^' . $volumeWordLetterRx . $punc1 . $pagesRx . '$/J', $remainder, $matches)) {
                $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 8');
-               $this->setField($item, 'pages', str_replace(['---', '--', '_'], '-', $matches['pp']), 'getVolumeNumberPagesForArticle 9');
+               $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 9');
                $remainder = '';
         } else {
             // If none of the common patterns fits, fall back on approach that first looks for a page range then

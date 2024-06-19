@@ -9510,6 +9510,48 @@ class ExampleSeeder extends Seeder
                     'volume' => '164',
                     ]
             ],
+  			// doctoral thesis --- Turkish
+			[
+                'source' => 'Zeybek, G. (2011). Bilgisayar meslek dersi alan ortaöğretim öğrencilerinin bilişim teknolojilerini kullanımlarının etik açıdan değerlendirilmesi. Doktora Tezi, Selçuk Üniversitesi Eğitim Bilimleri Enstitüsü, Konya. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Zeybek, G.',
+                    'year' => '2011',
+                    'title' => 'Bilgisayar meslek dersi alan ortaöğretim öğrencilerinin bilişim teknolojilerini kullanımlarının etik açıdan değerlendirilmesi',
+					'school' => 'Selçuk Üniversitesi Eğitim Bilimleri Enstitüsü, Konya',
+                ],
+                'char_encoding' => 'utf8leave'
+            ],
+			// 
+			[
+                'source' => 'Boring, S., M. Jurmu, and A. Butz. Scroll, tilt or move it: using mobile phones to continuously control pointers on large public displays. in Proceedings of the 21st Annual Conference of the Australian Computer-Human Interaction Special Interest Group: Design: Open 24/7. 2009. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Boring, S. and M. Jurmu and A. Butz',
+                    'title' => 'Scroll, tilt or move it: using mobile phones to continuously control pointers on large public displays',
+                    'year' => '2009',
+                    'booktitle' => 'Proceedings of the 21st Annual Conference of the Australian Computer-Human Interaction Special Interest Group: Design: Open 24/7',
+                ],
+                'language' => 'es',
+                'char_encoding' => 'utf8leave',
+            ],
+            // page range separator not translated to -
+            [
+                'source' => '(37)	Sweet, T. J.; Licatalosi, D. D. 3? END Formation and Regulation of Eukaryotic MRNAs. Methods in Molecular Biology 2014, 1125, 3Ð12. https://doi.org/10.1007/978-1-62703-971-0_1/COVER. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1007/978-1-62703-971-0\_1/COVER',
+                    'author' => 'Sweet, T. J. and Licatalosi, D. D.',
+                    'title' => '3? END Formation and Regulation of Eukaryotic MRNAs',
+                    'year' => '2014',
+                    'journal' => 'Methods in Molecular Biology',
+                    'volume' => '1125',
+                    'pages' => '3-12',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+            
+
 
         ];
 
