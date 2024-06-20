@@ -685,6 +685,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Nanti evidential practice: Language, knowledge, and social action in an Amazonian society',
                     'school' => 'University of Texas at Austin',
                     'year' => '2008',
+                    'note' => 'Austin',
                 ]
             ],
             [
@@ -5664,6 +5665,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2008',
                     'title' => 'Valuation of carbon sequestration and water supply services in community forests of Palpa district, Nepal',
                     'school' => 'Tribhuvan University',
+                    'note' => 'Kathmanndu: Tribhuvan University',
                     ]
             ],
             // \enquote used for quoted string
@@ -7854,7 +7856,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'online',
                 'bibtex' => [
                     'author' => 'Centers for Disease Control and Prevention',
-                    'title' => 'CDC respiratory virus updates. Centers for Disease Control and Prevention',
+                    'title' => 'CDC respiratory virus updates',
+                    'note' => 'Centers for Disease Control and Prevention',
                     'year' => '2023',
 					'month' => 'December',
 					'date' => '2023-12-14',
@@ -8443,9 +8446,9 @@ class ExampleSeeder extends Seeder
 			// remove 'retrived from' from note
 			 [
                 'source' => 'Addis Standard. (2020, September 11). Tigray election: beyond defying the central government. Addis Standard. Retrieved from: https://addisstandard.com/analysis-tigray-election-beyond-defying-the-central-government/ (Accessed 17 September 2023) ',
-                'type' => 'article',
+                'type' => 'online',
                 'bibtex' => [
-                    'journal' => 'Addis Standard',
+                    'note' => 'Addis Standard',
                     'url' => 'https://addisstandard.com/analysis-tigray-election-beyond-defying-the-central-government/',
                     'urldate' => '17 September 2023',
                     'month' => 'September',
@@ -9563,6 +9566,96 @@ class ExampleSeeder extends Seeder
                     'pages' => '341-357',
                     ]
             ],
+			// translator
+            [
+                'source' => 'Urbach, Ephraim E. 1979. The Sages: Their Concepts and Beliefs, trans. Israel Abrahams. Jerusalem: Magnes. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Urbach, Ephraim E.',
+                    'title' => 'The Sages: Their Concepts and Beliefs',
+                    'year' => '1979',
+                    'note' => 'Translated by Israel Abrahams.',
+                    'address' => 'Jerusalem',
+                    'publisher' => 'Magnes',
+                    ]
+            ],
+			// masters thesis
+			[
+                'source' => 'Bıçakcı, G. (2022). Spor bilimleri fakülteleri öğrencileri ve akademik personelin uzaktan eğitim hakkındaki görüşlerinin incelenmesi. Yüksek Lisans Tezi. Yozgat: Yozgat Bozok Üniversitesi Lisansüstü Eğitim Enstitüsü. ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+                    'author' => 'Bıçakcı, G.',
+                    'year' => '2022',
+                    'title' => 'Spor bilimleri fakülteleri öğrencileri ve akademik personelin uzaktan eğitim hakkındaki görüşlerinin incelenmesi',
+                    'school' => 'Yozgat Bozok Üniversitesi Lisansüstü Eğitim Enstitüsü',
+                    'note' => 'Yozgat',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// phdthesis
+			[
+                'source' => 'Engin, M. (2013). Üniversitelerde Teknoloji Yoğun Uzaktan Eğitim Sistemlerinin Üretim, Uygulama ve Yönetim Süreçlerinin İncelenmesi. Doktora Tezi. Ankara: Ankara Üniversitesi Eğitim Bilimleri Enstitüsü. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Engin, M.',
+                    'year' => '2013',
+                    'title' => 'Üniversitelerde Teknoloji Yoğun Uzaktan Eğitim Sistemlerinin Üretim, Uygulama ve Yönetim Süreçlerinin İncelenmesi',
+                    'school' => 'Ankara Üniversitesi Eğitim Bilimleri Enstitüsü',
+                    'note' => 'Ankara',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// phdthesis correctly detected
+			[
+                'source' => '\bibitem{west} J. West, Permutations with forbidden subsequences and  stack-sortable permutations, PhD thesis, Massachusetts Institute of  Technology, 1990. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'J. West',
+                    'title' => 'Permutations with forbidden subsequences and stack-sortable permutations',
+                    'year' => '1990',
+                    'school' => 'Massachusetts Institute of Technology',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// phdthesis (Turkish)
+			[
+                'source' => 'Çelik, K. (2018). Genişletilmiş Teknoloji Kabul Modeli: Uzaktan Eğitim Öğrencileri Üzerine Bir Araştırma. Yönetim Bilişim Sistemleri Anabilim Dalı, Gazi Üniversitesi Bilişim Enstitüsü,(Yayımlanmamış doktora tezi), Ankara. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Çelik, K.',
+                    'year' => '2018',
+                    'title' => 'Genişletilmiş Teknoloji Kabul Modeli: Uzaktan Eğitim Öğrencileri Üzerine Bir Araştırma',
+                    'school' => 'Yönetim Bilişim Sistemleri Anabilim Dalı, Gazi Üniversitesi Bilişim Enstitüsü, Ankara',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// unpublished master's thesis
+			[
+                'source' => 'Ceylan, H.(2019). Fen bilgisi öğretmenlerinin eğitim-öğretimde, Eğitim Bilişim Ağından (EBA ) yararlanmaya ilişkin görüşleri. Yayınlanmamış Yüksek Lisans Tezi, Trakya Üniversitesi, Edirne. ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+                    'author' => 'Ceylan, H. (2019).',
+                    'title' => 'Fen bilgisi öğretmenlerinin eğitim-öğretimde, Eğitim Bilişim Ağından (EBA) yararlanmaya ilişkin görüşleri',
+                    'school' => 'Trakya Üniversitesi, Edirne',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// urldate not detected
+			[
+                'source' => '[10] Solectroshop. (s.f.). Diferencias de los protocolos de comunicación UART vs I2C vs SPI. Solectroshop. Recuperado el 16 de junio de 2024, de https://solectroshop.com/es/blog/diferencias-de-los-protocolos-de-comunicacion-uart-vs-i2c-vs-spi-n107 ',
+                'type' => 'online',
+                'bibtex' => [
+                    'urldate' => '16 de junio de 2024',
+                    'url' => 'https://solectroshop.com/es/blog/diferencias-de-los-protocolos-de-comunicacion-uart-vs-i2c-vs-spi-n107',
+                    'author' => 'Solectroshop',
+                    'year' => 's.f.',
+                    'title' => 'Diferencias de los protocolos de comunicación UART vs I2C vs SPI',
+                    'note' => 'Solectroshop',
+                    ],
+					'language' => 'es',
+                    'char_encoding' => 'utf8leave',
+            ],
+
             
 
 

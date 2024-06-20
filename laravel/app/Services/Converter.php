@@ -346,10 +346,10 @@ class Converter
         $this->proceedingsRegExp = '(^proceedings of |conference|symposium on | meeting |congress of the |^proc\.| workshop|^actas del )';
         $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! (International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
 
-        $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|[Dd]issertação)([ \.,\)\]]|$)';
-        $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.?A\.?|M\.?Sc\.?';
-        $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral';
-        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|Doktora Tezi|Yüksek lisans tezi|Yükseklisans Tezi)';
+        $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|{Tt]ezi|[Dd]issertação)([ \.,\)\]]|$)';
+        $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.?A\.?|M\.?Sc\.?|Yayınlanmamış Yüksek [Ll]isans|Yüksek [Ll]isans|Masterproef';
+        $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral|[Dd]oktora';
+        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|[Tt]ezi|Yayımlanmamış doktora tezi|Doktora Tezi|Yüksek lisans tezi|Yükseklisans Tezi)';
         // pt: Dissertação de Mestrado | Tese de mestrado
         // es: Tesis de maestría
         // nl: Masterproef | Doctoraal proefschrift
@@ -853,9 +853,6 @@ class Converter
 
             if ($dateResult) {
                 $accessDate = $dateResult['date'];
-                // $year = $dateResult['year'];
-                // $month = $dateResult['monthName'] ? $dateResult['monthName'] : $dateResult['monthNumber'];
-                // $date = $dateResult['year'] . '-' . $dateResult['monthNumber'] . '-' . $dateResult['day'];
             }
         }
 
@@ -1184,20 +1181,17 @@ class Converter
             // If title has been found and ends in edition specification, take that out and put it in edition field
             $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . ')[.,]?$/iJ';
             if ($title && preg_match($editionRegExp, (string) $title, $matches)) {
-                //$this->setField($item, 'edition', trim(substr($matches[0], 0, strpos($matches[0], ' '))), 'setField 108');
                 $this->setField($item, 'edition', trim($matches['edition'], ',. '), 'setField 108');
                 $title = trim(Str::replaceLast($matches[0], '', $title));
             }
 
-            // Website
-            // if (! $title && isset($item->url) && $oneWordAuthor) {
-            //     $itemKind = 'online';
-            //     $title = trim($remainder);
-            //     $newRemainder = '';
-            // }
-
             if (! $title) {
+                $originalRemainder = $remainder;
                 $title = $this->getTitle($remainder, $edition, $volume, $isArticle, $year, $note, $journal, $containsUrlAccessInfo, false, $language);
+                if (substr($originalRemainder, strlen($title), 1) == '.') {
+                    $titleEndsInPeriod = true;
+                }
+
                 if (! isset($item->year) && $year) {
                     $this->setField($item, 'year', $year, 'setField 10a');
                     $remainder = str_replace($year, '', $remainder);
@@ -1225,7 +1219,9 @@ class Converter
             }
 
             // The - is in case it is used as a separator
-            $titleEndsInPeriod = substr($title, -1) == '.';
+            if (! $titleEndsInPeriod) {
+                $titleEndsInPeriod = substr($title, -1) == '.';
+            }
             $title = rtrim($title, ' .,-');
             // Remove '[J]' at end of title (why does it appear?)
             if (preg_match('/\[J\]$/', $title)) {
@@ -1299,7 +1295,7 @@ class Converter
         $remainder = ltrim($remainder, '.,; ');
         $this->verbose("[type] Remainder: " . $remainder);
         
-        $inStart = $containsIn = $italicStart = $containsEditors = $allLettersInitialCaps = false;
+        $inStart = $containsIn = $italicStart = $containsEditors = $allWordsInitialCaps = false;
         $containsNumber = $containsInteriorVolume = $containsCity = $containsPublisher = false;
         $containsWorkingPaper = $containsFullThesis = false;
         $containsNumberedWorkingPaper = $containsNumber = $pubInfoStartsWithForthcoming = $pubInfoEndsWithForthcoming = false;
@@ -1314,8 +1310,8 @@ class Converter
         // Remainder could be journal name without any volume-page info (e.g. Nutrients)
         // OR name of newspaper (e.g. The Washington Post)
         // but also could be name of publisher (without any address) (e.g. Cortez).
-        if (preg_match('/^([A-Z][a-z]+ ){0,3}[A-Z][a-z]+$/', $remainder)) {
-            $allLettersInitialCaps = true;
+        if (preg_match('/^([A-Z][A-Za-z]+ ){0,3}[A-Z][A-Za-z]+$/', $remainder)) {
+            $allWordsInitialCaps = true;
             $this->verbose("Consists only of letters and spaces");
         }
 
@@ -1572,7 +1568,7 @@ class Converter
                     ! $containsVolumeNumberPages &&
                     ! $containsPageRange &&
                     ! $containsJournalName &&
-                    ! $allLettersInitialCaps &&
+                    ! $allWordsInitialCaps &&
                     ! $isArticle
                 )
                 ||
@@ -1590,9 +1586,8 @@ class Converter
                     ! Str::contains($item->url, ['journal']) &&
                     // if remainder has address: publisher format, item is book unless author is organization
                     (! $startsAddressPublisher || $authorIsOrganization) &&
-                    ! $allLettersInitialCaps &&
+                    (! $allWordsInitialCaps || (isset($item->author) && $item->author == $remainder)) &&
                     ! $isArticle
-                    // && $itemYear && $itemMonth && $itemDay))
                 )
             )
         ) {
@@ -1702,9 +1697,9 @@ class Converter
                 && (
                     $titleStyle == 'quoted'
                     || $yearIsForthcoming
-                    || ($allLettersInitialCaps && ($hasFullDate || $containsUrlAccessInfo))
+                    || ($allWordsInitialCaps && ($hasFullDate || $containsUrlAccessInfo))
                    )) {  //  
-                // If $allLettersInitialCaps, $remainder could be journal/newspaper name (although there are no page numbers etc.)
+                // If $allWordsInitialCaps, $remainder could be journal/newspaper name (although there are no page numbers etc.)
                 $this->verbose("Item type case 17a");
                 $itemKind = 'article';
             } else {
@@ -2002,7 +1997,9 @@ class Converter
                     $this->setField($item, 'number', $number, 'setField 28');
                 }
 
-                if (isset($workingPaperMatches[0][1]) && $workingPaperMatches[0][1] > 0) {
+                // Institution could conceivably be 3-letter acronym, but not shorter?  (Note that first character of
+                // string from which $workingPaperMatches was extracted might be '(', so definitely need condition > 1, at least.)
+                if (isset($workingPaperMatches[0][1]) && $workingPaperMatches[0][1] > 2) {
                     // Chars before 'Working Paper'
                     $this->setField($item, 'institution', trim(substr($remainder, 0, $workingPaperMatches[0][1] - 1), ' .,'), 'setField 29');
                     $remainder = trim(substr($remainder, $workingPaperMatches[3][1] + strlen($number)), ' .,');
@@ -2018,7 +2015,7 @@ class Converter
                     $this->setField($item, 'institution', $remainder, 'setField 30');
                     $remainder = '';
                 }
-                if (!$item->institution) {
+                if (empty($item->institution)) {
                     $warnings[] = "Mandatory 'institition' field missing";
                 }
                 $notices[] = "Check institution.";
@@ -3035,7 +3032,7 @@ class Converter
                 }
 
                 // If remainder starts with pages, put them in Note and remove them from remainder
-                if (preg_match('/^(?P<note>pp?\.? [1-9][0-9]{0,3}(-[1-9][0-9]{0,3})?)/', $remainder, $matches)) {
+                if (preg_match('/^\(?(?P<note>pp?\.? [1-9][0-9]{0,3}(-[1-9][0-9]{0,3})?)/', $remainder, $matches)) {
                     $this->setField($item, 'note', $matches['note'], 'setField 59a');
                     $remainder = trim(substr($remainder, strlen($matches[0])), '() ');
                 }
@@ -3295,23 +3292,40 @@ class Converter
                 }
                 $this->verbose(['fieldName' => 'Item type', 'content' => $itemKind]);
 
-                $remainder = $this->findAndRemove($remainder, $this->fullThesisRegExp);
-                $remainder = trim($remainder, ' -.,)[]');
-                // if remainder contains number of pages, put them in note
-                $result = $this->findRemoveAndReturn($remainder, '(\()?' . $this->pageRegExpWithPp . '(\))?');
-                if ($result) {
-                    $this->setField($item, 'note', $result[0], 'setField 87a');
-                    $remainder = trim($remainder, '., ');
-                }
-                if (strpos($remainder, ':') === false) {
-                    $this->setField($item, 'school', $remainder, 'setField 87b');
+                if (preg_match('/^\(' . $this->fullThesisRegExp . '(?P<school>[^\)]*)\)(?P<remainder>.*)/', $remainder, $matches)) {
+                    $this->setField($item, 'school', trim($matches['school'], ', '), 'setField 87a');
+                    $remainder = $matches['remainder'];
+                    if (empty($item->school)) {
+                        $this->setField($item, 'school', trim($remainder, ',.() '), 'setField 87b');
+                    } else {
+                        $this->addToField($item, 'note', trim($remainder, ',. '), 'setField 87c');
+                    }
                 } else {
-                    $remArray = explode(':', $remainder);
-                    $this->setField($item, 'school', trim($remArray[1], ' .,'), 'setField 88');
-                }
-                $remainder = '';
+                    if (preg_match('/\(' . $this->fullThesisRegExp . '\)/', $remainder)) {
+                        $remainder = $this->findAndRemove($remainder, ',? ?\(' . $this->fullThesisRegExp . '\)');
+                    } else {
+                        $remainder = preg_replace('/^([Uu]npublished|[Yy]ayınlanmamış) /', '', $remainder);
+                        $remainder = $this->findAndRemove($remainder, $this->fullThesisRegExp);
+                    }
+                    $remainder = trim($remainder, ' -.,)[]');
+                    // if remainder contains number of pages, put them in note
+                    $result = $this->findRemoveAndReturn($remainder, '(\()?' . $this->pageRegExpWithPp . '(\))?');
+                    if ($result) {
+                        $this->setField($item, 'note', $result[0], 'setField 87d');
+                        $remainder = trim($remainder, '., ');
+                    }
 
-                if (!isset($item->school)) {
+                    if (strpos($remainder, ':') === false) {
+                        $this->setField($item, 'school', $remainder, 'setField 87e');
+                    } else {
+                        $remArray = explode(':', $remainder);
+                        $this->setField($item, 'school', trim($remArray[1], ' .,'), 'setField 87f');
+                        $this->addToField($item, 'note', $remArray[0], 'setField 87g');
+                    }
+                    $remainder = '';
+                }
+
+                if (empty($item->school)) {
                     $warnings[] = "No school identified.";
                 }
 
@@ -3337,7 +3351,12 @@ class Converter
                 ) {
                 $this->addToField($item, 'note', $remainder, 'addToField 14');
             } elseif ($itemKind == 'online') {
-                if (preg_match('/^[a-zA-Z ]*$/', $remainder) && ! $titleEndsInPeriod && $style != 'quoted') {
+                if (
+                    preg_match('/^[a-zA-Z ]*$/', $remainder) 
+                    && (! $titleEndsInPeriod || ! $allWordsInitialCaps) 
+                    && $style != 'quoted'
+                    && (! isset($item->author) || $item->author != $remainder)
+                   ) {
                     // If remainder is all letters and spaces, assume it is part of title,
                     // which must have been ended prematurely.
                     $this->addToField($item, 'title', $remainder, 'addToField 16');
@@ -3757,10 +3776,19 @@ class Converter
                     }
 
                     $translatorNext = false;
+                    // "(John Smith, trans.)"
                     if (in_array($nextWord[0], ['('])) {
-                        $translatorNext = preg_match('/^\((?P<translator>[^)]*?[Tt]rans\.[^)]*)\)(?P<remainder>.*)/', $remainder, $matches);
+                        $translatorNext = preg_match('/^\((?P<translator>[^)]+[Tt]rans\.)\)(?P<remainder>.*)/', $remainder, $matches);
                         if (isset($matches['translator'])) {
                             $note = ($note ? $note . '. ' : '') . $matches['translator'];
+                            $remainder = $matches['remainder'];
+                        }
+                    } else {
+                        // "trans. John Smith)"
+                        // Here trans must start with lowercase, because journal name might start with Trans.
+                        $translatorNext = preg_match('/^trans\. (?P<translator>[^.]+\.)(?P<remainder>.*)/', $remainder, $matches);
+                        if (isset($matches['translator'])) {
+                            $note = ($note ? $note . '. ' : '') . 'Translated by ' . $matches['translator'];
                             $remainder = $matches['remainder'];
                         }
                     }
@@ -4073,9 +4101,9 @@ class Converter
         }
 
         $remainder = $newRemainder ?? $remainder;
-        if (isset($remainder[0]) && $remainder[0] == '(') {
-            $remainder = substr($remainder, 1);
-        }
+        // if (isset($remainder[0]) && $remainder[0] == '(') {
+        //     $remainder = substr($remainder, 1);
+        // }
 
         return $title;
     }
