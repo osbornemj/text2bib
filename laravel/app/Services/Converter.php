@@ -1055,12 +1055,12 @@ class Converter
             $itemKind = 'book';
             $remainder = implode(' ', $words);
         // Entry starts ______ [i.e. author from previous entry]
-        } elseif (isset($words[0]) && preg_match('/^_+\.?$/', $words[0])) {
+        } elseif (isset($words[0]) && preg_match('/^[_-]+[.,]?$/', $words[0])) {
             $authorConversion = ['authorstring' => $previousAuthor, 'warnings' => []];
             $month = $day = $date = null;
             $isEditor = false;
             array_shift($words);
-            if (isset($words[0]) && preg_match('/^[\(\[]?(?P<year>(19|20)[0-9]{2})[\)\]]?$/', rtrim($words[0], '.,'), $matches)) {
+            if (isset($words[0]) && preg_match('/^[\(\[]?(?P<year>(19|20)[0-9]{2})[a-z]?[\)\]]?$/', rtrim($words[0], '.,'), $matches)) {
                 $year = $matches['year'];
                 array_shift($words);
             } else {

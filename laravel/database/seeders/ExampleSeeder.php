@@ -9655,6 +9655,31 @@ class ExampleSeeder extends Seeder
 					'language' => 'es',
                     'char_encoding' => 'utf8leave',
             ],
+            //
+            [
+                'source' => 'Reuters. (2022). Mexico nationalizes lithium, plans review of contracts. Retrieved May 5, 2024,  from https://www.reuters.com/article/idUSKCN2MB12Y/. ',
+                'type' => 'online',
+                'bibtex' => [
+                    'urldate' => 'May 5, 2024',
+                    'url' => 'https://www.reuters.com/article/idUSKCN2MB12Y/',
+                    'author' => 'Reuters',
+                    'year' => '2022',
+                    'title' => 'Mexico nationalizes lithium, plans review of contracts',
+                    ]
+            ],
+            //
+            [
+                'source' => '---. (2023a). Albemarle agrees $1.5 billion plan to double Australian lithium hydroxide output. Retrieved May 4, 2024,  from https://www.reuters.com/markets/commodities/albermarle-agrees-1-bln-plan-double-australian-lithium-hydroxide-output-state-2023-05-03/. ',
+                'type' => 'online',
+                'bibtex' => [
+                    'urldate' => 'May 4, 2024',
+                    'url' => 'https://www.reuters.com/markets/commodities/albermarle-agrees-1-bln-plan-double-australian-lithium-hydroxide-output-state-2023-05-03/',
+                    'author' => 'Reuters',
+                    'year' => '2023',
+                    'title' => 'Albemarle agrees $1.5 billion plan to double Australian lithium hydroxide output',
+                    ]
+            ],
+            
 
             
 
