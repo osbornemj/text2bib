@@ -1,6 +1,6 @@
 <nav x-data="{ open: false }"">
     <!-- Primary Navigation Menu -->
-    <div class="px-4 sm:px-4 lg:px-4">
+    <div class="px-4">
         <div class="flex justify-between h-16 border-blue-700 border-b-4 dark:border-blue-100">
             <div class="flex">
                 <!-- Logo -->

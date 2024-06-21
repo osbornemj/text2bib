@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="sm:px-4 space-y-6">
+    <div class="px-4 space-y-6">
         <div class="pt-0">
             <h3 class="font-semibold text-l">
                 Versions

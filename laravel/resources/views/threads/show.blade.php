@@ -14,7 +14,7 @@
     </div>
 
     <div class="sm:px-0 lg:px-0 space-y-6">
-        <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
+        <div class="px-4 pt-0 sm:pt-0 sm:rounded-lg">
 
             <div class="flex items-center mt-4">
                 <x-link href="{{ url('comments') }}">All comments</x-link>

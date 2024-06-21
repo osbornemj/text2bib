@@ -350,6 +350,7 @@ class Converter
         $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.?A\.?|M\.?Sc\.?|Yayınlanmamış Yüksek [Ll]isans|Yüksek [Ll]isans|Masterproef';
         $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral|[Dd]oktora';
         $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|[Tt]ezi|Yayımlanmamış doktora tezi|Doktora Tezi|Yüksek lisans tezi|Yükseklisans Tezi)';
+        // Variant in French: Thèse de Doctorat en droit, Thèse de Doctorat en droit public
         // pt: Dissertação de Mestrado | Tese de mestrado
         // es: Tesis de maestría
         // nl: Masterproef | Doctoraal proefschrift
@@ -1054,7 +1055,7 @@ class Converter
             $month = $day = $date = null;
             $itemKind = 'book';
             $remainder = implode(' ', $words);
-        // Entry starts ______ [i.e. author from previous entry]
+        // Entry starts ______ or --- [i.e. author from previous entry]
         } elseif (isset($words[0]) && preg_match('/^[_-]+[.,]?$/', $words[0])) {
             $authorConversion = ['authorstring' => $previousAuthor, 'warnings' => []];
             $month = $day = $date = null;

@@ -20,7 +20,14 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $sourceOptions = [
+            'webSearch' => 'A web search for a term like "convert references to BibTeX"',
+            'friend' => 'A friend/colleague told you about it',
+            'otherSite' => 'Link on another website (enter URL in text box)',
+            'other' => 'Other (enter in text box)',
+        ];
+
+        return view('auth.register', compact('sourceOptions'));
     }
 
     /**
@@ -40,6 +47,14 @@ class RegisteredUserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'source' => ['required', 'string', 'in:webSearch,friend,otherSite,other'],
+            'source_other_site' => ['required_if:source,otherSite', 'url', 'nullable'],
+            'source_other' => ['required_if:source,other'],
+        ], [
+            'source' => 'Please indicate how you found this website',
+            'source_other_site.required_if' => 'Please enter the URL of the site where you found a link to this site',
+            'source_other_site.url' => 'Please enter a valid URL (starting with https://)',
+            'source_other' => 'Please indicate how you discovered this site',
         ]);
 
         // No need to explicitly hash the password here, because the User model casts password as hashed

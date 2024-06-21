@@ -63,6 +63,30 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
+        <div>
+            <x-input-label for="source" :value="__('How did you discover this website?')" class="mt-4 mb-1"/>
+    
+            @foreach ($sourceOptions as $key => $option)
+                <x-radio-input name="source" value="{{ $key }}" checked="{{ ($key == 'other' && old('source') == 'other') || ($key == 'otherSite' && old('source') == 'otherSite') }}" @endif class="peer/{{ $key }}" /> 
+                <x-value-label for="{{ $key }}" class="peer-checked/{{ $key }}:text-blue-600 ml-1" :value="$option" />
+                <br/>
+            @endforeach
+    
+            <x-input-error :messages="$errors->get('source')" class="mt-2" />
+                
+            <div class="hidden peer-checked/otherSite:block">
+                <x-text-input name="source_other_site" type="url" class="w-full" />
+            </div>
+
+            <x-input-error :messages="$errors->get('source_other_site')" class="mt-2" />
+            
+            <div class="hidden peer-checked/other:block">
+                <x-text-input name="source_other" class="w-full" />
+            </div>
+
+            <x-input-error :messages="$errors->get('source_other')" class="mt-2" />
+        </div>
+
         <div class="flex items-center mt-4">
             <x-primary-button>
                 {{ __('Register') }}

@@ -6,7 +6,7 @@
         </h2>
     </x-slot>
 
-    <div class="sm:mx-4 font-semibold">
+    <div class="mx-4 font-semibold">
         <h2 class="text-lg">Users</h2>
 
         <div style="width:100%;">
@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <div class="sm:mx-4 mt-4 font-semibold">
+    <div class="mx-4 mt-4 font-semibold">
         <h2 class="text-lg">Conversions</h2>
 
         <div style="width:100%;">
@@ -22,7 +22,7 @@
         </div>
     </div>
 
-    <div class="sm:mx-4 mt-4 font-semibold">
+    <div class="mx-4 mt-4 font-semibold">
         <h2 class="text-lg">Items converted</h2>
 
         <div style="width:100%;">
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="sm:mx-4 mt-4 font-semibold">
+    <div class="mx-4 mt-4 font-semibold">
         <h2 class="text-xl">Conversions by intended use</h2>
         (since 2024.4.30)
 

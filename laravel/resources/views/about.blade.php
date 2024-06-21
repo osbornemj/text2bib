@@ -1,6 +1,6 @@
 <x-app-layout>
 
-    <div class="mt-6 px-4 sm:px-4 lg:px-4">
+    <div class="mt-6 px-4">
         <x-paragraph class="mt-4">
             This project was initiated by <x-link href="https://economics.utoronto.ca/osborne" target="_blank">Martin J. Osborne</x-link> in 2006 when he was the first Managing Editor of the (Open Access) journal <x-link href="https://econtheory.org" target="_blank">Theoretical Economics</x-link>.  (He was a member of the independent group that founded the journal, which was later taken over by the Econometric Society.)  The  purpose of the project was to convert into BibTeX the plain text references in accepted articles so that they could easily be consistently formatted.
         </x-paragraph>

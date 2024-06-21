@@ -1,6 +1,6 @@
 <x-app-layout>
 
-    <div class="px-4 sm:px-4 lg:px-4">
+    <div class="px-4">
 
         {{--
         <div class="bg-blue-200 text-blue-800 m-4 p-2">

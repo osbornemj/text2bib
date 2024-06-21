@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="sm:px-4 lg:px-4 space-y-6">
-        <div class="sm:p-0 pt-0 sm:pt-0">
+    <div class="px-4 space-y-6">
+        <div class="sm:p-0 pt-0">
             <p>
                 You have chosen a blank line as the item separator, but the items in your file appear not to be separated by blank lines.  The first entry starts
             </p>
