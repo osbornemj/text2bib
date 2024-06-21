@@ -28,6 +28,8 @@ class UsersController extends Controller
             $users = $users->orderByDesc('conversions_count');
         } elseif ($sortBy == 'lastLogin') {
             $users = $users->orderByDesc('date_last_login');
+        } elseif ($sortBy == 'source') {
+            $users = $users->orderByDesc('source');
         } elseif ($sortBy == 'registered') {
             $users = $users->orderByDesc('created_at');
         }

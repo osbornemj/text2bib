@@ -42,28 +42,39 @@
                         </div>
                     @endif
                 </div>
+
                 <div class="hidden md:col-span-5 md:block lg:col-span-4 lg:border-b-2 mb-2">
                     Email
                 </div>
-                <div class="hidden md:col-span-1 md:block lg:col-span-2 md:border-b-2 mb-2">
+
+                <div class="hidden md:col-span-1 md:block lg:col-span-3 md:border-b-2 mb-2">
                     @if ($sortBy == 'registered')
-                        <div class="bg-slate-100 dark:bg-slate-700">
+                        <span class="bg-slate-100 dark:bg-slate-700">
                     @endif
-                    <x-link href="{{ url('admin/users/registered') }}">Registered</x-link>
+                    <x-link href="{{ url('admin/users/registered') }}">Registered</x-link>,
                     @if ($sortBy == 'registered')
-                        </div>
+                        </span>
                     @endif
-                </div>
-                <div class="hidden md:col-span-1 md:block lg:col-span-2 md:border-b-2 mb-2">
                     @if ($sortBy == 'lastLogin')
-                        <div class="bg-slate-100 dark:bg-slate-700">
-                    @endif
+                        <span class="bg-slate-100 dark:bg-slate-700">
+                    @endif                   
                     <x-link href="{{ url('admin/users/lastLogin') }}">Last login</x-link>
                     @if ($sortBy == 'lastLogin')
+                        </span>
+                    @endif
+                </div>
+
+                <div class="hidden md:col-span-1 md:block lg:col-span-1 md:border-b-2 mb-2">
+                    @if ($sortBy == 'source')
+                        <div class="bg-slate-100 dark:bg-slate-700">
+                    @endif
+                    <x-link href="{{ url('admin/users/source') }}">Source</x-link>
+                    @if ($sortBy == 'source')
                         </div>
                     @endif
                 </div>
-                <div class="hidden md:col-span-1 md:block lg:col-span-1 md:border-b-2 mb-2">
+
+                <div class="hidden md:col-span-1 md:block lg:col-span-1 md:border-b-2 mb-2 lg:text-right">
                     @if ($sortBy == 'conversionCount')
                         <div class="bg-slate-100 dark:bg-slate-700">
                     @endif
@@ -72,6 +83,7 @@
                         </div>
                     @endif
                 </div>
+
                 @foreach ($users as $user)
                     <div class="md:col-span-4 lg:col-span-3">
                         {{ $user->fullName(true) }}
@@ -79,12 +91,15 @@
                             (admin)
                         @endif
                     </div>
+
                     <div class="md:col-span-5 lg:col-span-4">
                         {{ $user->email }}
                     </div>
-                    <div class="md:col-span-1 lg:col-span-2">
+
+                    <div class="md:col-span-1 lg:col-span-3">
                         @if ($user->email_verified_at)
-                            {{ $user->email_verified_at ? $user->email_verified_at->toDateString() : '' }}
+                            {{ $user->email_verified_at ? $user->email_verified_at->toDateString() : '' }}@if ($user->date_last_login),@endif
+                            {{ $user->date_last_login ? $user->date_last_login->toDateString() : '' }}
                         @else
                             <form method="post" action="{{ url('/admin/users/' . $user->id) }}" class="inline-flex">
                                 @csrf
@@ -95,10 +110,18 @@
                             </form>
                         @endif
                     </div>
-                    <div class="md:col-span-1 lg:col-span-2">
-                        {{ $user->date_last_login ? $user->date_last_login->toDateString() : '' }}
+
+                    <div class="md:col-span-1 lg:col-span-1">
+                        @if ($user->source == 'otherSite')
+                            <x-link href="{{ $user->source_other_site }}" target="_blank">{{ $user->source }}</x-link>
+                        @elseif ($user->source == 'other')
+                            other: {{ $user->source_other }}
+                        @else
+                            {{ $user->source }}
+                        @endif
                     </div>
-                    <div class="mb-4 md:col-span-1 lg:mb-0 lg:col-span-1 lg:text-right">
+
+                    <div class="mb-4 md:col-span-1 lg:col-span-1 lg:mb-0 lg:text-right">
                         @if ($user->conversions_count)
                             <x-link href="{{ url('admin/conversions/' . $user->id) }}">
                         @endif
