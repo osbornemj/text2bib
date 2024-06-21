@@ -3248,7 +3248,7 @@ class Converter
                     $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString);
 
                     if ($publisher) {
-                        $this->setField($item, 'publisher', $publisher, 'setField 85');
+                        $this->setField($item, 'publisher', trim($publisher, '() '), 'setField 85');
                     }
 
                     if ($address) {
@@ -3355,6 +3355,7 @@ class Converter
                 if (
                     preg_match('/^[a-zA-Z ]*$/', $remainder) 
                     && (! $titleEndsInPeriod || ! $allWordsInitialCaps) 
+                    && ! $remainderEndsInColon
                     && $style != 'quoted'
                     && (! isset($item->author) || $item->author != $remainder)
                    ) {
@@ -3838,10 +3839,10 @@ class Converter
                             preg_match('/^[A-Z][a-z]+, (?P<city>[A-Za-z ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
                             && in_array(trim($matches['city']), $this->cities)
                            )
-                        // . address: publisher$ [note that $word must end in .; , allowed]
+                        // . address: publisher$ OR (address: publisher) [note that ',' is allowed in address]
                         || (
-                            Str::endsWith($word, '.') 
-                            && preg_match('/^[\p{L}, ]+: [\p{L} ]+$/u', $remainder, $matches) 
+                            (Str::endsWith($word, '.') || $nextWord[0] == '(')
+                            && preg_match('/^\(?[\p{L}, ]+: [\p{L}& ]+\)?$/u', $remainder, $matches) 
                            )
                         // (<publisher> in db
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
@@ -6344,7 +6345,7 @@ class Converter
 
         $containsDigit = preg_match('/[0-9]/', $remainder);
 
-        if ($pubInfoStartsWithForthcoming && !$containsDigit) {
+        if ($pubInfoStartsWithForthcoming && ! $containsDigit) {
             // forthcoming at start
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
             $journal = $this->getQuotedOrItalic($result['content'], true, false, $before, $after, $style);
@@ -6371,7 +6372,7 @@ class Converter
                 $remainder = implode(' ', $remainingWords);
                 if ($key === count($words) - 1 // last word in remainder
                     || (isset($words[$key+1]) && Str::contains($words[$key+1], range('1', '9'))) // next word contains a digit
-                    || (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
+                    || (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}:?$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
                     || preg_match('/^(' . $this->monthsRegExp[$language] . ')( [0-9]{1,2})?[.,;]/', $remainder) // <month> or <month day> next
                     || preg_match($this->volRegExp2, $remainder) // followed by volume info
                     || preg_match($this->startPagesRegExp, ltrim($remainder, '( ')) // followed by pages info

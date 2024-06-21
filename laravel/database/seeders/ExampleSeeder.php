@@ -9679,6 +9679,70 @@ class ExampleSeeder extends Seeder
                     'title' => 'Albemarle agrees $1.5 billion plan to double Australian lithium hydroxide output',
                     ]
             ],
+			// remove right paren before publisher
+			[
+                'source' => 'Grawitz, Madeleine, Méthodes des sciences sociales. (Paris) Dalloz, 1964. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Grawitz, Madeleine',
+                    'title' => 'Méthodes des sciences sociales',
+                    'year' => '1964',
+                    'publisher' => 'Dalloz',
+                    'address' => 'Paris',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// not detected as book
+			[
+                'source' => 'Taft, Robert F. 1985. The Liturgy of the Hours in East and West (Collegeville, MN: The Liturgical Press). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Taft, Robert F.',
+                    'year' => '1985',
+                    'title' => 'The Liturgy of the Hours in East and West',
+					'address' => 'Collegeville, MN',
+					'publisher' => 'The Liturgical Press',
+                    ]
+            ],
+			// not detected as book
+			[
+                'source' => 'Balla, Emil. 1912. Das ich der Psalmen untersucht (Göttingen: VandenHoeck & Ruprecht). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Balla, Emil',
+                    'year' => '1912',
+                    'title' => 'Das ich der Psalmen untersucht',
+					'address' => 'Göttingen',
+					'publisher' => 'VandenHoeck & Ruprecht',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+   			// volume as roman number
+			[
+                'source' => 'Shanley, Brian J. 1997a. ‘Eternal Knowledge of the Temporal in Aquinas’, American Catholic Philosophical Quarterly LXXI: 197–224. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Shanley, Brian J.',
+                    'title' => 'Eternal Knowledge of the Temporal in Aquinas',
+                    'journal' => 'American Catholic Philosophical Quarterly',
+                    'year' => '1997',
+                    'volume' => 'LXXI',
+                    'pages' => '197-224',
+                    ]
+            ],
+			// London is included in title and publisher and address reversed
+			[
+                'source' => 'T. W. Chaundy, P. R. Barrett and C. Batey, The Printing of Mathematics. London, U.K., Oxford Univ. Press, 1954. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'T. W. Chaundy and P. R. Barrett and C. Batey',
+                    'title' => 'The Printing of Mathematics',
+                    'year' => '1954',
+                    'address' => 'London, U. K.',
+                    'publisher' => 'Oxford Univ. Press',
+                    ]
+            ],
+
             
 
             
