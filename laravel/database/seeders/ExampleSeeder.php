@@ -9897,6 +9897,20 @@ class ExampleSeeder extends Seeder
                     'pages' => '638-643',
                     ]
             ],
+            // organization name truncated
+            [
+                'source' => 'American Psychiatric Association. Diagnostic and statistical manual of mental disorders. 5th ed. Arlington, VA: Am Psychiatric Publishing; 2013. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'American Psychiatric Association',
+                    'edition' => '5th',
+                    'title' => 'Diagnostic and statistical manual of mental disorders',
+                    'year' => '2013',
+                    'publisher' => 'Am Psychiatric Publishing',
+                    'address' => 'Arlington, VA',
+                    ]
+            ],
+            
 
             
 

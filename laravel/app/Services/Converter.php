@@ -3244,7 +3244,7 @@ class Converter
                     $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString);
 
                     if ($publisher) {
-                        $this->setField($item, 'publisher', trim($publisher, '() '), 'setField 85');
+                        $this->setField($item, 'publisher', trim($publisher, '(); '), 'setField 85');
                     }
 
                     if ($address) {
@@ -4570,7 +4570,7 @@ class Converter
                     'warnings' => [],
                     'organization' => true,
                 ];
-            } elseif (ctype_alpha((string) $word) && $this->inDict($word)) {
+            } elseif (ctype_alpha((string) $word) && ($this->inDict($word) || in_array($word, ['American']))) {
                 $name .= ($i ? ' ' : '') . $word;
             } else {
                 $xword = substr($word, 0, -1);
