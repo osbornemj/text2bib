@@ -90,7 +90,7 @@ class IndexController extends Controller
             $convItem['label'] = $output->label;
             $convItem['warnings'] = [];
             $convItem['notices'] = [];
-            $convItem['scholarTitle'] = $this->makeScholarTitle($item->title);
+            $convItem['scholarTitle'] = $this->makeScholarTitle($item->title ?? '');
 
             $convertedItems[$output->id] = $convItem;
 
