@@ -9742,6 +9742,22 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Oxford Univ. Press',
                     ]
             ],
+            // no space before & in author list
+            [
+                'source' => 'Călinoiu, L. F., &Vodnar, D. C. (2018). Whole Grains and Phenolic Acids: A Review on Bioactivity, Functionality, Health Benefits and Bioavailability. Nutrients, 10(11), 1615. https://doi.org/10.3390/nu10111615 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.3390/nu10111615',
+                    'author' => 'Călinoiu, L. F. and Vodnar, D. C.',
+                    'year' => '2018',
+                    'title' => 'Whole Grains and Phenolic Acids: A Review on Bioactivity, Functionality, Health Benefits and Bioavailability',
+                    'journal' => 'Nutrients',
+                    'volume' => '10',
+                    'number' => '11',
+                    'pages' => '1615',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
 
             
 

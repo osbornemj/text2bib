@@ -947,6 +947,8 @@ class Converter
         $remains = substr($remainder, 0, $mismatchPosition);
         // Put space between , and ` or ' (assumed to be typo)
         $remains = str_replace([',`', ",'", '( ', ' )'], [', `', ", '", '(', ')'], $remains);
+        // If & is followed immediately by capital letter, put a space between them (assumed to be error)
+        $remains = preg_replace('/ &([A-Z])/', ' & $1', $remains);
 
         $chars = str_split($remains);
 
@@ -3839,7 +3841,8 @@ class Converter
                             preg_match('/^[A-Z][a-z]+, (?P<city>[A-Za-z ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
                             && in_array(trim($matches['city']), $this->cities)
                            )
-                        // . address: publisher$ OR (address: publisher) [note that ',' is allowed in address]
+                        // . address: publisher$ OR (address: publisher) [note that ',' is allowed in address and
+                        // '.' and '&' are allowed in publisher.  May need to put a limit on length of publisher part?
                         || (
                             (Str::endsWith($word, '.') || $nextWord[0] == '(')
                             && preg_match('/^\(?[\p{L}, ]+: [\p{L}&. ]+\)?$/u', $remainder, $matches) 
