@@ -9838,7 +9838,65 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'The Aquinas Institute for the Study of Sacred Doctrine',
                     ]
             ],
-
+			// phdthesis detected as article
+			[
+                'source' => 'Donald Atchison Spong, ?Equilibrium, confinement, and stability of runaway electrons in tokamaks" PhD Thesis, University of Michigan,  OAK RIDGE NATIONAL LABORATORY Oak Ridge, Tennessee (1976) ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Donald Atchison Spong',
+                    'title' => 'Equilibrium, confinement, and stability of runaway electrons in tokamaks',
+					'school' => 'University of Michigan, OAK RIDGE NATIONAL LABORATORY Oak Ridge, Tennessee',
+                    'year' => '1976',
+                    ]
+            ],
+			// phdthesis detected as article
+			[
+                'source' => 'Entrop I, ?Confinement of relativistic electrons in tokamak plasmas" Ph.D. Thesis, Eindhoven University of Technology, the Netherlands (ISBN 90-386-0474-2) 1999 ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Entrop, I.',
+                    'title' => 'Confinement of relativistic electrons in tokamak plasmas',
+                    'year' => '1999',
+                    'school' => 'Eindhoven University of Technology, the Netherlands',
+					'isbn' => '90-386-0474-2',
+                    ]
+            ],
+			// phdthesis detected correctly
+			[
+                'source' => 'Alexander Nevil Tronchin-James, ?Investigations of runaway electron generation, transport, and stability in the DIII-D tokamak? PhD Thesis, University of California, San Diego (2011) ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Alexander Nevil Tronchin-James',
+                    'title' => 'Investigations of runaway electron generation, transport, and stability in the DIII-D tokamak',
+                    'year' => '2011',
+                    'school' => 'University of California, San Diego',
+                    ]
+            ],
+			// detected as book because of city?  PhD thesis should trump that.
+			[
+                'source' => 'Liu Chang, ?Runaway electrons in tokamak? PhD Thesis, Princeton, NJ. Princeton University (2017) ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Liu Chang',
+                    'title' => 'Runaway electrons in tokamak',
+					'school' => 'Princeton, NJ. Princeton University',
+                    'year' => '2017',
+                    ]
+            ],
+            // No space after &
+            [
+                'source' => 'Malinowska,E.,Jankowski,K.,Wisniewska-Kadzajan,B.,Sosnowski,J.,Kolczarek,R., Jankowska, J., &Ciepiela,G. (2015). Contentof Zincand Copper in Selected Plants Growing Along a Motorway. Bulletin of Environmental Contamination and Toxicology, 95, 638–643. https://doi.org/10.1007/s00128-015-1648-8. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1007/s00128-015-1648-8',
+                    'author' => 'Malinowska, E. and Jankowski, K. and Wisniewska-Kadzajan, B. and Sosnowski, J. and Kolczarek, R. and Jankowska, J. and Ciepiela, G.',
+                    'title' => 'Contentof Zincand Copper in Selected Plants Growing Along a Motorway',
+                    'year' => '2015',
+                    'journal' => 'Bulletin of Environmental Contamination and Toxicology',
+                    'volume' => '95',
+                    'pages' => '638-643',
+                    ]
+            ],
 
             
 

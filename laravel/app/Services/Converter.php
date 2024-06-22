@@ -888,10 +888,10 @@ class Converter
         /////////////////////
 
         $containsIsbn = false;
-        $match = $this->extractLabeledContent($remainder, ' ' . $this->isbnRegExp1, $this->isbnRegExp2);
+        $match = $this->extractLabeledContent($remainder, ' \(?' . $this->isbnRegExp1, $this->isbnRegExp2 . '\)?');
         if ($match) {
             $containsIsbn = true;
-            $this->setField($item, 'isbn', str_replace(' ', '', $match), 'setField 16');
+            $this->setField($item, 'isbn', trim(str_replace(' ', '', $match), '()'), 'setField 16');
         }
         
         /////////////////////
@@ -5479,6 +5479,12 @@ class Converter
                     } else {
                         $quotedText .= $char;
                     }
+                } elseif ($begin == '?') {
+                    if ($char == '?' || $char == '"') {
+                        $end = true;
+                    } else {
+                        $quotedText .= $char;
+                    }
                 // before match has begun
                 } elseif ($char == '`') {
                     if ((! isset($chars[$i-1]) || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "`") {
@@ -5504,6 +5510,8 @@ class Converter
                     } else {
                         $beforeQuote .= $char;
                     }
+                } elseif ($char == '?' && $i == 0) {
+                    $begin = '?';
                 } else {
                     $beforeQuote .= $char;
                 }
