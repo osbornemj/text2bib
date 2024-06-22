@@ -4556,7 +4556,8 @@ class Converter
         // If first 3-6 words are all letters and in the dictionary except possibly last one, which is letters with a period at the end
         // then they make up the name of an organization
         // (Dictionary check is to exclude strings like 'John Doe and Jane Doe' or 'Doe J and Doe K', which needs processing
-        // as names, to insert commas after the last names.)
+        // as names, to insert commas after the last names.  A word that is not in the dictionary and could not be part
+        // of a name, like 'American', is also possible.)
         $this->verbose('convertToAuthors: Checking for name of organization');
         $name = '';
         foreach ($words as $i => $word) {
