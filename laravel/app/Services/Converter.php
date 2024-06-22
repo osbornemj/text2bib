@@ -3842,7 +3842,7 @@ class Converter
                         // . address: publisher$ OR (address: publisher) [note that ',' is allowed in address]
                         || (
                             (Str::endsWith($word, '.') || $nextWord[0] == '(')
-                            && preg_match('/^\(?[\p{L}, ]+: [\p{L}& ]+\)?$/u', $remainder, $matches) 
+                            && preg_match('/^\(?[\p{L}, ]+: [\p{L}&. ]+\)?$/u', $remainder, $matches) 
                            )
                         // (<publisher> in db
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
