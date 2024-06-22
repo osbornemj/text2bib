@@ -9758,6 +9758,87 @@ class ExampleSeeder extends Seeder
                     ],
 					'char_encoding' => 'utf8leave',
             ],
+			// don't stop editor's name at period
+			[
+                'source' => 'Bracken Long, Kimberly. 2014. ‘The Psalms in Christian Worship,’ in: The Oxford Handbook of the Psalms ed. by William P. Brown (Oxford: Oxford University Press), 545–556. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Bracken Long, Kimberly',
+                    'year' => '2014',
+                    'title' => 'The Psalms in Christian Worship',
+                    'pages' => '545-556',
+                    'booktitle' => 'The Oxford Handbook of the Psalms',
+                    'editor' => 'William P. Brown',
+                    'publisher' => 'Oxford University Press',
+                    'address' => 'Oxford',
+                    ]
+            ],
+			// don't stop at period after 'St'
+			 [
+                'source' => 'Anderson, James F. 1952. The Cause of Being: The Philosophy of Creation in St. Thomas. St. Louis: Herder.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Anderson, James F.',
+                    'title' => 'The Cause of Being: The Philosophy of Creation in St. Thomas',
+                    'year' => '1952',
+                    'address' => 'St. Louis',
+                    'publisher' => 'Herder',
+                    ]
+            ],
+			// don't stop at period after 'St'
+			[
+                'source' => 'Weinandy, Thomas G. 1985. Does God Change?: The Word’s Becoming in the Incarnation. Still River, MA: St. Bede’s Publications. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Weinandy, Thomas G.',
+                    'title' => 'Does God Change?: The Word\'s Becoming in the Incarnation',
+                    'year' => '1985',
+                    'address' => 'Still River, MA',
+                    'publisher' => 'St. Bede\'s Publications',
+                    ]
+            ],
+			// editor not detected
+			[
+                'source' => 'Melamed, Yitzhak Y. 2016a. ‘Introduction’, in Eternity: A History. Edited by Yitzhak J. Melamed. Oxford: Oxford University Press, 1–13. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Melamed, Yitzhak Y.',
+                    'title' => 'Introduction',
+                    'year' => '2016',
+                    'pages' => '1-13',
+                    'editor' => 'Yitzhak J. Melamed',
+                    'address' => 'Oxford',
+                    'publisher' => 'Oxford University Press',
+                    'booktitle' => 'Eternity: A History',
+                    ]
+            ],
+			// detected as article
+			 [
+                'source' => 'Thomas Aquinas. 1955. Summa contra Gentiles. Translated by Anton C. Pegis et al. 5 vols. Garden City: Doubleday & Company. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Thomas Aquinas',
+                    'title' => 'Summa contra Gentiles',
+                    'year' => '1955',
+                    'note' => 'Translated by Anton C. Pegis et al. 5 vols.',
+                    'address' => 'Garden City',
+                    'publisher' => 'Doubleday & Company',
+                    ]
+            ],
+			// 'edited by' repeated
+			[
+                'source' => 'Thomas Aquinas. 2012. Summa Theologiae. Translated by Lawrence Shapcote. Edited by John Mortensen and Enrique Alarcón. Lander, WY: The Aquinas Institute for the Study of Sacred Doctrine. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Thomas Aquinas',
+                    'title' => 'Summa Theologiae',
+                    'year' => '2012',
+                    'note' => 'Translated by Lawrence Shapcote. Edited by John Mortensen and Enrique Alarc{\\\'o}n.',
+                    'address' => 'Lander, WY',
+                    'publisher' => 'The Aquinas Institute for the Study of Sacred Doctrine',
+                    ]
+            ],
+
 
             
 

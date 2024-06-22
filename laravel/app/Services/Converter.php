@@ -259,7 +259,8 @@ class Converter
         $this->edsRegExp2 = '/ed(\.|ited) by/i';
         $this->edsRegExp4 = '/( [Ee]ds?[\. ]|[\(\[][Ee]ds?\.?[\)\]]| [Ee]ditors?| [\(\[][Ee]ditors?[\)\]])/';
         $this->editorStartRegExp = '/^[\(\[]?[Ee]dited by|^[\(\[]?[Ee]ds?\.?|^[\(\[][Ee]ditors?/';
-        $this->editorEndRegExp = '[^0-9] ?eds?\.?[\)\]]?$|[\(\[]?editors?[\)\]]?$';
+        // Needs space before 'eds?' to exclude word ending in 'ed'.
+        $this->editorEndRegExp = '[^0-9] eds?\.?[\)\]]?$|[\(\[]?editors?[\)\]]?$';
         // რედ: Georgian
         $this->editorRegExp = '( eds?[\. ]|[\(\[]eds?\.?[\)\]]|[\(\[ ]edits\.[\(\] ]| editors?| [\(\[]editors?[\)\]]|[\(\[]რედ?\.?[\)\]])';
 
@@ -922,7 +923,7 @@ class Converter
         if ($result) {
             $this->addToField($item, 'note', ucfirst($result[0]), 'addToField 3');
             $before = Str::replaceEnd(' and ', '', $result['before']);
-            $remainder = $before . '.' . $result['after'];
+            $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . $result['after'];
             $containsTranslator = true;
         }
 
@@ -1374,8 +1375,8 @@ class Converter
         // (Idea is that it contains '<name>, ed.' or ', ed. <name>')
         // Note that 'Ed.' may appear in a journal name.
         $regExpStart = '/^eds?\.|(?<!';
-        $regExpEnd1 = '|rev\.)[ \(}](eds?\.|editors?),/i';
-        $regExpEnd2 = '|rev\.), ?[ \(}](eds?\.|editors?)/i';
+        $regExpEnd1 = '|rev\.)[ \(}](eds?\.|editors?|edited by),/i';
+        $regExpEnd2 = '|rev\.), ?[ \(}](eds?\.|editors?|edited by)/i';
 
         $regExp11 = $regExp12 = $regExp21 = $regExp22 = $regExpStart;
         foreach ($this->ordinals[$language] as $i => $ordinal) {
@@ -2198,12 +2199,6 @@ class Converter
                         $remainder = '';
                     }
                 }
-
-                // $result = $this->extractLabeledContent($remainder, '^[a-zA-Z]*:', '.*', true);
-                // if ($result) {
-                //     $this->setField($item, 'address', substr($result['label'], 0, -1), 'setField 35');
-                //     $this->setField($item, 'publisher', $result['content'], 'setField 36');
-                // }
 
                 // The only reason why $item->editor could be set other than by the previous code block is that the 
                 // item is a book with an editor rather than an author.  So probably the following condition could
@@ -3191,9 +3186,8 @@ class Converter
                     $remainder = $newRemainder ?? implode(" ", $remainingWords);
                     $remainder = trim($remainder, ' .');
                     if (preg_match('/(?P<editorString>Edited by .*?[a-z] ?\.)/', $remainder, $matches)) {
-                        $editorString = str_replace(' .', '.', $matches['editorString']);
-                        $this->addToField($item, 'note', $editorString, 'setField 110a');
-                        $remainder = preg_replace('/' . $editorString . '/', '', $remainder);
+                        $this->addToField($item, 'note', str_replace(' .', '.', $matches['editorString']), 'setField 110a');
+                        $remainder = str_replace($matches['editorString'], '', $remainder);
                     }
 
                     // If string is in italics, get rid of the italics
@@ -3728,6 +3722,11 @@ class Converter
                 $upcomingJournalAndPubInfo = $upcomingPageRange = false;
                 $wordsToNextPeriodOrComma = explode(' ', $stringToNextPeriodOrComma);
 
+                // This case may arise if a string has been removed from $remainder and a lone '.' is left in the middle of it.
+                // if (isset($remainingWords[0]) && $remainingWords[0] == '.') {
+                //     array_shift($remainingWords);
+                //     $remainder = ltrim($remainder, ' .');
+                // }
                 $upcomingBookVolume = preg_match('/(^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. )\S+ (?!of)/', $remainder);
                 $upcomingVolumeCount = preg_match('/^\(?(?P<note>[1-9][0-9]{0,1} ([Vv]ols?\.?|[Vv]olumes))\)?/', $remainder, $volumeCountMatches);
 
@@ -3954,7 +3953,9 @@ class Converter
                             && 
                             (! $journal || rtrim($nextWord, '.') == rtrim(strtok($journal, ' '), '.'))
                             &&
-                            ! ($word == 'U.' && $nextWord == 'S.') // special case of 'U. S.' in title
+                            ! ($word == 'U.' && in_array($nextWord, ['K.', 'S.'])) // special case of 'U. S.' or 'U. K.' in title
+                            &&
+                            $word != 'St.' 
                         ) {
                         $this->verbose("Ending title, case 4");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
@@ -5147,7 +5148,6 @@ class Converter
                 $this->verbose("nameScore: " . $nameScore['score'] . ". Count: " . $nameScore['count']);
                 if ($nameScore['count']) {
                     $this->verbose('[convertToAuthors 24]');
-//                    dump($remainingWords, $this->getQuotedOrItalic(implode(" ", array_splice($r, 1)), true, false, $before, $after, $style));
                     $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                 }
 
@@ -5916,6 +5916,17 @@ class Converter
             $dupYear = $result ? $result[0] : null;
 
             $periodPos = strpos($remainder, '.');
+
+            // If period follows 'St.' at start of string or ' St.' later in string, ignore it and find next period
+            if (
+                $periodPos !== false 
+                && 
+                (($periodPos == 2 && substr($remainder, 0, 3) == 'St.') || ($periodPos > 2 && substr($remainder, $periodPos - 3, 4) == ' St.'))
+               ) {
+                $pos = strpos(substr($remainder, $periodPos + 1), '.');
+                $periodPos = ($pos === false) ? false : $periodPos + 1 + $pos;
+            }
+
             if ($periodPos !== false && preg_match('/[^A-Z]/', $remainder[$periodPos-1])) {
                 $publisher = substr($remainder, 0, $periodPos);
                 $remainder = substr($remainder, $periodPos);
@@ -6049,7 +6060,7 @@ class Converter
                 $stop = true;
             }
 
-            if (preg_match('/(\(|\[)?(18|19|20)([0-9][0-9])(\)|\])?/', $word)) {
+            if (preg_match('/(\(|\[)?(18|19|20)([0-9][0-9])(\)|\])?/', $word) || Str::startsWith($word, '(')) {
                 $stop = true;
                 $include = false;
             }
