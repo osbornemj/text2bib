@@ -9910,6 +9910,150 @@ class ExampleSeeder extends Seeder
                     'address' => 'Arlington, VA',
                     ]
             ],
+			// "visited" before urldate
+			[
+                'source' => 'De Souza, Raymond J. 2007. ‘Benedict and Jesus: Teach Us How to Pray,’ National Catholic Register 4 September; https://www.ncregister.com/news/benedict-and-jesus, visited 1 March 2022. ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'De Souza, Raymond J.',
+                    'title' => 'Benedict and Jesus: Teach Us How to Pray',
+                    'year' => '2007',
+                    'note' => 'National Catholic Register 4 September',
+                    'url' => 'https://www.ncregister.com/news/benedict-and-jesus',
+                    'urldate' => '1 March 2022',
+                    ]
+            ],
+			// address-publisher not detected (because of dash?)
+			[
+                'source' => 'Helm, Paul. 1993. The Providence of God (Leicester: Inter-Varsity Press). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Helm, Paul',
+                    'title' => 'The Providence of God',
+                    'year' => '1993',
+                    'address' => 'Leicester',
+                    'publisher' => 'Inter-Varsity Press',
+                    ]
+            ],
+			// 'translated by' not picked up
+			[
+                'source' => 'Augustine. 2002. Expositions of the Psalms translated by Maria Boulding (Hyde Park, NY: New City Press). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Augustine',
+                    'title' => 'Expositions of the Psalms',
+                    'year' => '2002',
+                    'note' => 'Translated by Maria Boulding',
+                    'address' => 'Hyde Park, NY',
+                    'publisher' => 'New City Press',
+                    ]
+            ],
+			// translated by not picked up
+			[
+                'source' => 'Calvin, John. 1536. Institutes of the Christian Religion: 1536 edition (translated by Ford Lewis Battles) (Grand Rapids: Eerdmans, 1986). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Calvin, John',
+                    'title' => 'Institutes of the Christian Religion',
+                    'year' => '1536',
+                    'note' => 'Translated by Ford Lewis Battles',
+                    'edition' => '1536',
+                    'address' => 'Grand Rapids',
+                    'publisher' => 'Eerdmans',
+                    ]
+            ],
+			// year follows publisher, which means address: publisher not detected
+			[
+                'source' => 'Brümmer, Vincent. 2008. What Are We Doing When We Pray? On Prayer and the Nature of Faith (Aldershot: Ashgate, 2008). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Brümmer, Vincent',
+                    'title' => 'What Are We Doing When We Pray? On Prayer and the Nature of Faith',
+                    'year' => '2008',
+                    'address' => 'Aldershot',
+                    'publisher' => 'Ashgate',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// same
+			[
+                'source' => 'Coakley, Sarah. 2013b. ‘Beyond “Belief”: Liturgy and the Cognitive Apprehension of God,’ in: The Vocation of Theology Today ed. by Tom Greggs, Rachel Muers & Simeon Zahl (Eugene, OR: Wipf and Stock, 2013), 131–145. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Coakley, Sarah',
+                    'title' => 'Beyond ``Belief\'\': Liturgy and the Cognitive Apprehension of God',
+                    'year' => '2013',
+                    'pages' => '131-145',
+                    'editor' => 'Tom Greggs and Rachel Muers and Simeon Zahl',
+                    'address' => 'Eugene, OR',
+                    'publisher' => 'Wipf and Stock',
+                    'booktitle' => 'The Vocation of Theology Today',
+                    ]
+            ],
+			// same?
+			[
+                'source' => 'Desmond, William. 2016. ‘The Porosity of Being: Towards a Catholic Agapeics,’ in: Renewing the Church in a Secular Age: Holistic Dialogue and Kenotic Vision ed. by João J. Vila-Chã, George F. McLean, Charles Taylor, José Casanova (Washington, D.C.: Council for Research in Values and Philosophy), 283–305. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Desmond, William',
+                    'title' => 'The Porosity of Being: Towards a Catholic Agapeics',
+                    'year' => '2016',
+                    'pages' => '283-305',
+                    'editor' => 'João J. Vila-Chã and George F. McLean and Charles Taylor and José Casanova',
+                    'address' => 'Washington, D. C.',
+                    'publisher' => 'Council for Research in Values and Philosophy',
+                    'booktitle' => 'Renewing the Church in a Secular Age: Holistic Dialogue and Kenotic Vision',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// problem with address
+			[
+                'source' => 'Dugan, Katherine. 2019. ‘iPrayer: Catholic Prayer Apps and Twenty-First-Century Catholic Subjectivities,’ in: Anthropological Perspectives on the Religious Uses of Mobile Apps ed. by Jacqueline H. Fewkes (Cham, Switzerland: Palgrave Macmillan), 131–151. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Dugan, Katherine',
+                    'title' => 'iPrayer: Catholic Prayer Apps and Twenty-First-Century Catholic Subjectivities',
+                    'year' => '2019',
+                    'pages' => '131-151',
+                    'editor' => 'Jacqueline H. Fewkes',
+                    'address' => 'Cham, Switzerland',
+                    'publisher' => 'Palgrave Macmillan',
+                    'booktitle' => 'Anthropological Perspectives on the Religious Uses of Mobile Apps',
+                    ]
+            ],
+			// similar?
+			[
+                'source' => 'Van den Brink, Gijsbert. 1992. ‘Natural Evil and Eschatology,’ in: Christian Faith and Philosophical Theology: Essays in Honour of Vincent Brümmer ed. by Gijsbert van den Brink, Luco van den Brom & Marcel Sarot (Kampen: Kok Pharos), 39–55. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Van den Brink, Gijsbert',
+                    'title' => 'Natural Evil and Eschatology',
+                    'year' => '1992',
+                    'pages' => '39-55',
+                    'editor' => 'Gijsbert van den Brink and Luco van den Brom and Marcel Sarot',
+                    'address' => 'Kampen',
+                    'publisher' => 'Kok Pharos',
+                    'booktitle' => 'Christian Faith and Philosophical Theology: Essays in Honour of Vincent Brümmer',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// address, publisher messed up because 'Sheffield' is in db as a city?
+			[
+                'source' => 'Barker, Margaret. 2003. ‘The Temple Roots of the Christian Liturgy,’ in: Christian Origins: Worship, Belief and Society ed. by Kieran J. Mahoney (London: Sheffield Academic Press), 29–51. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Barker, Margaret',
+                    'title' => 'The Temple Roots of the Christian Liturgy',
+                    'year' => '2003',
+                    'pages' => '29-51',
+                    'editor' => 'Kieran J. Mahoney',
+                    'address' => 'London',
+                    'publisher' => 'Sheffield Academic Press',
+                    'booktitle' => 'Christian Origins: Worship, Belief and Society',
+                    ]
+            ],
+
+
             
 
             

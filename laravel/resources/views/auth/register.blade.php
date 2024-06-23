@@ -67,7 +67,7 @@
             <x-input-label for="source" :value="__('How did you discover this website?')" class="mt-4 mb-1"/>
     
             @foreach ($sourceOptions as $key => $option)
-                <x-radio-input name="source" value="{{ $key }}" checked="{{ ($key == 'other' && old('source') == 'other') || ($key == 'otherSite' && old('source') == 'otherSite') }}" @endif class="peer/{{ $key }}" /> 
+                <x-radio-input name="source" value="{{ $key }}" checked="{{ $key == old('source') }}" @endif class="peer/{{ $key }}" /> 
                 <x-value-label for="{{ $key }}" class="peer-checked/{{ $key }}:text-blue-600 ml-1" :value="$option" />
                 <br/>
             @endforeach

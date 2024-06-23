@@ -29,6 +29,8 @@ use function Safe\strftime;
 class Converter
 {
     var $accessedRegExp1;
+    var $addressPublisherRegExp;
+    var $addressPublisherYearRegExp;
     var $articleRegExp;
     var $boldCodes;
     var $bookTitleAbbrevs;
@@ -265,7 +267,7 @@ class Converter
         $this->editorRegExp = '( eds?[\. ]|[\(\[]eds?\.?[\)\]]|[\(\[ ]edits\.[\(\] ]| editors?| [\(\[]editors?[\)\]]|[\(\[]რედ?\.?[\)\]])';
 
         $this->editionWords = ['edition', 'ed', 'edn', 'edição', 'édition', 'edición'];
-        $this->editionRegExp = '(?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie)';
+        $this->editionRegExp = '(?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie)';
 
         $this->volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
@@ -371,6 +373,11 @@ class Converter
 
         $this->journalWord = 'Journal';
 
+        // (?<address>: <publisher>(, <year>))
+        $addressPublisher = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-. ]{0,50})';
+        $this->addressPublisherRegExp = '\(?' . $addressPublisher . '\)?';
+        $this->addressPublisherYearRegExp = '\(?' . $addressPublisher . '(, (?P<year>(19|20)[0-9]{2}))?\)?';
+
         $this->bookTitleAbbrevs = ['Proc', 'Amer', 'Conf', 'Cont', 'Sci', 'Int', "Auto", 'Symp'];
 
         $this->workingPaperRegExp = '(preprint|arXiv preprint|bioRxiv|working paper|texto para discussão|discussion paper|'
@@ -405,7 +412,7 @@ class Converter
         ];
 
         $this->accessedRegExp1 = [
-            'en' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
+            'en' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed|[Vv]isited)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'cz' => '([Nn]ačteno|[Zz]přístupněno|[Zz]obrazeno)( dne)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'fr' => '([Rr]écupéré |[Cc]onsulté )(le )?(?P<date2>' . $dateRegExp . ')',
             'es' => '([Oo]btenido|[Aa]ccedido)[,:]? (?P<date2>' . $dateRegExp . ')',
@@ -919,9 +926,9 @@ class Converter
         $containsTranslator = false;
         // Translators: string up to first period preceded by a lowercase letter.
         // Case of "Trans." is handled later, after item type is determined, because "Trans." is an abbreviation used in journal names.
-        $result = $this->findRemoveAndReturn($remainder, '[Tt]ranslat(ed|ion) by .*?[a-z]\.', false);
+        $result = $this->findRemoveAndReturn($remainder, '[Tt]ranslat(ed|ion) by .*?[a-z]\)?(\.| \()', false);
         if ($result) {
-            $this->addToField($item, 'note', ucfirst($result[0]), 'addToField 3');
+            $this->addToField($item, 'note', trim(ucfirst($result[0]), ')( '), 'addToField 3');
             $before = Str::replaceEnd(' and ', '', $result['before']);
             $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . $result['after'];
             $containsTranslator = true;
@@ -1242,7 +1249,7 @@ class Converter
                 $title = trim($title, '?., ');
             }
 
-            $title = trim($title);
+            $title = trim($title, ' :');
             $title = Str::replaceEnd('[C]', '', $title);
             $this->setField($item, 'title', $title, 'setField 12');
         }
@@ -1501,7 +1508,7 @@ class Converter
             if (isset($matches[0][0])) {
                 $hasSecondaryDate = true;
                 $this->addToField($item, 'note', $matches[0][0]);
-                $remainder = substr($remainder, 0, $matches[0][1]) . '.' . substr($remainder, $matches[0][1] + strlen($matches[0][0]));
+                $remainder = rtrim(substr($remainder, 0, $matches[0][1]), ' .') . '.' . substr($remainder, $matches[0][1] + strlen($matches[0][0]));
             }
         }
 
@@ -1541,7 +1548,10 @@ class Converter
         }
         $city = null;
 
-        if (preg_match('/^[a-z ]{0,25}: [a-z ]{0,25}/i', $remainder) && ! preg_match('/^Published/', $remainder)) {
+        // (?<address>: <publisher>(, <year>)?)?
+        // if (preg_match('/^\(?[\p{L},. ]{0,25}: [\p{L}&\- ]{0,25}(, (19|20)[0-9]{2})?\)?/u', $remainder) && ! preg_match('/^Published/', $remainder)) {
+        // if (preg_match('/^' . $this->addressPublisherYearRegExp . '/u', $remainder) && ! preg_match('/^Published/', $remainder)) {
+        if ($this->isAddressPublisher(rtrim($remainder, '.'), finish: false) && ! preg_match('/^Published/', $remainder)) {
             $startsAddressPublisher = true;
             $this->verbose("Remainder has 'address: publisher' format.");
         }
@@ -3730,6 +3740,8 @@ class Converter
                 $upcomingBookVolume = preg_match('/(^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. )\S+ (?!of)/', $remainder);
                 $upcomingVolumeCount = preg_match('/^\(?(?P<note>[1-9][0-9]{0,1} ([Vv]ols?\.?|[Vv]olumes))\)?/', $remainder, $volumeCountMatches);
 
+                //dump($remainder, $this->isAddressPublisher($remainder));
+
                 // When a word ending in punctuation or preceding a word starting with ( is encountered, check whether
                 // it is followed by
                 // italics
@@ -3744,8 +3756,17 @@ class Converter
                 // If so, the title is $remainder up to the punctuation.
                 // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
                 // of the cases ``<word>.'' and "<word>."
-                if (Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) || ($nextWord && in_array($nextWord[0], ['(', '['])) || ($nextWord && $nextWord == '-')) {
-
+                if (
+                    ! in_array($word, ['St.'])
+                    &&
+                    (
+                        Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) 
+                        ||
+                        ($nextWord && in_array($nextWord[0], ['(', '['])) 
+                        || 
+                        ($nextWord && $nextWord == '-')
+                    )
+                   ) {
                     $remainderMinusArticle = preg_replace('/[\( ][Aa]rticle /', '', $remainder);
 
                     if (
@@ -3830,21 +3851,24 @@ class Converter
                             preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) 
                             && in_array(trim($matches['publisher']), $this->publishers)
                            )
-                        // address (city in db): publisher
+                        // address [city in db]: publisher
                         || (
                             preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) 
                             && in_array(trim($matches['city']), $this->cities)
                            )
-                        // publisher, address (city in db), <year>?
+                        // publisher, address [city in db], <year>?
                         || (
                             preg_match('/^[A-Z][a-z]+, (?P<city>[A-Za-z ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
                             && in_array(trim($matches['city']), $this->cities)
                            )
-                        // . address: publisher$ OR (address: publisher) [note that ',' is allowed in address and
+                        // . <address>: <publisher>(, <year>)?$ OR (<address>: <publisher>(, <year>)?)
+                        // Note that ',' is allowed in address and
                         // '.' and '&' are allowed in publisher.  May need to put a limit on length of publisher part?
                         || (
                             (Str::endsWith($word, '.') || $nextWord[0] == '(')
-                            && preg_match('/^\(?[\p{L}, ]+: [\p{L}&. ]+\)?$/u', $remainder, $matches) 
+                            //&& preg_match('/^\(?[\p{L}, ]+: [\p{L}&\-. ]+(, (19|20)[0-9]{2})?\)?$/u', $remainder, $matches) 
+                            //&& preg_match('/^' . $this->addressPublisherYearRegExp . '$/u', $remainder, $matches) 
+                            && $this->isAddressPublisher($remainder)
                            )
                         // (<publisher> in db
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
@@ -3915,22 +3939,6 @@ class Converter
                         ) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
                         $skipNextWord = true;
-                    // } elseif (
-                    //     // journal name, then word for volume
-                    //     preg_match('/^' . $this->volRegExp3 . '$/', $wordAfterNextCommaOrPeriod)
-                    //     ||
-                    //     // journal name, then roman volume number
-                    //     preg_match('/^[IVXLCD]{1,6}$/', $wordAfterNextCommaOrPeriod)
-                    //     ) {
-                    //     $this->verbose("Ending title, case 4d");
-                    //     $title = rtrim(implode(' ', $initialWords), ' ,');
-                    //     break;
-                    // else if next word is short and ends with period, and either $word does not end in a comma, or $nextWord
-                    // is the last one or $nextWord is not
-                    // in the dictionary or $nextWord is initials or the following word starts with a lowercase letter,
-                    // assume it is the first word of the publication info, which is an abbreviation.
-                    // (Case of lowercase letter stops "... perspectives, rev. ed." at the comma and does not stop
-                    // "... Basin, Turkey.  KSCE Journal ..." at the comma.)
                     } elseif 
                         (
                             $nextWord 
@@ -4076,7 +4084,9 @@ class Converter
                             && strlen($stringToNextPeriod) > 5 
                             && preg_match('/[a-z][.,]$/', $stringToNextPeriod) 
                             && ! Str::endsWith($stringToNextPeriod, 'Univ.') 
-                            && preg_match('/^[\p{L}. ]+: [\p{L} ]+$/u', trim($remainderFollowingNextPeriod, '. '))
+                            //&& preg_match('/^[\p{L}., ]+: [\p{L}&\- ]+$/u', trim($remainderFollowingNextPeriod, '. '))
+                            //&& preg_match('/^' . $this->addressPublisherRegExp . '$/u', trim($remainderFollowingNextPeriod, '. '))
+                            && $this->isAddressPublisher(trim($remainderFollowingNextPeriod, '. '), allowYear: false)
                             ) {
                             // <address>: <publisher> follows string to next period: If string to next period
                             // (note: comma not allowed, because comma may appear in address --- New York, NY)
@@ -4630,7 +4640,7 @@ class Converter
                 isset($words[$i+1]) &&
                 mb_strtoupper($words[$i+1]) != $words[$i+1] &&
                 ! $this->isAnd(strtolower($word), $language)
-                ) {
+               ) {
                 $word = $word . ',';
             }
 
@@ -4786,6 +4796,9 @@ class Converter
                     $case = 14;
                     $reason = 'Word is "et" and next word is "al." or "al"';
                 }
+            } elseif ($type == 'editors' && isset($word[0]) && $word[0] == '(' && $this->isAddressPublisher($remainder, finish: false)) {
+                $this->addToAuthorString(17, $authorstring, $this->formatAuthor($fullName));
+                $done = true;
             } elseif ($determineEnd && substr($word, -1) == ':') {
                 if (
                         $namePart >= 2 
@@ -5413,6 +5426,35 @@ class Converter
         } else {
             return $matches['plural'] == 's' ? 2 : 1;
         }
+    }
+
+    private function isAddressPublisher(string $string, bool $start = true, bool $finish = true, bool $allowYear = true ): bool
+    {
+        $returner = false;
+        $begin = $start ? '/^' : '/';
+        $end = $finish ? '$/u' : '/u';
+
+        if ($allowYear) {
+            $match = preg_match($begin . $this->addressPublisherYearRegExp . $end, $string, $matches);
+        } else {
+            $match = preg_match($begin . $this->addressPublisherRegExp . $end, $string, $matches);
+        }
+
+        if ($match) {
+            $returner = true;
+            $addressPublisher = $matches['address'] . ' ' . $matches['publisher'];
+            $words = explode(' ', $addressPublisher);
+            foreach ($words as $word) {
+                if (substr($word, -1) == '.') {
+                    if (! in_array($word, ['St.']) && ! preg_match('/^[A-Z]\.$/', $word)) {
+                        $returner = false;
+                        break;
+                    }
+                }
+            }
+        }
+//dump($string, $match, $words ?? '', $returner);
+        return $returner;
     }
 
     /**

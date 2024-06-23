@@ -22,6 +22,7 @@ class RegisteredUserController extends Controller
     {
         $sourceOptions = [
             'webSearch' => 'A web search for a term like "convert references to BibTeX"',
+            'youtube' => 'A search on YouTube',
             'friend' => 'A friend/colleague told you about it',
             'otherSite' => 'Link on another website (enter URL in text box)',
             'other' => 'Other (enter in text box)',
@@ -47,7 +48,7 @@ class RegisteredUserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'source' => ['required', 'string', 'in:webSearch,friend,otherSite,other'],
+            'source' => ['required', 'string', 'in:webSearch,youtube,friend,otherSite,other'],
             'source_other_site' => ['required_if:source,otherSite', 'url', 'nullable'],
             'source_other' => ['required_if:source,other'],
         ], [
