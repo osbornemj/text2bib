@@ -18,7 +18,7 @@
         </div>
 
         @if ($checkedPublishers->count())
-            <h3 class="mt-4 font-semibold text-lg leading-tight">Unchecked</h3>
+            <h3 class="mt-4 font-semibold text-lg leading-tight">Checked</h3>
             <ul>
                 @foreach ($checkedPublishers as $publisher)
                 <li>
