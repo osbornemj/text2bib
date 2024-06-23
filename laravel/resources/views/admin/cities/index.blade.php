@@ -11,18 +11,8 @@
 
     <div class="px-4 sm:px-4 sm:rounded-lg">
         <x-link href="/admin/cities/create">Add city</x-link>
-        @if ($uncheckedCities->count())
-            <h3 class="mt-4 font-semibold text-lg leading-tight">Unchecked</h3>
-            <ul>
-                @foreach ($uncheckedCities as $city)
-                <li>
-                    <div>
-                    <livewire:city-check :city="$city" />
-                    </div>
-                </li>
-                @endforeach
-            </ul>
-        @endif
+        &nbsp;&bull;&nbsp;
+        <x-link href="/admin/uncheckedCities">Unchecked</x-link>
 
         @if ($checkedCities->count())
             <h3 class="mt-4 font-semibold text-lg leading-tight">Checked</h3>
@@ -37,6 +27,7 @@
             </ul>
         @endif
 
+        {{ $checkedCities->links() }}
     </div>
 
 </x-app-layout>

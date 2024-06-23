@@ -19,13 +19,22 @@ class CitiesController extends Controller
     {
         $checkedCities = City::where('checked', 1)
             ->orderBy('name')
-            ->get();
+            ->paginate(50);
 
+        $checked = 1;
+
+        return view('admin.cities.index', compact('checkedCities'));
+    }
+
+    public function unchecked(): View
+    {
         $uncheckedCities = City::where('checked', 0)
             ->orderBy('name')
-            ->get();
+            ->paginate(50);
 
-        return view('admin.cities.index', compact('checkedCities', 'uncheckedCities'));
+        $checked = 0;
+
+        return view('admin.cities.unchecked', compact('uncheckedCities', 'checked'));
     }
 
     /**
