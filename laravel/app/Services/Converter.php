@@ -29,8 +29,6 @@ use function Safe\strftime;
 class Converter
 {
     var $accessedRegExp1;
-    var $addressPublisherRegExp;
-    var $addressPublisherYearRegExp;
     var $articleRegExp;
     var $boldCodes;
     var $bookTitleAbbrevs;
@@ -372,11 +370,6 @@ class Converter
         $this->oclcRegExp2 = '[0-9]+';
 
         $this->journalWord = 'Journal';
-
-        // (?<address>: <publisher>(, <year>))
-        $addressPublisher = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-. ]{0,50})';
-        $this->addressPublisherRegExp = '\(?' . $addressPublisher . '\)?';
-        $this->addressPublisherYearRegExp = '\(?' . $addressPublisher . '(, (?P<year>(19|20)[0-9]{2}))?\)?';
 
         $this->bookTitleAbbrevs = ['Proc', 'Amer', 'Conf', 'Cont', 'Sci', 'Int', "Auto", 'Symp'];
 
@@ -3740,8 +3733,6 @@ class Converter
                 $upcomingBookVolume = preg_match('/(^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. )\S+ (?!of)/', $remainder);
                 $upcomingVolumeCount = preg_match('/^\(?(?P<note>[1-9][0-9]{0,1} ([Vv]ols?\.?|[Vv]olumes))\)?/', $remainder, $volumeCountMatches);
 
-                //dump($remainder, $this->isAddressPublisher($remainder));
-
                 // When a word ending in punctuation or preceding a word starting with ( is encountered, check whether
                 // it is followed by
                 // italics
@@ -5434,10 +5425,12 @@ class Converter
         $begin = $start ? '/^' : '/';
         $end = $finish ? '$/u' : '/u';
 
+        $addressPublisher = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-. ]{0,50})';
+
         if ($allowYear) {
-            $match = preg_match($begin . $this->addressPublisherYearRegExp . $end, $string, $matches);
+            $match = preg_match($begin . '\(?' . $addressPublisher . '(, (?P<year>(19|20)[0-9]{2}))?\)?' . $end, $string, $matches);
         } else {
-            $match = preg_match($begin . $this->addressPublisherRegExp . $end, $string, $matches);
+            $match = preg_match($begin . '\(?' . $addressPublisher . '\)?' . $end, $string, $matches);
         }
 
         if ($match) {
@@ -5453,7 +5446,7 @@ class Converter
                 }
             }
         }
-//dump($string, $match, $words ?? '', $returner);
+
         return $returner;
     }
 
@@ -6497,9 +6490,7 @@ class Converter
 
         $dashEquivalents = ['---', '--', ' - ', '- ', ' -', '_', 'Ð', '?'];
 
-        //dd('5(2), p182', preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', '5(2), p182'));
         // e.g. Volume 6, No. 3, pp. 41-75 OR 6(3) 41-75
-        // if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . '( ?' . $monthRange . ' ?)?' . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
         if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
             $this->setField($item, 'number', str_replace(['---', '--', ' - '], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');

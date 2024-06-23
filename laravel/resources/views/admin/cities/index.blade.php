@@ -20,7 +20,7 @@
                 @foreach ($checkedCities as $city)
                 <li>
                     <div>
-                        <livewire:city-check :city="$city" />
+                        <livewire:city-check :city="$city" type="checked" :currentPage="$checkedCities->currentPage()"/>
                         </div>
                     </li>
                 @endforeach
