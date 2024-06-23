@@ -17,10 +17,10 @@
 
         @if ($uncheckedCities->count())
             <ul>
-                @foreach ($uncheckedCities as $journal)
+                @foreach ($uncheckedCities as $city)
                 <li>
                     <div>
-                    <livewire:journal-check :journal="$journal" :currentPage="$uncheckedCities->currentPage()" />
+                    <livewire:city-check :city="$city" :currentPage="$uncheckedCities->currentPage()" />
                     </div>
                 </li>
                 @endforeach
