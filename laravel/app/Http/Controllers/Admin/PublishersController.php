@@ -19,7 +19,7 @@ class PublishersController extends Controller
     {
         $checkedPublishers = Publisher::where('checked', 1)
             ->orderBy('name')
-            ->paginate(5);
+            ->paginate(50);
 
         return view('admin.publishers.index', compact('checkedPublishers'));
     }
@@ -28,7 +28,7 @@ class PublishersController extends Controller
     {
         $uncheckedPublishers = Publisher::where('checked', 0)
             ->orderBy('name')
-            ->paginate(5);
+            ->paginate(50);
 
         return view('admin.publishers.unchecked', compact('uncheckedPublishers'));
     }
