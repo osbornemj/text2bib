@@ -125,6 +125,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/uncheckedCities', 'unchecked')->name('admin.cities.unchecked');
     });
 
+    Route::controller(PublishersController::class)->group(function () {
+        Route::get('/admin/uncheckedPublishers', 'unchecked')->name('admin.publishers.unchecked');
+    });
+
     Route::controller(JournalsController::class)->group(function () {
         Route::get('/admin/uncheckedJournals', 'unchecked')->name('admin.journals.unchecked');
     });

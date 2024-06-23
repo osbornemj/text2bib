@@ -21,8 +21,6 @@ class CitiesController extends Controller
             ->orderBy('name')
             ->paginate(50);
 
-        $checked = 1;
-
         return view('admin.cities.index', compact('checkedCities'));
     }
 
@@ -34,7 +32,7 @@ class CitiesController extends Controller
 
         $checked = 0;
 
-        return view('admin.cities.unchecked', compact('uncheckedCities', 'checked'));
+        return view('admin.cities.unchecked', compact('uncheckedCities'));
     }
 
     /**

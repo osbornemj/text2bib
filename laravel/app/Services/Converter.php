@@ -154,7 +154,7 @@ class Converter
             ->orderByRaw('CHAR_LENGTH(name) DESC')
             ->pluck('name')
             ->toArray();
-        
+
         $this->names = Name::all()->pluck('name')->toArray();
 
         $this->nameSuffixes = ['Jr', 'Sr', 'III'];

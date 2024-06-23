@@ -1,16 +1,16 @@
 <div>
     <x-link href="{{ url('admin/publishers/' . $publisher->id . '/edit') }}">{{ $publisher->name }}</x-link>
 
-    <x-small-button class="ml-1 bg-red-400 dark:bg-red-800" wire:click="delete">
+    <x-small-button class="ml-1 bg-red-400 dark:bg-red-800" wire:click="delete({{ $currentPage }})">
         X
     </x-small-button>
 
     @if ($publisher->checked)
-        <x-small-button class="ml-1 bg-green-600 dark:bg-green-700" wire:click="check(0)">
+        <x-small-button class="ml-1 bg-green-600 dark:bg-green-700" wire:click="check(0, {{ $currentPage }})">
             &check;
         </x-small-button>
     @else
-        <x-small-button class="ml-1 bg-slate-300 dark:bg-slate-500" wire:click="check(1)">
+        <x-small-button class="ml-1 bg-slate-300 dark:bg-slate-500" wire:click="check(1, {{ $currentPage }})">
             &check;
         </x-small-button>
     @endif
