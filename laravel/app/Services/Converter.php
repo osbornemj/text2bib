@@ -29,6 +29,7 @@ use function Safe\strftime;
 class Converter
 {
     var $accessedRegExp1;
+    var $andWords;
     var $articleRegExp;
     var $boldCodes;
     var $bookTitleAbbrevs;
@@ -294,6 +295,12 @@ class Converter
             '[Ss]s?\. ?',  // Turkish
             '[Ss]tr\. ?',  // Czech
             'გვ\. ?',      // Georgian
+        ];
+
+        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian, 'v' for Turkish,
+        // 'dan' for Indonesian
+        $this->andWords = [
+            'and', '\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и', 've', 'dan'
         ];
 
         $startPagesRegExp = '/(';
@@ -1834,7 +1841,7 @@ class Converter
                     //     $journal = substr($journal, 0, -1);
                     // }
                     $journal = trim($journal, '_');
-                    $this->setField($item, 'journal', trim($journal, '"*'), 'setField 19');
+                    $this->setField($item, 'journal', trim($journal, '"*,; '), 'setField 19');
                 } elseif (! $journalNameMissingButHasVolume) {
                     $warnings[] = "Item seems to be article, but journal name not found.  Setting type to unpublished.";
                     $itemKind = 'unpublished';  // but continue processing as if journal
@@ -3774,7 +3781,7 @@ class Converter
                             || preg_match('/^[A-Z][A-Za-z &]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
                             // journal name followed by more specific publication info, allowing issue number and page
                             // numbers to be preceded by letters.
-                            || preg_match('/^[A-Z][A-Za-z &]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9]{1,3},? ' . $this->pagesRegExp . ',? (\(?(19|20)[0-9]{2}\)?)$/', $remainder) 
+                            || preg_match('/^[A-Z][A-Za-z &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9]{1,3}\)?,? ' . $this->pagesRegExp . '(, |. |.)(\(?(19|20)[0-9]{2}\)?)$/', $remainder) 
                             // $word ends in period && journal name (can include commma), pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                             || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?([0-9, \-p\.():]*$|\([0-9]{2,4}\))/', $remainderMinusArticle))
                         )
@@ -4415,9 +4422,7 @@ class Converter
     private function isAnd(string $string, $language = 'en'): bool
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
-        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian, 'v' for Turkish,
-        // 'dan' for Indonesian
-        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, ['and', '\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и', 've', 'dan']) || $string == 'with';
+        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, $this->andWords) || $string == 'with';
     }
 
     /*
@@ -4889,9 +4894,20 @@ class Converter
                     $this->addToAuthorString(18, $authorstring, $fullName);
                     $reason = 'Word ends in period, namePart is 1, and next word is not initials or "and", so ending author list.';
                     $done = true;
-                    //$remainder = substr($remainder, strpos($remainder, '.'));
-                    $remainder = Str::replaceStart('and ' . trim($fullName), '', $remainder);
-                    $remainder = Str::replaceStart(trim($fullName), '', $remainder);
+                    $replaced = false;
+                    foreach ($this->andWords as $andWord) {
+                        if (Str::startsWith($remainder, $andWord . ' ')) {
+                            // can't make replacement based on $fullName, because case might differ from case in $remainder
+                            // (e.g. last name all-uppercase vs. formatted with uppercase first letter and rest lowercase)
+                            $remainder = substr($remainder, strlen($andWord) + 1 + strlen(trim($fullName)));
+                            $replaced = true;
+                            break;
+                        }
+                    }
+                    if (! $replaced) {
+                        //$remainder = Str::replaceStart(trim($fullName), '', $remainder);
+                        $remainder = substr($remainder, strlen(trim($fullName)));
+                    }
                 }
                 $this->verbose("Remainder: " . $remainder);
                 $this->verbose('[c2a getDate 4]');
@@ -5282,11 +5298,10 @@ class Converter
                                 && ! in_array($remainingWords[1], $this->vonNames)
                                 && ! in_array($remainingWords[1], ['et', 'et.', 'al', 'al.'])
                                )
-//                            || (ctype_alpha($wordAfterBareWords) && $wordAfterBareWords == mb_strtolower($wordAfterBareWords))
                         )
                         &&
                         (
-                            ! $this->isInitials(rtrim($remainingWords[0], ', '))
+                            ! $this->isInitials(rtrim($remainingWords[0], ',: '))
                             ||
                             ($remainingWords[0] == 'A' && isset($remainingWords[1]) && $remainingWords[1][0] == strtolower($remainingWords[1][0]))
                         )
@@ -5765,12 +5780,15 @@ class Converter
 
         if (! $start && $allowMonth) {
             if (
-                // <year> <month> <day>?
+                // <year> <month> <day>? [month cannot be followed by '-': in that case it's a month range, picked up in next preg_match]
                 // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug;9(8):473-480'
-                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>' . $months . ')( (?P<day>[0-9]{1,2}))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>(' . $months . ')(?!-))( (?P<day>[0-9]{1,2}))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                ||
+                // <year> <month>-<month> <day>?
+                // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug-Sep;9(8):473-480'
+                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>(' . $months . ')-(' . $months . '))([ ;](?P<day>[0-9]{1,2}))?)/iJ', $string, $matches2, PREG_OFFSET_CAPTURE)
                 ||
                 // <month> <day> <year>
-                // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug;9(8):473-480'
                 preg_match('/[ \(](?P<date>(?P<month>' . $months . ') (?P<day>[0-9]{1,2}) (?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
                 ||
                 // <day>? <month> <year>
@@ -6102,6 +6120,7 @@ class Converter
 
             if (preg_match('/[A-Z]\.:/', $word)) {
                 $stop = true;
+                $endsWithPunc = true;
             }
 
             if (preg_match('/(\(|\[)?(18|19|20)([0-9][0-9])(\)|\])?/', $word) || Str::startsWith($word, '(')) {
@@ -6466,7 +6485,7 @@ class Converter
 
         // First check for some common patterns
         // p omitted from permitted starting letters, to all p100 to be interpreted as page 100.
-        $number = '[A-Za-oq-z]?[0-9][0-9]{0,12}[A-Za-z]?';
+        $number = '[A-Za-oq-z]?([Ss]upp )?[0-9][0-9]{0,12}[A-Za-z]?';
         $numberWithRoman = '([1-9][0-9]{0,3}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
         $numberRange = $number . '(( ?--?-? ?|_|\?)' . $number . ')?';

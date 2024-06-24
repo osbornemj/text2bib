@@ -10052,6 +10052,103 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Christian Origins: Worship, Belief and Society',
                     ]
             ],
+			// deal with month range
+			[
+                'source' => 'Maharjan SK. Propranolol is effective in decreasing stress response due to airway manipulation and CO2 pneumoperitoneum in patients undergoing laparoscopic cholecystectomy. Kathmandu University Medical Journal. 2005 Apr-Jun; 3(2): 102-6  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Maharjan, S. K.',
+                    'title' => 'Propranolol is effective in decreasing stress response due to airway manipulation and CO2 pneumoperitoneum in patients undergoing laparoscopic cholecystectomy',
+                    'year' => '2005',
+                    'month' => 'April-June',
+                    'journal' => 'Kathmandu University Medical Journal.',
+                    'volume' => '3',
+                    'number' => '2',
+                    'pages' => '102-6',
+                    ]
+            ],
+			//use of 'supp' in issue number
+			 [
+                'source' => 'Kamran Montazeri, Parviz Kashefi, Azim Honarmand, Mohammadreza Safavi, Anahita Hirmanpour. Attenuation of the pressor response to direct laryngoscopy and tracheal intubation: Oral Clonidine vs. Oral Gabapentin premedication. J Res Med Sci. Mar 2011;16(supp 11):S377-S386.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kamran Montazeri and Parviz Kashefi and Azim Honarmand and Mohammadreza Safavi and Anahita Hirmanpour',
+                    'title' => 'Attenuation of the pressor response to direct laryngoscopy and tracheal intubation: Oral Clonidine vs. Oral Gabapentin premedication',
+					'journal' => 'J Res Med Sci.',
+                    'year' => '2011',
+                    'month' => 'March',
+					'number' => 'supp 11',
+                    'pages' => 'S377-S386',
+                    'volume' => '16',
+                    ]
+            ],
+			// publisher misidentified because "Academic Press" is in db as publisher?
+			[
+                'source' => 'Day, John. 1990. Psalms (Sheffield: Sheffield Academic Press). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Day, John',
+                    'title' => 'Psalms',
+                    'year' => '1990',
+                    'address' => 'Sheffield',
+                    'publisher' => 'Sheffield Academic Press',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => 'Akima H.: A method of bivariate interpolation and smooth surface fitting for irregularly distributed data points. ACM Transactions on Mathematical Software (TOMS), 4(2), pp. 148-159.(1978). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Akima, H.',
+                    'title' => 'A method of bivariate interpolation and smooth surface fitting for irregularly distributed data points',
+                    'journal' => 'ACM Transactions on Mathematical Software (TOMS)',
+                    'year' => '1978',
+                    'volume' => '4',
+                    'number' => '2',
+                    'pages' => '148-159',
+                    ]
+            ],
+			// initial "N" included in title
+			 [
+                'source' => 'Mitchell D. P. and Netravali A. N.: Reconstruction filters in computer-graphics. ACM Siggraph Computer Graphics, 22(4), pp. 221-228. (1988).  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Mitchell, D. P. and Netravali, A. N.',
+                    'title' => 'Reconstruction filters in computer-graphics',
+                    'journal' => 'ACM Siggraph Computer Graphics',
+                    'year' => '1988',
+                    'volume' => '22',
+                    'number' => '4',
+                    'pages' => '221-228',
+                    ]
+            ],
+			// last author's name repeated in title
+			[
+                'source' => 'AGGARWAL, Medhavi, KAUR, Ranjit, et KAUR, Beant. A review of denoising filters in image restoration. International Journal of Current Research And Academic Review, ISSN, 2014, p. 2347-3215. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Aggarwal, Medhavi and Kaur, Ranjit and Kaur, Beant',
+                    'title' => 'A review of denoising filters in image restoration',
+                    'journal' => 'International Journal of Current Research And Academic Review, ISSN',
+                    'year' => '2014',
+                    'pages' => '2347-3215',
+                    ]
+            ],
+			// lowercase 'a' in 'aug' causes problems? (or presence of month?)
+			[
+                'source' => 'Memis D, Turan A, Kuramanliogu B ,Sekar S, Ture M. Gabapentin reduces cardiovascular responses to laryngoscopy and tracheal intubation. Eur J A anesthesiology, 2006 aug; 23(8):p686-90.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Memis, D. and Turan, A. and Kuramanliogu, B. and Sekar, S. and Ture, M.',
+                    'title' => 'Gabapentin reduces cardiovascular responses to laryngoscopy and tracheal intubation',
+					'journal' => 'Eur J A anesthesiology',
+					'year' => '2006',
+					'month' => 'August',
+					'volume' => '23',
+					'number' => '8',
+					'pages' => '686-90',
+                    ]
+            ],
 
 
             
