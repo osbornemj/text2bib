@@ -5540,6 +5540,7 @@ class Converter
                     // ''
                     if (($i == 0 || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "'") {
                         if (isset($chars[$i+2]) && $chars[$i+2] == "'") {
+                            // '''
                             if ($begin == "''") {
                                 $quotedText .= $char;
                                 $end = true;
@@ -5555,9 +5556,7 @@ class Converter
                                 $quotedText .= $chars[$i+2];
                                 $level += 2;
                             }
-                        }
-
-                        if ($begin == "``" || $begin == "''" || $begin == '"') {
+                        } elseif ($begin == "``" || $begin == "''" || $begin == '"') {
                             $end = true;
                             $skip = 1;
                         } elseif ($begin) {
