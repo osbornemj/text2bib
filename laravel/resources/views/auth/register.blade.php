@@ -75,7 +75,7 @@
             <x-input-error :messages="$errors->get('source')" class="mt-2" />
                 
             <div class="hidden peer-checked/otherSite:block">
-                <x-text-input name="source_other_site" type="url" class="w-full" />
+                <x-text-input name="source_other_site" type="url" class="w-full" maxlength="255" />
             </div>
 
             <x-input-error :messages="$errors->get('source_other_site')" class="mt-2" />

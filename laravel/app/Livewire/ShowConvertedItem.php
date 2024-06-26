@@ -131,7 +131,7 @@ class ShowConvertedItem extends Component
             $journalName = ($output->item)['journal'];
             if (! Journal::where('name', $journalName)->exists()) {
                 $journal = new Journal;
-                $journal->name = $journalName;
+                $journal->name = substr($journalName, 0, 255);
                 $journal->save();
             }
             if (preg_match('/^(?P<firstWord>[A-Z][a-z]+)\. /', $journalName, $matches)) {
@@ -148,7 +148,7 @@ class ShowConvertedItem extends Component
                     $publisherName = ($output->item)['publisher'];
                     if (!Publisher::where('name', $publisherName)->exists()) {
                         $publisher = new Publisher();
-                        $publisher->name = $publisherName;
+                        $publisher->name = substr($publisherName, 0, 255);
                         $publisher->save();
                     }
                 }
@@ -156,7 +156,7 @@ class ShowConvertedItem extends Component
                     $cityName = ($output->item)['address'];
                     if (!City::where('name', $cityName)->exists()) {
                         $city = new City();
-                        $city->name = $cityName;
+                        $city->name = substr($cityName, 0, 255);
                         $city->save();
                     }
                 }

@@ -10149,13 +10149,33 @@ class ExampleSeeder extends Seeder
 					'pages' => '686-90',
                     ]
             ],
-
-
-            
-
-            
-
-            
+   			// nested quotes
+			[
+                'source' => 'Kaunfer, Alvan H. 1995. ‘Who Knows Four? The ‘Imahot’ in Rabbinic Judaism’, Judaism 44: 94–103. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kaunfer, Alvan H.',
+                    'title' => 'Who Knows Four? The `Imahot\' in Rabbinic Judaism',
+                    'journal' => 'Judaism',
+                    'year' => '1995',
+                    'volume' => '44',
+                    'pages' => '94-103',
+                    ]
+            ],
+			// closing quotation mark trimmed
+			[
+                'source' => '[30] Stipanowich, Thomas J. 2010. “Arbitration: The ‘New Litigation.’” University of Illinois Law Review 2010 (1): 1–58. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Stipanowich, Thomas J.',
+                    'year' => '2010',
+                    'title' => 'Arbitration: The `New Litigation.\'',
+                    'journal' => 'University of Illinois Law Review',
+                    'volume' => '2010',
+                    'number' => '1',
+                    'pages' => '1-58',
+                    ]
+            ],
 
 
         ];
