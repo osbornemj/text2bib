@@ -275,7 +275,7 @@ class Converter
         $this->volumeRegExp = '[Vv]olume ?|[Vv]ols? ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{|\*';
         $this->volRegExp3 = '[Vv]olume ?|[Vv]ol ?\.? ?|VOL ?\.? ?|[Vv]\. ';
 
-        $this->numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ |[Ii]ssues?:? ?|Issue no. ?|Iss: ';
+        $this->numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ ?|n° ?|[Ii]ssues?:? ?|Issue no. ?|Iss: ';
 
         // page range
         // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
@@ -285,6 +285,7 @@ class Converter
 
         $this->pageWords = [
             '[Pp]ages? ',
+            '[Pp]ages? : ',
             '[Pp]p\.? ?',
             'p\. ?',
             'p ?',
@@ -669,7 +670,7 @@ class Converter
         if (empty($doi)) {
             $doi = $this->extractLabeledContent(
                 $remainder,
-                ' [\[\)]?doi:? | [\[\(]?doi: ?|(Available from:? )?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(Available from:? )?(\\\href\{|\\\url{)?https?://doi\.org/|doi\.org',
+                ' [\[\)]?doi:? | [\[\(]?doi: ?|;doi:|(Available from:? )?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(Available from:? )?(\\\href\{|\\\url{)?https?://doi\.org/|doi\.org',
                 '[^ ]+'
             );
         }
@@ -716,8 +717,10 @@ class Converter
 
         if ($doi) {
             $this->setField($item, 'doi', $doi, 'setField 1');
+            $hasDoi = true;
         } else {
             $this->verbose("No doi found.");
+            $hasDoi = false;
         }
 
         //////////////////////////////
@@ -1324,10 +1327,10 @@ class Converter
         $cityLength = 0;
         $publisherString = $cityString = '';
 
-        // Remainder could be journal name without any volume-page info (e.g. Nutrients)
+        // Remainder could be journal name without any volume-page info (e.g. "Nutrients" or "Ophthalmol Glaucoma.")
         // OR name of newspaper (e.g. The Washington Post)
         // but also could be name of publisher (without any address) (e.g. Cortez).
-        if (preg_match('/^([A-Z][A-Za-z]+ ){0,3}[A-Z][A-Za-z]+$/', $remainder)) {
+        if (preg_match('/^([A-Z][A-Za-z]+ ){0,3}[A-Z][A-Za-z]+$/', rtrim($remainder, '. '))) {
             $allWordsInitialCaps = true;
             $this->verbose("Consists only of letters and spaces");
         }
@@ -1347,7 +1350,7 @@ class Converter
             $this->verbose("Starts with italics.");
         }
 
-        if (preg_match('/\d/', $remainder)) {
+        if (preg_match('/\d/', $remainder) || preg_match('/ [IVXDLC]+[., ]/', $remainder)) {
             $containsNumber = true;
             $this->verbose("Contains a number.");
         }
@@ -1688,7 +1691,7 @@ class Converter
         } elseif ($inStart) {
             $this->verbose("Item type case 11");
             $itemKind = 'incollection';
-            if (! $this->itemType && !$itemKind) {
+            if (! $this->itemType && ! $itemKind) {
                 $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [3]";
             }
         } elseif ($containsPublisher || $endsAddressPublisher) {
@@ -1707,7 +1710,7 @@ class Converter
             if ($containsThesis) {
                 $this->verbose("Item type case 14");
                 $itemKind = 'thesis';
-            } elseif ($endsWithInReview || $containsMonth) {
+            } elseif (($endsWithInReview || $containsMonth) && ! $hasDoi) {
                 $this->verbose("Item type case 15");
                 $itemKind = 'unpublished';
             } elseif ($pubInfoEndsWithForthcoming || $pubInfoStartsWithForthcoming) {
@@ -3778,10 +3781,11 @@ class Converter
                         &&
                         (
                             // e.g. SIAM J. ... (Don't generalize too much, because 'J.' can be an editor's initial.)
-                            preg_match('/^(SIAM (J\.|Journal)|IEEE Transactions)/', $remainder)
+                            preg_match('/^(SIAM (J\.|Journal)|IEEE Transactions|ACM Transactions)/', $remainder)
                             // journal name, pub info?
                             || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)
                             || in_array('Journal', $wordsToNextPeriodOrComma)
+                            || preg_match('/^Revue /', $remainder)
                             // journal name, pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                             // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
                             || preg_match('/^[A-Z][A-Za-z &]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 

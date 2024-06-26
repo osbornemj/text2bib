@@ -10176,6 +10176,63 @@ class ExampleSeeder extends Seeder
                     'pages' => '1-58',
                     ]
             ],
+			// journal not detected
+			[
+                'source' => 'Wang, Y., Sun, Y., Liu, Z., Sarma, S. E., Bronstein, M. M., & Solomon, J. M. (2019). Dynamic graph cnn for learning on point clouds. ACM Transactions on Graphics (tog), 38(5), 1-12. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Wang, Y. and Sun, Y. and Liu, Z. and Sarma, S. E. and Bronstein, M. M. and Solomon, J. M.',
+                    'year' => '2019',
+                    'title' => 'Dynamic graph cnn for learning on point clouds',
+					'journal' => 'ACM Transactions on Graphics (tog)',
+                    'volume' => '38',
+					'number' => '5',
+                    'pages' => '1-12',
+                    ]
+            ],
+            // doi not detected
+			[
+                'source' => 'Reed DM, Toris CB, Gilbert J, et al. Eye Dynamics and Engineering Network Consortium: Baseline Characteristics of a Randomized Trial in Healthy Adults. Ophthalmol Glaucoma. Sep 10 2022;doi:10.1016/j.ogla.2022.09.001 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Reed, D. M. and Toris, C. B. and Gilbert, J. and others',
+                    'title' => 'Eye Dynamics and Engineering Network Consortium: Baseline Characteristics of a Randomized Trial in Healthy Adults',
+					'journal' => 'Ophthalmol Glaucoma.',
+                    'year' => '2022',
+                    'month' => 'September',
+                    'date' => '2022-09-10',
+                    'doi' => '10.1016/j.ogla.2022.09.001',
+                    ]
+            ],
+			// various issues
+			[
+                'source' => 'Badie, Bertrand et Richard Dubrell, Analyse systémique d’une crise: l’exemple du front populaire, Revue française de sciences politique, 1974, Vol 24, n°1, page : 80-119. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Badie, Bertrand and Richard Dubrell',
+                    'volume' => '24',
+                    'title' => 'Analyse systémique d\'une crise: l\'exemple du front populaire',
+					'journal' => 'Revue française de sciences politique',
+					'year' => '1974',
+                    'number' => '1',
+                    'pages' => '80-119',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// article detected as book
+			[
+                'source' => 'Zadeh, Taghi. Les Courants politiques dans la Turquie contemporaine, Revue du Monde Musulman, XXI, 1912. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Zadeh, Taghi',
+                    'title' => 'Les Courants politiques dans la Turquie contemporaine',
+                    'year' => '1912',
+                    'journal' => 'Revue du Monde Musulman',
+                    'volume' => 'XXI',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+
 
 
         ];
