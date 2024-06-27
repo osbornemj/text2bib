@@ -10197,7 +10197,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Reed, D. M. and Toris, C. B. and Gilbert, J. and others',
                     'title' => 'Eye Dynamics and Engineering Network Consortium: Baseline Characteristics of a Randomized Trial in Healthy Adults',
-					'journal' => 'Ophthalmol Glaucoma.',
+					'journal' => 'Ophthalmol Glaucoma',
                     'year' => '2022',
                     'month' => 'September',
                     'date' => '2022-09-10',
@@ -10320,6 +10320,75 @@ class ExampleSeeder extends Seeder
                     'note' => 'ISSN: 0309-1317'
                     ]
             ],
+			// need to replace nonstandard space with regular space
+			[
+                'source' => 'Przezdziecki, Marek A. 2005. Vowel harmony and coarticulation in three dialects of Yoruba: Phonetics determining phonology. Ph.D. dissertation. Cornell University. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Przezdziecki, Marek A.',
+                    'year' => '2005',
+                    'title' => 'Vowel harmony and coarticulation in three dialects of Yoruba: Phonetics determining phonology',
+                    'school' => 'Cornell University',
+                    ]
+            ],
+			// year-volume-number not parsed
+			[
+                'source' => 'Ananthakrishnan AN, Beaulieu DB, Ulitsky A, et al. Does primary sclerosing cholangitis impact quality of life in patients with inflammatory bowel disease? 2010;16(3):494-500. doi:10.1002/IBD.21051 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1002/IBD.21051',
+                    'author' => 'Ananthakrishnan, A. N. and Beaulieu, D. B. and Ulitsky, A. and others',
+                    'year' => '2010',
+					'volume' => '16',
+					'number' => '3',
+					'pages' => '494-500',
+                    'title' => 'Does primary sclerosing cholangitis impact quality of life in patients with inflammatory bowel disease?',
+                    ]
+            ],
+            //
+            [
+                'source' => ' Smith MP, Loe RH. Sclerosing cholangitis: Review of recent case reports and associated diseases and four new cases. The American Journal of Surgery. 1965;110(2):239-246. doi:10.1016/0002-9610(65)90018-8 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/0002-9610(65)90018-8',
+                    'author' => 'Smith, M. P. and Loe, R. H.',
+                    'title' => 'Sclerosing cholangitis: Review of recent case reports and associated diseases and four new cases',
+                    'year' => '1965',
+                    'journal' => 'The American Journal of Surgery.',
+                    'volume' => '110',
+                    'number' => '2',
+                    'pages' => '239-246',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => 'Casali, Roderic F. 2016. Some inventory-related asymmetries in the patterning of tongue root harmony systems. Studies in African Linguistics 45(1/2): 95–140. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Casali, Roderic F.',
+                    'year' => '2016',
+                    'title' => 'Some inventory-related asymmetries in the patterning of tongue root harmony systems',
+					'journal' => 'Studies in African Linguistics',
+					'volume' => '45',
+					'number' => '1/2',
+					'pages' => '95-140',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => 'Purnomo, H. W & Bard, J. F., Cyclic Preference Scheduling for Nurses Using Branch and Price, Naval Research Logistics, 2005, Volume 54, Issue 2, Page 200-220 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Purnomo, H. W. and Bard, J. F.',
+                    'title' => 'Cyclic Preference Scheduling for Nurses Using Branch and Price',
+                    'journal' => 'Naval Research Logistics',
+                    'year' => '2005',
+                    'volume' => '54',
+                    'number' => '2',
+                    'pages' => '200-220',
+                    ]
+            ],
+
             
             
             
