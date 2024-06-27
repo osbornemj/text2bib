@@ -920,13 +920,19 @@ class Converter
         ///////////////////////////////
 
         $containsIssn = false;
-        $issn = null;
 
         foreach ($this->issnRegExps as $issnRegExp) {
             preg_match($issnRegExp, $remainder, $matches);
             if (isset($matches[0])) {
-                $this->addToField($item, 'note', trim($matches[0], '()., '), 'addToField 2a');
+                // trim '(' and ')' from '(ISSN 1234-5678)' but not from 'ISSN 1234-5678 (digital)'
+                if (substr_count(ltrim($matches[0], '('), '(') < substr_count($matches[0], ')')) {
+                    $issn = trim($matches[0], ')');
+                } else {
+                    $issn = $matches[0];
+                }
+                $this->addToField($item, 'note', trim($issn, '(., '), 'addToField 2a');
                 $remainder = str_replace($matches[0], '', $remainder);
+                $containsIssn = true;
                 break;
             } 
         }
