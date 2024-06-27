@@ -10388,6 +10388,18 @@ class ExampleSeeder extends Seeder
                     'pages' => '200-220',
                     ]
             ],
+			// detected as article
+			[
+                'source' => 'Kelleher J, Namee B, D\'Arcy A. Fundamentals of Machine Learning for Predictive Data Analytics. The MIT Press. 2015. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Kelleher, J. and Namee, B. and D\'Arcy, A.',
+                    'title' => 'Fundamentals of Machine Learning for Predictive Data Analytics',
+                    'year' => '2015',
+                    'publisher' => 'The MIT Press',
+                    ]
+            ],
+
 
             
             

@@ -1954,7 +1954,7 @@ class Converter
                             } elseif (! $item->pages && ! empty($item->number) && !$containsNumberDesignation) {
                                 // else if no pages have been found and a number has been set, assume the previously assigned number
                                 // is in fact a single page
-                                if (! empty($numberInParens)) {
+                                if (empty($numberInParens)) {
                                     $this->setField($item, 'pages', $item->number, 'setField 23');
                                     unset($item->number);
                                     $this->verbose('[p5] no pages found, so assuming string previously assigned to number is a single page: ' . $item->pages);
