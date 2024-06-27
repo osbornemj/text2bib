@@ -70,7 +70,7 @@
         <x-input-error :messages="$errors->get('uploadForm.use')" class="mt-2" />
             
         <div class="hidden peer-checked/other:block">
-            <x-text-input class="w-full" wire:model="uploadForm.other_use" />
+            <x-text-input class="w-full" wire:model="uploadForm.other_use" maxlength="255" />
         </div>
 
         <x-input-error :messages="$errors->get('uploadForm.other_use')" class="mt-2" />
