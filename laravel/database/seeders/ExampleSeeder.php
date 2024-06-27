@@ -10232,6 +10232,97 @@ class ExampleSeeder extends Seeder
                     ],
 					'char_encoding' => 'utf8leave',
             ],
+			// detect and remove ISSN to note? (otherwise can get confused with pages)
+			[
+                'source' => 'G. Gualtieri, Analysing the uncertainties of reanalysis data used for wind resource assessment: A critical review, Renewable and Sustainable Energy Reviews, Volume 167, 2022, 112741, ISSN 1364-0321, https://doi.org/10.1016/j.rser.2022.112741.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'G. Gualtieri',
+                    'title' => 'Analysing the uncertainties of reanalysis data used for wind resource assessment: A critical review',
+                    'journal' => 'Renewable and Sustainable Energy Reviews',
+                    'year' => '2022',
+                    'volume' => '167',
+                    'pages' => '112741',
+                    'note' => 'ISSN 1364-0321',
+                    'doi' => '10.1016/j.rser.2022.112741',
+                    ]
+            ],
+            // ISSN
+            [
+                'source' => 'Saraim, U., Voruganti, S. (2022). Heart disease prediction using data mining. International Journal of Creative research Thoughts. 10(5) (pp. 886-895). ISSN 2320-2882. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Saraim, U. and Voruganti, S.',
+                    'year' => '2022',
+                    'title' => 'Heart disease prediction using data mining',
+                    'journal' => 'International Journal of Creative research Thoughts.',
+                    'pages' => '886-895',
+                    'volume' => '10',
+                    'number' => '5',
+                    'note' => 'ISSN 2320-2882'
+                    ]
+            ],
+            // ISSN
+            [
+                'source' => 'Miller, P. (2013) Justifying Fiduciary Duties. McGill Law Journal / Revue de droit de McGill ISSN 0024-9041 (print)1920-6356 (digital) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Miller, P.',
+                    'year' => '2013',
+                    'title' => 'Justifying Fiduciary Duties',
+                    'journal' => 'McGill Law Journal / Revue de droit de McGill',
+                    'note' => 'ISSN 0024-9041 (print)1920-6356 (digital)',
+                    ]
+            ],
+            // ISSN
+            [
+                'source' => 'Crawford, R. (2013) The effect of the financial crisis on the retirement plans of older workers in England, Economics Letters,Volume 121, Issue 2,Pages 156-159, ISSN 0165-1765,https://doi.org/10.1016/j.econlet.2013.07.024 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.econlet.2013.07.024',
+                    'author' => 'Crawford, R.',
+                    'year' => '2013',
+                    'title' => 'The effect of the financial crisis on the retirement plans of older workers in England',
+                    'journal' => 'Economics Letters',
+                    'pages' => '156-159',
+                    'volume' => '121',
+                    'number' => '2',
+                    'note' => 'ISSN 0165-1765',
+                    ]
+            ],
+            // ISSN
+            [
+                'source' => '	\bibitem{DG.R. Dunlop} Dunlop D.R., Jones T.P. Position analysis of a two DOF parallel mechanism—the Canterbury tracker // Mechanism and Machine Theory, 1999, Vol 34, Issue 4, pp 599 – 614,ISSN 0094-114X. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Dunlop, D. R. and Jones, T. P.',
+                    'title' => 'Position analysis of a two DOF parallel mechanism---the Canterbury tracker',
+                    'journal' => 'Mechanism and Machine Theory',
+                    'year' => '1999',
+                    'pages' => '599-614',
+                    'volume' => '34',
+                    'number' => '4',
+                    'note' => 'ISSN 0094-114X'
+                    ]
+            ],
+            // ISSN
+            [
+                'source' => 'Degen, M. and Garcia, S. (2012) \'The Transformation of the ‘Barcelona Model’: An Analysis of Culture\'.International Journal of Urban and Regional Research, 36 (5). pp. 1022 - 1038. ISSN: 0309-1317',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Degen, M. and Garcia, S.',
+                    'year' => '2012',
+                    'title' => 'The Transformation of the `Barcelona Model\': An Analysis of Culture',
+                    'journal' => 'International Journal of Urban and Regional Research',
+                    'volume' => '36',
+                    'number' => '5',
+                    'pages' => '1022-1038',
+                    'note' => 'ISSN: 0309-1317'
+                    ]
+            ],
+            
+            
+            
 
 
 

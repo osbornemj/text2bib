@@ -63,6 +63,7 @@ class Converter
     var $inReviewRegExp3;
     var $isbnRegExp1;
     var $isbnRegExp2;
+    var $issnRegExps;
     var $italicCodes;
     var $italicTitle;
     var $itemType;
@@ -375,6 +376,15 @@ class Converter
         $this->isbnRegExp1 = 'ISBN(-(10|13))?:? ?';
         // ISBN should not have spaces, but allow for two
         $this->isbnRegExp2 = '[0-9X -]{10,15}';
+
+        $issnNumberFormat = '[0-9]{4}-[0-9]{3}[0-9X]';
+        $this->issnRegExps = [
+            '/[Oo]nline(:|: | )' . $issnNumberFormat . '(\)|,|.| |$)/',
+            '/[Pp]rint(:|: | )' . $issnNumberFormat . '(\)|,|.| |$)/',
+            '/[( ,]ISSN(:|: | )' . $issnNumberFormat . ' ?[( ](print|digital)(\) ?| |$)(' . $issnNumberFormat . ' ?[( ](print|digital)(\)| |$))?/',
+            '/[( ,](e-|p-)?ISSN(:|: | )(\(?(online|digital|print)[) ])?' . '(e-?|p-?)?' . $issnNumberFormat . '(\)|,|.| |$)/',
+        ];
+
         $this->oclcRegExp1 = 'OCLC:? ';
         $this->oclcRegExp2 = '[0-9]+';
 
@@ -905,6 +915,22 @@ class Converter
             $this->setField($item, 'isbn', trim(str_replace(' ', '', $match), '()'), 'setField 16');
         }
         
+        ///////////////////////////////
+        // Put ISSN, if any, in note //
+        ///////////////////////////////
+
+        $containsIssn = false;
+        $issn = null;
+
+        foreach ($this->issnRegExps as $issnRegExp) {
+            preg_match($issnRegExp, $remainder, $matches);
+            if (isset($matches[0])) {
+                $this->addToField($item, 'note', trim($matches[0], '()., '), 'addToField 2a');
+                $remainder = str_replace($matches[0], '', $remainder);
+                break;
+            } 
+        }
+
         /////////////////////
         // Get OCLC if any //
         /////////////////////

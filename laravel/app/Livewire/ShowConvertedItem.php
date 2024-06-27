@@ -174,9 +174,9 @@ class ShowConvertedItem extends Component
             $changes = true;
         } else {
             foreach ($this->fields as $field) {
-                if ((isset($output->item[$field]) && $output->item[$field] != $this->form->$field)
+                if ((isset($output->item[$field]) && isset($this->form->$field) && $output->item[$field] != $this->form->$field)
                         ||
-                        (! isset($output->item[$field]) && !empty($this->form->$field))
+                        (! isset($output->item[$field]) && ! empty($this->form->$field))
                     ) {
                     $changes = true;
                     break;
