@@ -354,7 +354,7 @@ class Converter
         // If next reg exp works, (conf\.|conference) can be deleted, given '?' at end.
         // Could add "symposium" to list of words
         //$this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference|symposium on | meeting |congress of the | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop|^actas del )';
-        $this->proceedingsRegExp = '(^proceedings of |conference|symposium on | meeting |congress of the |^proc\.| workshop|^actas del )';
+        $this->proceedingsRegExp = '(^proceedings of |proceedings of the (.*) (conference|congress)|conference|symposium on | meeting |congress of the |^proc\.| workshop|^actas del )';
         $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! (International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|{Tt]ezi|[Dd]issertação)([ \.,\)\]]|$)';
@@ -1032,13 +1032,19 @@ class Converter
                 } else {
                     $skip = 2;
                 }
-            } elseif (in_array($char, ['.', ',']) 
-                    && (! isset($chars[$i-1]) || $chars[$i-1] != '\\')
-                    && isset($chars[$i+1]) 
-                    && ! in_array($chars[$i+1], [' ', '.', ',', ';', '-', '"', "'"]) 
-                    && ! (isset($chars[$i-1]) && ctype_digit($chars[$i-1]) && ctype_digit($chars[$i+1]))
-                    && ((in_array($chars[$i+1], range('0', '9')) && (!isset($chars[$i+2]) || $chars[$i+2] != ':'))
-                            || mb_strtolower($chars[$i+1]) != $chars[$i+1])
+            } elseif (
+                // Don't add space after period in something like 'M.24'.
+                in_array($char, ['.', ',']) 
+                && (! isset($chars[$i-1]) 
+                    || (
+                    $chars[$i-1] != '\\' 
+                        && ! (in_array($chars[$i-1], range('A', 'Z')) && isset($chars[$i+1]) && in_array($chars[$i+1], range(0, 9))))
+                   )
+                && isset($chars[$i+1]) 
+                && ! in_array($chars[$i+1], [' ', '.', ',', ';', '-', '"', "'"]) 
+                && ! (isset($chars[$i-1]) && ctype_digit($chars[$i-1]) && ctype_digit($chars[$i+1]))
+                && ((in_array($chars[$i+1], range('0', '9')) && (! isset($chars[$i+2]) || $chars[$i+2] != ':'))
+                        || mb_strtolower($chars[$i+1]) != $chars[$i+1])
                 )
             {
                 $word .= $char;
@@ -2479,9 +2485,20 @@ class Converter
                             $editorStart = true;
                             $remainder = trim(substr($remainder, $matches[0][1] + strlen($matches[0][0])));
                         } elseif (preg_match($this->edsRegExp1, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                            // $remainder contains "(Eds.)" (parens required) or similar
-                            if ($this->isNameString($remainder)) {
+                            // $remainder contains "(Eds.)" (parens required) or similar and  starts with namestring OR
+                            // contains "(Eds.)," [note comma] --- in which case editors precede "eds".
+                            // if ($this->isNameString($remainder) || preg_match('/\([Ee]ds?\.?\),/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                            $result = preg_match('/^(?P<booktitle>[\p{L}\-: ]{15,}), (?P<editor>[\p{L}\-. ]{6,})\([Ee]ds?\.?\),? (?P<pubInfo>.*)$/', $remainder, $matches2);
+                            if ($result) {
                                 // CASE 1
+                                $this->verbose("Remainder format is <booktitle> <editors> (Eds.) <publicationInfo>");
+                                $this->setField($item, 'booktitle', $matches2['booktitle'], 'setField 130');
+                                $isEditor = true;
+                                $conversionResult = $this->convertToAuthors(explode(' ', $matches2['editor']), $remainder, $year, $month, $day, $date, $isEditor, determineEnd: false, type: 'editors', language: $language);
+                                $this->setField($item, 'editor', trim($conversionResult['authorstring'], ', '), 'setField 131');
+                                $remainder = trim($matches2['pubInfo'], ',. ');
+                            } elseif ($this->isNameString($remainder)) {
+                                // CASE 2
                                 // $remainder starts with names, and so
                                 // $remainder is <editors> (Eds.) <booktitle> <publicationInfo>
                                 $this->verbose("Remainder format is <editors> (Eds.) <booktitle> <publicationInfo>");
@@ -2493,7 +2510,7 @@ class Converter
                                 $this->verbose("postEditorString: " . $postEditorString);
                                 $this->verbose("[in4] Remainder: " . $remainder);
                             } else {
-                                // CASE 2
+                                // CASE 3
                                 // $remainder does not start with names, and so
                                 // $remainder is <booktitle>[,.] <editors> (Eds.) <publicationInfo>
                                 $this->verbose("Remainder contains \"(Eds.)\" or similar but starts with string that does not look like a name");
@@ -2920,10 +2937,16 @@ class Converter
                                 $this->setField($item, 'publisher', trim($matches['publisher'], ' .'), 'setField 125');
                                 $this->verbose('booktitle case 14a');
                                 $remainder = '';
+                            } elseif (preg_match('/^(?P<booktitle>[^.]+)\. \. (?P<address>.*): (?P<publisher>[^:.,]*)$/', $remainder, $matches)) {
+                                $this->setField($item, 'booktitle', trim($matches['booktitle'], ',. '), 'setField 131');
+                                $this->setField($item, 'address', trim($matches['address'], ',. '), 'setField 132');
+                                $this->setField($item, 'publisher', trim($matches['publisher'], ',. '), 'setField 133');
+                                $this->verbose('booktitle case 14b');
+                                $remainder = '';
                             } elseif (preg_match('/( ([^ ]*): ([^:.,]*)$)/', $remainder, $matches)) {
                                 $booktitle = Str::before($remainder, $matches[0]);
                                 $this->setField($item, 'booktitle', trim($booktitle, ',. '), 'setField 126');
-                                $this->verbose('booktitle case 14b');
+                                $this->verbose('booktitle case 14c');
                                 $remainder = $matches[0];
                             } else {
                                 $words = explode(" ", $remainder);
@@ -4496,7 +4519,7 @@ class Converter
         if (in_array(substr($word, -1), str_split($finalPunc))) {
             $word = substr($word, 0, -1);
         }
-        if (preg_match('/^[a-z{}\\\"\']+$/i', $word) && (ucfirst($word) == $word || strtoupper($word) == $word)) {
+        if (preg_match('/^[a-z{}\\\"\'\-]+$/i', $word) && (ucfirst($word) == $word || strtoupper($word) == $word)) {
             $result = true;
         }
 

@@ -10399,6 +10399,52 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'The MIT Press',
                     ]
             ],
+            // editor/booktitle mixed up
+			[
+                'source' => 'Hyman, Larry M. 1999. The Historical Interpretation of Vowel Harmony in Bantu. In Jean-Marie Hombert and Larry M. Hyman (eds.), Bantu Historical Linguistics: Theoretical and Empirical Perspectives, 235–295. Stanford: CSLI Publications.  ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Hyman, Larry M.',
+                    'year' => '1999',
+                    'title' => 'The Historical Interpretation of Vowel Harmony in Bantu',
+                    'pages' => '235-295',
+                    'booktitle' => 'Bantu Historical Linguistics: Theoretical and Empirical Perspectives',
+					'address' => 'Stanford',
+					'publisher' => 'CSLI Publications',
+                    'editor' => 'Jean-Marie Hombert and Larry M. Hyman',
+                    ]
+            ],
+			// editor/booktitle mixed up
+			 [
+                'source' => 'Kutsch Lojenga, Constance. 2009. Two types of vowel harmony in Malila (M.24). In Margarida Petter & Ronald Beline Mendes (eds.), Proceedings of the special world congress of African linguistics: Exploring the African language connection in the Americas, São Paulo, 2008. 109–128. São Paulo: Humanitas. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Kutsch Lojenga, Constance',
+                    'year' => '2009',
+                    'title' => 'Two types of vowel harmony in Malila (M.24)',
+                    'pages' => '109-128',
+                    'booktitle' => 'Proceedings of the special world congress of African linguistics: Exploring the African language connection in the Americas, São Paulo, 2008',
+					'address' => 'São Paulo',
+					'publisher' => 'Humanitas',
+                    'editor' => 'Margarida Petter and Ronald Beline Mendes',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// editor, booktitle mixed up
+			[
+                'source' => 'Morton, Deborah. 2012. Temporal and Aspectual Reference in Bassila Anii. In Elizabeth Bogal-Allbritton (ed.), Proceedings of SULA 6 and SULA-Bar: Semantics of Under-Represented Languages in the Americas (and Elsewhere), 349-363. Amherst: GLSA Publications. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Morton, Deborah',
+                    'year' => '2012',
+                    'title' => 'Temporal and Aspectual Reference in Bassila Anii',
+                    'pages' => '349-363',
+                    'booktitle' => 'Proceedings of SULA 6 and SULA-Bar: Semantics of Under-Represented Languages in the Americas (and Elsewhere)',
+                    'publisher' => 'GLSA Publications',
+                    'address' => 'Amherst',
+                    'editor' => 'Elizabeth Bogal-Allbritton',
+                    ]
+            ],
 
 
             
