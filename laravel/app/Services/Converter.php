@@ -3830,7 +3830,11 @@ class Converter
                             || preg_match('/^Revue /', $remainder)
                             // journal name, pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                             // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
-                            || preg_match('/^[A-Z][A-Za-z &]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
+                            // The following pattern allows too much latitude --- e.g. "The MIT Press. 2015." matches it.
+                            // || preg_match('/^[A-Z][A-Za-z &]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
+                            // journal name followed by publication info, allowing issue number and page
+                            // numbers to be preceded by letters --- no year.
+                            || preg_match('/^[A-Z][A-Za-z &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{0,4}\)?,? ?' . $this->pagesRegExp . '\.? ?$/', $remainder) 
                             // journal name followed by more specific publication info, year at end, allowing issue number and page
                             // numbers to be preceded by letters.
                             || preg_match('/^[A-Z][A-Za-z &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $this->pagesRegExp . '(, |. |.)(\(?(19|20)[0-9]{2}\)?)$/', $remainder) 
