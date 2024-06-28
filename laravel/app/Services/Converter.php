@@ -2927,7 +2927,7 @@ class Converter
                                     $this->setField($item, 'booktitle', trim($booktitle, ' ,;'), 'setField 53');
                                     $remainder = '';
                                 }
-                            // $remainder ends with pattern like 'city: publisher'; take booktitle to be preceding string
+                            // $remainder ends with pattern like 'city: publisher'
                             } elseif (! empty($cityString) && preg_match('/( ' . $cityString . ': (?P<publisher>[^:.,]*)\.?$)/', $remainder, $matches)) {
                                 $booktitle = Str::before($remainder, $matches[0]);
                                 $this->setField($item, 'booktitle', trim($booktitle, ', '), 'setField 123');

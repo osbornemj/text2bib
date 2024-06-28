@@ -7,19 +7,7 @@
     </x-slot>
 
     <div class="ml-4 -mt-2">
-        <form method="POST" action="{{ route('admin.search.conversions') }}">
-            @csrf
-    
-            <div>
-                <x-input-label for="search_string" :value="__('Words in source')" class="mt-4 mb-1"/>
-                <div class="flex">
-                    <x-text-input id="search_string" name="search_string" class="block mt-1 max-w-xl w-full" type="text" value="{{ $searchString ?? '' }}" autofocus />
-                    <x-primary-button class="ml-4 py-0">
-                        {{ __('Search') }}
-                    </x-primary-button>
-                </div>
-            </div>
-        </form>
+        @include('admin.conversions.searchForm')
     </div>
 
     <div class="sm:px-0 pt-0 space-y-6">
@@ -29,7 +17,7 @@
 
     <div class="px-4 sm:rounded-lg">
         <div class="mt-2">
-            {{ $outputs->count() }} matching outputs
+            {{ $outputs->count() }} matching {{ Str::plural('output', $outputs) }}
         </div>
         @foreach ($outputs as $i => $output)
             <div class="items-center">

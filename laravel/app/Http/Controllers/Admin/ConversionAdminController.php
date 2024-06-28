@@ -204,16 +204,22 @@ class ConversionAdminController extends Controller
     public function search(): View
     {
         $searchString = request()->search_string;
+        $cutoffDate = request()->cutoff_date;
         $searchTerms = explode(' ', $searchString);
 
         $outputs = Output::with('itemType')
             ->with('conversion');
+
+        if ($cutoffDate) {
+            $outputs = $outputs->where('created_at', '>', $cutoffDate);
+        }
+
         foreach ($searchTerms as $searchTerm) {
             $outputs = $outputs->where('source', 'like', '%' . $searchTerm .'%');
         }
         $outputs = $outputs->get();
 
-        return view('admin.conversions.showOutputs', compact('outputs', 'searchString'));
+        return view('admin.conversions.showOutputs', compact('outputs', 'searchString', 'cutoffDate'));
     }
 
 }
