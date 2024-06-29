@@ -268,7 +268,7 @@ class Converter
         $this->editorRegExp = '( eds?[\. ]|[\(\[]eds?\.?[\)\]]|[\(\[ ]edits\.[\(\] ]| editors?| [\(\[]editors?[\)\]]|[\(\[]რედ?\.?[\)\]])';
 
         $this->editionWords = ['edition', 'ed', 'edn', 'edição', 'édition', 'edición'];
-        $this->editionRegExp = '(?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie)';
+        $this->editionRegExp = '(?P<fullEdition>(?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie))';
 
         $this->volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
@@ -374,8 +374,8 @@ class Converter
         $this->inReviewRegExp3 = '/(\(?[Ii]n [Rr]eview\.?\)?)$/';
 
         $this->isbnRegExp1 = 'ISBN(-(10|13))?:? ?';
-        // ISBN should not have spaces, but allow for two
-        $this->isbnRegExp2 = '[0-9X -]{10,15}';
+        // ISBN should not have spaces, but allow them.  (ISBN has 10 or 13 digits.)
+        $this->isbnRegExp2 = '[0-9X -]{10,17}';
 
         $issnNumberFormat = '[0-9]{4}-[0-9]{3}[0-9X]';
         $this->issnRegExps = [
@@ -680,7 +680,7 @@ class Converter
         if (empty($doi)) {
             $doi = $this->extractLabeledContent(
                 $remainder,
-                ' [\[\)]?doi:? | [\[\(]?doi: ?|;doi:|(Available from:? )?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(Available from:? )?(\\\href\{|\\\url{)?https?://doi\.org/|doi\.org',
+                ' [\[\)]?doi:? | [\[\(]?doi: ?|;doi:|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://doi\.org/|doi\.org',
                 '[^ ]+'
             );
         }
@@ -785,7 +785,7 @@ class Converter
 
         //$eprint = $this->extractLabeledContent($remainder, ' arxiv[:,] ?', '\S+');
 
-        $eprint = $this->extractLabeledContent($remainder, '([Ii]n)? bioRxiv ?', '\S+ \S+');
+        $eprint = $this->extractLabeledContent($remainder, '([Ii]n|{\\\em)? bioRxiv[ }]?', '\S+ \S+');
 
         if ($eprint) {
             $this->setField($item, 'archiveprefix', 'bioRxiv', 'setField 2a');
@@ -871,6 +871,11 @@ class Converter
             $siteName = (! empty($matches['siteName']) && $matches['siteName'] != '\url{') ? $matches['siteName'] : null;
             $url = $matches['url'] ?? null;
             $note = $matches['note'] ?? null;
+            $trimmedNote = trim($note);
+            if ($this->isYear($trimmedNote)) {
+                $this->setField($item, 'year', $trimmedNote, 'setField 4c');
+                $note = null;
+            }
 
             $dateResult = $this->isDate(trim($date, ' .,'), $language, 'contains');
 
@@ -2207,7 +2212,14 @@ class Converter
                 // If a string in $remainder is quoted or italicized, take that to be book title
                 // (string) on next line to stop VSCode complaining
                 $booktitle = (string) $this->getQuotedOrItalic($remainder, false, false, $before, $after, $style);
-                $newRemainder = $remainder = $before . ltrim($after, ".,' ");
+                if (preg_match('/^(?P<volume>' . $this->volRegExp0 . ')(?P<after>.*)$/', $after, $matches)) {
+                    if (isset($matches['volume'])) {
+                        $booktitle .= $matches['volume'];
+                        $after = $matches['after'] ?? '';
+                    }
+                }
+                $after = ltrim($after, ".,' ");
+                $newRemainder = $remainder = $before . $after;
                 $booktitle = rtrim($booktitle, ', ');
 
                 if ($booktitle) {
@@ -2243,20 +2255,20 @@ class Converter
                     }
                 }
 
+                $remainder = Str::replaceStart('{\em', '', $remainder);
+                $remainder = trim($remainder, '} ');
                 $this->verbose('[in3] Remainder: ' . $remainder);
                 $updateRemainder = false;
 
-                // If $remainder starts with '[a-zA-Z]*:' and has no more occurrences of this pattern,
-                // it is consistent with its being publisher: address, without any editors.
-                if (preg_match_all('/[a-zA-Z]*:/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                    // Next line to stop VSCode complaining
-                    $matches = (array) $matches;
-                    //  If only one occurrence of string followed by colon, **and it's at the start**
-                    if (count($matches[0]) == 1 && $matches[0][0][1] == 0) {
-                        $this->setField($item, 'address', substr($matches[0][0][0], 0, -1), 'setField 35');
-                        $this->setField($item, 'publisher', trim(substr($remainder, strlen($matches[0][0][0]))), 'setField 36');
-                        $remainder = '';
+                // address can have one or two words, publisher can have 1-3 word, the last of which can be in parens
+                if (preg_match('/^(?P<address>[\p{L}]+( [\p{L}]+)?): ?(?P<publisher>[\p{L}\-]+( [\p{L}\-]+)?( [\p{L}\-()]+)?)\.?$/', $remainder, $matches)) {
+                    if (isset($matches['address'])) {
+                        $this->setField($item, 'address', $matches['address'], 'setField 35');
                     }
+                    if (isset($matches['publisher'])) {
+                        $this->setField($item, 'publisher', $matches['publisher'], 'setField 36');
+                    }
+                    $remainder = '';
                 }
 
                 // The only reason why $item->editor could be set other than by the previous code block is that the 
@@ -2444,13 +2456,17 @@ class Converter
                         $afterEds = Str::after($remainder, $eds);
                         $publisherPosition = strpos($after, $publisher);
                         $remainderContainsEds = true;
-                    } elseif (preg_match('/^(.*?)(edited by)(.*?)$/i', $remainder, $matches)) {
+                    } elseif (preg_match('/^(?P<booktitle>.*?)(edited by)(?P<rest>.*?)$/i', $remainder, $matches)) {
                         // If it doesn't, take start of $remainder up to first comma or period to be title,
                         // followed by editors, up to (Eds.).
                         $this->verbose('Remainder contains \'edited by\'.  Taking it to be <booktitle> edited by <editor> <publicationInfo>');
-                        $booktitle = trim($matches[1], ', ');
+                        $booktitle = trim($matches['booktitle'], ', ');
                         // Authors and publication info
-                        $rest = trim($matches[3]);
+                        $rest = trim($matches['rest']);
+                        if (preg_match('/^(?P<before>.*)' . $this->editionRegExp . '(?P<after>.*)$/', $rest, $matches)) {
+                            $this->addToField($item, 'note', $matches['fullEdition']);
+                            $rest = $matches['before'] . $matches['after'];
+                        }
                         $isEditor = true;
                         $result = $this->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
                         $this->setField($item, 'editor', trim($result['authorstring'], ', '), 'setField 120');
@@ -2773,8 +2789,11 @@ class Converter
                         } else {
                             if ($containsPublisher) {
                                 $publisherPos = strpos($remainder, $publisher);
-                                $editor = substr($remainder, 0, $publisherPos);
-                                $this->verbose("Editor is: " . $editor);
+                                $editorString = substr($remainder, 0, $publisherPos);
+                                $editorConversion = $this->convertToAuthors(explode(' ', trim($remainder)), $remainder, $year, $month, $day, $date, $isEditor, true, 'editors', $language);
+
+                                $editor = $editorConversion['authorstring'];
+                                $this->verbose("Editor is: " . $editor);                                
                                 $newRemainder = substr($remainder, $publisherPos);
                             } else {
                                 $editorConversion = $this->convertToAuthors(explode(' ', trim($remainder)), $remainder, $year, $month, $day, $date, $isEditor, true, 'editors', $language);
@@ -2840,6 +2859,8 @@ class Converter
                         }
 
                         $remainder = ltrim($newRemainder, ' ,');
+                        $remainder = Str::replaceStart('{\em ', '', $remainder);
+                        $remainder = trim($remainder, '}: ');
                         $this->verbose("[in10] Remainder: " . $remainder);
                     }
                 } elseif (! $booktitle) {

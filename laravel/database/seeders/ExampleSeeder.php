@@ -10445,6 +10445,143 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Elizabeth Bogal-Allbritton',
                     ]
             ],
+            // ISSN
+            [
+                'source' => 'Bernacchia R, Preti R and Vinci G. Chemical Composition and Health Benefits of Flaxseed. Austin J Nutri Food Sci. 2014;2(8): 1045. ISSN: 2381-8980. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bernacchia, R. and Preti, R. and Vinci, G.',
+                    'title' => 'Chemical Composition and Health Benefits of Flaxseed',
+                    'year' => '2014',
+                    'journal' => 'Austin J Nutri Food Sci',
+                    'pages' => '1045',
+                    'volume' => '2',
+                    'number' => '8',
+                    'note' => 'ISSN: 2381-8980',
+                    ]
+            ],
+			// {\em should not be put in note
+			[
+                'source' => '\bibitem{Heinzinger2023}Heinzinger, M., Weissenow, K., Sanchez, J., Henkel, A., Steinegger, M. \& Rost, B. ProstT5: Bilingual Language Model for Protein Sequence and Structure. {\em bioRxiv}. 2023.07.23.550085v1 (2023).  ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'archiveprefix' => 'bioRxiv',
+                    'eprint' => '2023.07.23.550085v1',
+                    'author' => 'Heinzinger, M. and Weissenow, K. and Sanchez, J. and Henkel, A. and Steinegger, M. and Rost, B.',
+                    'title' => 'ProstT5: Bilingual Language Model for Protein Sequence and Structure',
+                    'year' => '2023',
+                    ]
+            ],
+			// publisher enclosed in {\em
+			[
+                'source' => '\bibitem{Alberts2002a} B.~Alberts, A.~Johnson, J.~Lewis, M.~Raff, K.~Roberts, and P.~Walter, ``DNA-Binding Motifs in Gene Regulatory Proteins,\'\' In: ``Molecular Biology of the Cell, 4th edition,\'\' {\em New York: Garland Science}, 2002. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'B. Alberts and A. Johnson and J. Lewis and M. Raff and K. Roberts and P. Walter',
+                    'title' => 'DNA-Binding Motifs in Gene Regulatory Proteins',
+                    'year' => '2002',
+                    'booktitle' => 'Molecular Biology of the Cell, 4th edition',
+                    'address' => 'New York',
+                    'publisher' => 'Garland Science',
+                    ]
+            ],
+			// publisher enclosed in {\em
+			[
+                'source' => '\bibitem{Cooper2000} G.~M. Cooper, ``The Central Role of Enzymes as Biological Catalysts,\'\' In: ``The Cell: A Molecular Approach, 2nd edition\'\' {\em Sunderland (MA): Sinauer Associates}, 2000. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'G. M. Cooper',
+                    'title' => 'The Central Role of Enzymes as Biological Catalysts',
+                    'year' => '2000',
+                    'booktitle' => 'The Cell: A Molecular Approach, 2nd edition',
+                    'publisher' => 'Sinauer Associates',
+                    'address' => 'Sunderland (MA)',
+                    ]
+            ],
+			// problem with {\em not preceded by punctuation
+			[
+                'source' => '\bibitem{backelin} J. Backelin, J. West, G. Xin,  Wilf-equivalence for singleton classes, {\em Adv. in Appl. Math.} {\bf 38} (2007), no. 2, 133--148. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'J. Backelin and J. West and G. Xin',
+                    'title' => 'Wilf-equivalence for singleton classes',
+                    'journal' => 'Adv. in Appl. Math.',
+                    'year' => '2007',
+                    'volume' => '38',
+                    'number' => '2',
+                    'pages' => '133-148',
+                    ]
+            ],
+			// publisher enclosed in {\em
+			[
+                'source' => '\bibitem{Lehoucq1998} R.~B. Lehoucq, D.~C. Sorensen, and C.~Yang, ``ARPACK users guide: solution of large-scale eigenvalue problems with    implicitly restarted Arnoldi methods,\'\' {\em Philadelphia: SIAM}, 1998. \newblock ISBN 978-0-89871-407-4. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'isbn' => '978-0-89871-407-4',
+                    'author' => 'R. B. Lehoucq and D. C. Sorensen and C. Yang',
+                    'title' => 'ARPACK users guide: solution of large-scale eigenvalue problems with implicitly restarted Arnoldi methods',
+                    'year' => '1998',
+                    'publisher' => 'SIAM',
+                    'address' => 'Philadelphia',
+                    ]
+            ],
+			// publisher mixed up with editors
+			[
+                'source' => '\bibitem{Berger63} M.~J. Berger, ``Monte Carlo Calculations of the Penetration and Diffusion of Fast Charged Particles\'\', \emph{Methods in Computational Physics},Vol. 1, edited by B.Adler, S. Fernbach, and M. Rotenberg, Academic Press, New York, (1963). ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'M. J. Berger',
+                    'title' => 'Monte Carlo Calculations of the Penetration and Diffusion of Fast Charged Particles',
+                    'year' => '1963',
+                    'booktitle' => 'Methods in Computational Physics, Vol. 1',
+                    'publisher' => 'Academic Press',
+					'editor' => 'B. Adler and S. Fernbach and M. Rotenberg',
+                    'address' => 'New York',
+                    ]
+            ],
+			// year not detected
+			[
+                'source' => 'Nerea Boada. Experiencia de usuario. https://www.cyberclick.es/numerical-blog/por-que-user-experience-o-experiencia-del-usuario. 2022 ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'Nerea Boada',
+                    'title' => 'Experiencia de usuario',
+                    'year' => '2022',
+                    'url' => 'https://www.cyberclick.es/numerical-blog/por-que-user-experience-o-experiencia-del-usuario',
+                    ]
+            ],
+			// 'available at' not removed
+			[
+                'source' => 'Bastian, B.T. et al. (2019) ‘Visual inspection and characterization of external corrosion in pipelines using deep neural network’, NDT & E International, 107, p. 102134. Available at: https://doi.org/10.1016/j.ndteint.2019.102134. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.ndteint.2019.102134',
+                    'author' => 'Bastian, B. T. and others',
+                    'year' => '2019',
+                    'title' => 'Visual inspection and characterization of external corrosion in pipelines using deep neural network',
+                    'journal' => 'NDT & E International',
+                    'pages' => '102134',
+                    'volume' => '107',
+                    ]
+            ],
+			// edition not detected
+			[
+                'source' => 'Catto, Rebecca. 2016. ‘Reverse Mission: From the Global South to Mainline Churches’. In Church Growth in Britain: 1980 to the Present, edited by David Goodhew, 2nd edition, 91–103. London: Routledge. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Catto, Rebecca',
+                    'title' => 'Reverse Mission: From the Global South to Mainline Churches',
+                    'year' => '2016',
+                    'pages' => '91-103',
+                    'note' => '2nd edition',
+                    'editor' => 'David Goodhew',
+                    'address' => 'London',
+                    'publisher' => 'Routledge',
+                    'booktitle' => 'Church Growth in Britain: 1980 to the Present',
+                    ]
+            ],
+
+            
 
 
             
