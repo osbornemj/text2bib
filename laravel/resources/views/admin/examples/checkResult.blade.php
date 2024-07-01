@@ -7,6 +7,12 @@
     </x-slot>
 
     <div class="px-4 sm:rounded-lg">
+        Author pattern counts:
+        @foreach ($authorPatternCounts as $i => $authorPatternCount)
+            {{ $i }}: {{ $authorPatternCount }}@if ($loop->last).@else, @endif
+        @endforeach
+        Total: {{ array_sum($authorPatternCounts)}}
+        <p>
         @if ($allCorrect && $detailsIfCorrect == 'hide') 
             <span class="bg-green-600">All correct</span> ({{ $exampleCount }} {{ Str::plural('item', $exampleCount) }})
         @else

@@ -52,6 +52,7 @@ class ExampleCheckController extends Controller
 
         $previousAuthor = null;
 
+        $authorPatternCounts = [];
         foreach ($examples as $example) {
 
             $correctType = $correctContent = true;
@@ -65,6 +66,15 @@ class ExampleCheckController extends Controller
 
             $output = $this->converter->convertEntry($example->source, $conversion, $example->language, $example->char_encoding, $example->use, $previousAuthor);
             $previousAuthor = $output['item']->author ?? null;
+
+            $authorPattern = $output['author-pattern'];
+            if ($authorPattern !== null) {
+                if (isset($authorPatternCounts[$authorPattern])) {
+                    $authorPatternCounts[$output['author-pattern']]++;
+                } else {
+                    $authorPatternCounts[$output['author-pattern']] = 1;
+                }
+            }
             
             $unidentified = '';
             if (isset($output['item']->unidentified)) {
@@ -132,7 +142,8 @@ class ExampleCheckController extends Controller
 
         $exampleCount = count($examples);
 
+        ksort($authorPatternCounts);
         return view('admin.examples.checkResult',
-            compact('results', 'reportType', 'detailsIfCorrect', 'allCorrect', 'exampleCount', 'typeOptions', 'utf8Options', 'languageOptions', 'detailOptions'));
+            compact('results', 'reportType', 'detailsIfCorrect', 'allCorrect', 'exampleCount', 'typeOptions', 'utf8Options', 'languageOptions', 'detailOptions', 'authorPatternCounts'));
     }
 }

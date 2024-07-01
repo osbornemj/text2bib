@@ -6570,7 +6570,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Tien DH, Duy TN, Thoa PTT. 2023. Applying GPR-FGRA hybrid algorithm for prediction and optimization of eco-friendly magnetorheological finishing Ti–6Al–4V alloy. International Journal on Interactive Design and Manufacturing. Apr 1;17(2):729–45. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => 'Tien, D. H. and Duy, T. N. and Thoa Ptt',
+                    'author' => 'Tien, D. H. and Duy, T. N. and Thoa, P. T. T.',
                     'year' => '2023',
                     'title' => 'Applying GPR-FGRA hybrid algorithm for prediction and optimization of eco-friendly magnetorheological finishing Ti--6Al--4V alloy',
                     'journal' => 'International Journal on Interactive Design and Manufacturing.',
@@ -6600,8 +6600,8 @@ class ExampleSeeder extends Seeder
                 'source' => 'Lim YR, Ariffin AS, Ali M, Chang KL. A Hybrid MCDM Model for Live-Streamer Selection via the Fuzzy Delphi Method, AHP, and TOPSIS. Applied Sciences. 2021 Oct 8;11(19):9322. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => 'Lim, Y. R. and Ariffin, A. S. and Ali, M. and Chang, K. L. A.',
-                    'title' => 'Hybrid MCDM Model for Live-Streamer Selection via the Fuzzy Delphi Method, AHP, and TOPSIS',
+                    'author' => 'Lim, Y. R. and Ariffin, A. S. and Ali, M. and Chang, K. L.',
+                    'title' => 'A Hybrid MCDM Model for Live-Streamer Selection via the Fuzzy Delphi Method, AHP, and TOPSIS',
                     'year' => '2021',
                     'month' => 'October',
 					'date' => '2021-10-08',
@@ -8844,7 +8844,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'article',
                 'bibtex' => [
                     'doi' => '10.1016/j.arthro.2006.04.098',
-                    'author' => 'Brandon, M. L. and Haynes, P. T. and Bonamo, J. R. and Flynn Mii and Barrett, G. R. and Sherman, M. F.',
+                    'author' => 'Brandon, M. L. and Haynes, P. T. and Bonamo, J. R. and Flynn, M. I. I. and Barrett, G. R. and Sherman, M. F.',
                     'year' => '2006',
 					'volume' => '22',
 					'number' => '8',
@@ -10580,6 +10580,114 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Church Growth in Britain: 1980 to the Present',
                     ]
             ],
+			// authors ended early
+			[
+                'source' => 'Cullen G, Kroshinsky D, Cheifetz AS and Korzenik JR: Psoriasis associated with anti-tumour necrosis factor therapy in inflammatory bowel disease: A new series and a review of 120 cases from the literature. Aliment Pharmacol Ther. 34:1318–1327. 2011.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Cullen, G. and Kroshinsky, D. and Cheifetz, A. S. and Korzenik, J. R.',
+                    'title' => 'Psoriasis associated with anti-tumour necrosis factor therapy in inflammatory bowel disease: A new series and a review of 120 cases from the literature',
+                    'journal' => 'Aliment Pharmacol Ther.',
+                    'year' => '2011',
+                    'volume' => '34',
+                    'pages' => '1318-1327',
+                    ]
+            ],
+			// authors ended early
+			[
+                'source' => ' Tatu AL, Elisei AM, Chioncel V, Miulescu M and Nwabudike LC: Immunologic adverse reactions of β blockers and the skin (Review). Exp Ther Med 18: 955 959, 2019.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Tatu, A. L. and Elisei, A. M. and Chioncel, V. and Miulescu, M. and Nwabudike, L. C.',
+                    'title' => 'Immunologic adverse reactions of β blockers and the skin (Review)',
+                    'year' => '2019',
+                    'journal' => 'Exp Ther Med',
+                    'volume' => '18',
+                    'number' => '955',
+                    'pages' => '959',
+                    ]
+            ],
+			// authors ended early
+			[
+                'source' => 'Adair JC, Gold M and Bond RE: Acyclovir neurotoxicity: Clinical experience and review of the literature. South Med J 87: 1227 1231, 1994.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Adair, J. C. and Gold, M. and Bond, R. E.',
+                    'title' => 'Acyclovir neurotoxicity: Clinical experience and review of the literature',
+                    'year' => '1994',
+                    'journal' => 'South Med J',
+                    'volume' => '87',
+                    'number' => '1227',
+                    'pages' => '1231',
+                    ]
+            ],
+			// authors ended early
+			[
+                'source' => 'Haefeli WE, Schoenenberger RA, Weiss P and Ritz RF: Acyclovir induced neurotoxicity: Concentration side effect relationship in acyclovir overdose. Am J Med 94: 212 215, 1993.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Haefeli, W. E. and Schoenenberger, R. A. and Weiss, P. and Ritz, R. F.',
+                    'title' => 'Acyclovir induced neurotoxicity: Concentration side effect relationship in acyclovir overdose',
+                    'year' => '1993',
+                    'journal' => 'Am J Med',
+                    'volume' => '94',
+                    'number' => '212',
+                    'pages' => '215',
+                    ]
+            ],
+			// authors ended early
+			[
+                'source' => 'George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T: Drug induced thrombocytopenia: A systematic review of published case reports. Ann Intern Med 129: 886 890, 1998. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'George, J. N. and Raskob, G. E. and Shah, S. R. and Rizvi, M. A. and Hamilton, S. A. and Osborne, S. and Vondracek, T.',
+                    'title' => 'Drug induced thrombocytopenia: A systematic review of published case reports',
+                    'year' => '1998',
+                    'journal' => 'Ann Intern Med',
+                    'volume' => '129',
+                    'number' => '886',
+                    'pages' => '890',
+                    ]
+            ],
+            // authors ended early
+			[
+                'source' => 'Nguyen ATM and Holland AJA: Balanitis xerotica obliterans: An update for clinicians. Eur J Pediatr. 179:9?16. 2020. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Nguyen, A. T. M. and Holland, A. J. A.',
+                    'title' => 'Balanitis xerotica obliterans: An update for clinicians',
+                    'year' => '2020',
+                    'journal' => 'Eur J Pediatr.',
+                    'volume' => '179',
+                    'pages' => '9-16',
+                    ]
+            ],
+			// title included in author string.  Hard to see how to solve the problem. (Use fact that ; is being used as name separator??)
+			[
+                'source' => 'Webber, M. J.; Appel, E. A.; Meijer, E. W.; Langer, R., Supramolecular Biomaterials. Nat. Mater. 2016, 15, 13–26. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Webber, M. J. and Appel, E. A. and Meijer, E. W. and Langer, R.',
+                    'title' => 'Supramolecular Biomaterials',
+                    'journal' => 'Nat. Mater',
+                    'year' => '2016',
+                    'volume' => '15',
+                    'pages' => '13-26',
+                    ]
+            ],
+			// first word of title included in authors
+            [
+                'source' => '\bibitem{Kingma13} D. P. Kingma, M. Welling, Auto-encoding variational bayes, arXiv preprint, art no. 1312.6114, 2013.',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => 'D. P. Kingma and M. Welling',
+                    'title' => 'Auto-encoding variational bayes',
+                    'archiveprefixl' => 'arXiv',
+					'eprint' => '1312.6114',
+                    'year' => '2013',
+                    ]
+            ],
+
 
             
 
