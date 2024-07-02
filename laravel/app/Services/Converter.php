@@ -4738,11 +4738,22 @@ class Converter
         }
         $vonNameRegExp .= ')';
 
+        $andRegExp = '(';
+        foreach ($this->andWords as $i => $andWord) {
+            if ($andWord == '\&') {
+                $andWord = '\\\&';
+            } elseif ($andWord == '$\&$') {
+                $andWord = '\$\\\&\$';
+            }
+            $andRegExp .= ($i ? '|' : '') . $andWord;
+        }
+        $andRegExp .= ')';
+
         // last name has to start with uppercase letter
         $lastNameRegExp = '(' . $vonNameRegExp . ' )?\p{Lu}[\p{L}\-\']+';
         // other name has to start with uppercase letter and include at least one lowercase letter
         $otherNameRegExp = '(?=[^ ]*\p{Ll})\p{Lu}[\p{L}\-\']+';
-        $andRegExp = '(and|&|\\\&|et|y)';
+        //$andRegExp = '(and|&|\\\&|et|y)';
         $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.-\p{Lu}\.)';
         
         $authorRegExps = [
@@ -4926,6 +4937,23 @@ class Converter
                 'end1' => ', (?!' . $andRegExp . ')', 
                 'end2' => ', (?!' . $andRegExp . ')', 
                 'end3' => '\. ', 
+                'initials' => false
+            ],
+            // 22. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
+            [
+                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?',
+                'end1' => ' ' . $andRegExp . ' ',
+                'end2' => '[\.,] ',
+                'end3' => null,
+                'initials' => false
+            ],
+            // 23. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
+            [
+                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?',
+                'name2' => $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp,
+                'end1' => ', (?!' . $andRegExp . ')', 
+                'end2' => ',? ' . $andRegExp . ' ',
+                'end3' => '[\.,] ',
                 'initials' => false
             ],
         ];

@@ -10688,6 +10688,35 @@ class ExampleSeeder extends Seeder
                     'year' => '2013',
                     ]
             ],
+            // author format
+            [
+                'source' => 'Murshed, Muntasir & Ozturk, Ilhan, 2023. "Rethinking energy poverty reduction through improving electricity accessibility: A regional analysis on selected African nations," Energy, vol. 267. DOI: 10.1016/j.energy.2022.126547  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.energy.2022.126547',
+                    'author' => 'Murshed, Muntasir and Ozturk, Ilhan',
+                    'year' => '2023',
+                    'title' => 'Rethinking energy poverty reduction through improving electricity accessibility: A regional analysis on selected African nations',
+                    'journal' => 'Energy',
+                    'volume' => '267',
+                    ]
+            ],
+            // author pattern
+            [
+                'source' => 'Wu, Jia, Junsen Zhang, and Chunchao Wang. 2023. "Student Performance, Peer Effects, and Friend Networks: Evidence from a Randomized Peer Intervention." American Economic Journal: Economic Policy, 15 (1): 510-42. https://hdl.handle.net/10419/289581  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'url' => 'https://hdl.handle.net/10419/289581',
+                    'author' => 'Wu, Jia and Junsen Zhang and Chunchao Wang',
+                    'year' => '2023',
+                    'title' => 'Student Performance, Peer Effects, and Friend Networks: Evidence from a Randomized Peer Intervention',
+                    'journal' => 'American Economic Journal: Economic Policy',
+                    'volume' => '15',
+                    'number' => '1',
+                    'pages' => '510-42',
+                    ]
+            ],
+            
 
 
             
