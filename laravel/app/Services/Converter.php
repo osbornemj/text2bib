@@ -4828,7 +4828,7 @@ class Converter
             [
                 'name1' => $lastNameRegExp . ',?( ' . $initialRegExp . '){1,3}', 
                 'end1' => ', (?!' . $andRegExp . ')', 
-                'end2' => ', ' . $andRegExp . ' ', 
+                'end2' => ',? ' . $andRegExp . ' ', 
                 'end3' => '[,\. ]', 
                 'initials' => false
             ],
