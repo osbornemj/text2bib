@@ -10730,6 +10730,21 @@ class ExampleSeeder extends Seeder
                     'pages' => '33-63',
                     ]
             ],
+            // author pattern
+            [
+                'source' => 'Huang, P., and Y. Liu. 2021. Toward just energy transitions in authoritarian regimes: Indirect participation and adaptive governance. Journal of Environmental Planning and Management 64 (1):1–21. doi:10.1080/09640568.2020.1743245. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1080/09640568.2020.1743245',
+                    'author' => 'Huang, P. and Y. Liu',
+                    'year' => '2021',
+                    'title' => 'Toward just energy transitions in authoritarian regimes: Indirect participation and adaptive governance',
+                    'journal' => 'Journal of Environmental Planning and Management',
+                    'volume' => '64',
+                    'number' => '1',
+                    'pages' => '1-21',
+                    ]
+            ],
             
 
 
