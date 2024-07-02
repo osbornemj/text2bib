@@ -57,9 +57,22 @@ class ConversionAdminController extends Controller
                     ->orderBy('seq')
                     ->get();
 
+        $authorPatternCount = $outputs->whereNotNull('author_pattern')->count();
+        $outputCount = $outputs->count();
+        $authorPatternPercent = $outputCount ? 100 * $authorPatternCount / $outputCount : 0;
+
         $conversion = Conversion::find($conversionId);
 
-        return view('admin.conversions.show', compact('outputs', 'conversion', 'page'));
+        return view('admin.conversions.show',
+            compact(
+                'outputs', 
+                'conversion', 
+                'page', 
+                'authorPatternCount', 
+                'authorPatternPercent', 
+                'outputCount'
+            )
+        );
     }
 
     public function destroy(int $conversionId)

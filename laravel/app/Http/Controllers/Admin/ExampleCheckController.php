@@ -67,12 +67,12 @@ class ExampleCheckController extends Controller
             $output = $this->converter->convertEntry($example->source, $conversion, $example->language, $example->char_encoding, $example->use, $previousAuthor);
             $previousAuthor = $output['item']->author ?? null;
 
-            $authorPattern = $output['author-pattern'];
+            $authorPattern = $output['author_pattern'];
             if ($authorPattern !== null) {
                 if (isset($authorPatternCounts[$authorPattern])) {
-                    $authorPatternCounts[$output['author-pattern']]++;
+                    $authorPatternCounts[$output['author_pattern']]++;
                 } else {
-                    $authorPatternCounts[$output['author-pattern']] = 1;
+                    $authorPatternCounts[$output['author_pattern']] = 1;
                 }
             }
             

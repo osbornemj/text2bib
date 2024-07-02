@@ -37,6 +37,10 @@
         @endif
 
         <br/>
+
+        Author pattern: {{ $output->author_pattern ?? 'none'}}
+
+        <br/>
         
         {{ '@' }}{{ $output->itemType->name }}{{ '{' }}{{ $output->label }},
         @foreach ($convertedItem as $name => $content)

@@ -733,9 +733,9 @@ class Converter
             $hasDoi = false;
         }
 
-        //////////////////////////////
-        // Get PMID and PMCIDif any //
-        //////////////////////////////
+        ///////////////////////////////
+        // Get PMID and PMCID if any //
+        ///////////////////////////////
 
         if (preg_match('/pmid: [0-9]{6,9}/i', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
             $this->addToField($item, 'note', $matches[0][0], 'addToField 1a');
@@ -3549,7 +3549,7 @@ class Converter
             'notices' => $notices,
             'details' => $conversion->report_type == 'detailed' ? $this->detailLines : [],
             'scholarTitle' => $scholarTitle,
-            'author-pattern' => $authorConversion['author-pattern'] ?? null,
+            'author_pattern' => $authorConversion['author_pattern'] ?? null,
         ];
 
         return $returner;
@@ -4918,7 +4918,8 @@ class Converter
                 'end1' => ' ' . $andRegExp . ' ',
                 'end2' => '[\.,] ',
                 'end3' => null,
-                'initials' => false],
+                'initials' => false
+            ],
             // 21. Jane Smith, Susan Jones, Hilda Gonzalez. 
             [
                 'name1' => $otherNameRegExp . ' ' . $lastNameRegExp, 
@@ -4995,7 +4996,7 @@ class Converter
                 'authorstring' => $authorstring,
                 'warnings' => [],
                 'organization' => false,
-                'author-pattern' => $i,
+                'author_pattern' => $i,
             ];
         }
 
@@ -5809,7 +5810,7 @@ class Converter
             'authorstring' => $authorstring,
             'warnings' => $warnings,
             'organization' => false,
-            'author-pattern' => null,
+            'author_pattern' => null,
         ];
     }
 

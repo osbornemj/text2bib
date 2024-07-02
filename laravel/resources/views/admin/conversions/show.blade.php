@@ -47,6 +47,9 @@
                     </x-primary-button>
                 </form>
                 @endif
+                <div class="mt-2">
+                    Author patterns: {{ $authorPatternCount }}/{{ $outputCount}} ({{ number_format($authorPatternPercent, 0) }}%)
+                </div>
             </div>
 
             @foreach ($outputs as $i => $output)

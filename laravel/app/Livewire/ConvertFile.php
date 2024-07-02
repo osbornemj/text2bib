@@ -303,6 +303,7 @@ class ConvertFile extends Component
                         'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
                         'label' => $convItem['label'],
                         'item' => $convItem['item'],
+                        'author_pattern' => $convItem['author_pattern'],
                         'seq' => $i,
                     ]);
                     $convertedItems[$output->id] = $convItem;
