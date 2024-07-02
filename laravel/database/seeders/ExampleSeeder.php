@@ -9502,10 +9502,10 @@ class ExampleSeeder extends Seeder
 			// braces around last name of first author mess things up
             // Rendering of {J}.-{P}. is not correct, but is seems such an edge case that it's not worth fixing
 			[
-                'source' => '\bibitem{alouani2004} F.~{Alouani-Bibi}, M.~M. Shoucri, and {J}.-{P}. Matte. \newblock Different {F}okker--{P}lanck approaches to simulate electron   transport in plasmas. \newblock {\em Comput. Phys. Commun.}, 164:60--66, 2004. ',
+                'source' => '\bibitem{alouani2004} F.~{Alouani-Bibi}, M.~M. Shoucri, and J.-P. Matte. \newblock Different {F}okker--{P}lanck approaches to simulate electron   transport in plasmas. \newblock {\em Comput. Phys. Commun.}, 164:60--66, 2004. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => 'F. {Alouani-Bibi} and M. M. Shoucri and {J. }.-{P. }. Matte', 
+                    'author' => 'F. {Alouani-Bibi} and M. M. Shoucri and J.-P. Matte', 
 					'title' => 'Different {F}okker--{P}lanck approaches to simulate electron transport in plasmas',
                     'year' => '2004',
                     'journal' => 'Comput. Phys. Commun.',
@@ -9631,10 +9631,11 @@ class ExampleSeeder extends Seeder
             ],
 			// unpublished master's thesis
 			[
-                'source' => 'Ceylan, H.(2019). Fen bilgisi öğretmenlerinin eğitim-öğretimde, Eğitim Bilişim Ağından (EBA ) yararlanmaya ilişkin görüşleri. Yayınlanmamış Yüksek Lisans Tezi, Trakya Üniversitesi, Edirne. ',
+                'source' => 'Ceylan, H. (2019). Fen bilgisi öğretmenlerinin eğitim-öğretimde, Eğitim Bilişim Ağından (EBA ) yararlanmaya ilişkin görüşleri. Yayınlanmamış Yüksek Lisans Tezi, Trakya Üniversitesi, Edirne. ',
                 'type' => 'mastersthesis',
                 'bibtex' => [
-                    'author' => 'Ceylan, H. (2019).',
+                    'author' => 'Ceylan, H.',
+                    'year' => '2019',
                     'title' => 'Fen bilgisi öğretmenlerinin eğitim-öğretimde, Eğitim Bilişim Ağından (EBA) yararlanmaya ilişkin görüşleri',
                     'school' => 'Trakya Üniversitesi, Edirne',
                     ],
