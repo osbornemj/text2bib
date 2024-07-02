@@ -4948,7 +4948,15 @@ class Converter
                 'end3' => null,
                 'initials' => false
             ],
-            // 22. Jane (A. )?Smith, Susan (B. )?Jones, Hilda (C. )?Gonzalez. 
+            // 22. Jane (A. )?Smith, Susan (B. )?Jones. 
+            [
+                'name1' => $firstNameInitialsLastName, 
+                'end1' => ', ' . $notAnd, 
+                'end2' => '\.', 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 23. Jane (A. )?Smith, Susan (B. )?Jones, Hilda (C. )?Gonzalez. 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => ', ' . $notAnd, 
@@ -4956,7 +4964,7 @@ class Converter
                 'end3' => '\. ', 
                 'initials' => false
             ],
-            // 23. Jane (A. )?Smith and Susan (B. )?Jones[,.] 
+            // 24. Jane (A. )?Smith and Susan (B. )?Jones[,.] 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => ',? ' . $andRegExp . ' ',
@@ -4964,7 +4972,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 24. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
+            // 25. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => ', ' . $notAnd, 
@@ -4972,7 +4980,7 @@ class Converter
                 'end3' => '[\.,] ' . $notJr, 
                 'initials' => false
             ],
-            // 25. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
+            // 26. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
             [
                 'name1' => $lastNameFirstNameInitials,
                 'end1' => ',? ' . $andRegExp . ' ',
@@ -4980,7 +4988,7 @@ class Converter
                 'end3' => null,
                 'initials' => false
             ],
-            // 26. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
+            // 27. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
             [
                 'name1' => $lastNameFirstNameInitials,
                 'name2' => $firstNameInitialsLastName,
