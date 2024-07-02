@@ -4755,12 +4755,20 @@ class Converter
         $otherNameRegExp = '(?=[^ ]*\p{Ll})\p{Lu}[\p{L}\-\']+';
         //$andRegExp = '(and|&|\\\&|et|y)';
         $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.-\p{Lu}\.)';
+
+        $initialsLastName = '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp;
+        $lastNameInitials = $lastNameRegExp . ',?( ' . $initialRegExp . '){1,3}';
+        $firstNameInitialsLastName = $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp;
+        $lastNameFirstNameInitials = $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?';
+
+        $notJr = '(?!(Jr|Sr|III))';
+        $notAnd = '(?!' . $andRegExp . ')';
         
         $authorRegExps = [
             // 0. Smith AB[:\.] [must be at least two initials, otherwise could be start of name --- e.g. Smith A. Jones]
             [
                 'name1' => $lastNameRegExp . ' \p{Lu}{2,3}',
-                'end1' => '(: |\. (?!' . $andRegExp . '))',
+                'end1' => '(: |\. ' . $notAnd . ')',
                 'end2' => null,
                 'end3' => null,
                 'initials' => true
@@ -4778,7 +4786,7 @@ class Converter
             [
                 'name1' => $lastNameRegExp . ' \p{Lu}{1,3}',
                 'end1' => ', ', 
-                'end2' => '(: |\. (?!' . $andRegExp . '))', 
+                'end2' => '(: |\. ' . $notAnd . ')', 
                 'end3' => null, 
                 'initials' => true
             ],
@@ -4786,7 +4794,7 @@ class Converter
             [
                 'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
                 'end1' => ', ', 
-                'end2' => ', (?!' . $andRegExp . ')', 
+                'end2' => ', ' . $notAnd, 
                 'end3' => '[:\.] ', 
                 'initials' => true
             ],
@@ -4812,29 +4820,29 @@ class Converter
             [
                 'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
                 'end1' => ', ', 
-                'end2' => ', (?!' . $andRegExp . ')', 
+                'end2' => ', ' . $notAnd, 
                 'end3' => ', et\.? al\.?', 
                 'initials' => true
             ],
             // 7. Smith, A. B.[,;] Jones, C. D.[,;] Gonzalez, J. D.,
             [
-                'name1' => $lastNameRegExp . ',( ' . $initialRegExp . '){1,3}', 
+                'name1' => $lastNameInitials, 
                 'end1' => '[;,] ', 
-                'end2' => '; (?!' . $andRegExp . ')', 
+                'end2' => '; ' . $notAnd, 
                 'end3' => ',', 
                 'initials' => false
             ],
             // 8. Smith,? A. B., Jones,? C. D., and Gonzalez,? J. D. 
             [
-                'name1' => $lastNameRegExp . ',?( ' . $initialRegExp . '){1,3}', 
-                'end1' => ', (?!' . $andRegExp . ')', 
+                'name1' => $lastNameInitials, 
+                'end1' => ', ' . $notAnd, 
                 'end2' => ',? ' . $andRegExp . ' ', 
                 'end3' => '[,\. ]', 
                 'initials' => false
             ],
             // 9. A. B. Smith[.:] 
             [
-                'name1' => '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp, 
+                'name1' => $initialsLastName, 
                 'end1' => '[\.:] ', 
                 'end2' => null, 
                 'end3' => null, 
@@ -4842,7 +4850,7 @@ class Converter
             ],
             // 10. A. B. Smith et.? al.? 
             [
-                'name1' => '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp, 
+                'name1' => $initialsLastName, 
                 'end1' => ' et\.? al\.?', 
                 'end2' => null, 
                 'end3' => null, 
@@ -4851,40 +4859,40 @@ class Converter
             ],
             // 11. A. B. Smith and C. D. Jones[\., ]
             [
-                'name1' => '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp, 
+                'name1' => $initialsLastName, 
                 'end1' => ',? ' . $andRegExp . ' ', 
-                'end2' => '[\., ]', 
+                'end2' => '(\. |,? ' . $notJr . ')', 
                 'end3' => null, 
                 'initials' => false
             ],
             // 12. A. B. Smith, C. D. Jones and J. D. Gonzalez[\., ]
             [
-                'name1' => '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp, 
-                'end1' => ', (?!' . $andRegExp . ')', 
+                'name1' => $initialsLastName, 
+                'end1' => ', ' . $notAnd, 
                 'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '[\., ]', 
+                'end3' => '(\. |,? ' . $notJr . ')', 
                 'initials' => false
             ],
             // 13. Smith, A. B., C. D. Jones,? and J. D. Gonzalez[\., ]
             [
-                'name1' => $lastNameRegExp . ',( ' . $initialRegExp . '){1,3}', 
-                'name2' => '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp, 
-                'end1' => ', (?!' . $andRegExp . ')', 
+                'name1' => $lastNameInitials, 
+                'name2' => $initialsLastName, 
+                'end1' => ', ' . $notAnd, 
                 'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '(\. |, | \()', // can't be simply space, because then if last author has two-word last name, only first is included
+                'end3' => '(\. |, ' . $notJr . '| \()', // can't be simply space, because then if last author has two-word last name, only first is included
                 'initials' => false
             ],
             // 14. Smith, Jane( J)?.
             [
                 'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?', 
-                'end1' => '\. (?!' . $andRegExp . ')', 
+                'end1' => '\. ' . $notAnd, 
                 'end2' => null, 
                 'end3' => null, 
                 'initials' => false
             ],
             // 15. Smith J.:
             [
-                'name1' => $lastNameRegExp . ' ' . $initialRegExp, 
+                'name1' => $lastNameInitials, 
                 'end1' => ': ', 
                 'end2' => null, 
                 'end3' => null, 
@@ -4892,7 +4900,7 @@ class Converter
             ],
             // 16. Jane A. Smith.
             [
-                'name1' => $otherNameRegExp . ' (\p{Lu}\.? )?' . $lastNameRegExp, 
+                'name1' => $firstNameInitialsLastName, 
                 'end1' => '\. ', 
                 'end2' => null, 
                 'end3' => null, 
@@ -4900,7 +4908,7 @@ class Converter
             ],
             // 17. Smith, J. A. <followed by>[\(|\[|``|"]
             [
-                'name1' => $lastNameRegExp . ',( ' . $initialRegExp . '){1,3}', 
+                'name1' => $lastNameInitials, 
                 'end1' => ' (?=(\(|\[|``|"))', 
                 'end2' => null, 
                 'end3' => null, 
@@ -4908,7 +4916,7 @@ class Converter
             ],
             // 18. Smith, J. A., Jones, A. B. <followed by>[\(|\[|``|"]
             [
-                'name1' => $lastNameRegExp . ',( ' . $initialRegExp . '){1,3}', 
+                'name1' => $lastNameInitials, 
                 'end1' => ', ', 
                 'end2' => ' (?=(\(|\[|``|"))', 
                 'end3' => null, 
@@ -4916,44 +4924,69 @@ class Converter
             ],
             // 19. Smith, J\.? and Jones, A[:\.,]
             [
-                'name1' => $lastNameRegExp . ',? (' . $initialRegExp . ')( ' . $initialRegExp . ')?', 
+                'name1' => $lastNameInitials, 
                 'end1' => ',? ' . $andRegExp . ' ', 
                 'end2' => '[:\.,]? ', 
                 'end3' => null, 
                 'initials' => false
             ],
+            // 19. Smith, J\.? and A\.? Jones[:\.,]
+            [
+                'name1' => $lastNameInitials, 
+                'name2' => $initialsLastName, 
+                'end1' => ',? ' . $andRegExp . ' ', 
+                'end2' => '(: |\. |,? ' . $notJr . ')', 
+                'end3' => null, 
+                'initials' => false
+            ],
             // 20. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.] 
             [
-                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?',
-                'name2' => $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp,
-                'end1' => ' ' . $andRegExp . ' ',
-                'end2' => '[\.,] ',
+                'name1' => $lastNameFirstNameInitials,
+                'name2' => $firstNameInitialsLastName,
+                'end1' => ',? ' . $andRegExp . ' ',
+                'end2' => '(: |\. |,? ' . $notJr . ')',
                 'end3' => null,
                 'initials' => false
             ],
-            // 21. Jane Smith, Susan Jones, Hilda Gonzalez. 
+            // 21. Jane (A. )?Smith, Susan (B. )?Jones, Hilda (C. )?Gonzalez. 
             [
-                'name1' => $otherNameRegExp . ' ' . $lastNameRegExp, 
-                'end1' => ', (?!' . $andRegExp . ')', 
-                'end2' => ', (?!' . $andRegExp . ')', 
+                'name1' => $firstNameInitialsLastName, 
+                'end1' => ', ' . $notAnd, 
+                'end2' => ', ' . $notAnd, 
                 'end3' => '\. ', 
                 'initials' => false
             ],
-            // 22. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
+            // 22. Jane (A. )?Smith and Susan (B. )?Jones[,.] 
             [
-                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?',
-                'end1' => ' ' . $andRegExp . ' ',
-                'end2' => '[\.,] ',
+                'name1' => $firstNameInitialsLastName, 
+                'end1' => ',? ' . $andRegExp . ' ',
+                'end2' => '[\.,] ' . $notJr, 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 23. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
+            [
+                'name1' => $firstNameInitialsLastName, 
+                'end1' => ', ' . $notAnd, 
+                'end2' => ',? ' . $andRegExp . ' ',
+                'end3' => '[\.,] ' . $notJr, 
+                'initials' => false
+            ],
+            // 24. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
+            [
+                'name1' => $lastNameFirstNameInitials,
+                'end1' => ',? ' . $andRegExp . ' ',
+                'end2' => '[\.,] ' . $notJr,
                 'end3' => null,
                 'initials' => false
             ],
-            // 23. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
+            // 25. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
             [
-                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?',
-                'name2' => $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp,
-                'end1' => ', (?!' . $andRegExp . ')', 
+                'name1' => $lastNameFirstNameInitials,
+                'name2' => $firstNameInitialsLastName,
+                'end1' => ', ' . $notAnd, 
                 'end2' => ',? ' . $andRegExp . ' ',
-                'end3' => '[\.,] ',
+                'end3' => '[\.,] ' . $notJr,
                 'initials' => false
             ],
         ];

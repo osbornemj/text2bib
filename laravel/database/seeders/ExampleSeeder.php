@@ -10716,6 +10716,20 @@ class ExampleSeeder extends Seeder
                     'pages' => '510-42',
                     ]
             ],
+            // author pattern
+            [
+                'source' => 'Alberto Alesina and David Dollar, (2000), Who Gives Foreign Aid to Whom and Why?, Journal of Economic Growth, 5, (1), 33-63 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Alberto Alesina and David Dollar',
+                    'year' => '2000',
+                    'title' => 'Who Gives Foreign Aid to Whom and Why?',
+                    'journal' => 'Journal of Economic Growth',
+                    'volume' => '5',
+                    'number' => '1',
+                    'pages' => '33-63',
+                    ]
+            ],
             
 
 
