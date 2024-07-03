@@ -4756,7 +4756,9 @@ class Converter
         //$andRegExp = '(and|&|\\\&|et|y)';
         $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.-\p{Lu}\.)';
 
+        // Spaces between initials are added previously, so "A.B." doesn't need to be matched
         $initialsLastName = '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp;
+        //$initialsLastName = '((' . $initialRegExp . ' ){1,3}|(' . $initialRegExp . '){1,3} )' . $lastNameRegExp;
         $lastNameInitials = $lastNameRegExp . ',?( ' . $initialRegExp . '){1,3}';
         $firstNameInitialsLastName = $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp;
         $lastNameFirstNameInitials = $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?';
@@ -4775,7 +4777,7 @@ class Converter
             ],
             // 1. Smith A. et al.
             [
-                'name1' => $lastNameRegExp . ' \p{Lu}',
+                'name1' => $lastNameRegExp . ',? \p{Lu}',
                 'end1' => '\. et.? al.?',
                 'end2' => null,
                 'end3' => null,
@@ -4824,7 +4826,7 @@ class Converter
                 'end3' => ', et\.? al\.?', 
                 'initials' => true
             ],
-            // 7. Smith, A. B.[,;] Jones, C. D.[,;] Gonzalez, J. D.,
+            // 7. Smith, A. B.[,;] Jones, C. D.; Gonzalez, J. D.,
             [
                 'name1' => $lastNameInitials, 
                 'end1' => '[;,] ', 
