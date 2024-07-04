@@ -10745,6 +10745,154 @@ class ExampleSeeder extends Seeder
                     'pages' => '1-21',
                     ]
             ],
+            // title delimited by asterisks
+            [
+                'source' => 'Benaroya, H. (2018). *Building habitats on the Moon: Engineering Approaches to Lunar Settlements*. Cham, Switzerland: Springer. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Benaroya, H.',
+                    'year' => '2018',
+                    'title' => 'Building habitats on the Moon: Engineering Approaches to Lunar Settlements',
+                    'publisher' => 'Springer',
+                    'address' => 'Cham, Switzerland',
+                    ]
+            ],
+            // booktitle delimited by asterisks
+            [
+                'source' => 'Filburn, T., et al. (2011). An investigation into life support systems for a lunar habitat. *41st International Conference on Environmental Systems*. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Filburn, T. and others',
+                    'year' => '2011',
+                    'title' => 'An investigation into life support systems for a lunar habitat',
+                    'booktitle' => '41st International Conference on Environmental Systems',
+                    ]
+            ],
+            // author pattern
+            [
+                'source' => '[3]	WANG Zihang, YIAN Pengwei, JIANG Zhuoren. Research on social media rumour identification based on interpretable graph neural network model[J]. Journal of Intelligence, 2023, 42(11): 1369-1381. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Wang, Zihang and Yian, Pengwei and Jiang, Zhuoren',
+                    'title' => 'Research on social media rumour identification based on interpretable graph neural network model',
+                    'year' => '2023',
+                    'journal' => 'Journal of Intelligence',
+                    'volume' => '42',
+                    'number' => '11',
+                    'pages' => '1369-1381',
+                    ]
+            ],
+            // author pattern
+            [
+                'source' => '[6]	Wang J, Zheng V W, Liu Z, et al. Topological recurrent neural network for diffusion prediction[C]// Proceedings of the 2017 IEEE International Conference on Data Mining (ICDM), 2017: 475-484. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Wang, J. and Zheng, V. W. and Liu, Z. and others',
+                    'title' => 'Topological recurrent neural network for diffusion prediction',
+                    'year' => '2017',
+                    'pages' => '475-484',
+                    'booktitle' => 'Proceedings of the 2017 IEEE International Conference on Data Mining (ICDM)',
+                    ]
+            ],
+            // number designation
+            [
+                'source' => 'A. Brauer, «On a Problem of Partitions», American Journal of Mathematics, vol. 64, n.º 1/4. p. 299-312, 1942. doi: 10.2307/2371684. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'A. Brauer',
+                    'title' => 'On a Problem of Partitions',
+                    'journal' => 'American Journal of Mathematics',
+                    'year' => '1942',
+                    'volume' => '64',
+                    'number' => '1',
+                    'pages' => '299-312',
+                    'doi' => '10.2307/2371684',
+                    ]
+            ],
+            // proceedings exception
+            [
+                'source' => 'J. C. Rosales and P. A. Garcia-Sanchez, «On Cohen-Macaulay and Gorenstein simplicial affine semigroups», Proceedings of the Edinburgh Mathematical Society, vol. 41, no. 3, pp. 517–537, 1998. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'J. C. Rosales and P. A. Garcia-Sanchez',
+                    'title' => 'On Cohen-Macaulay and Gorenstein simplicial affine semigroups',
+                    'year' => '1998',
+                    'pages' => '517-537',
+                    'journal' => 'Proceedings of the Edinburgh Mathematical Society',
+                    'volume' => '41',
+                    'number' => '3',
+                    ]
+            ],
+            // author pattern
+            [
+                'source' => '3. 	Frizzera, G.; Moran, E.M.; Rappaport, H. ANGIO-IMMUNOBLASTIC LYMPHADENOPATHY WITH DYSPROTEIN®MIA. The Lancet 1974, 303, 1070Ð1073, doi:10.1016/S0140-6736(74)90553-4. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/S0140-6736(74)90553-4',
+                    'author' => 'Frizzera, G. and Moran, E. M. and Rappaport, H.',
+                    'title' => 'ANGIO-IMMUNOBLASTIC LYMPHADENOPATHY WITH DYSPROTEIN®MIA',
+                    'journal' => 'The Lancet',
+                    'year' => '1974',
+                    'volume' => '303',
+                    'pages' => '1070-1073',
+                    ]
+            ],
+            // author pattern
+            [
+                'source' => '5. 	Xu, B.; Liu, P. No Survival Improvement for Patients with Angioimmunoblastic T-Cell Lymphoma over the Past Two Decades: A Population-Based Study of 1207 Cases. PLoS One 2014, 9, doi:10.1371/JOURNAL.PONE.0092585. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1371/JOURNAL.PONE.0092585',
+                    'author' => 'Xu, B. and Liu, P.',
+                    'title' => 'No Survival Improvement for Patients with Angioimmunoblastic T-Cell Lymphoma over the Past Two Decades: A Population-Based Study of 1207 Cases',
+                    'year' => '2014',
+                    'journal' => 'PLoS One',
+                    'volume' => '9',
+                    ]
+            ],
+            // author pattern
+            [
+                'source' => 'Petkova, A.T.; Leapman, R.D.; Guo, Z.; Yau, W.M.; Mattson, M.P.; Tycko, R. Self-propagating, molecular-level polymorphism in Alzheimer\'s β-amyloid fibrils. \emph{Science} 2005, 307, 262--265, doi:10.1126/science.1105850. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1126/science.1105850',
+                    'author' => 'Petkova, A. T. and Leapman, R. D. and Guo, Z. and Yau, W. M. and Mattson, M. P. and Tycko, R.',
+                    'title' => 'Self-propagating, molecular-level polymorphism in Alzheimer\'s β-amyloid fibrils',
+                    'journal' => 'Science',
+                    'year' => '2005',
+                    'volume' => '307',
+                    'pages' => '262-265',
+                    ]
+            ],
+            // author pattern
+            [
+                'source' => 'Yan, X.; Zhu, P.; Li, J. Self-assembly and application of diphenylalanine-based nanostructures. \emph{Chem. Soc. Rev.} 2010, 39, 1877--1890, doi:10.1039/b915765b. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1039/b915765b',
+                    'author' => 'Yan, X. and Zhu, P. and Li, J.',
+                    'title' => 'Self-assembly and application of diphenylalanine-based nanostructures',
+                    'pages' => '1877-1890',
+                    'journal' => 'Chem. Soc. Rev.',
+                    'year' => '2010',
+                    'volume' => '39',
+                    ]
+            ],
+			// address and publisher repeated in editor field; detected as book
+			[
+                'source' => 'Tukey, J. W. 1960. A survey of sampling from contaminated distributions, in 	Contributions to Probability and Statistics, edited by I. Olkin, Stanford University Press, Stanford, CA. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Tukey, J. W.',
+                    'title' => 'A survey of sampling from contaminated distributions',
+					'booktitle' => 'Contributions to Probability and Statistics',
+                    'year' => '1960',
+                    'editor' => 'I. Olkin',
+                    'address' => 'Stanford, CA',
+                    'publisher' => 'Stanford University Press',
+                    ]
+            ],
+
             
 
 

@@ -32,6 +32,7 @@ class Converter
     var $accessedRegExp1;
     var $andWords;
     var $articleRegExp;
+    var $authorRegExps;
     var $boldCodes;
     var $bookTitleAbbrevs;
     var $cities;
@@ -107,7 +108,7 @@ class Converter
     var $workingPaperNumberRegExp;
 
     use Stopwords;
-    // Countries used to check last word of title, following a comma and followed by a period --- country
+    // Countries are used to check last word of title, following a comma and followed by a period --- country
     // names that are not abbreviations used at the start of journal names or other publication info
     use Countries;
     use MakeScholarTitle;
@@ -265,7 +266,7 @@ class Converter
         // Needs space before 'eds?' to exclude word ending in 'ed'.
         $this->editorEndRegExp = '[^0-9] eds?\.?[\)\]]?$|[\(\[]?editors?[\)\]]?$';
         // რედ: Georgian
-        $this->editorRegExp = '( eds?[\. ]|[\(\[]eds?\.?[\)\]]|[\(\[ ]edits\.[\(\] ]| editors?| [\(\[]editors?[\)\]]|[\(\[]რედ?\.?[\)\]])';
+        $this->editorRegExp = '([^0-9] eds?[\. ]|[\(\[]eds?\.?[\)\]]|[\(\[ ]edits\.[\(\] ]| editors?| [\(\[]editors?[\)\]]|[\(\[]რედ?\.?[\)\]])';
 
         $this->editionWords = ['edition', 'ed', 'edn', 'edição', 'édition', 'edición'];
         $this->editionRegExp = '(?P<fullEdition>(?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie))';
@@ -276,7 +277,7 @@ class Converter
         $this->volumeRegExp = '[Vv]olume ?|[Vv]ols? ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{|\*';
         $this->volRegExp3 = '[Vv]olume ?|[Vv]ol ?\.? ?|VOL ?\.? ?|[Vv]\. ';
 
-        $this->numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ ?|n° ?|[Ii]ssues?:? ?|Issue no. ?|Iss: ';
+        $this->numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ ?|n\.? ?° ?|n\. ?º ?|[Ii]ssues?:? ?|Issue no. ?|Iss: ';
 
         // page range
         // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
@@ -355,7 +356,7 @@ class Converter
         // Could add "symposium" to list of words
         //$this->proceedingsRegExp = '(^proceedings of |^conference on |^((19|20)[0-9]{2} )?(.*)(international )?conference|symposium on | meeting |congress of the | conference proceedings| proceedings of the (.*) conference|^proc\..*(conf\.|conference)?| workshop|^actas del )';
         $this->proceedingsRegExp = '(^proceedings of |proceedings of the (.*) (conference|congress)|conference|symposium on | meeting |congress of the |^proc\.| workshop|^actas del )';
-        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the [a-zA-Z]+ Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! (International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
+        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the \p{L}+ (\p{L}+ )?Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! (International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|{Tt]ezi|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.?A\.?|M\.?Sc\.?|Yayınlanmamış Yüksek [Ll]isans|Yüksek [Ll]isans|Masterproef';
@@ -478,8 +479,329 @@ class Converter
         // Codes are ended by } EXCEPT \em, \it, and \sl, which have to be ended by something like \normalfont.  Code
         // that gets italic text handles only the cases in which } ends italics.
         // \enquote{ is not a signal of italics, but it is easiest to classify it thus.
-        $this->italicCodes = ["\\textit{", "\\textsl{", "\\textsc{", "\\emph{", "{\\em ", "\\em ", "{\\it ", "\\it ", "{\\sl ", "\\sl ", "\\enquote{"];
-        $this->boldCodes = ["\\textbf{", "{\\bf ", "{\\bfseries "];
+        $this->italicCodes = [
+            "\\textit{", 
+            "\\textsl{", 
+            "\\textsc{", 
+            "\\emph{", 
+            "{\\em ", 
+            "\\em ", 
+            "{\\it ", 
+            "\\it ", 
+            "{\\sl ", 
+            "\\sl ", 
+            "\\enquote{"
+        ];
+
+        $this->boldCodes = [
+            "\\textbf{", 
+            "{\\bf ", 
+            "{\\bfseries "
+        ];
+
+        /* AUTHOR PATTERNS
+         * name1 end1 (name2 end1)* name2 end2 name2 end3
+         * is matched.  (Notice that first name can have different format from following names, to accommodate author strings like
+         * Smith, A., B. Jones, and C. Gonzalez.)
+         * 'initials' => true means treat string of u.c. letters as initials if length is at most 4 (rather than default 2)
+         */
+        $vonNameRegExp = '(';
+        foreach ($this->vonNames as $i => $vonName) {
+            $vonNameRegExp .= ($i ? '|' : '') . $vonName;
+        }
+        $vonNameRegExp .= ')';
+
+        $andRegExp = '(';
+        foreach ($this->andWords as $i => $andWord) {
+            if ($andWord == '\&') {
+                $andWord = '\\\&';
+            } elseif ($andWord == '$\&$') {
+                $andWord = '\$\\\&\$';
+            }
+            $andRegExp .= ($i ? '|' : '') . $andWord;
+        }
+        $andRegExp .= ')';
+
+        // last name has to start with uppercase letter
+        //$lastNameRegExp = '(' . $vonNameRegExp . ' )?\p{Lu}[\p{L}\-\']+';
+        // Following allows double-barelled last name with space; doesn't produce any errors in Examples, and seems OK
+        // as long as none of the patterns end with simply a space.
+        $lastNameRegExp = '(' . $vonNameRegExp . ' )?(' . $vonNameRegExp . ' )?\p{Lu}[\p{L}\-\']+( \p{Lu}[\p{L}\-\']+)?';
+        // other name (string before first space) has to start with uppercase letter and include at least one lowercase letter
+        $otherNameRegExp = '(?=[^ ]*\p{Ll})\p{Lu}[\p{L}\-\']+';
+        // Uppercase name
+        $ucNameRegExp = '\p{Lu}+';
+        $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.-\p{Lu}\.)';
+
+        // Spaces between initials are added before an item is processed, so "A.B." doesn't need to be matched
+        $initialsLastName = '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp;
+        $lastNameInitials = $lastNameRegExp . ',?( ' . $initialRegExp . '){1,3}';
+        $firstNameInitialsLastName = $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp;
+        $lastNameFirstNameInitials = $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?';
+
+        $notJr = '(?!(Jr|Sr|III))';
+        $notAnd = '(?!' . $andRegExp . ')';
+        $periodOrColonOrCommaYear = '(\. |: |, (?=[\(\[`"\'\d]))';
+        
+        $this->authorRegExps = [
+            // 0. Smith AB[:\.] [must be at least two initials, otherwise could be start of name --- e.g. Smith A. Jones]
+            [
+                'name1' => $lastNameRegExp . ' \p{Lu}{2,3}',
+                'end1' => '(: |\. ' . $notAnd . ')',
+                'end2' => null,
+                'end3' => null,
+                'initials' => true
+            ],
+            // 1. Smith,? A.,? et al.
+            [
+                'name1' => $lastNameInitials,
+                'end1' => ',? et.? al.?',
+                'end2' => null,
+                'end3' => null,
+                'initials' => false,
+                'etal' => true,
+            ],
+            // 2. Smith AB, Jones CD[:\.]
+            [
+                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}',
+                'end1' => ', ', 
+                'end2' => '(: |\. ' . $notAnd . ')', 
+                'end3' => null, 
+                'initials' => true
+            ],
+            // 2. Smith A. B., Jones C. D.[:\.]
+            // [
+            //     'name1' => $lastNameInitials,
+            //     'end1' => '[,;] ', 
+            //     'end2' => '\. (?!(\p{Lu}\.|;))' . $notAnd, 
+            //     'end3' => null, 
+            //     'initials' => false
+            // ],
+            // 3. Smith AB, Jones CD, Gonzalez JD[:\.]
+            [
+                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
+                'end1' => ', ', 
+                'end2' => ', ' . $notAnd, 
+                'end3' => '[:\.] ', 
+                'initials' => true
+            ],
+            // 4. Smith AB and Gonzalez JD[:\.,]
+            [
+                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
+                'end1' => ' ' . $andRegExp . ' ', 
+                'end2' => '[:\.,]', 
+                'end3' => null, 
+                'initials' => true
+            ],
+            // 5. Smith AB, Jones CD,? and Gonzalez JD[:\.]
+            [
+                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
+                'end1' => ', ', 
+                'end2' => ',? ' . $andRegExp . ' ', 
+                'end3' => '[:\.]', 
+                'initials' => true
+            ],
+            // 6. Smith AB, Jones CD, Gonzalez JD, et al.
+            [
+                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
+                'end1' => ', ', 
+                'end2' => ', ' . $notAnd, 
+                'end3' => ', et\.? al\.?', 
+                'initials' => true,
+                'etal' => true,
+            ],
+            // 7. Smith A B, Jones C D, Gonzalez J D, et al.
+            [
+                'name1' => $lastNameInitials, 
+                'end1' => ', ', 
+                'end2' => ', ' . $notAnd, 
+                'end3' => ', et\.? al\.?', 
+                'initials' => true,
+                'etal' => true,
+            ],
+            // 8. Smith, A. B.[,;] Jones, C. D.; Gonzalez, J. D.,
+            [
+                'name1' => $lastNameInitials, 
+                'end1' => '[;,] ', 
+                'end2' => '; ' . $notAnd, 
+                'end3' => '[,.] (?!(\p{Lu}\.|;))', 
+                'initials' => false
+            ],
+            // 9. Smith,? A. B., Jones,? C. D., and Gonzalez,? J. D. 
+            [
+                'name1' => $lastNameInitials, 
+                'end1' => ', ' . $notAnd, 
+                'end2' => ',? ' . $andRegExp . ' ', 
+                'end3' => '[,\. ]', 
+                'initials' => false
+            ],
+            // 10. A. B. Smith[.:] 
+            [
+                'name1' => $initialsLastName, 
+                'end1' => '[\.:] ', 
+                'end2' => null, 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 11. A. B. Smith et.? al.? 
+            [
+                'name1' => $initialsLastName, 
+                'end1' => ' et\.? al\.?', 
+                'end2' => null, 
+                'end3' => null, 
+                'initials' => false,
+                'etal' => true,
+            ],
+            // 12. A. B. Smith and C. D. Jones[\., ]
+            [
+                'name1' => $initialsLastName, 
+                'end1' => ',? ' . $andRegExp . ' ', 
+                'end2' => '(\. |,? ' . $notJr . ')', 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 13. A. B. Smith, C. D. Jones and J. D. Gonzalez[\., ]
+            [
+                'name1' => $initialsLastName, 
+                'end1' => ', ' . $notAnd, 
+                'end2' => ',? ' . $andRegExp . ' ', 
+                'end3' => '(\. |,? ' . $notJr . ')', 
+                'initials' => false
+            ],
+            // 14. Smith, A. B., C. D. Jones,? and J. D. Gonzalez[\., ]
+            [
+                'name1' => $lastNameInitials, 
+                'name2' => $initialsLastName, 
+                'end1' => ', ' . $notAnd, 
+                'end2' => ',? ' . $andRegExp . ' ', 
+                'end3' => '(\. |, ' . $notJr . '| \()', // can't be simply space, because then if last author has two-word last name, only first is included
+                'initials' => false
+            ],
+            // 15. Smith, Jane( J)?.
+            [
+                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?', 
+                'end1' => '\. ' . $notAnd, 
+                'end2' => null, 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 16. Smith J. A.:
+            [
+                'name1' => $lastNameInitials, 
+                'end1' => ': ', 
+                'end2' => null, 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 17. Jane A. Smith[:.]
+            [
+                'name1' => $firstNameInitialsLastName, 
+                'end1' => $periodOrColonOrCommaYear, 
+                'end2' => null, 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 18. Smith, J. A.,? <followed by>[\(|\[|`|\'|"|\d]
+            [
+                'name1' => $lastNameInitials, 
+                'end1' => ',? (?=[\(\[`"\'\d])', 
+                'end2' => null, 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 19. Smith, J. A., Jones, A. B.,? <followed by>[\(|\[|`|\'|"|\d]
+            [
+                'name1' => $lastNameInitials, 
+                'end1' => ', ', 
+                'end2' => ',? (?=[\(\[`"\'\d])', 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 20. Smith, J\.? and Jones, A[:\.,]
+            [
+                'name1' => $lastNameInitials, 
+                'end1' => ',? ' . $andRegExp . ' ', 
+                'end2' => '[:\.,]? ', 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 21. Smith, J\.? and A\.? Jones[:\.,]
+            [
+                'name1' => $lastNameInitials, 
+                'name2' => $initialsLastName, 
+                'end1' => ',? ' . $andRegExp . ' ', 
+                'end2' => '(: |\. |,? ' . $notJr . ')', 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 22. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.] 
+            [
+                'name1' => $lastNameFirstNameInitials,
+                'name2' => $firstNameInitialsLastName,
+                'end1' => ',? ' . $andRegExp . ' ',
+                'end2' => '(: |\. |,? ' . $notJr . ')',
+                'end3' => null,
+                'initials' => false
+            ],
+            // 23. Jane (A. )?Smith, Susan (B. )?Jones. 
+            [
+                'name1' => $firstNameInitialsLastName, 
+                'end1' => ', ' . $notAnd, 
+                'end2' => $periodOrColonOrCommaYear, 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 24. Jane (A. )?Smith, Susan (B. )?Jones, Hilda (C. )?Gonzalez. 
+            [
+                'name1' => $firstNameInitialsLastName, 
+                'end1' => '[,;] ' . $notAnd, 
+                'end2' => '[,;] ' . $notAnd, 
+                'end3' => $periodOrColonOrCommaYear, 
+                'initials' => false
+            ],
+            // 25. SMITH Jane, JONES Susan, GONZALEZ Hilda.
+            [
+                'name1' => $ucNameRegExp . ' ' . $otherNameRegExp, 
+                'end1' => '[,;] ' . $notAnd, 
+                'end2' => '[,;] ' . $notAnd, 
+                'end3' => $periodOrColonOrCommaYear, 
+                'initials' => false
+            ],
+            // 26. Jane (A. )?Smith and Susan (B. )?Jones[,.] 
+            [
+                'name1' => $firstNameInitialsLastName, 
+                'end1' => ',? ' . $andRegExp . ' ',
+                'end2' => '[\.,] ' . $notJr, 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 27. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
+            [
+                'name1' => $firstNameInitialsLastName, 
+                'end1' => ', ' . $notAnd, 
+                'end2' => ',? ' . $andRegExp . ' ',
+                'end3' => '[\.,] ' . $notJr, 
+                'initials' => false
+            ],
+            // 28. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
+            [
+                'name1' => $lastNameFirstNameInitials,
+                'end1' => ',? ' . $andRegExp . ' ',
+                'end2' => '[\.,] ' . $notJr,
+                'end3' => null,
+                'initials' => false
+            ],
+            // 29. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
+            [
+                'name1' => $lastNameFirstNameInitials,
+                'name2' => $firstNameInitialsLastName,
+                'end1' => ', ' . $notAnd, 
+                'end2' => ',? ' . $andRegExp . ' ',
+                'end3' => '[\.,] ' . $notJr,
+                'initials' => false
+            ],
+        ];
+
     }
 
     ///////////////////////////////////////////////////
@@ -1295,6 +1617,9 @@ class Converter
 
             if (substr($title, 0, 1) == '{' && substr($title, -1) == '}') {
                 $title = trim($title, '{}');
+            }
+            if (substr($title, 0, 1) == '*' && substr($title, -1) == '*') {
+                $title = trim($title, '*');
             }
             // Case in which quotation marks were in wrong encoding and appear as ?'s.
             if (substr($title, 0, 1) == '?' && substr($title, -1) == '?') {
@@ -2418,10 +2743,11 @@ class Converter
                         $lastTwoWordsHaveDigits = false;
                     }
 
-                    if (! $lastTwoWordsHaveDigits && preg_match('/(.*)' . $this->editorEndRegExp . '/i', $tempRemainder, $matches)) {
+                    if (! $lastTwoWordsHaveDigits && preg_match('/(.*)' . $this->editorEndRegExp . '(?P<pubInfo>.*)$/i', $tempRemainder, $matches)) {
                         $this->verbose('Remainder minus pub info ends with \'eds\' or similar, so format is <booktitle> <editor>');
                         // Remove "eds" at end
                         $tempRemainderMinusEds = Str::beforeLast($tempRemainder, ' ');
+                        $pubInfo = $matches['pubInfo'] ?? '';
                         // If remaining string contains '(', take preceding string to be booktitle and following string to be editors.
                         // Remaining string might not contain '(': might be error, or "eds" could have been "(eds").
                         if ($tempRemainderEndsWithParen && Str::contains($tempRemainderMinusEds, '(')) {
@@ -2441,11 +2767,12 @@ class Converter
                                 $this->addToField($item, 'note', $note, 'addToField 11');
                             }
                             $isEditor = true;
-                            $result = $this->convertToAuthors(explode(' ', $tempRemainder), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
+                            $result = $this->convertToAuthors(explode(' ', $tempRemainder), $tempRemainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
                         }
                         $this->setField($item, 'editor', trim($result['authorstring']), 'setField 119');
                         $remainderContainsEds = true;
                         $updateRemainder = false;
+                        $remainder = $pubInfo;
                     } elseif ($containsEditors && preg_match('/' . $this->editorRegExp . '/i', $remainder, $matches)) {
                         // If $remainder contains string "(Eds.)" or similar then check
                         // whether it starts with names.
@@ -2468,7 +2795,21 @@ class Converter
                             $rest = $matches['before'] . $matches['after'];
                         }
                         $isEditor = true;
-                        $result = $this->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
+                        $remainder = $rest;
+
+                        // If remainder contains publisher word, look for editor before preceding punctuation
+                        if (preg_match('/^(?P<before>.*?)(?P<publisherWord>(University|Press))/', $remainder, $matches)) {
+                            $origRemainder = $remainder;
+                            $before = $matches['before'];
+                            $lastCommaPos = strrpos($before, ',');
+                            $lastPeriodPos = strrpos($before, '.');
+                            $editorString = substr($before, 0, max($lastCommaPos, $lastPeriodPos));
+                            $result = $this->convertToAuthors(explode(' ', $editorString), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
+                            $remainder = substr($origRemainder, max($lastCommaPos, $lastPeriodPos));
+                            //dump($before, $editorString, $remainder);
+                        } else {
+                            $result = $this->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
+                        }
                         $this->setField($item, 'editor', trim($result['authorstring'], ', '), 'setField 120');
                         $updateRemainder = false;
                     }
@@ -3069,7 +3410,11 @@ class Converter
 
                 if (! isset($item->booktitle)) {
                     if ($booktitle) {
-                        $this->setField($item, 'booktitle', trim($booktitle, ' .,('), 'setField 58');
+                        $booktitle = trim($booktitle, ' .,(');
+                        if (substr($booktitle, 0, 1) == '*' && substr($booktitle, -1) == '*') {
+                            $booktitle = trim($booktitle, '*');
+                        }
+                        $this->setField($item, 'booktitle', $booktitle, 'setField 58');
                     } else {
                         // Change item type to book
                         $itemKind = 'book';
@@ -4638,7 +4983,7 @@ class Converter
      * convertToAuthors: determine the authors in the initial elements of an array of words
      * After making a change, check that all examples are still converted correctly.
      * @param array $words array of words
-     * @param string|null $remainder: remaining string after authors removed
+     * @param string|null $remainder: string remaining after authors removed
      * @param string|null $year
      * @param string|null $month
      * @param string|null $day
@@ -4725,328 +5070,83 @@ class Converter
         ////////////////////////////////////
         // Check for some common patterns //
         ////////////////////////////////////
-        /*
-         * Pattern
-         * name1 end1 (name2 end1)* name2 end2 name2 end3
-         * is matched.  (Notice that first name can have different format from following names, to accommodate author strings like
-         * Smith, A., B. Jones, and C. Gonzalez.)
-         * 'initials' => true means treat string of u.c. letters as initials if length is at most 4 (rather than default 2)
-         */
-        $vonNameRegExp = '(';
-        foreach ($this->vonNames as $i => $vonName) {
-            $vonNameRegExp .= ($i ? '|' : '') . $vonName;
-        }
-        $vonNameRegExp .= ')';
-
-        $andRegExp = '(';
-        foreach ($this->andWords as $i => $andWord) {
-            if ($andWord == '\&') {
-                $andWord = '\\\&';
-            } elseif ($andWord == '$\&$') {
-                $andWord = '\$\\\&\$';
-            }
-            $andRegExp .= ($i ? '|' : '') . $andWord;
-        }
-        $andRegExp .= ')';
-
-        // last name has to start with uppercase letter
-        $lastNameRegExp = '(' . $vonNameRegExp . ' )?\p{Lu}[\p{L}\-\']+';
-        // other name has to start with uppercase letter and include at least one lowercase letter
-        $otherNameRegExp = '(?=[^ ]*\p{Ll})\p{Lu}[\p{L}\-\']+';
-        //$andRegExp = '(and|&|\\\&|et|y)';
-        $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.-\p{Lu}\.)';
-
-        // Spaces between initials are added previously, so "A.B." doesn't need to be matched
-        $initialsLastName = '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp;
-        //$initialsLastName = '((' . $initialRegExp . ' ){1,3}|(' . $initialRegExp . '){1,3} )' . $lastNameRegExp;
-        $lastNameInitials = $lastNameRegExp . ',?( ' . $initialRegExp . '){1,3}';
-        $firstNameInitialsLastName = $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp;
-        $lastNameFirstNameInitials = $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?';
-
-        $notJr = '(?!(Jr|Sr|III))';
-        $notAnd = '(?!' . $andRegExp . ')';
-        
-        $authorRegExps = [
-            // 0. Smith AB[:\.] [must be at least two initials, otherwise could be start of name --- e.g. Smith A. Jones]
-            [
-                'name1' => $lastNameRegExp . ' \p{Lu}{2,3}',
-                'end1' => '(: |\. ' . $notAnd . ')',
-                'end2' => null,
-                'end3' => null,
-                'initials' => true
-            ],
-            // 1. Smith A. et al.
-            [
-                'name1' => $lastNameRegExp . ',? \p{Lu}',
-                'end1' => '\. et.? al.?',
-                'end2' => null,
-                'end3' => null,
-                'initials' => false,
-                'etal' => true,
-            ],
-            // 2. Smith AB, Jones CD[:\.]
-            [
-                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}',
-                'end1' => ', ', 
-                'end2' => '(: |\. ' . $notAnd . ')', 
-                'end3' => null, 
-                'initials' => true
-            ],
-            // 3. Smith AB, Jones CD, Gonzalez JD[:\.]
-            [
-                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
-                'end1' => ', ', 
-                'end2' => ', ' . $notAnd, 
-                'end3' => '[:\.] ', 
-                'initials' => true
-            ],
-            // 4. Smith AB and Gonzalez JD[:\.,]
-            [
-                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
-                'end1' => ' ' . $andRegExp . ' ', 
-                'end2' => '[:\.,]', 
-                'end3' => null, 
-                'initials' => true
-            ],
-            // 5. Smith AB, Jones CD and Gonzalez JD[:\.]
-            [
-                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
-                'end1' => ', ', 
-                'end2' => ' ' . $andRegExp . ' ', 
-                'end3' => '[:\.]', 
-                'initials' => true
-            ],
-            // 6. Smith AB, Jones CD, Gonzalez JD, et al.
-            // [Whole regexp will be matched, but when components are matched sequentially, third component will not be 
-            // reached, because matches of first component are enough. So 'et al.' will not be included in match, and is added afterwards.]
-            [
-                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
-                'end1' => ', ', 
-                'end2' => ', ' . $notAnd, 
-                'end3' => ', et\.? al\.?', 
-                'initials' => true
-            ],
-            // 7. Smith, A. B.[,;] Jones, C. D.; Gonzalez, J. D.,
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => '[;,] ', 
-                'end2' => '; ' . $notAnd, 
-                'end3' => ',', 
-                'initials' => false
-            ],
-            // 8. Smith,? A. B., Jones,? C. D., and Gonzalez,? J. D. 
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ', ' . $notAnd, 
-                'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '[,\. ]', 
-                'initials' => false
-            ],
-            // 9. A. B. Smith[.:] 
-            [
-                'name1' => $initialsLastName, 
-                'end1' => '[\.:] ', 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 10. A. B. Smith et.? al.? 
-            [
-                'name1' => $initialsLastName, 
-                'end1' => ' et\.? al\.?', 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false,
-                'etal' => true,
-            ],
-            // 11. A. B. Smith and C. D. Jones[\., ]
-            [
-                'name1' => $initialsLastName, 
-                'end1' => ',? ' . $andRegExp . ' ', 
-                'end2' => '(\. |,? ' . $notJr . ')', 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 12. A. B. Smith, C. D. Jones and J. D. Gonzalez[\., ]
-            [
-                'name1' => $initialsLastName, 
-                'end1' => ', ' . $notAnd, 
-                'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '(\. |,? ' . $notJr . ')', 
-                'initials' => false
-            ],
-            // 13. Smith, A. B., C. D. Jones,? and J. D. Gonzalez[\., ]
-            [
-                'name1' => $lastNameInitials, 
-                'name2' => $initialsLastName, 
-                'end1' => ', ' . $notAnd, 
-                'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '(\. |, ' . $notJr . '| \()', // can't be simply space, because then if last author has two-word last name, only first is included
-                'initials' => false
-            ],
-            // 14. Smith, Jane( J)?.
-            [
-                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?', 
-                'end1' => '\. ' . $notAnd, 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 15. Smith J.:
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ': ', 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 16. Jane A. Smith.
-            [
-                'name1' => $firstNameInitialsLastName, 
-                'end1' => '\. ', 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 17. Smith, J. A. <followed by>[\(|\[|``|"]
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ' (?=(\(|\[|``|"))', 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 18. Smith, J. A., Jones, A. B. <followed by>[\(|\[|``|"]
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ', ', 
-                'end2' => ' (?=(\(|\[|``|"))', 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 19. Smith, J\.? and Jones, A[:\.,]
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ',? ' . $andRegExp . ' ', 
-                'end2' => '[:\.,]? ', 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 20. Smith, J\.? and A\.? Jones[:\.,]
-            [
-                'name1' => $lastNameInitials, 
-                'name2' => $initialsLastName, 
-                'end1' => ',? ' . $andRegExp . ' ', 
-                'end2' => '(: |\. |,? ' . $notJr . ')', 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 21. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.] 
-            [
-                'name1' => $lastNameFirstNameInitials,
-                'name2' => $firstNameInitialsLastName,
-                'end1' => ',? ' . $andRegExp . ' ',
-                'end2' => '(: |\. |,? ' . $notJr . ')',
-                'end3' => null,
-                'initials' => false
-            ],
-            // 22. Jane (A. )?Smith, Susan (B. )?Jones. 
-            [
-                'name1' => $firstNameInitialsLastName, 
-                'end1' => ', ' . $notAnd, 
-                'end2' => '\.', 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 23. Jane (A. )?Smith, Susan (B. )?Jones, Hilda (C. )?Gonzalez. 
-            [
-                'name1' => $firstNameInitialsLastName, 
-                'end1' => ', ' . $notAnd, 
-                'end2' => ', ' . $notAnd, 
-                'end3' => '\. ', 
-                'initials' => false
-            ],
-            // 24. Jane (A. )?Smith and Susan (B. )?Jones[,.] 
-            [
-                'name1' => $firstNameInitialsLastName, 
-                'end1' => ',? ' . $andRegExp . ' ',
-                'end2' => '[\.,] ' . $notJr, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 25. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
-            [
-                'name1' => $firstNameInitialsLastName, 
-                'end1' => ', ' . $notAnd, 
-                'end2' => ',? ' . $andRegExp . ' ',
-                'end3' => '[\.,] ' . $notJr, 
-                'initials' => false
-            ],
-            // 26. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
-            [
-                'name1' => $lastNameFirstNameInitials,
-                'end1' => ',? ' . $andRegExp . ' ',
-                'end2' => '[\.,] ' . $notJr,
-                'end3' => null,
-                'initials' => false
-            ],
-            // 27. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
-            [
-                'name1' => $lastNameFirstNameInitials,
-                'name2' => $firstNameInitialsLastName,
-                'end1' => ', ' . $notAnd, 
-                'end2' => ',? ' . $andRegExp . ' ',
-                'end3' => '[\.,] ' . $notJr,
-                'initials' => false
-            ],
-        ];
 
         $authorstring = '';
-        foreach ($authorRegExps as $i => $r) {
+        foreach ($this->authorRegExps as $i => $r) {
             $name1 = $r['name1'];
             $name2 = $r['name2'] ?? $name1;
 
-            $regExp = '%^' . $name1 . $r['end1'] . '(' . $name2 . $r['end1'] . ')*';
+            $regExp = '%^(?P<firstAuthor>' . $name1 . ')' . $r['end1']; 
             if ($r['end2']) {
-                $regExp .= $name2 . $r['end2'];
+                $regExp .= '(?P<middleAuthors>(' . $name2 . $r['end1'] . ')*)';
+                $regExp .= '(?P<penultimateAuthor>' . $name2 . ')' . $r['end2'];
             }
             if ($r['end3']) {
-                $regExp .= $name2 . $r['end3'];
+                $regExp .= '(?P<lastAuthor>' . $name2 . ')' . $r['end3'];
             }
-            $regExp .= '%u';
+            $regExp .= '(?P<remainder>.*)%u';
 
-            if (preg_match($regExp, $remainder)) {
-                $result = preg_match('%^(?P<author>'. $name1 . ')' . $r['end1'] . '(?P<remainder>.*)$%u', $remainder, $matches);
-                if (isset($matches['author'])) {
-                    $authorstring .= $this->formatAuthor($matches['author'], $r['initials']);
+            if (preg_match($regExp, $remainder, $matches)) {
+                $authorstring .= $this->formatAuthor($matches['firstAuthor'], $r['initials']);
+
+                //dump($remainder, $i, $matches);
+
+                if (isset($matches['middleAuthors'])) {
+                    // process middle authors
+                    $subremainder = $matches['middleAuthors'];
+                    $result = 1;
+                    while ($result == 1) {
+                        $result = preg_match('%^(?P<author>'. $name2 . ')' . $r['end1'] . '(?P<remainder>.*)$%u', $subremainder, $submatches);
+                        if (isset($submatches['author'])) {
+                            $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($submatches['author'], $r['initials']);
+                            $subremainder = $submatches['remainder'];
+                        }
+                    }
+                }
+
+                if (isset($matches['penultimateAuthor'])) {
+                    $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['penultimateAuthor'], $r['initials']);
+                }
+                if (isset($matches['lastAuthor'])) {
+                    $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['lastAuthor'], $r['initials']);
+                }
+
+                // $result = preg_match('%^(?P<author>'. $name1 . ')' . $r['end1'] . '(?P<remainder>.*)$%u', $remainder, $matches);
+                // if (isset($matches['author'])) {
+                //     $authorstring .= $this->formatAuthor($matches['author'], $r['initials']);
+                //     $remainder = $matches['remainder'];
+                // }
+                // $result = 1;
+                // while ($result == 1) {
+                //     $result = preg_match('%^(?P<author>'. $name2 . ')' . $r['end1'] . '(?P<remainder>.*)$%u', $remainder, $matches);
+                //     if (isset($matches['author'])) {
+                //         $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['author'], $r['initials']);
+                //         $remainder = $matches['remainder'];
+                //     }
+                // }
+                // if ($r['end2'] && preg_match('%^(?P<author>'. $name2 . ')' . $r['end2'] . '(?P<remainder>.*)$%u', $remainder, $matches)) {
+                //     if (isset($matches['author'])) {
+                //         $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['author'], $r['initials']);
+                //         $remainder = $matches['remainder'];
+                //     }
+                // }
+                // if ($r['end3'] && preg_match('%^(?P<author>'. $name2 . ')' . $r['end3'] . '(?P<remainder>.*)$%u', $remainder, $matches)) {
+                //     if (isset($matches['author'])) {
+                //         $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['author'], $r['initials']);
+                //         $remainder = $matches['remainder'];
+                //     }
+                // }
+
+                if (preg_match('%^et.? al.?(?P<remainder>.*)$%', $matches['remainder'], $endmatches)) {
+                    $authorstring .= ' and others';
+                    $remainder = $endmatches['remainder'];
+                } else {
+                    if (! empty($r['etal'])) {
+                        $authorstring .= ' and others';
+                    }
                     $remainder = $matches['remainder'];
                 }
-                $result = 1;
-                while ($result == 1) {
-                    $result = preg_match('%^(?P<author>'. $name2 . ')' . $r['end1'] . '(?P<remainder>.*)$%u', $remainder, $matches);
-                    if (isset($matches['author'])) {
-                        $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['author'], $r['initials']);
-                        $remainder = $matches['remainder'];
-                    }
-                }
-                if ($r['end2'] && preg_match('%^(?P<author>'. $name2 . ')' . $r['end2'] . '(?P<remainder>.*)$%u', $remainder, $matches)) {
-                    if (isset($matches['author'])) {
-                        $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['author'], $r['initials']);
-                        $remainder = $matches['remainder'];
-                    }
-                }
-                if ($r['end3'] && preg_match('%^(?P<author>'. $name2 . ')' . $r['end3'] . '(?P<remainder>.*)$%u', $remainder, $matches)) {
-                    if (isset($matches['author'])) {
-                        $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['author'], $r['initials']);
-                        $remainder = $matches['remainder'];
-                    }
-                }
-                if (preg_match('%^et.? al.?(?P<remainder>.*)$%', $remainder, $matches)) {
-                    $authorstring .= ' and others';
-                    $remainder = $matches['remainder'];
-                } elseif (! empty($r['etal'])) {
-                    $authorstring .= ' and others';
-                }
+
                 $this->verbose('Authors match pattern ' . $i);
                 break;
             }
@@ -6762,7 +6862,7 @@ class Converter
 
     /**
      * Normalize format to Smith, A. B. or A. B. Smith or Smith, Alan B. or Alan B. Smith.
-     * In particular, change Smith AB to Smith, A. B. and A.B. SMITH to A. B. Smith
+     * In particular, change Smith AB to Smith, A. B. and A.B. SMITH to A. B. Smith and SMITH Ann to SMITH, Ann
      * $nameString is a FULL name (e.g. first and last or first middle last)
      */
     private function formatAuthor(string $nameString, bool $initials = false): string
@@ -6829,11 +6929,14 @@ class Converter
             // in $name or a comma has occurred and there are fewer than 4 letters, and all letters in the name are uppercase, assume $name
             // is initials.  Put periods and spaces as appropriate.
             if (
-                ! $allUppercase &&
-                (strlen($lettersOnlyName) < 3 || ($commaPassed && ($initials || strlen($lettersOnlyName) < 4))) &&
-                strtoupper($lettersOnlyName) == $lettersOnlyName &&
+                ! $allUppercase
+                &&
+                (strlen($lettersOnlyName) < 3 || ($commaPassed && ($initials || strlen($lettersOnlyName) < 4)))
+                &&
+                strtoupper($lettersOnlyName) == $lettersOnlyName
+                &&
                 $lettersOnlyName != 'III'
-                ) {
+               ) {
                 // First deal with single accented initial
                 // Case of multiple accented initials not currently covered
                 if (preg_match('/^\\\\\S\{[a-zA-Z]\}\.$/', $name)) {  // e.g. \'{A}.
@@ -6867,16 +6970,26 @@ class Converter
             // If name is ALL uppercase and contains no period, translate uppercase component to an u.c. first letter and the rest l.c.
             // (Contains no period to deal with name H.-J., which should not be convered to H.-j.)
             } elseif (
-                strtoupper($lettersOnlyName) == $lettersOnlyName &&
-                (strpos($name, '.') === false || strpos($name, '.') < strlen($name)) &&
+                strtoupper($lettersOnlyName) == $lettersOnlyName
+                &&
+                (strpos($name, '.') === false || strpos($name, '.') < strlen($name)) 
+                &&
                 $lettersOnlyName != 'III'
-                ) {
-                $chars = mb_str_split($name);
-                $lcName = '';
-                foreach ($chars as $i => $char) {
-                    $lcName .= ($i && $chars[$i-1] != '-') ? mb_strtolower($char) : $char;
+               ) {
+                if (strlen($name) == 1) {
+                    $fName .= $name . '.';
+                } else {
+                    $chars = mb_str_split($name);
+                    $lcName = '';
+                    foreach ($chars as $j => $char) {
+                        $lcName .= ($j && $chars[$j-1] != '-') ? mb_strtolower($char) : $char;
+                    }
+                    $fName .= strlen($lcName) > 2 ? rtrim($lcName, '.') : $lcName;
                 }
-                $fName .= strlen($lcName) > 2 ? rtrim($lcName, '.') : $lcName;
+
+                if ($i == 0 && mb_strtoupper($name) == $name && strlen($name) > 1 && ! in_array(substr($name, -1), ['.', ','])) {
+                    $fName .= ',';
+                }
             } else {
                 $fName .= $name;
             }
@@ -6970,6 +7083,8 @@ class Converter
 
         $months = $this->monthsRegExp[$language];
 
+        $remainder = str_replace(['Ð', '{\DH}'], '-', $remainder);
+
         // First check for some common patterns
         // p omitted from permitted starting letters, to all p100 to be interpreted as page 100.
         $number = '[A-Za-oq-z]?([Ss]upp )?[0-9][0-9]{0,12}[A-Za-z]?';
@@ -6981,7 +7096,7 @@ class Converter
         $numberRangeWithSlash = $number . '(( ?--?-? ?|_|\/)' . $number . ')?( ?\(?(' . $months . ')([-\/](' . $months . '))?\)?)?';
         //$monthRange = '\(?(?P<month1>' . $months . ')(-(?P<month2>' . $months . '))?\)?';
         // Ð is for non-utf8 encoding of en-dash(?)
-        $letterNumberRange = $letterNumber . '(( ?--?-? ?|_|\?|Ð)' . $letterNumber . ')?';
+        $letterNumberRange = $letterNumber . '(( ?--?-? ?|_|\?)' . $letterNumber . ')?';
         $numberRangeWithRoman = $numberWithRoman . '((--?-?|_)' . $numberWithRoman . ')?';
         $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')';
         $volumeWithRomanRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')';
