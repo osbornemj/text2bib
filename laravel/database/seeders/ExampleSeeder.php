@@ -5472,7 +5472,7 @@ class ExampleSeeder extends Seeder
                 'source' => '1: Ferris JK, Lo BP, Barisano G. Modulation of the Association Between Corticospinal Tract Damage and Outcome After Stroke by White Matter Hyperintensities. Neurology. 2024 May 28;102(10):e209387. doi: 10.1212/WNL.0000000000209387. Epub 2024 May 3. PMID: 38701386. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'note' => 'PMID: 38701386',
+                    'note' => 'PMID: 38701386. Epub 2024 May 3.',
                     'doi' => '10.1212/WNL.0000000000209387',
                     'author' => 'Ferris, J. K. and Lo, B. P. and Barisano, G.',
                     'title' => 'Modulation of the Association Between Corticospinal Tract Damage and Outcome After Stroke by White Matter Hyperintensities',
@@ -10892,6 +10892,63 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Stanford University Press',
                     ]
             ],
+			// author pattern 8 fails because of errors in punctuation.  Need only at least one ;?
+			[
+                'source' => '\bibitem {Mitra2022} Mitra, G.; Low, J.Z.; Wei, S.; Francisco, K.R., Deffner, M.; Herrmann, C.; Campos, L.M.,; Scheer, E.; Interplay between Magnetoresistance and Kondo Resonance in Radical Single-Molecule Junctions. Nano Lett. 2022, 22, 5773–5779.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Mitra, G. and Low, J. Z. and Wei, S. and Francisco, K. R. and Deffner, M. and Herrmann, C. and Campos, L. M. and Scheer, E.',
+                    'year' => '2022',
+                    'title' => 'Interplay between Magnetoresistance and Kondo Resonance in Radical Single-Molecule Junctions',
+					'journal' => 'Nano Lett',
+                    'volume' => '22',
+                    'pages' => '5773-5779',
+                    ]
+            ],
+			// phdthesis institution not detected
+			[
+                'source' => 'Frøyshov, Stig Simeon. 2005. L’Horologe “Georgien” du Sinaiticus Ibericus 34, 2 vols (Ph.D diss., Paris IV/Institut Catholique/Institut de Théologie Orthodoxe Saint-Serge). ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Frøyshov, Stig Simeon',
+                    'title' => 'L\'Horologe ``Georgien\'\' du Sinaiticus Ibericus 34',
+                    'year' => '2005',
+                    'school' => 'Paris IV/Institut Catholique/Institut de Théologie Orthodoxe Saint-Serge',
+                    'note' => '2 vols',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// incollection not detected
+			[
+                'source' => ' Giannico GA, Hameed O (2018) Evaluation of prostate needle biopsies. In: Schatten H (ed) Clinical molecular and diagnostic imaging of prostate Cancer and treatment strategies. Springer Science Business Media ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Giannico, G. A. and Hameed, O.',
+                    'year' => '2018',
+                    'title' => 'Evaluation of prostate needle biopsies',
+					'editor' => 'Schatten, H.',
+                    'publisher' => 'Springer Science Business Media',
+                    'booktitle' => 'Clinical molecular and diagnostic imaging of prostate Cancer and treatment strategies',
+                    ]
+            ],
+			// journal not detected
+            [
+                'source' => '199: Almirall D, DiStefano C, Chang YC, Shire S, Kaiser A, Lu X, Nahum-Shani I, Landa R, Mathy P, Kasari C. Longitudinal Effects of Adaptive Interventions With a Speech-Generating Device in Minimally Verbal Children With ASD. J Clin Child Adolesc Psychol. 2016 Jul-Aug;45(4):442-56. doi: 10.1080/15374416.2016.1138407. Epub 2016 Mar 8. PMID: 26954267; PMCID: PMC4930379. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'PMID: 26954267. PMCID: PMC4930379. Epub 2016 Mar 8.',
+                    'doi' => '10.1080/15374416.2016.1138407',
+                    'author' => 'Almirall, D. and DiStefano, C. and Chang, Y. C. and Shire, S. and Kaiser, A. and Lu, X. and Nahum-Shani, I. and Landa, R. and Mathy, P. and Kasari, C.',
+                    'title' => 'Longitudinal Effects of Adaptive Interventions With a Speech-Generating Device in Minimally Verbal Children With ASD',
+					'journal' => 'J Clin Child Adolesc Psychol.',
+                    'year' => '2016',
+                    'month' => 'July-August',
+                    'volume' => '45',
+					'number' => '4',
+					'pages' => '442-56',
+                    ]
+            ],
+            
 
             
 

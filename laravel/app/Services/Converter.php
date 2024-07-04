@@ -539,15 +539,22 @@ class Converter
         $firstNameInitialsLastName = $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp;
         $lastNameFirstNameInitials = $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?';
 
-        $notJr = '(?!(Jr|Sr|III))';
+        $notJr = '(?!(';
+        foreach ($this->nameSuffixes as $i => $nameSuffix) {
+            $notJr .= ($i ? '|' : '') . $nameSuffix;
+        };
+        $notJr .= '))';
+
         $notAnd = '(?!' . $andRegExp . ')';
-        $periodOrColonOrCommaYear = '(\. |: |, (?=[\(\[`"\'\d]))';
-        
+
+        $periodOrColonOrCommaYear = '(\. |: |,? (?=[\(\[`"\'\d]))';
+        $periodNotAndOrColonOrCommaYear = '(\. ' . $notAnd . '|: |,? (?=[\(\[`"\'\d]))';
+
         $this->authorRegExps = [
             // 0. Smith AB[:\.] [must be at least two initials, otherwise could be start of name --- e.g. Smith A. Jones]
             [
                 'name1' => $lastNameRegExp . ' \p{Lu}{2,3}',
-                'end1' => '(: |\. ' . $notAnd . ')',
+                'end1' => $periodNotAndOrColonOrCommaYear,
                 'end2' => null,
                 'end3' => null,
                 'initials' => true
@@ -566,6 +573,7 @@ class Converter
                 'name1' => $lastNameRegExp . ' \p{Lu}{1,3}',
                 'end1' => ', ', 
                 'end2' => '(: |\. ' . $notAnd . ')', 
+                'end2' => $periodNotAndOrColonOrCommaYear,
                 'end3' => null, 
                 'initials' => true
             ],
@@ -619,12 +627,14 @@ class Converter
                 'initials' => true,
                 'etal' => true,
             ],
-            // 8. Smith, A. B.[,;] Jones, C. D.; Gonzalez, J. D.,
+            // 8. Smith, A. B.[,;] Jones, C. D.; Gonzalez, J. D.[.,] <not initial>
+            // Exclusions in end3 are to prevent the first part of a list of authors matching
+            // when the rest does not because of a typo in the punctuation.
             [
                 'name1' => $lastNameInitials, 
                 'end1' => '[;,] ', 
                 'end2' => '; ' . $notAnd, 
-                'end3' => '[,.] (?!(\p{Lu}\.|;))', 
+                'end3' => '[,.] (?!(\p{Lu}\.|;|' . $lastNameInitials . '[; ]))', 
                 'initials' => false
             ],
             // 9. Smith,? A. B., Jones,? C. D., and Gonzalez,? J. D. 
@@ -638,7 +648,7 @@ class Converter
             // 10. A. B. Smith[.:] 
             [
                 'name1' => $initialsLastName, 
-                'end1' => '[\.:] ', 
+                'end1' => $periodOrColonOrCommaYear, 
                 'end2' => null, 
                 'end3' => null, 
                 'initials' => false
@@ -1062,13 +1072,13 @@ class Converter
         if (preg_match('/pmid: [0-9]{6,9}/i', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
             $this->addToField($item, 'note', $matches[0][0], 'addToField 1a');
             $remainder = substr($remainder, 0, $matches[0][1]) . substr($remainder, $matches[0][1] + strlen($matches[0][0]));
-            $remainder = trim($remainder, ' .');
+            $remainder = trim($remainder, ' .;');
         }
 
         if (preg_match('/pmcid: [A-Z]{1,4}[0-9]{6,9}/i', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
             $this->addToField($item, 'note', $matches[0][0], 'addToField 1b');
             $remainder = substr($remainder, 0, $matches[0][1]) . substr($remainder, $matches[0][1] + strlen($matches[0][0]));
-            $remainder = trim($remainder, ' .');
+            $remainder = trim($remainder, ' .;');
         }
 
         //////////////////////////////////////
@@ -1271,6 +1281,14 @@ class Converter
         $match = $this->extractLabeledContent($remainder, ' ' . $this->oclcRegExp1, $this->oclcRegExp2);
         if ($match) {
             $this->setField($item, 'oclc', $match, 'setField 17a');
+        }
+
+        //////////////////////////
+        // Get Epub info if any //
+        //////////////////////////
+        $result = $this->findRemoveAndReturn($remainder, '(Epub ahead of print|Epub \d{4} [A-Za-z]+ \d{1,2}\.?)');
+        if ($result !== false) {
+            $this->addToField($item, 'note', rtrim($result[0], '.') . '.', 'addToField 2b');
         }
 
         ////////////////////////
@@ -2804,9 +2822,8 @@ class Converter
                             $lastCommaPos = strrpos($before, ',');
                             $lastPeriodPos = strrpos($before, '.');
                             $editorString = substr($before, 0, max($lastCommaPos, $lastPeriodPos));
-                            $result = $this->convertToAuthors(explode(' ', $editorString), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
-                            $remainder = substr($origRemainder, max($lastCommaPos, $lastPeriodPos));
-                            //dump($before, $editorString, $remainder);
+                            $result = $this->convertToAuthors(explode(' ', $editorString), $remainderFromC2A, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
+                            $remainder = $remainderFromC2A . substr($origRemainder, max($lastCommaPos, $lastPeriodPos));
                         } else {
                             $result = $this->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
                         }
@@ -3409,8 +3426,8 @@ class Converter
                 }
 
                 if (! isset($item->booktitle)) {
+                    $booktitle = trim($booktitle, ' .,(:');
                     if ($booktitle) {
-                        $booktitle = trim($booktitle, ' .,(');
                         if (substr($booktitle, 0, 1) == '*' && substr($booktitle, -1) == '*') {
                             $booktitle = trim($booktitle, '*');
                         }
@@ -3424,6 +3441,7 @@ class Converter
                             $this->addToField($item, 'note', 'Edited by ' . $item->editor . '.');
                             unset($item->editor);
                         }
+                        unset($warnings[array_search('Pages not found.', $warnings)]);
                     }
                 }
                 
@@ -4009,7 +4027,7 @@ class Converter
         }
 
         // If $remainder ends with string in parenthesis, look at the string
-        if (preg_match('/\((.*?)\)$/', rtrim($remainder, '. '), $matches)) {
+        if (preg_match('/\(([^\(]*)\)$/', rtrim($remainder, '. '), $matches)) {
             $match = $matches[1];
             if (Str::contains($match, $this->publishers)) {
                 // String in parentheses seems like it's the publication info; set $title equal to preceding string
@@ -5111,32 +5129,6 @@ class Converter
                     $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['lastAuthor'], $r['initials']);
                 }
 
-                // $result = preg_match('%^(?P<author>'. $name1 . ')' . $r['end1'] . '(?P<remainder>.*)$%u', $remainder, $matches);
-                // if (isset($matches['author'])) {
-                //     $authorstring .= $this->formatAuthor($matches['author'], $r['initials']);
-                //     $remainder = $matches['remainder'];
-                // }
-                // $result = 1;
-                // while ($result == 1) {
-                //     $result = preg_match('%^(?P<author>'. $name2 . ')' . $r['end1'] . '(?P<remainder>.*)$%u', $remainder, $matches);
-                //     if (isset($matches['author'])) {
-                //         $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['author'], $r['initials']);
-                //         $remainder = $matches['remainder'];
-                //     }
-                // }
-                // if ($r['end2'] && preg_match('%^(?P<author>'. $name2 . ')' . $r['end2'] . '(?P<remainder>.*)$%u', $remainder, $matches)) {
-                //     if (isset($matches['author'])) {
-                //         $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['author'], $r['initials']);
-                //         $remainder = $matches['remainder'];
-                //     }
-                // }
-                // if ($r['end3'] && preg_match('%^(?P<author>'. $name2 . ')' . $r['end3'] . '(?P<remainder>.*)$%u', $remainder, $matches)) {
-                //     if (isset($matches['author'])) {
-                //         $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['author'], $r['initials']);
-                //         $remainder = $matches['remainder'];
-                //     }
-                // }
-
                 if (preg_match('%^et.? al.?(?P<remainder>.*)$%', $matches['remainder'], $endmatches)) {
                     $authorstring .= ' and others';
                     $remainder = $endmatches['remainder'];
@@ -5232,7 +5224,7 @@ class Converter
             }
 
             if ($case == 12 
-                    && ! in_array($word, ['Jr.', 'Jr.,', 'Sr.', 'Sr.,', 'III', 'III,']) 
+                    && ! in_array(rtrim($word, ',.'), $this->nameSuffixes) 
                     // Deal with names like Bruine de Bruin, W.
                     && isset($words[$i+1]) // must be at least 2 words left
                     && ! $this->isAnd($words[$i+1], $language) // next word is not 'and'
@@ -5712,6 +5704,14 @@ class Converter
                         $this->verbose("\$namePart set to 0");
                         $authorIndex++;
                     }
+
+                    if (! Str::endsWith($word, ',') && ! $this->isAnd($nextWord, $language)) {
+                        $done = true;
+                        $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
+                        $year = $this->getDate(implode(" ", $remainingWords), $remainder, $month, $day, $date, true, true, true, $language);
+                        break;
+                    }
+
                     $this->verbose('Name with Jr., Sr., or III; fullName: ' . $fullName);
                 } else {
                     $this->verbose('[convertToAuthors 23]');
@@ -6372,7 +6372,7 @@ class Converter
                 ||
                 // <year> <month>-<month> <day>?
                 // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug-Sep;9(8):473-480'
-                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>(' . $months . ')-(' . $months . '))([ ;](?P<day>[0-9]{1,2}))?)/iJ', $string, $matches2, PREG_OFFSET_CAPTURE)
+                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>(' . $months . ')-(' . $months . '))( (?P<day>[0-9]{1,2}))?)/iJ', $string, $matches2, PREG_OFFSET_CAPTURE)
                 ||
                 // <month> <day> <year>
                 preg_match('/[ \(](?P<date>(?P<month>' . $months . ') (?P<day>[0-9]{1,2}) (?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
