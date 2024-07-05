@@ -69,7 +69,7 @@ class ConvertFile extends Component
             'item_separator' => 'line',
             'language' => 'en',
             'label_style' => 'short',
-            'override_labels' => '1',
+            'override_labels' => '0',
             'line_endings' => 'w',
             'char_encoding' => 'utf8leave',
             'percent_comment' => '1',

@@ -184,7 +184,7 @@ class Converter
                 'editors' => 'editors',
                 'ed.' => 'ed.',
                 'eds.' => 'eds.',
-                'edited by' => 'upravil'
+                'edited by' => 'editoval'
                 ],
             'fr' =>
                 [
@@ -416,7 +416,7 @@ class Converter
         $dateRegExp = '[a-zA-Z0-9,/\-\. ]{8,23}';
         $this->retrievedFromRegExp2 = [
             'en' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
-            'cz' => '[Dd]ostupné (?P<date1>' . $dateRegExp . ' )?(, )?z |[Zz]přístupněno (?P<date2>' . $dateRegExp . ' )?na ',
+            'cz' => '[Dd]ostupné (?P<date1>' . $dateRegExp . ' )?(, )?z |[Zz]přístupněno (?P<date2>' . $dateRegExp . ' )?na |Staženo (?P<date1>' . $dateRegExp . ' )?(, )?z',
             'fr' => '[Rr]écupéré (le )?(?P<date1>' . $dateRegExp . ' )?,? ?(sur|de) |[Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?,? ?(à|sur|de) ',
             'es' => '[Oo]btenido (el )?(?P<date1>' . $dateRegExp . ' )?de |[Rr]ecuperado (el )?(?P<date1>' . $dateRegExp . ' )?de |[Aa]ccedido (?P<date2>' . $dateRegExp . ' )?en ',
             'pt' => '[Oo]btido (?P<date1>' . $dateRegExp . ' )?de |[Aa]cesso (?P<date2>' . $dateRegExp . ' )?em ',
@@ -443,7 +443,7 @@ class Converter
                 . '(?P<m9>September|Sept?' . $p . ')|(?P<m10>October|Oct' . $p . ')|(?P<m11>November|Nov' . $p . ')|(?P<m12>December|Dec' . $p . ')',
             'cz' => '(?P<m1>leden|led' . $p . ')|(?P<m2>únor|ún' . $p . ')|(?P<m3>březen|břez' . $p . ')|(?P<m4>duben|dub' . $p . ')|'
                 . '(?P<m5>květen|květ' . $p . ')|(?P<m6>červen|červ' . $p . ')|(?P<m7>červenec|červen' . $p . ')|(?P<m8>srpen|srp' . $p . ')|'
-                . '(?P<m9>září|zář' . $p . ')|(?P<m10>říjen|říj' . $p . ')|(?P<m11>listopad|list' . $p . ')|(?P<m12>prosinec|pros' . $p . ')',
+                . '(?P<m9>září|zář' . $p . ')|(?P<m10>říjen|říj' . $p . ')|(?P<m11>listopad|listopadu|list' . $p . ')|(?P<m12>prosinec|pros' . $p . ')',
             'fr' => '(?P<m1>janvier|janv' . $p . ')|(?P<m2>février|févr' . $p . ')|(?P<m3>mars)|(?P<m4>avril|avr' . $p . ')|'
                 . '(?P<m5>mai)|(?P<m6>juin)|(?P<m7>juillet|juill?' . $p . ')|(?P<m8>aout|août)|'
                 . '(?P<m9>septembre|sept?' . $p . ')|(?P<m10>octobre|oct' . $p . ')|(?P<m11>novembre|nov' . $p . ')|(?P<m12>décembre|déc' . $p . ')',

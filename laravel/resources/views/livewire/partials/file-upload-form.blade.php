@@ -185,11 +185,11 @@
     <div>
         <x-input-label for="char_encoding" :value="__('Convert accented characters to TeX?')" class="mt-4 mb-1" />
     
-        <x-radio-input wire:model="uploadForm.char_encoding" value="utf8leave" class="peer/utf8leave" />
-        <x-value-label for="utf8leave" class="peer-checked/utf8leave:text-blue-600 ml-1" :value="__('No')" />
-
-        <x-radio-input wire:model="uploadForm.char_encoding" value="utf8" class="peer/utf8 ml-4" /> 
+        <x-radio-input wire:model="uploadForm.char_encoding" value="utf8" class="peer/utf8" /> 
         <x-value-label for="utf8" class="peer-checked/utf8:text-blue-600 ml-1" :value="__('Yes')" />
+
+        <x-radio-input wire:model="uploadForm.char_encoding" value="utf8leave" class="peer/utf8leave ml-4" />
+        <x-value-label for="utf8leave" class="peer-checked/utf8leave:text-blue-600 ml-1" :value="__('No')" />
 
         <x-input-error :messages="$errors->get('uploadForm.char_encoding')" class="mt-2" />
 
