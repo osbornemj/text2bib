@@ -13,6 +13,9 @@ class Comment extends Model
 
     protected $guarded = [];
 
+    // update updated_at for thread when new comment is saved
+    protected $touches = ['thread'];
+
     public function thread(): BelongsTo
     {
         return $this->belongsTo(Thread:: class);

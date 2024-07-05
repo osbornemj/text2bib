@@ -19,7 +19,7 @@ class CommentController extends Controller
 {
     public function index(): View
     {
-        $threads = Thread::latest()->paginate();
+        $threads = Thread::orderBy('updated_at', 'desc')->paginate();
 
         return view('threads', compact('threads'));
     }

@@ -577,39 +577,39 @@ class Converter
                 'end3' => null, 
                 'initials' => true
             ],
-            // 2. Smith A. B., Jones C. D.[:\.]
-            // [
-            //     'name1' => $lastNameInitials,
-            //     'end1' => '[,;] ', 
-            //     'end2' => '\. (?!(\p{Lu}\.|;))' . $notAnd, 
-            //     'end3' => null, 
-            //     'initials' => false
-            // ],
-            // 3. Smith AB, Jones CD, Gonzalez JD[:\.]
+            // 3. Smith A. B., Jones C. D.[:\.]
             [
-                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
+                'name1' => $lastNameInitials,
+                'end1' => '[,;] ', 
+                'end2' => ': ', 
+                'end3' => null, 
+                'initials' => false
+            ],
+            // 4. Smith,? AB, Jones,? CD, Gonzalez,? JD(: |\. | followed by <paren> or <quote> or <digit>)
+            [
+                'name1' => $lastNameRegExp . ',? \p{Lu}{1,3}', 
                 'end1' => ', ', 
                 'end2' => ', ' . $notAnd, 
-                'end3' => '[:\.] ', 
+                'end3' => '(: |\. | (?=[\(\[`"\'\d]))', 
                 'initials' => true
             ],
-            // 4. Smith AB and Gonzalez JD[:\.,]
+            // 5. Smith AB and Gonzalez JD(: |\. |, | followed by <paren> or <quote> or <digit>)
             [
                 'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
                 'end1' => ' ' . $andRegExp . ' ', 
-                'end2' => '[:\.,]', 
+                'end2' => '(: |\. |, | (?=[\(\[`"\'\d]))', 
                 'end3' => null, 
                 'initials' => true
             ],
-            // 5. Smith AB, Jones CD,? and Gonzalez JD[:\.]
+            // 6. Smith AB, Jones CD,? and Gonzalez JD(: |\. |, | followed by <paren> or <quote> or <digit>)
             [
                 'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
                 'end1' => ', ', 
                 'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '[:\.]', 
+                'end3' => '(: |\. |, | (?=[\(\[`"\'\d]))',  
                 'initials' => true
             ],
-            // 6. Smith AB, Jones CD, Gonzalez JD, et al.
+            // 7. Smith AB, Jones CD, Gonzalez JD, et al.
             [
                 'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
                 'end1' => ', ', 
@@ -618,7 +618,7 @@ class Converter
                 'initials' => true,
                 'etal' => true,
             ],
-            // 7. Smith A B, Jones C D, Gonzalez J D, et al.
+            // 8. Smith A B, Jones C D, Gonzalez J D, et al.
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ', ', 
@@ -627,7 +627,7 @@ class Converter
                 'initials' => true,
                 'etal' => true,
             ],
-            // 8. Smith, A. B.[,;] Jones, C. D.; Gonzalez, J. D.[.,] <not initial>
+            // 9. Smith, A. B.[,;] Jones, C. D.; Gonzalez, J. D.[.,] <not initial>
             // Exclusions in end3 are to prevent the first part of a list of authors matching
             // when the rest does not because of a typo in the punctuation.
             [
@@ -637,7 +637,15 @@ class Converter
                 'end3' => '[,.] (?!(\p{Lu}\.|;|' . $lastNameInitials . '[; ]))', 
                 'initials' => false
             ],
-            // 9. Smith,? A. B., Jones,? C. D., and Gonzalez,? J. D. 
+            // 10. Smith, A. B.[,;] Jones, C. D.[,;] Gonzalez, J. D.:
+            [
+                'name1' => $lastNameInitials, 
+                'end1' => '[;,] ', 
+                'end2' => '[;,] ' . $notAnd, 
+                'end3' => ': ', 
+                'initials' => false
+            ],
+            // 11. Smith,? A. B., Jones,? C. D., and Gonzalez,? J. D. 
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ', ' . $notAnd, 
@@ -645,7 +653,7 @@ class Converter
                 'end3' => '[,\. ]', 
                 'initials' => false
             ],
-            // 10. A. B. Smith[.:] 
+            // 12. A. B. Smith[.:] 
             [
                 'name1' => $initialsLastName, 
                 'end1' => $periodOrColonOrCommaYear, 
@@ -653,7 +661,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 11. A. B. Smith et.? al.? 
+            // 13. A. B. Smith et.? al.? 
             [
                 'name1' => $initialsLastName, 
                 'end1' => ' et\.? al\.?', 
@@ -662,7 +670,7 @@ class Converter
                 'initials' => false,
                 'etal' => true,
             ],
-            // 12. A. B. Smith and C. D. Jones[\., ]
+            // 14. A. B. Smith and C. D. Jones[\., ]
             [
                 'name1' => $initialsLastName, 
                 'end1' => ',? ' . $andRegExp . ' ', 
@@ -670,7 +678,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 13. A. B. Smith, C. D. Jones and J. D. Gonzalez[\., ]
+            // 15. A. B. Smith, C. D. Jones and J. D. Gonzalez[\., ]
             [
                 'name1' => $initialsLastName, 
                 'end1' => ', ' . $notAnd, 
@@ -678,7 +686,7 @@ class Converter
                 'end3' => '(\. |,? ' . $notJr . ')', 
                 'initials' => false
             ],
-            // 14. Smith, A. B., C. D. Jones,? and J. D. Gonzalez[\., ]
+            // 16. Smith, A. B., C. D. Jones,? and J. D. Gonzalez[\., ]
             [
                 'name1' => $lastNameInitials, 
                 'name2' => $initialsLastName, 
@@ -687,7 +695,7 @@ class Converter
                 'end3' => '(\. |, ' . $notJr . '| \()', // can't be simply space, because then if last author has two-word last name, only first is included
                 'initials' => false
             ],
-            // 15. Smith, Jane( J)?.
+            // 17. Smith, Jane( J)?.
             [
                 'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?', 
                 'end1' => '\. ' . $notAnd, 
@@ -695,7 +703,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 16. Smith J. A.:
+            // 18. Smith J. A.:
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ': ', 
@@ -703,7 +711,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 17. Jane A. Smith[:.]
+            // 19. Jane A. Smith[:.]
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => $periodOrColonOrCommaYear, 
@@ -711,7 +719,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 18. Smith, J. A.,? <followed by>[\(|\[|`|\'|"|\d]
+            // 20. Smith, J. A.,? <followed by>[\(|\[|`|\'|"|\d]
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ',? (?=[\(\[`"\'\d])', 
@@ -719,7 +727,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 19. Smith, J. A., Jones, A. B.,? <followed by>[\(|\[|`|\'|"|\d]
+            // 21. Smith, J. A., Jones, A. B.,? <followed by>[\(|\[|`|\'|"|\d]
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ', ', 
@@ -727,7 +735,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 20. Smith, J\.? and Jones, A[:\.,]
+            // 22. Smith, J\.? and Jones, A[:\.,]
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ',? ' . $andRegExp . ' ', 
@@ -735,7 +743,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 21. Smith, J\.? and A\.? Jones[:\.,]
+            // 23. Smith, J\.? and A\.? Jones[:\.,]
             [
                 'name1' => $lastNameInitials, 
                 'name2' => $initialsLastName, 
@@ -744,7 +752,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 22. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.] 
+            // 24. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.] 
             [
                 'name1' => $lastNameFirstNameInitials,
                 'name2' => $firstNameInitialsLastName,
@@ -753,7 +761,7 @@ class Converter
                 'end3' => null,
                 'initials' => false
             ],
-            // 23. Jane (A. )?Smith, Susan (B. )?Jones. 
+            // 25. Jane (A. )?Smith, Susan (B. )?Jones. 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => ', ' . $notAnd, 
@@ -761,7 +769,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 24. Jane (A. )?Smith, Susan (B. )?Jones, Hilda (C. )?Gonzalez. 
+            // 26. Jane (A. )?Smith, Susan (B. )?Jones, Hilda (C. )?Gonzalez. 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => '[,;] ' . $notAnd, 
@@ -769,7 +777,7 @@ class Converter
                 'end3' => $periodOrColonOrCommaYear, 
                 'initials' => false
             ],
-            // 25. SMITH Jane, JONES Susan, GONZALEZ Hilda.
+            // 27. SMITH Jane, JONES Susan, GONZALEZ Hilda.
             [
                 'name1' => $ucNameRegExp . ' ' . $otherNameRegExp, 
                 'end1' => '[,;] ' . $notAnd, 
@@ -777,7 +785,7 @@ class Converter
                 'end3' => $periodOrColonOrCommaYear, 
                 'initials' => false
             ],
-            // 26. Jane (A. )?Smith and Susan (B. )?Jones[,.] 
+            // 28. Jane (A. )?Smith and Susan (B. )?Jones[,.] 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => ',? ' . $andRegExp . ' ',
@@ -785,7 +793,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 27. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
+            // 29. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => ', ' . $notAnd, 
@@ -793,7 +801,7 @@ class Converter
                 'end3' => '[\.,] ' . $notJr, 
                 'initials' => false
             ],
-            // 28. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
+            // 30. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
             [
                 'name1' => $lastNameFirstNameInitials,
                 'end1' => ',? ' . $andRegExp . ' ',
@@ -801,7 +809,7 @@ class Converter
                 'end3' => null,
                 'initials' => false
             ],
-            // 29. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
+            // 31. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
             [
                 'name1' => $lastNameFirstNameInitials,
                 'name2' => $firstNameInitialsLastName,
@@ -1566,6 +1574,7 @@ class Converter
         if (! $title) {
             $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
             $titleStyle = $style;
+            $this->verbose('Title is styled (' . $titleStyle . ')');
             $newRemainder = $before . ltrim($after, "., ");
         }
 
@@ -3655,36 +3664,53 @@ class Converter
                         $remainder = rtrim(substr($remainder, $length), '}');
                     }
 
-                    $remainderMinusPubInfo = Str::remove($cityString, $remainder);
-                    $remainderMinusPubInfo = Str::remove($publisherString, $remainderMinusPubInfo);
-                    // If remainder contains a period following a lowercase letter, string before period is series name
-                    $periodPos = strpos($remainderMinusPubInfo, '.');
-                    if ($periodPos !== false && strtolower($remainderMinusPubInfo[$periodPos-1]) == $remainderMinusPubInfo[$periodPos-1]) {
-                        $beforePeriod = trim(Str::before($remainderMinusPubInfo, '.'));
-                        if (Str::contains($beforePeriod, ['series', 'Series'])) {
-                            $this->setField($item, 'series', $beforePeriod, 'setField 110');
-                            $remainder = trim(Str::remove($beforePeriod, $remainder));
-                        }
-                        //$this->setField($item, 'title', $item->title . $series, 'setField 110');
+                    //$remainderMinusPubInfo = Str::remove($cityString, $remainder);
+                    //$remainderMinusPubInfo = Str::remove($publisherString, $remainderMinusPubInfo);
+                    if (! empty($cityString)) {
+                        $remainderMinusPubInfo = preg_replace('/' . $cityString . '[.,:]?/', '', $remainder);
                     }
+                    if (! empty($publisherString)) {
+                        $remainderMinusPubInfo = preg_replace('/' . $publisherString . '[.,]?/', '', $remainderMinusPubInfo);
+                    }
+                    $remainderMinusPubInfo = trim($remainderMinusPubInfo);
 
-                    // First use routine to find publisher and address, to catch cases where address
-                    // contains more than one city, for example.
+                    if ($titleStyle && $titleStyle != 'none' && ! empty($cityString) && ! empty($publisherString)) {
+                        // The title is strongly identified, so what is left must be the series
+                        $this->setField($item, 'series', trim($remainderMinusPubInfo, ',. '), 'setField 110b');
+                        $this->setField($item, 'address', $cityString, 'setField 110c');
+                        $this->setField($item, 'publisher', $publisherString, 'setField 110d');
+                        $remainder = '';
+                    } else {
+                        // If remainder contains a period following a lowercase letter and preceding string contains the word
+                        // 'series', string before period is series name
+                        $periodPos = strpos($remainderMinusPubInfo, '.');
+                        if ($periodPos !== false && strtolower($remainderMinusPubInfo[$periodPos-1]) == $remainderMinusPubInfo[$periodPos-1]) {
+                            $beforePeriod = trim(Str::before($remainderMinusPubInfo, '.'));
+                            if (Str::contains($beforePeriod, ['series', 'Series'])) {
+                                $this->setField($item, 'series', $beforePeriod, 'setField 110');
+                                $remainder = trim(Str::remove($beforePeriod, $remainder));
+                            }
+                            //$this->setField($item, 'title', $item->title . $series, 'setField 110');
+                        }
 
-                    // If item is a book, $cityString and $publisherString are set, and existing title is followed by comma
-                    // in $entry, string preceding $cityString
-                    // and $publisherString must be part of title (which must have been ended prematurely). 
-                    if ($itemKind == 'book' && ! empty($cityString) && !empty($publisherString)) {
-                        $afterTitle = Str::after($entry, $item->title ?? '');
-                        if ($afterTitle[0] == ',') {
-                            $beforeCity = Str::before($remainder, $cityString);
-                            $beforePublisher = Str::before($remainder, $publisherString);
-                            $beforeCityPublisher = strlen($beforeCity) < strlen($beforePublisher) ? $beforeCity : $beforePublisher;
-                            if ($beforeCityPublisher) {
-                                $entryStartingWithTitle = strstr($entry, $item->title);
-                                $title = strstr($entryStartingWithTitle, $beforeCityPublisher, true) . $beforeCityPublisher;
-                                $this->setField($item, 'title', trim($title, ' ,'), 'setField 113');
-                                $remainder = $cityString . ':' . $publisherString;
+                        // First use routine to find publisher and address, to catch cases where address
+                        // contains more than one city, for example.
+
+                        // If item is a book, $cityString and $publisherString are set, and existing title is followed by comma
+                        // in $entry, string preceding $cityString
+                        // and $publisherString must be part of title (which must have been ended prematurely). 
+                        if ($itemKind == 'book' && ! empty($cityString) && !empty($publisherString)) {
+                            $afterTitle = Str::after($entry, $item->title ?? '');
+                            if ($afterTitle[0] == ',') {
+                                $beforeCity = Str::before($remainder, $cityString);
+                                $beforePublisher = Str::before($remainder, $publisherString);
+                                $beforeCityPublisher = strlen($beforeCity) < strlen($beforePublisher) ? $beforeCity : $beforePublisher;
+                                if ($beforeCityPublisher) {
+                                    $entryStartingWithTitle = strstr($entry, $item->title);
+                                    $title = strstr($entryStartingWithTitle, $beforeCityPublisher, true) . $beforeCityPublisher;
+                                    $this->setField($item, 'title', trim($title, ' ,'), 'setField 113');
+                                    $remainder = $cityString . ':' . $publisherString;
+                                }
                             }
                         }
                     }

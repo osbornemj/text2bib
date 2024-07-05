@@ -10948,7 +10948,57 @@ class ExampleSeeder extends Seeder
 					'pages' => '442-56',
                     ]
             ],
-            
+            // series not detected
+            [
+                'source' => '\bibitem[Sc5] {Sc5} M.-H. Schwartz, {\it Classes de Chern des ensembles analytiques.} Actualit\'es math\'ematiques, Hermann, Paris, 2000.',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'M.-H. Schwartz',
+                    'title' => 'Classes de Chern des ensembles analytiques',
+                    'series' => 'Actualit\'es math\'ematiques',
+                    'publisher' => 'Hermann',
+                    'address' => 'Paris',
+                    'year' => '2000',
+                ]
+            ],
+            // author pattern
+            [
+                'source' => '\bibitem{Mechti2018} Mechti, S., Khoufi, N., Belguith, L. H.: Improving native language identification model with syntactic features: Case of arabic.. In : Proceedings of the 18th International Conference on Intelligent Systems Design and Applications. pp. 202--211 (2018). ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Mechti, S. and Khoufi, N. and Belguith, L. H.',
+                    'title' => 'Improving native language identification model with syntactic features: Case of arabic',
+                    'year' => '2018',
+                    'pages' => '202-211',
+                    'booktitle' => 'Proceedings of the 18th International Conference on Intelligent Systems Design and Applications',
+                    ]
+            ],
+            // author pattern
+            [
+                'source' => '\bibitem{Shervin2014} Shervin, M., DRAS, M.: Arabic native language identification. In : Proceedings of the EMNLP 2014 Workshop on Arabic Natural Language Processing (ANLP). pp. 180--186 (2014). ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Shervin, M. and Dras, M.',
+                    'title' => 'Arabic native language identification',
+                    'year' => '2014',
+                    'pages' => '180-186',
+                    'booktitle' => 'Proceedings of the EMNLP 2014 Workshop on Arabic Natural Language Processing (ANLP)',
+                    ]
+            ],
+            // author pattern
+            [
+                'source' => 'Chadegani AA, Salehi H, Yunus M, Farhadi H, Fooladi M, Farhadi, M, Ebrahim, NA (2013). A Comparison between Two Main Academic Literature Collections: Web of Science and Scopus Databases. Asian Social Science 9(5): 18–26. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Chadegani, A. A. and Salehi, H. and Yunus, M. and Farhadi, H. and Fooladi, M. and Farhadi, M. and Ebrahim, N. A.',
+                    'year' => '2013',
+                    'title' => 'A Comparison between Two Main Academic Literature Collections: Web of Science and Scopus Databases',
+                    'journal' => 'Asian Social Science',
+                    'volume' => '9',
+                    'number' => '5',
+                    'pages' => '18-26',
+                    ]
+            ],
 
             
 
