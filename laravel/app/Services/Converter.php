@@ -531,7 +531,7 @@ class Converter
         $otherNameRegExp = '(?=[^ ]*\p{Ll})\p{Lu}[\p{L}\-\']+';
         // Uppercase name
         $ucNameRegExp = '\p{Lu}+';
-        $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.-\p{Lu}\.)';
+        $initialRegExp = '(\p{Lu}\.?|\p{Lu}\. ?-\p{Lu}\.)';
 
         // Spaces between initials are added before an item is processed, so "A.B." doesn't need to be matched
         $initialsLastName = '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp;
@@ -1056,7 +1056,7 @@ class Converter
         $doi = Str::replaceStart('doi.', '', $doi);
         $doi = rtrim($doi, ']');
         $doi = ltrim($doi, '/:');
-        if (in_array($use, ['latex', 'biblatex'])) {
+        if (in_array($use, ['latex'])) {
             $doi = preg_replace('/([^\\\])_/', '$1\_', $doi);
         }
 
@@ -3912,7 +3912,7 @@ class Converter
         }
 
         if (isset($item->title)) {
-            if (in_array($use, ['latex', 'biblatex'])) {
+            if (in_array($use, ['latex'])) {
                 $item->title = $this->requireUc($item->title);
             }
             $scholarTitle = $this->makeScholarTitle($item->title);

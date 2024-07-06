@@ -4928,7 +4928,7 @@ class ExampleSeeder extends Seeder
                 'source' => ' \bibitem{LiPRA2023} W. Li, J. Cheng, W. -J. Gong, and J. Li, Nonlinear self-sustaining dynamics in cavity magnomechanics, Phys. Rev. A {\bf108}, 033518 (2023). ',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => 'W. Li and J. Cheng and W.-J. Gong and J. Li',
+                    'author' => 'W. Li and J. Cheng and W. -J. Gong and J. Li',
                     'title' => 'Nonlinear self-sustaining dynamics in cavity magnomechanics',
                     'year' => '2023',
                     'journal' => 'Phys. Rev. A',
