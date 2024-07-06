@@ -39,7 +39,7 @@
         <br/>
 
         Author pattern:
-        @if ($output->author_pattern == 'none')
+        @if ($output->author_pattern === null)
             <span class="bg-red-500">none</span>
         @else
             {{ $output->author_pattern }}
