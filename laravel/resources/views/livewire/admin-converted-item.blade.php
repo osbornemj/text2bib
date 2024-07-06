@@ -38,7 +38,12 @@
 
         <br/>
 
-        Author pattern: {{ $output->author_pattern ?? 'none'}}
+        Author pattern:
+        @if ($output->author_pattern)
+            {{ $output->author_pattern }}
+        @else
+            <span class="bg-red-500">none</span>
+        @endif
 
         <br/>
         
