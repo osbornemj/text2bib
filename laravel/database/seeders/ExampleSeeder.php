@@ -11004,13 +11004,26 @@ class ExampleSeeder extends Seeder
                 'source' => '\bibitem{C-E-I} R. C. Char{\~a}o, J. T. Espinoza  and R. Ikehata,  \emph{A second order fractional differential equation under effects of a super damping},  Comm. Pure Appl. Analysis, {19} (2020), 4433--4454.  ',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => 'Char{\~a}o, Ruy Coimbra and Espinoza, Juan Torres and Ikehata, Ryo',
+                    'author' => 'R. C. Char{\~a}o and J. T. Espinoza and R. Ikehata',
                     'title' => 'A second order fractional differential equation under effects of a super damping',
                     'journal' => 'Comm. Pure Appl. Analysis',
                     'year' => '2020',
                     'volume' => '19',
-                    'number' => '9',
                     'pages' => '4433-4454',
+                    ]
+            ],
+			// parens should be removed when pages are removed
+			[
+                'source' => 'Dev, S., Sheng, E., Zhao, J., Amstutz, A., Sun, J., Hou, Y., ... & Chang, K. W. (2022, November). On Measures of Biases and Harms in NLP. In Findings of the Association for Computational Linguistics: AACL-IJCNLP 2022 (pp. 246-267). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'month' => 'November',
+                    'author' => 'Dev, S. and Sheng, E. and Zhao, J. and Amstutz, A. and Sun, J. and Hou, Y. and others and Chang, K. W.',
+                    'year' => '2022',
+                    'title' => 'On Measures of Biases and Harms in NLP',
+                    'journal' => 'Findings of the Association for Computational Linguistics: AACL-IJCNLP',
+                    'pages' => '246-267',
+                    'volume' => '2022',
                     ]
             ],
 

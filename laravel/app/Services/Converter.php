@@ -401,19 +401,23 @@ class Converter
         // (otherwise word following "manuscript" will be matched, for example)
         $this->workingPaperNumberRegExp = ' (\\\\#|number|no\.?)? ?(?=.*[0-9])([a-zA-Z0-9\-]+),?';
 
+        // Used in: "*Retrieved from* (site)? <url> accessed <date>"
+        // and "*Retrieved from* (site)? <url> <date>?"
         $this->retrievedFromRegExp1 = [
             'en' => '(Retrieved from:? |Available( at)?:? )',
             'cz' => '(Dostupné z:? |načteno z:? )',
-            'fr' => '(Récupéré sur |Disponible( à)?:? )',
+            'fr' => '(Récupéré sur |Disponible( (à l\'adresse|sur))?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
 //            'id' => '(Diambil kembali dari )',
             'pt' => '(Disponível( em)?:? |Obtido de:? )',
             'my' => '(Retrieved from |Available( at)?:? )',
-            'nl' => '(Opgehaald van |Verkrijgbaar( bij)?:? |Available( at)?:? )',
+            'nl' => '(Opgehaald van |Verkrijgbaar( bij)?:? |Beschikbaar op |Available( at)?:? )',
         ];
 
         // Dates are between 8 and 23 characters long (13 de novembre de 2024,)
         $dateRegExp = '[a-zA-Z0-9,/\-\. ]{8,23}';
+
+        // Used in: "*Retrieved <date>? from* <url> <note>?
         $this->retrievedFromRegExp2 = [
             'en' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
             'cz' => '[Dd]ostupné (?P<date1>' . $dateRegExp . ' )?(, )?z |[Zz]přístupněno (?P<date2>' . $dateRegExp . ' )?na |Staženo (?P<date1>' . $dateRegExp . ' )?(, )?z',
@@ -424,14 +428,18 @@ class Converter
             'nl' => '[Oo]pgehaald (?P<date1>' . $dateRegExp . ' )?(, )?van |[Gg]eraadpleegd op (?P<date2>' . $dateRegExp . ' )?om ',
         ];
 
+        // Used in: "Retrieved from (site)? <url> *accessed <date>*"
+        // <url> *accessed <date>*
+        // *acceessed <date>* <url>
+        // *accessed <date>*
         $this->accessedRegExp1 = [
             'en' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed|[Vv]isited)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
-            'cz' => '([Nn]ačteno|[Zz]přístupněno|[Zz]obrazeno)( dne)?[,:]? (?P<date2>' . $dateRegExp . ')',
+            'cz' => '([Nn]ačteno|[Zz]přístupněno|[Zz]obrazeno|[Cc]itováno)( dne)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'fr' => '([Rr]écupéré |[Cc]onsulté )(le )?(?P<date2>' . $dateRegExp . ')',
             'es' => '([Oo]btenido|[Aa]ccedido)[,:]? (?P<date2>' . $dateRegExp . ')',
-            'pt' => '([Oo]btido |[Aa]cesso (em:?)? )(?P<date2>' . $dateRegExp . ')',
+            'pt' => '([Oo]btido |[Aa]cess(ad)?o (em:?)? |[Aa]cedido (em:?)? )(?P<date2>' . $dateRegExp . ')',
             'my' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
-            'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken|[Gg]eopend),? (?P<date2>' . $dateRegExp . ')',
+            'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken|[Bb]ezocht op|[Gg]eopend),? (?P<date2>' . $dateRegExp . ')',
         ];
 
         // Month abbreviations in many languages: https://web.library.yale.edu/cataloging/months
@@ -2288,6 +2296,7 @@ class Converter
                         if (! empty($item->pages)) {
                             $pagesReported = true;
                         }
+
                         $this->verbose("[p1] Remainder: " . $remainder);
 
                         if ($remainder) {
@@ -7176,8 +7185,18 @@ class Converter
                 $this->verbose("Number of matches for a potential page range: " . $numberOfMatches);
                 $this->verbose("Match index: " . $matchIndex);
                 $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches[3][$matchIndex][0]), 'getVolumeNumberPagesForArticle 10');
+
+                // If pages surrounded by parens, don't include parens in remainder
                 $take = $matches[0][$matchIndex][1];
+                if (isset($remainder[$take - 1]) && $remainder[$take - 1] == '(') {
+                    $take -= 1;
+                }
+
                 $drop = $matches[3][$matchIndex][1] + strlen($matches[3][$matchIndex][0]);
+                if (isset($remainder[$drop]) && $remainder[$drop] == '(') {
+                    $drop += 1;
+                }
+
                 $result = true;
                 // single page
             } elseif (preg_match('/p\. (?P<pp>[1-9][0-9]{0,5})/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
@@ -7340,7 +7359,7 @@ class Converter
                                     if (preg_match('/^\((?P<volume>.*?)\)$/', $remainder, $matches)) {
                                         $remainder = $matches['volume'];
                                     }
-                                    $this->setField($item, 'volume', trim($remainder, ' ,;:.'), 'getVolumeAndNumberForArticle 13');
+                                    $this->setField($item, 'volume', trim($remainder, ' ,;:.{}'), 'getVolumeAndNumberForArticle 13');
                                 }
                                 unset($item->number);
                                 $take = 0;
