@@ -10999,6 +10999,20 @@ class ExampleSeeder extends Seeder
                     'pages' => '18-26',
                     ]
             ],
+            // remove braces from volume number
+            [
+                'source' => '\bibitem{C-E-I} R. C. Char{\~a}o, J. T. Espinoza  and R. Ikehata,  \emph{A second order fractional differential equation under effects of a super damping},  Comm. Pure Appl. Analysis, {19} (2020), 4433--4454.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Char{\~a}o, Ruy Coimbra and Espinoza, Juan Torres and Ikehata, Ryo',
+                    'title' => 'A second order fractional differential equation under effects of a super damping',
+                    'journal' => 'Comm. Pure Appl. Analysis',
+                    'year' => '2020',
+                    'volume' => '19',
+                    'number' => '9',
+                    'pages' => '4433-4454',
+                    ]
+            ],
 
             
 

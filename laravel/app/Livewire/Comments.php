@@ -60,7 +60,7 @@ class Comments extends Component
         $firstComment = Comment::where('thread_id', $this->thread->id)->oldest()->first();
         $opUser = $firstComment->user;
         if ($user->id != $opUser->id) {
-            $opUser->notify(new CommentResponsePosted($this->thread->id));
+            $opUser->notify(new CommentResponsePosted($this->thread->id, $comment->id));
         }
 
         $this->comment = '';

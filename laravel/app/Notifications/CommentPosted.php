@@ -38,7 +38,7 @@ class CommentPosted extends Notification
     {
         return (new MailMessage)
                     ->line('A comment has been posted.')
-                    ->action('View comment', url('/threads/' . $this->comment->thread_id));
+                    ->action('View comment', url('/threads/' . $this->comment->thread_id . '#' . $this->comment->id));
     }
 
     /**

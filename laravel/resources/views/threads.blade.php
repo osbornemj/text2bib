@@ -26,7 +26,7 @@
     @foreach ($threads as $thread)
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 mx-4">
             <div class="col-span-10">
-                <x-link href="{{ url('threads/' . $thread->id) }}">{{ $thread->title }}</x-link> ({{ $thread->comments->count() }}) 
+                <x-link href="{{ url('threads/' . $thread->id) }}">{{ $thread->title }}</x-link> ({{ $thread->comments->count() }})
             </div>
             <div class="col-span-2 text-right">
                 {{ $thread->comments->last()->created_at->format('Y-m-d') }}

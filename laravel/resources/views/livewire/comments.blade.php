@@ -5,7 +5,7 @@
         <dl class="mb-6">
             @foreach ($comments as $comment)
                 <x-dt>
-                    {{ $comment->user->fullName() }} posted {{ $comment->created_at }}
+                    <a name="{{ $comment->id }}">{{ $comment->user->fullName() }} posted {{ $comment->created_at }}</a>
                     @if ($loop->last && $comment->user->is_admin && Auth::user()->is_admin)
                         <div>
                             <livewire:require-response 
@@ -24,7 +24,7 @@
             @csrf
 
             <x-input-label for="comment" value="Response" />
-            <x-textarea-input rows="10" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="comment"/>
+            <x-textarea-input rows="12" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="comment"/>
             <div role="alert" class="mt-4 mb-4">
                 @error('comment') <span class="text-red-500">{{ $message }}</span> @enderror 
             </div>

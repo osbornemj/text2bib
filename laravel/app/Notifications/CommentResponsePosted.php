@@ -16,9 +16,9 @@ class CommentResponsePosted extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(public int $threadId)
+    public function __construct(public int $threadId, public int $commentId)
     {
-        $this->threadId = $threadId;
+        //$this->threadId = $threadId;
     }
 
     /**
@@ -38,7 +38,7 @@ class CommentResponsePosted extends Notification
     {
         return (new MailMessage)
                     ->line('A response to a comment of yours has been posted.')
-                    ->action('View comment', url('/threads/' . $this->threadId));
+                    ->action('View comment', url('/threads/' . $this->threadId . '#' . $this->commentId));
     }
 
     /**
