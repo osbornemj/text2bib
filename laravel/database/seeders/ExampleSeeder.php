@@ -11054,6 +11054,59 @@ class ExampleSeeder extends Seeder
                     'pages' => '267-268',
                     ]
             ],
+			// author pattern error
+			[
+                'source' => 'Yan, S.-Q., Gu, J.-C., Zhu, Y., & Ling, Z.-H. (2024). Corrective Retrieval Augmented Generation. https://doi.org/10.48550/arXiv.2401.15884  ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'doi' => '10.48550/arXiv.2401.15884',
+                    'author' => 'Yan, S.-Q. and Gu, J.-C. and Zhu, Y. and Ling, Z.-H.',
+                    'year' => '2024',
+                    'title' => 'Corrective Retrieval Augmented Generation',
+                    ]
+            ],
+			// author format
+			[
+                'source' => '\bibitem{ref:Blackery} J. Blackery, E. Mitsoulis. Creeping motion of a sphere in tubes filled with a Bingham plastic material. Journal of Non-Newtonian Fluid Mechanics, 1997, v. 70, pp. 59--77. 	 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'J. Blackery and E. Mitsoulis',
+                    'title' => 'Creeping motion of a sphere in tubes filled with a Bingham plastic material',
+                    'year' => '1997',
+                    'journal' => 'Journal of Non-Newtonian Fluid Mechanics',
+                    'volume' => '70',
+                    'pages' => '59-77',
+                    ]
+            ],
+			// author format 
+			[
+                'source' => ' \bibitem{AW2018} A. Wronkowicz, K. Dragan, K. Lis, ``Assessment of uncertainty in damage evaluation by ultrasonic testing of composite structures,\'\' \emph{Composite Structures}, vol. 203, (2018), pp.71-84. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'A. Wronkowicz and K. Dragan and K. Lis',
+                    'title' => 'Assessment of uncertainty in damage evaluation by ultrasonic testing of composite structures',
+                    'year' => '2018',
+                    'journal' => 'Composite Structures',
+                    'volume' => '203',
+                    'pages' => '71-84',
+                    ]
+            ],
+            // author format
+            [
+                'source' => '\bibitem{d4} W. Matsunaga, K. Mizukami, Y. Mizutani, A. Todoroki, ``Applicability of eddy current testing in CFRP using electrodes on CFRP surface and control of the testing range,\'\' \emph{Advanced Composite Materials}, vol.31, (5), (2022), 538-551. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'W. Matsunaga and K. Mizukami and Y. Mizutani and A. Todoroki',
+                    'title' => 'Applicability of eddy current testing in CFRP using electrodes on CFRP surface and control of the testing range',
+                    'year' => '2022',
+                    'journal' => 'Advanced Composite Materials',
+                    'volume' => '31',
+                    'number' => '5',
+                    'pages' => '538-551',
+                    ]
+            ],
+            
+
             
 
             
