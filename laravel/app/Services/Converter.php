@@ -2253,7 +2253,7 @@ class Converter
                     //     $journal = substr($journal, 0, -1);
                     // }
                     $journal = trim($journal, '_');
-                    $this->setField($item, 'journal', trim($journal, '"*,; '), 'setField 19');
+                    $this->setField($item, 'journal', trim($journal, '"*,;: '), 'setField 19');
                 } elseif (! $journalNameMissingButHasVolume) {
                     $warnings[] = "Item seems to be article, but journal name not found.  Setting type to unpublished.";
                     $itemKind = 'unpublished';  // but continue processing as if journal
@@ -3551,7 +3551,7 @@ class Converter
                 $remainder = implode(" ", $remainingWords);
                 $result = $this->findRemoveAndReturn(
                     $remainder,
-                    '((\(?' . $this->volumeRegExp . ')( ([1-9][0-9]{0,4})\)?))(( of| in|,|.)? )(.*)$'
+                    '((\(?' . $this->volumeRegExp . ')( ([1-9][0-9]{0,4}|[IVXL]{1,3})\)?))(( of| in|,|.)? )(.*)$'
                 );
                 if ($result) {
                     if (in_array($result[6], ['.', ',']) && substr_count(trim($result['before']), ' ') <= 1) {
@@ -6629,7 +6629,7 @@ class Converter
                 $address = $oldPublisher;
             }
         // else if string contains no colon and at least one ',', take publisher to be string
-        // preceding first colon and and city to be rest
+        // preceding first comma and city to be rest
         } elseif (! substr_count($string, ':') && substr_count($string, ',')) {
             $wordBeforeComma = trim(substr($string, 0, strpos($string, ',')), ',. ');
             $wordAfterComma = trim(substr($string, strpos($string, ',') + 1), ',.: ');

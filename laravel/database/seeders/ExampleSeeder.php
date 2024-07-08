@@ -11026,6 +11026,35 @@ class ExampleSeeder extends Seeder
                     'volume' => '2022',
                     ]
             ],
+			//
+			[
+                'source' => 'Amaral, D. F. D. (2001). Curso de Direito Administrativo, Vol. II, Coimbra. Livraria Almedina. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Amaral, D. F. D.',
+                    'title' => 'Curso de Direito Administrativo',
+					'volume' => 'II',
+                    'year' => '2001',
+                    'address' => 'Coimbra',
+                    'publisher' => 'Livraria Almedina',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// trim colon from journal name
+            [
+                'source' => 'Albus U (2012): Guide for the Care and Use of Laboratory Animals (8th edn). Laboratory Animals: 46 (3), 267-268. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Albus, U.',
+                    'year' => '2012',
+                    'title' => 'Guide for the Care and Use of Laboratory Animals (8th edn)',
+                    'journal' => 'Laboratory Animals',
+                    'volume' => '46',
+                    'number' => '3',
+                    'pages' => '267-268',
+                    ]
+            ],
+            
 
             
 
