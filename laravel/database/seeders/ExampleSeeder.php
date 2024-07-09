@@ -4664,9 +4664,9 @@ class ExampleSeeder extends Seeder
                     'year' => '1971',
                     'title' => 'Scales, norms, and equivalent scores',
                     'editor' => 'R. L. Thorndike',
-                    'booktitle' => 'Educational Measurement 2nd Ed.',
+                    'booktitle' => 'Educational Measurement 2nd Ed',
                     'publisher' => 'American Council on Education',
-                    'address' => 'Washington, D.C.',
+                    'address' => 'Washington, D. C.',
                     ]
             ],
             [
@@ -4928,7 +4928,7 @@ class ExampleSeeder extends Seeder
                 'source' => ' \bibitem{LiPRA2023} W. Li, J. Cheng, W. -J. Gong, and J. Li, Nonlinear self-sustaining dynamics in cavity magnomechanics, Phys. Rev. A {\bf108}, 033518 (2023). ',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => 'W. Li and J. Cheng and W. -J. Gong and J. Li',
+                    'author' => 'W. Li and J. Cheng and W.-J. Gong and J. Li',
                     'title' => 'Nonlinear self-sustaining dynamics in cavity magnomechanics',
                     'year' => '2023',
                     'journal' => 'Phys. Rev. A',
@@ -8864,7 +8864,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '112-199',
                     'editor' => 'Hood, W. and T. Koopmans',
                     'publisher' => 'Wiley',
-                    'booktitle' => 'Studies in Econometric Method, Cowles Commission Monograph No. 14.',
+                    'booktitle' => 'Studies in Econometric Method, Cowles Commission Monograph No. 14',
 					'address' => 'New York',
                     'chapter' => '6',
                     ]
@@ -11105,22 +11105,53 @@ class ExampleSeeder extends Seeder
                     'pages' => '538-551',
                     ]
             ],
-            
+            // author format
+            [
+                'source' => 'Breu, Walter (1984): Zur Rolle der Lexik in der Aspektologie. In: Die Welt der Slaven 29. 123-148. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Breu, Walter',
+                    'year' => '1984',
+                    'title' => 'Zur Rolle der Lexik in der Aspektologie',
+                    'journal' => 'Die Welt der Slaven',
+                    'pages' => '123-148',
+                    'volume' => '29',
+                    ]
+            ], 
+            // German for editor
+            [
+                'source' => 'Daues, Alexandra (2010): Zur Korrelation der hethitischen Konjunktion kuitman mit den Verbalsuffix -ške-. In: Kim, Ronald / Oettinger, Norbert / Rieken, Elisabeth / Weiss, Michael (Hrsgg.): Ex Anatolia Lux. Anatolian and Indo-European studies in honor of H. Craig Melchert on the occasion of his sixty-fifth birthday. Ann Arbor / New York: Beech Stave Press. 9-18.  ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Daues, Alexandra',
+                    'year' => '2010',
+                    'title' => 'Zur Korrelation der hethitischen Konjunktion kuitman mit den Verbalsuffix -ške',
+                    'pages' => '9-18',
+                    'editor' => 'Kim, Ronald and Oettinger, Norbert and Rieken, Elisabeth and Weiss, Michael',
+                    'booktitle' => 'Ex Anatolia Lux. Anatolian and Indo-European studies in honor of H. Craig Melchert on the occasion of his sixty-fifth birthday',
+                    'publisher' => 'Beech Stave Press',
+                    'address' => 'Ann Arbor / New York',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+            // author separator
+            [
+                'source' => 'Bertinetto, Pier Marco / Cambi, Valentina (2006): Hittite temporal adverbials and the aspectual interpretation of the -ške/a-suffix. In: Bombi, Raffaella / Cifoletti, Guido / Fusco, Fabiana / Innocente Lucia / Orioles, Vincenzo (ed.): Studi linguistici in onore di Roberto Gusmani. Alessandria: Edizioni dell\'Orso. 193-233. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Bertinetto, Pier Marco and Cambi, Valentina',
+                    'title' => 'Hittite temporal adverbials and the aspectual interpretation of the -ške/a-suffix',
+                    'year' => '2006',
+                    'pages' => '193-233',
+                    'editor' => 'Bombi, Raffaella and Cifoletti, Guido and Fusco, Fabiana and Innocente Lucia and Orioles, Vincenzo',
+                    'address' => 'Alessandria',
+                    'publisher' => 'Edizioni dell\'Orso',
+                    'booktitle' => 'Studi linguistici in onore di Roberto Gusmani',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],  
 
-            
-
-            
-
-
-            
-
-
-            
-            
-            
-
-
-
+                       
         ];
 
         DB::statement('DELETE FROM examples');

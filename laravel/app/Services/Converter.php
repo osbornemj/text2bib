@@ -258,8 +258,8 @@ class Converter
 
         $this->articleRegExp = 'article (id |no\.? ?)?[0-9]*';
 
-        // 'a cura di': Italian. რედ: Georgian.
-        $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|რედ?\.?|[Ee]ditors?|a cura di)[\)\]]/';
+        // 'a cura di': Italian. რედ: Georgian.  Hrsgg.: German
+        $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|რედ?\.?|Hrsgg\.|[Ee]ditors?|a cura di)[\)\]]/';
         $this->edsRegExp2 = '/ed(\.|ited) by/i';
         $this->edsRegExp4 = '/( [Ee]ds?[\. ]|[\(\[][Ee]ds?\.?[\)\]]| [Ee]ditors?| [\(\[][Ee]ditors?[\)\]])/';
         $this->editorStartRegExp = '/^[\(\[]?[Ee]dited by|^[\(\[]?[Ee]ds?\.?|^[\(\[][Ee]ditors?/';
@@ -304,7 +304,7 @@ class Converter
         // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian, 'v' for Turkish,
         // 'dan' for Indonesian, 'şi' for Romanian
         $this->andWords = [
-            'and', '\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и', 've', 'dan', 'şi'
+            'and', '/', '\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и', 've', 'dan', 'şi'
         ];
 
         $startPagesRegExp = '/(';
@@ -564,7 +564,7 @@ class Converter
         $otherNameRegExp = '(?=[^ ]*\p{Ll})\p{Lu}[\p{L}\-\']+';
         // Uppercase name
         $ucNameRegExp = '\p{Lu}+';
-        $initialRegExp = '(\p{Lu}\.?|\p{Lu}\. ?-\p{Lu}\.)';
+        $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.?-\p{Lu}\.)';
 
         // Spaces between initials are added before an item is processed, so "A.B." doesn't need to be matched
         $initialsLastName = '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp;
@@ -580,8 +580,10 @@ class Converter
 
         $notAnd = '(?!' . $andRegExp . ')';
 
+        // When used for Editors, ending with colon can be a problem if it is used in address: publisher
         $periodOrColonOrCommaYear = '(\. |: |,? (?=[\(\[`"\'\d]))';
         $periodNotAndOrColonOrCommaYear = '(\. ' . $notAnd . '|: |,? (?=[\(\[`"\'\d]))';
+        $periodNotAndOrCommaYear = '(\. ' . $notAnd . '|,? (?=[\(\[`"\'\d]))';
 
         $this->authorRegExps = [
             // 0. Smith AB[:\.] [must be at least two initials, otherwise could be start of name --- e.g. Smith A. Jones]
@@ -727,7 +729,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 18. Smith, A. B., C. D. Jones,? and J. D. Gonzalez[\., ]
+            // 17. Smith, A. B., C. D. Jones,? and J. D. Gonzalez[\., ]
             [
                 'name1' => $lastNameInitials, 
                 'name2' => $initialsLastName, 
@@ -736,15 +738,15 @@ class Converter
                 'end3' => '(\. |, ' . $notJr . '| \()', // can't be simply space, because then if last author has two-word last name, only first is included
                 'initials' => false
             ],
-            // 19. Smith, Jane( J)?.
+            // 18. Smith, Jane( J)?.
             [
                 'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?', 
-                'end1' => '\. ' . $notAnd, 
+                'end1' => $periodNotAndOrCommaYear, 
                 'end2' => null, 
                 'end3' => null, 
                 'initials' => false
             ],
-            // 20. Smith J. A.:
+            // 19. Smith J. A.:
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ': ', 
@@ -752,7 +754,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 21. Jane A. Smith[:.]
+            // 20. Jane A. Smith[:.]
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => $periodOrColonOrCommaYear, 
@@ -760,7 +762,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 22. Smith, J. A.,? <followed by>[\(|\[|`|\'|"|\d]
+            // 21. Smith, J. A.,? <followed by>[\(|\[|`|\'|"|\d]
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ',? (?=[\(\[`"\'\d])', 
@@ -768,7 +770,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 23. Smith, J. A., Jones, A. B.,? <followed by>[\(|\[|`|\'|"|\d]
+            // 22. Smith, J. A., Jones, A. B.,? <followed by>[\(|\[|`|\'|"|\d]
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ', ', 
@@ -776,7 +778,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 24. Smith, J\.? and Jones, A[:\.,]
+            // 23. Smith, J\.? and Jones, A[:\.,]
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ',? ' . $andRegExp . ' ', 
@@ -784,7 +786,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 25. Smith, J\.? and A\.? Jones[:\.,]
+            // 24. Smith, J\.? and A\.? Jones[:\.,]
             [
                 'name1' => $lastNameInitials, 
                 'name2' => $initialsLastName, 
@@ -793,7 +795,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 26. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.] 
+            // 25. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.] 
             [
                 'name1' => $lastNameFirstNameInitials,
                 'name2' => $firstNameInitialsLastName,
@@ -802,7 +804,7 @@ class Converter
                 'end3' => null,
                 'initials' => false
             ],
-            // 27. Jane (A. )?Smith, Susan (B. )?Jones. 
+            // 26. Jane (A. )?Smith, Susan (B. )?Jones. 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => '[,;] ' . $notAnd, 
@@ -810,7 +812,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 28. Jane (A. )?Smith, Susan (B. )?Jones, Hilda (C. )?Gonzalez. 
+            // 27. Jane (A. )?Smith, Susan (B. )?Jones, Hilda (C. )?Gonzalez. 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => '[,;] ' . $notAnd, 
@@ -818,7 +820,7 @@ class Converter
                 'end3' => $periodOrColonOrCommaYear, 
                 'initials' => false
             ],
-            // 29. SMITH Jane, JONES Susan, GONZALEZ Hilda.
+            // 28. SMITH Jane, JONES Susan, GONZALEZ Hilda.
             [
                 'name1' => $ucNameRegExp . ' ' . $otherNameRegExp, 
                 'end1' => '[,;] ' . $notAnd, 
@@ -826,7 +828,7 @@ class Converter
                 'end3' => $periodOrColonOrCommaYear, 
                 'initials' => false
             ],
-            // 30. Jane (A. )?Smith and Susan (B. )?Jones[,.] 
+            // 29. Jane (A. )?Smith and Susan (B. )?Jones[,.] 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => ',? ' . $andRegExp . ' ',
@@ -834,7 +836,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 31. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
+            // 30. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => ', ' . $notAnd, 
@@ -842,7 +844,7 @@ class Converter
                 'end3' => '[\.,] ' . $notJr, 
                 'initials' => false
             ],
-            // 32. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
+            // 31. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
             [
                 'name1' => $lastNameFirstNameInitials,
                 'end1' => ',? ' . $andRegExp . ' ',
@@ -850,7 +852,7 @@ class Converter
                 'end3' => null,
                 'initials' => false
             ],
-            // 33. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
+            // 32. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
             [
                 'name1' => $lastNameFirstNameInitials,
                 'name2' => $firstNameInitialsLastName,
@@ -3276,8 +3278,13 @@ class Converter
                     // CASES 1, 3, and 4
                     // Case in which $booktitle is not defined: remainder presumably starts with booktitle
                     $remainder = trim($remainder, '., ');
+                    $remainder = ltrim($remainder, ': ');
                     $this->verbose("[in11] Remainder: " . $remainder);
                     // $remainder contains book title and publication info.  Need to find boundary.  
+                    $colonPos = strpos($remainder, ':');
+                    // Look for last period that is at least 5 characters before colon (to account for addresses like
+                    // Washington, D.C.)
+                    $periodBeforeColonPos = ($colonPos !== false) ? strrpos(substr($remainder, 0, $colonPos - 5), '.') : false;
 
                     // Check whether publication info matches pattern for book to be a volume in a series
                     $result = $this->findRemoveAndReturn(
@@ -3301,15 +3308,26 @@ class Converter
                         $remainder = rtrim($remainder, ' :)(');
                         $booktitle = $remainder;
                         $remainder = '';
+                    } elseif (substr_count($remainder, ':') == 1 && $colonPos !== false && $periodBeforeColonPos !== false && $colonPos - $periodBeforeColonPos < 23)  {
+                        // if $remainder contains one colon and a period preceding it by at most 23 characters, take string before
+                        // period to be booktitle, following string up to colon to be address, and rest to be publisher
+                        $booktitle = substr($remainder, 0, $periodBeforeColonPos);
+                        $address = substr($remainder, $periodBeforeColonPos + 1, $colonPos - $periodBeforeColonPos - 1);
+                        $address = trim($address);
+                        $this->setField($item, 'address', $address, 'setField 49c');
+                        $publisher = substr($remainder, $colonPos+1);
+                        $publisher = trim($publisher);
+                        $this->setField($item, 'publisher', $publisher, 'setField 49c');
+                        $remainder = '';
                     } elseif (
-                        preg_match('/(?P<booktitle>[^\(]{5,100})\((?P<address>[^:]{4,20}):(?P<publisher>[^\.]{4,40})\)/i', $remainder, $matches)
+                        preg_match('/(?P<booktitle>[^\(]{5,150})\((?P<address>[^:]{4,22}):(?P<publisher>[^\.]{4,40})\)/i', $remainder, $matches)
                         ||
-                        preg_match('/(?P<booktitle>[^\.]{5,100})\.(?P<address>[^:]{4,20}):(?P<publisher>[^\.]{4,40})[,.]/i', $remainder, $matches)
+                        preg_match('/(?P<booktitle>[^\.]{5,150})\.(?P<address>[^:]{4,22}):(?P<publisher>[^\.]{4,40})(,|\.|$)/i', $remainder, $matches)
                         ) {
                         // common pattern: <booktitle> (<address>: <publisher>).
                         $booktitle = $matches['booktitle'];
                         $address = $matches['address'];
-                        $this->setField($item, 'address', trim($address), 'setField 49a');
+                        $this->setField($item, 'address', trim($address, '. '), 'setField 49a');
                         $publisher = trim($matches['publisher']);
                         $this->setField($item, 'publisher', $publisher, 'setField 49b');
                         $remainder = '';
@@ -3319,10 +3337,6 @@ class Converter
                             $this->verbose("Remainder contains single period, so take that as end of booktitle");
                             $periodPos = strpos($remainder, '.');
                             $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
-                            // If title starts with In <uc letter>, take off the "In".
-                            if (preg_match('/^[Ii]n [A-Z]/', $booktitle)) {
-                                $booktitle = substr($booktitle, 3);
-                            }
                             $this->verbose('booktitle case 6');
                             $remainder = substr($remainder, $periodPos);
                         } else {
@@ -3360,7 +3374,7 @@ class Converter
                             // $remainder ends with pattern like 'city: publisher'
                             } elseif (! empty($cityString) && preg_match('/( ' . $cityString . ': (?P<publisher>[^:.,]*)\.?$)/', $remainder, $matches)) {
                                 $booktitle = Str::before($remainder, $matches[0]);
-                                $this->setField($item, 'booktitle', trim($booktitle, ', '), 'setField 123');
+                                $this->setField($item, 'booktitle', trim($booktitle, ',: '), 'setField 123');
                                 // Eliminate space between letters in US state abbreviation containing periods.
                                 $cityString = preg_replace('/ ([A-Z]\.) ([A-Z]\.)/', ' $1' . '$2', $cityString);
                                 $this->setField($item, 'address', $cityString, 'setField 124');
@@ -3479,6 +3493,10 @@ class Converter
                 if (! isset($item->booktitle)) {
                     $booktitle = trim($booktitle, ' .,(:');
                     if ($booktitle) {
+                        // If title starts with In <uc letter>, take off the "In".
+                        if (preg_match('/^[IiEe]n [A-Z]/', $booktitle)) {
+                            $booktitle = substr($booktitle, 3);
+                        }
                         if (substr($booktitle, 0, 1) == '*' && substr($booktitle, -1) == '*') {
                             $booktitle = trim($booktitle, '*');
                         }
@@ -5252,7 +5270,7 @@ class Converter
                  || (preg_match('/^[A-Z]*$/', $word) && in_array(strtolower($word), array_map('strtolower', $this->vonNames)));
 
             // If word is all uppercase, with no trailing punctuation, and next word is not all uppercase,
-            // and word and is not a von name and is not "and"
+            // and word is not a von name and is not "and"
             // then add a comma at the end
             // The idea is to interpret SMITH John to be SMITH, John.
             if (
