@@ -713,7 +713,7 @@ class Converter
                 'end3' => null, 
                 'initials' => false
             ],
-            // 15. A. B. Smith, C. D. Jones and J. D. Gonzalez[\., ]
+            // 15. A. B. Smith, C. D. Jones,? and J. D. Gonzalez[\., ]
             [
                 'name1' => $initialsLastName, 
                 'end1' => ', ' . $notAnd, 
@@ -6517,10 +6517,12 @@ class Converter
         // 1980/1 or 1980/81 or 1980/1981 or 1980-1 or 1980-81 or 1980-1981
         // NOTE: '1980:' could be a volume number---might need to check for that
         $monthRegExp = '((' . $months . ')([-\/](' . $months . '))?)?';
+        //$monthRegExp = '(?P<month>(' . $months . ')([-\/](' . $months . '))?)?';
         // In following line, [1-2]?[0-9]? added to allow second year to have four digits.  Should be (18|19|20), but that
         // would mean adding a group, which would require the recalculation of all the indices ...
         // Year should not be preceded by 'pp. ', which would mean it is in fact a page number/page range.
         $yearRegExp = '((?<!pp\. )(' . $centuries . ')([0-9]{2})(--?[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
+        //$yearRegExp = '(?P<year>(?<!pp\. )(' . $centuries . ')([0-9]{2})(--?[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
         $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
 
         // Require space or ',' in front of year if search is not restricted to start or in parens or brackets,

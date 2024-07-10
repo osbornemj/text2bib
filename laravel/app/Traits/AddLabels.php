@@ -104,7 +104,7 @@ trait AddLabels
             $label .= $year;
         }
 
-        $label = trim($label);
+        $label = substr(trim($label), 0, 255);
 
         return $label;
     }
