@@ -30,16 +30,16 @@ class DatabaseSeeder extends Seeder
                  'url', 'archiveprefix', 'eprint', 'date'],
             'book' => ['author', 'editor', 'title', 'edition', 'volume', 'series', 'year', 'address', 'publisher',
                  'note', 'doi', 'url', 'archiveprefix', 'eprint', 'isbn', 'oclc'],
-            'techreport' => ['author', 'title', 'year', 'month', 'number', 'institution', 'note', 'type', 'url',
-                 'archiveprefix', 'eprint'],
             'incollection' => ['author', 'title', 'booktitle', 'volume', 'series', 'year', 'publisher', 'address', 'editor', 'pages',
-                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'volume', 'series', 'isbn', 'chapter'],
+                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'isbn', 'chapter'],
             'inproceedings' => ['author', 'title', 'booktitle', 'year', 'month', 'publisher', 'address', 'editor',
                  'pages', 'note', 'archiveprefix', 'eprint', 'doi'],
-            'unpublished' => ['author', 'title', 'year', 'month', 'note', 'url', 'archiveprefix', 'eprint', 'doi'],
             'mastersthesis' => ['author', 'title', 'school', 'year', 'month', 'note', 'url', 'doi'],
-            'phdthesis' => ['author', 'title', 'school', 'year', 'month', 'note', 'url', 'doi'],
             'online' => ['author', 'title', 'year', 'url', 'urldate', 'month', 'date', 'note'],
+            'phdthesis' => ['author', 'title', 'school', 'year', 'month', 'note', 'url', 'doi', 'isbn'],
+            'techreport' => ['author', 'title', 'year', 'month', 'number', 'institution', 'note', 'type', 'url',
+                 'archiveprefix', 'eprint', 'doi'],
+            'unpublished' => ['author', 'title', 'year', 'month', 'note', 'url', 'archiveprefix', 'eprint', 'doi'],
         ];
 
         foreach($itemTypeItemFields as $name => $fields) {

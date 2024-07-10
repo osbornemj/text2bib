@@ -86,7 +86,7 @@
                 @if ($uncheckedPublisherCount)
                     <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedPublisherCount }}</span>
                 @endif
-                (publishing companies, base on conversions marked as correct by users and approved by administrator)
+                (publishing companies, based on conversions marked as correct by users and approved by administrator)
             </p>
             <p>
                 <x-link :href="route('cities.index')" :active="request()->routeIs('cities.index')">

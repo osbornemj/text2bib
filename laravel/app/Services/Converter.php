@@ -269,7 +269,7 @@ class Converter
         $this->editorRegExp = '([^0-9] eds?[\. ]|[\(\[]eds?\.?[\)\]]|[\(\[ ]edits\.[\(\] ]| editors?| [\(\[]editors?[\)\]]|[\(\[]რედ?\.?[\)\]])';
 
         $this->editionWords = ['edition', 'ed', 'edn', 'edição', 'édition', 'edición'];
-        $this->editionRegExp = '(?P<fullEdition>(?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie))';
+        $this->editionRegExp = '(?P<fullEdition>((?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie))|[1-9] ?ed\.)';
 
         $this->volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
         $this->volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
@@ -2656,7 +2656,7 @@ class Converter
                 $this->verbose('[in3] Remainder: ' . $remainder);
                 $updateRemainder = false;
 
-                // address can have one or two words, publisher can have 1-3 word, the last of which can be in parens
+                // address can have one or two words, publisher can have 1-3 words, the last of which can be in parens
                 if (preg_match('/^(?P<address>[\p{L}]+( [\p{L}]+)?): ?(?P<publisher>[\p{L}\-]+( [\p{L}\-]+)?( [\p{L}\-()]+)?)\.?$/u', $remainder, $matches)) {
                     if (isset($matches['address'])) {
                         $this->setField($item, 'address', $matches['address'], 'setField 35');
@@ -3313,7 +3313,7 @@ class Converter
                         // period to be booktitle, following string up to colon to be address, and rest to be publisher
                         $booktitle = substr($remainder, 0, $periodBeforeColonPos);
                         $address = substr($remainder, $periodBeforeColonPos + 1, $colonPos - $periodBeforeColonPos - 1);
-                        $address = trim($address);
+                        $address = trim($address, ', ');
                         $this->setField($item, 'address', $address, 'setField 49c');
                         $publisher = substr($remainder, $colonPos+1);
                         $publisher = trim($publisher);
@@ -3474,6 +3474,13 @@ class Converter
                 }
 
                 if (! empty($item->publisher)) {
+                    // Check whether any edition info has been included in publisher
+                    $publisher = $item->publisher;
+                    preg_match('/\(?' . $this->editionRegExp . '\)?/', $publisher, $matches);
+                    if (! empty($matches[0])) {
+                        $editionInfo = $matches[0];
+                        $item->publisher = trim(str_replace($editionInfo, '', $publisher), ' .');
+                    }
                     $this->verbose(['fieldName' => 'Publisher', 'content' => $item->publisher]);
                 } else {
                     $warnings[] = "Publisher not found.";
@@ -3499,6 +3506,9 @@ class Converter
                         }
                         if (substr($booktitle, 0, 1) == '*' && substr($booktitle, -1) == '*') {
                             $booktitle = trim($booktitle, '*');
+                        }
+                        if (! empty($editionInfo)) {
+                            $booktitle .= ' ' . $editionInfo;
                         }
                         $this->setField($item, 'booktitle', $booktitle, 'setField 58');
                     } else {
@@ -5041,8 +5051,11 @@ class Converter
         } elseif ($this->isName($words[0], ',') && count($words) >= 2 && $this->isName($word1, '.')) {
             $this->verbose("isNameString: string is name (case 5): <name> <name>");
             $result = true;
+        } elseif ($this->isName($words[0], ',') && count($words) >= 2 && in_array($word1, $this->vonNames) && $this->isName($words[2], ',') ) {
+            $this->verbose("isNameString: string is name (case 6): <name> <vonName> <name>");
+            $result = true;
         } elseif ($this->isName($words[0], ',') && count($words) >= 2 && $this->isName($word1) && $words[2] == $phrases['and']) {
-            $this->verbose("isNameString: string is name (case 6): <name> <name> and");
+            $this->verbose("isNameString: string is name (case 7): <name> <name> and");
             $result = true;
         } else {
             $this->verbose("isNameString: string is not name (2)");
@@ -5192,8 +5205,6 @@ class Converter
 
             if (preg_match($regExp, $remainder, $matches)) {
                 $authorstring .= $this->formatAuthor($matches['firstAuthor'], $r['initials']);
-
-                //dump($remainder, $i, $matches);
 
                 if (isset($matches['middleAuthors'])) {
                     // process middle authors
@@ -5441,12 +5452,14 @@ class Converter
                 $done = true;
             } elseif ($determineEnd && substr($word, -1) == ':') {
                 if (
-                        $namePart >= 2 
+                        ! preg_match('/^[A-Z]\.:$/', $word)
+                        && $namePart >= 2 
                         && isset($words[$i-1]) 
                         && in_array(substr($words[$i-1], -1), ['.', ',', ';']) 
                         && (! $this->isInitials($words[$i-1]) || (isset($words[$i-2]) && in_array(substr($words[$i-2], -1), [',', ';'])))
                     ) {
-                    $this->verbose('Word ends in colon, $namePart is at least 2, and previous word ends in comma or period, and either previous word is not initials or word before it ends in comma, so assuming word is first word of title.');
+                        dd($word, $words[$i-1], $words[$i-2]);
+                    $this->verbose('Word ends in colon and is not initial with period followed by colon, $namePart is at least 2, and previous word ends in comma or period, and either previous word is not initials or word before it ends in comma, so assuming word is first word of title.');
                     $this->addToAuthorString(16, $authorstring, $this->formatAuthor($fullName));
                     $remainder = $word . ' ' . implode(" ", $remainingWords);
                     $done = true;
@@ -6171,17 +6184,27 @@ class Converter
                             $begin = '``';
                             $skip = 1;
                         }
-                    } elseif (! isset($chars[$i-1]) || $chars[$i-1] != '\\') {
+                    } elseif (
+                        // if pattern is [a-z]`s, assume the ` is a typo for '
+                        ! isset($chars[$i-1])
+                        ||
+                        ($chars[$i-1] != '\\' && ! (in_array($chars[$i-1], range('a', 'z')) && $chars[$i+1] == 's'))
+                       ) {
                         $level++;
                         if ($begin) {
                             $quotedText .= $char;
                         } else {
                             $begin = '`';
                         }
-                    } elseif ($begin) {
-                        $quotedText .= $char;
                     } else {
-                        $beforeQuote .= $char;
+                        if (in_array($chars[$i-1], range('a', 'z')) && $chars[$i+1] == 's') {
+                            $char = "'";
+                        }
+                        if ($begin) {
+                            $quotedText .= $char;
+                        } else {
+                            $beforeQuote .= $char;
+                        }
                     }
                 } elseif ($char == "'") {
                     // ''
@@ -6234,7 +6257,6 @@ class Converter
                         }
                     // ' not preceded by space and not followed by ' or letter or \ [example: "\'\i"]
                     } elseif (! isset($chars[$i+1]) || ($chars[$i+1] != "'" && ! preg_match('/^[\p{L}\\\]$/u', $chars[$i+1]))) {
-                    //in_array(strtolower($chars[$i+1]), range('a', 'z')))) {
                         $level--;
                         if ($begin == "'" || $begin == "`") {
                             $end = $level ? false : true;
@@ -6439,6 +6461,9 @@ class Converter
                 ||
                 // (year,? monthNumber day) (or without parens or with brackets)
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),?[ \/](?P<month>[0-9]{1,2})[ \/](?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
+                ||
+                // (month day, year) (or without parens or with brackets)
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<month>' . $months . ') (?P<day>[0-9]{1,2}), (?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
                 ) {
                 $year = $matches1['year'] ?? null;
                 $month = $matches1['month'] ?? null;
@@ -6505,18 +6530,28 @@ class Converter
         $regExp3 = '\(' . $regExp0 . '\)';
         $regExp4 = '\[' . $regExp0 . '\]';
 
-        if ($start) {
-            $regExp = '^(' . $regExp1 . ')|^(' . $regExp3 . ')|^(' . $regExp4 . ')';
-        } else {
-            $regExp = '(' . $regExp1 . ')|(' . $regExp2 . ')|(' . $regExp3 . ')|(' . $regExp4 . ')';
-        }
+        // if ($start) {
+        //     $regExps = [$regExp1, $regExp3, $regExp4];
+        //     foreach ($regExps as $regExp) {
+        //         preg_match('/^(' . $regExp . ')/', $string, $matches, PREG_OFFSET_CAPTURE);
+        //         if (! empty($matches)) {
+        //             break;
+        //         }
+        //     }
+        // } else {
+        //     $regExps = [$regExp1, $regExp2, $regExp3, $regExp4];
+        //     foreach ($regExps as $i => $regExp) {
+        //         preg_match('/(' . $regExp . ')/', $string, $matches2, PREG_OFFSET_CAPTURE);
+        //         $matches[$i] = $matches2;
+        //     }
+        // }
 
         // /J: allow duplicate names
-        $regExp = '/' . $regExp . '/J';
-
         if ($start) {
+            $regExp = '/^(' . $regExp1 . ')|^(' . $regExp3 . ')|^(' . $regExp4 . ')/J';
             preg_match($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
         } else {
+            $regExp = '/(' . $regExp1 . ')|(' . $regExp2 . ')|(' . $regExp3 . ')|(' . $regExp4 . ')/J';
             preg_match_all($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
         }
 
@@ -7184,8 +7219,9 @@ class Converter
         // Ð is for non-utf8 encoding of en-dash(?)
         $letterNumberRange = $letterNumber . '(( ?--?-? ?|_|\?)' . $letterNumber . ')?';
         $numberRangeWithRoman = $numberWithRoman . '((--?-?|_)' . $numberWithRoman . ')?';
-        $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')';
-        $volumeWithRomanRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')';
+        // }? at end is because $this->volumeRegExp includes \textbf{
+        $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')}?';
+        $volumeWithRomanRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')}?';
         $numberRx = '('. $this->numberRegExp . ')?(?P<num>' . $numberRangeWithSlash . ')';
         //$volumeWordRx = '('. $this->volumeRegExp . ')(?P<vol>' . $numberRange . ')';
         // Letter in front of volume is allowed only if preceded by "vol(ume)" and is single number

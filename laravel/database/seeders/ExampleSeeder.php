@@ -9137,7 +9137,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '27-42',
                     'publisher' => 'Allyn and Bacon',
 					'address' => 'Boston',
-                    'booktitle' => 'Handbook of gifted education',
+                    'booktitle' => 'Handbook of gifted education (2ed.)',
                     'editor' => 'N. Colangelo and G. Davis',
                     ],
 					'language' => 'es',
@@ -11150,6 +11150,65 @@ class ExampleSeeder extends Seeder
                 ],
                 'char_encoding' => 'utf8leave',
             ],  
+			// second initial of last author included in title
+			[
+                'source' => '	\bibitem{Ilin1960}  Il\'in, A. M.,  Ole\v{\i}nik, O. A.: Asymptotic behavior of solutions of the Cauchy problem for some quasi-linear equations for large values of the time, \emph{Mat. Sb. (N.S.)} \textbf{51}(93) 191--216 (1960) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Il\'in, A. M. and Ole\v{\i}nik, O. A.',
+                    'title' => 'Asymptotic behavior of solutions of the Cauchy problem for some quasi-linear equations for large values of the time',
+                    'year' => '1960',
+                    'journal' => 'Mat. Sb. (N. S.)',
+                    'pages' => '191-216',
+                    'volume' => '51',
+					'number' => '93',
+                    ]
+            ],
+			// title not detected --- why?
+			[
+                'source' => 'Goodacre, Mark. 2006. ‘Scripturalization in Mark‘s Crucifixion Narrative’ in Geert van Oyen and Tom Shepherd (eds.), The Trial and Death of Jesus: Essays on the Passion Narrative in Mark. Leuven: Peeters, 33–47. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Goodacre, Mark',
+                    'title' => 'Scripturalization in Mark\'s Crucifixion Narrative',
+                    'year' => '2006',
+                    'pages' => '33-47',
+                    'editor' => 'Geert van Oyen and Tom Shepherd',
+                    'address' => 'Leuven',
+                    'publisher' => 'Peeters',
+                    'booktitle' => 'The Trial and Death of Jesus: Essays on the Passion Narrative in Mark',
+                    ]
+            ],
+			// trim left comma from address
+			[
+                'source' => 'Pidkuimukha, L. (2022). Myths and Myth-Making in Current Kremlin Ideology, in A. Giannakopoulos (ed.), Politics of Memory and War From Russia to the Middle East., Tel Aviv: S. Daniel Abraham Center Tel Aviv University, pp. 38–53. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Pidkuimukha, L.',
+                    'title' => 'Myths and Myth-Making in Current Kremlin Ideology',
+                    'year' => '2022',
+                    'pages' => '38-53',
+                    'editor' => 'A. Giannakopoulos',
+                    'address' => 'Tel Aviv',
+                    'publisher' => 'S. Daniel Abraham Center Tel Aviv University',
+                    'booktitle' => 'Politics of Memory and War From Russia to the Middle East',
+                    ]
+            ],
+			// date format
+			[
+                'source' => 'Reevell, P. and Stukalova, T. (Dec. 28, 2021). Russia Shuts Down Human Rights Group That Recorded Stalin-Era Crimes, ABC News, https://abcnews.go.com/Politics/russia-closes-human-rights-group-recorded-stalin-era/story?id=81968455.  ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'Reevell, P. and Stukalova, T.',
+                    'title' => 'Russia Shuts Down Human Rights Group That Recorded Stalin-Era Crimes',
+                    'note' => 'ABC News',
+                    'year' => '2021',
+                    'month' => 'December',
+                    'urldate' => 'Dec. 28, 2021',
+					'date' => '2021-12-28',
+                    'url' => 'https://abcnews.go.com/Politics/russia-closes-human-rights-group-recorded-stalin-era/story?id=81968455',
+                    ]
+            ],
 
                        
         ];
