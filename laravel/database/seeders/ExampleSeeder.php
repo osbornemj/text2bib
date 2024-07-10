@@ -11209,6 +11209,19 @@ class ExampleSeeder extends Seeder
                     'url' => 'https://abcnews.go.com/Politics/russia-closes-human-rights-group-recorded-stalin-era/story?id=81968455',
                     ]
             ],
+            // detected as book
+            [
+                'source' => '\bibitem{laville2020}  Laville A., Pardoen M., Close G., Poezart M., Gerna D.,   Robustness, Reliability and Diagnostic Aspects in Sensors for Automotive Applications: The Magnetic Sensors Case,  in Next-Generation ADCs, High-Performance Power Management, and Technology Considerations for Advanced Integrated Circuits. Baschirotto A., Harpe P., Makinwa K. (eds). Springer, Cham.   ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Laville, A. and Pardoen, M. and Close, G. and Poezart, M. and Gerna, D.',
+                    'title' => 'Robustness, Reliability and Diagnostic Aspects in Sensors for Automotive Applications: The Magnetic Sensors Case',
+                    'editor' => 'Baschirotto, A. and Harpe, P. and Makinwa, K.',
+                    'address' => 'Cham',
+                    'publisher' => 'Springer',
+                    'booktitle' => 'Next-Generation ADCs, High-Performance Power Management, and Technology Considerations for Advanced Integrated Circuits',
+                    ]
+            ],
 
                        
         ];

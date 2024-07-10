@@ -2915,9 +2915,22 @@ class Converter
                             // $remainder contains "(Eds.)" (parens required) or similar and  starts with namestring OR
                             // contains "(Eds.)," [note comma] --- in which case editors precede "eds".
                             // if ($this->isNameString($remainder) || preg_match('/\([Ee]ds?\.?\),/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                            $result = preg_match('/^(?P<booktitle>[\p{L}\-: ]{15,}), (?P<editor>[\p{L}\-. ]{6,})\([Ee]ds?\.?\),? (?P<pubInfo>.*)$/u', $remainder, $matches2);
-                            if ($result) {
-                                // CASE 1
+
+                            // booktitle, which can contain commas, ends in period:
+                            $result1 = preg_match('/^(?P<booktitle>[\p{L}\-:, ]{15,})\. (?P<editor>[\p{L}\-., ]{8,})\([Ee]ds?\.?\)[.,]? (?P<pubInfo>.*)$/u', $remainder, $matches1);
+                            // booktitle, which cannot contain commas, ends in comma
+                            $result2 = preg_match('/^(?P<booktitle>[\p{L}\-: ]{15,}), (?P<editor>[\p{L}\-., ]{8,})\([Ee]ds?\.?\)[.,]? (?P<pubInfo>.*)$/u', $remainder, $matches2);
+
+                            if ($result1 && $this->isNameString($matches1['editor'])) {
+                                // CASE 1a
+                                $this->verbose("Remainder format is <booktitle> <editors> (Eds.) <publicationInfo>");
+                                $this->setField($item, 'booktitle', $matches1['booktitle'], 'setField 130');
+                                $isEditor = true;
+                                $conversionResult = $this->convertToAuthors(explode(' ', $matches1['editor']), $remainder, $year, $month, $day, $date, $isEditor, determineEnd: false, type: 'editors', language: $language);
+                                $this->setField($item, 'editor', trim($conversionResult['authorstring'], ', '), 'setField 131');
+                                $remainder = trim($matches1['pubInfo'], ',. ');
+                            } elseif ($result2 && $this->isNameString($matches2['editor'])) {
+                                // CASE 1b
                                 $this->verbose("Remainder format is <booktitle> <editors> (Eds.) <publicationInfo>");
                                 $this->setField($item, 'booktitle', $matches2['booktitle'], 'setField 130');
                                 $isEditor = true;
