@@ -11222,7 +11222,7 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Next-Generation ADCs, High-Performance Power Management, and Technology Considerations for Advanced Integrated Circuits',
                     ]
             ],
-            // problem with authors
+            // problem with author
             [
                 'source' => '\bibitem{haeusler1968}, J. Haeusler,  , Die Geometriefunktion vierelektrodiger Hallgeneratoren., Archiv f\"{u}r Elektrotechnik 52:11 (1968)  ',
                 'type' => 'article',
@@ -11235,6 +11235,57 @@ class ExampleSeeder extends Seeder
                     'pages' => '11',
                     ]
             ],
+			// incollection detected as book
+			[
+                'source' => '\bibitem{laville2020}  Laville A., Pardoen M., Close G., Poezart M., Gerna D.,   Robustness, Reliability and Diagnostic Aspects in Sensors for Automotive Applications: The Magnetic Sensors Case,  in Next-Generation ADCs, High-Performance Power Management, and Technology Considerations for Advanced Integrated Circuits. Baschirotto A., Harpe P., Makinwa K. (eds). Springer, Cham.   ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Laville, A. and Pardoen, M. and Close, G. and Poezart, M. and Gerna, D.',
+                    'title' => 'Robustness, Reliability and Diagnostic Aspects in Sensors for Automotive Applications: The Magnetic Sensors Case',
+                    'editor' => 'Baschirotto, A. and Harpe, P. and Makinwa, K.',
+                    'address' => 'Cham',
+                    'publisher' => 'Springer',
+                    'booktitle' => 'Next-Generation ADCs, High-Performance Power Management, and Technology Considerations for Advanced Integrated Circuits',
+                    ]
+            ],
+			// remove comma at start of entry
+			[
+                'source' => '\bibitem{bakker1999}, A. Bakker, A. Bellekom, S. Middelhoek and  J. H. Huijsing (1999) , Low offset low noise 3.5 mV CMOS spinning current Hall effect sensor with integrated chopper amplifier, Proc. XIII European Conference on Solid-State Transducers, The Hague, September 1999 ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'A. Bakker and A. Bellekom and S. Middelhoek and J. H. Huijsing',
+                    'year' => '1999',
+                    'title' => 'Low offset low noise 3.5 mV CMOS spinning current Hall effect sensor with integrated chopper amplifier',
+                    'booktitle' => 'Proc. XIII European Conference on Solid-State Transducers, The Hague, September 1999',
+                    ]
+            ],
+			// journal name starts in title
+            [
+                'source' => '\bibitem{boero2003}, G. Boero, M. Demierre, P.-A. Besse, and R. S. Popovic,  Micro-Hall Devices: Performance, Technologies and Applications, Sens. Actuators, A 106, 314 2003. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'G. Boero and M. Demierre and P.-A. Besse and R. S. Popovic',
+                    'title' => 'Micro-Hall Devices: Performance, Technologies and Applications',
+                    'journal' => 'Sens. Actuators, A',
+                    'year' => '2003',
+                    'volume' => '106',
+                    'pages' => '314',
+                    ]
+            ],
+			// book detected as article
+			[
+                'source' => '\bibitem{popovic2003}  R.S. Popovic,   Hall Effect Devices,   Taylor \& Francis, London, 2003.   ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'R. S. Popovic',
+                    'title' => 'Hall Effect Devices',
+                    'year' => '2003',
+                    'publisher' => 'Taylor \& Francis',
+					'address' => 'London',
+                    ]
+            ],
+
+            
 
                        
         ];

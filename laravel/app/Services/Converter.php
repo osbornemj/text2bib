@@ -981,7 +981,7 @@ class Converter
             $entry = preg_replace("/^\s*\[\d*\]|^\s*\(\d*\)/", "", $entry);
         }
 
-        $entry = ltrim($entry, ' {');
+        $entry = ltrim($entry, ' {,');
         $entry = rtrim($entry, ' }');
 
         $this->verbose(['item' => $entry]);
@@ -4154,7 +4154,7 @@ class Converter
             // Last word has to be in the dictionary (proper nouns allowed) and not an excluded word, OR start with a lowercase letter
             // That excludes cases in which the period ends an abbreviation in a journal name (like "A theory of something, Bull. Amer.").
             if (
-                ! in_array($lastWord, ['J'])
+                ! in_array($lastWord, $this->startJournalAbbreviations)
                 &&
                 (
                     ($this->inDict($lastWord, false) && ! in_array($lastWord, $this->excludedWords))
@@ -4443,6 +4443,10 @@ class Converter
                             //&& preg_match('/^\(?[\p{L}, ]+: [\p{L}&\-. ]+(, (19|20)[0-9]{2})?\)?$/u', $remainder, $matches) 
                             //&& preg_match('/^' . $this->addressPublisherYearRegExp . '$/u', $remainder, $matches) 
                             && $this->isAddressPublisher($remainder)
+                           )
+                        // <publisher>, <address>, <year>
+                        || (
+                            preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}), (?P<year>(19|20)[0-9]{2})\.?$/', $remainder, $matches) 
                            )
                         // (<publisher> in db
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
@@ -5471,7 +5475,6 @@ class Converter
                         && in_array(substr($words[$i-1], -1), ['.', ',', ';']) 
                         && (! $this->isInitials($words[$i-1]) || (isset($words[$i-2]) && in_array(substr($words[$i-2], -1), [',', ';'])))
                     ) {
-                        dd($word, $words[$i-1], $words[$i-2]);
                     $this->verbose('Word ends in colon and is not initial with period followed by colon, $namePart is at least 2, and previous word ends in comma or period, and either previous word is not initials or word before it ends in comma, so assuming word is first word of title.');
                     $this->addToAuthorString(16, $authorstring, $this->formatAuthor($fullName));
                     $remainder = $word . ' ' . implode(" ", $remainingWords);
