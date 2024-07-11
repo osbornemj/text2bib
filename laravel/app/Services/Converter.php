@@ -5850,6 +5850,21 @@ class Converter
                     $this->verbose('nameScore per word: ' . number_format($nameScore['score'] / $nameScore['count'], 2));
                 }
 
+                // If one of the bareWords starts with a lc letter and is not a vonName or and, set $bareWordStartsLc true.
+                $bareWordStartsLc = false;
+                foreach ($bareWords as $bareWord) {
+                    if (
+                        isset($bareWord[0])
+                        && preg_match('/^\p{L}$/', $bareWord[0])
+                        && mb_strtolower($bareWord[0]) == $bareWord[0] 
+                        && ! in_array($bareWord, $this->vonNames) 
+                        && ! $this->isAnd($bareWord, $language)
+                       ) {
+                        $bareWordStartsLc = true;
+                        break;
+                    }
+                }
+
                 $wordsRemainingAfterNext = $remainingWords;
                 array_shift($wordsRemainingAfterNext);
                 $upcomingQuotedText = $this->getQuotedOrItalic(implode(" ", $wordsRemainingAfterNext), true, false, $before, $after, $style);
@@ -5896,13 +5911,20 @@ class Converter
                         &&
                         ! $this->isAnd($remainingWords[0], $language)
                         && 
-                        // don't stop if next word ends in a colon and is not in the dictionary
+                        // don't stop if next word ends in a colon and is not in the dictionary and the following word
+                        // starts with an uppercase letter
                         // (to catch case in which author list is terminated by a colon, which is ignored when computing
                         // bareWords (because colons often occur after the first or second word of a title))
                         (
                             substr($remainingWords[0], -1) != ':'
                             ||
                             $this->inDict($remainingWords[0])
+                            ||
+                            (
+                                isset($remainingWords[1])
+                                &&
+                                mb_strtolower($remainingWords[1]) == $remainingWords[1]
+                            )
                         )
                         &&
                         (
@@ -5930,7 +5952,11 @@ class Converter
                                 && ! in_array(trim($remainingWords[0], '.,'), $this->nameSuffixes)
                                 && ! preg_match('/[0-9]/', $remainingWords[0])
                                 && ! empty($remainingWords[1]) 
-                                && $this->inDict($remainingWords[1]) 
+                                && (
+                                    $this->inDict(trim($remainingWords[1], ': ')) 
+                                    ||
+                                    mb_strtolower($remainingWords[1][0]) == $remainingWords[1][0]
+                                   )
                                 && ! $this->isInitials(trim($remainingWords[1], ',;'))
                                 && ! in_array(trim($remainingWords[1], '.,'), $this->nameSuffixes)
                                 && ! preg_match('/[0-9]/', $remainingWords[1])
@@ -5951,6 +5977,9 @@ class Converter
                         (
                             $nameScore['count'] == 0
                             || $nameScore['score'] / $nameScore['count'] < 0.26
+                            || (
+                                $bareWordStartsLc
+                               )
                             || (
                                 isset($bareWords[1])
                                 && mb_strtolower($bareWords[1]) == $bareWords[1]
@@ -6834,8 +6863,8 @@ class Converter
             $endsWithPunc = false;
             $include = true;
 
-            // Don't add : to this list (otherwise problems with titles that have : after first or second word)
-            if (Str::endsWith($word, ['.', ',', ')', ';', '}'])) {
+            // : is now included in this list (which may require special handling for titles that have : after first or second word)
+            if (Str::endsWith($word, ['.', ',', ')', ';', '}', ':'])) {
                 $stop = true;
                 $endsWithPunc = true;
             }

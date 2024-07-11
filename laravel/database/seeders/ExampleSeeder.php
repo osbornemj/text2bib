@@ -11222,6 +11222,19 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Next-Generation ADCs, High-Performance Power Management, and Technology Considerations for Advanced Integrated Circuits',
                     ]
             ],
+            // problem with authors
+            [
+                'source' => '\bibitem{haeusler1968}, J. Haeusler,  , Die Geometriefunktion vierelektrodiger Hallgeneratoren., Archiv f\"{u}r Elektrotechnik 52:11 (1968)  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'J. Haeusler',
+                    'title' => 'Die Geometriefunktion vierelektrodiger Hallgeneratoren',
+                    'journal' => 'Archiv f\"{u}r Elektrotechnik',
+                    'year' => '1968',
+                    'volume' => '52',
+                    'pages' => '11',
+                    ]
+            ],
 
                        
         ];
