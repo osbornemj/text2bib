@@ -32,7 +32,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Hillisch, A. and Pineda, L. F. and Hilgenfeld, R.',
                     'title' => 'Utility of homology models in the drug discovery process',
-                    'journal' => 'Drug Discov Today',
+                    'journal' => 'Drug Discov Today.',
                     'year' => '2004',
                     'volume' => '9',
                     'pages' => '659-669'
@@ -3106,7 +3106,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Dunaway, S. and Rothaus, A. and Zhang, Y. and Luisa Kadekaro, A. and Andl, T. and Andl, C. D.',
                     'title' => 'Divide and conquer: two stem cell populations in squamous epithelia, reserves and the active duty forces',
-                    'journal' => 'Int J Oral Sci',
+                    'journal' => 'Int J Oral Sci.',
                     'year' => '2019',
                     'volume' => '11',
                     'pages' => '26',
@@ -3118,7 +3118,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Alcolea, M. P. and Jones, P. H.',
                     'title' => 'Cell competition: winning out by losing notch',
-                    'journal' => 'Cell Cycle',
+                    'journal' => 'Cell Cycle.',
                     'year' => '2015',
                     'volume' => '14',
                     'pages' => '9-17',
@@ -3131,7 +3131,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Andreatta, M. and Carmona, S. J.',
                     'title' => 'UCell: Robust and scalable single-cell gene signature scoring',
                     'year' => '2021',
-                    'journal' => 'Comput Struct Biotechnol J',
+                    'journal' => 'Comput Struct Biotechnol J.',
                     'volume' => '19',
                     'pages' => '3796-3798',
                     ]
@@ -3167,7 +3167,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Stavros V. Konstantinides and Guy Meyer and Cecilia Becattini and others',
                     'title' => '2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism developed in collaboration with the European Respiratory Society',
                     'year' => '2020',
-                    'journal' => 'Eur Heart J',
+                    'journal' => 'Eur Heart J.',
                     'volume' => '41',
                     'number' => '4',
                     'pages' => '543-603',
@@ -3685,7 +3685,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Georgiades, J. and Zielinski, T. and Cicholska, A. and others',
                     'title' => 'Research on the oncolytic effect of APC viruses in cancer of the cervix uteri; preliminary report',
                     'year' => '1959',
-                    'journal' => 'Biul Inst Med Morsk Gdansk',
+                    'journal' => 'Biul Inst Med Morsk Gdansk.',
                     'pages' => '49-57',
                     'volume' => '10',
                     'note' => 'PMID: 13827367',
@@ -3735,7 +3735,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Fisch, C.',
                     'title' => 'William Withering: an account of foxglove and some of its medical uses 1785--1985',
                     'year' => '1985',
-                    'journal' => 'J Am Coll Cardiol',
+                    'journal' => 'J Am Coll Cardiol.',
                     'volume' => '5',
                     'number' => '5',
                     'pages' => '1A-2A',
@@ -4108,7 +4108,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'van der Geest, L. G. M. and Lemmens, V. E. P. P. and de Hingh, I. H. J. T. and van Laarhoven, C. J. H. M. and Bollen, T. L. and Nio, C. Y. and van Eijck, C. H. J. and Busch, O. R. C. and Besselink, M. G.',
                     'title' => 'Dutch Pancreatic Cancer Group Nationwide Outcomes in Patients Undergoing Surgical Exploration without Resection for Pancreatic Cancer',
                     'year' => '2017',
-                    'journal' => 'Br. J. Surg',
+                    'journal' => 'Br. J. Surg.',
                     'volume' => '104',
                     'pages' => '1568-1577',
                     ]
@@ -4121,7 +4121,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Tempero, M. A. and Malafa, M. P. and Al-Hawary, M. and Behrman, S. W. and Benson, A. B. and Cardin, D. B. and Chiorean, E. G. and Chung, V. and Czito, B. and Del Chiaro, M. and others',
                     'title' => 'Pancreatic Adenocarcinoma, Version 2.2021, NCCN Clinical Practice Guidelines in Oncology',
                     'year' => '2021',
-                    'journal' => 'J. Natl. Compr. Canc. Netw',
+                    'journal' => 'J. Natl. Compr. Canc. Netw.',
                     'volume' => '19',
                     'pages' => '439-457',
                     ]
@@ -4174,7 +4174,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Yan, B. and Luh, P. B. and Warner, G. and Zhang, P.',
                     'title' => 'Operation and Design Optimization of Microgrids with Renewables',
                     'year' => '2017',
-                    'journal' => 'IEEE Trans. Autom. Sci. Eng',
+                    'journal' => 'IEEE Trans. Autom. Sci. Eng.',
                     'volume' => '14',
                     'pages' => '573-585',
                     ]
@@ -5836,7 +5836,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '10',
                     'pages' => '347-353',
                     'title' => 'Mastocytosis and insect venom allergy',
-                    'journal' => 'Curr Opin Allergy Clin Immunol',
+                    'journal' => 'Curr Opin Allergy Clin Immunol.',
                     ]
             ],
             // Authors ended early
@@ -6319,7 +6319,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Clausen, C. H. and Jensen, J. and Castillo, J. and Dimaki, M. and Svendsen, W. E.',
 					'title' => 'Qualitative Mapping of Structurally Different Dipeptide Nanotubes',
-                    'journal' => 'Nano Lett',
+                    'journal' => 'Nano Lett.',
                     'year' => '2008',
                     'volume' => '8',
                     'pages' => '4066-4069',
@@ -6332,7 +6332,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Jacobs, W. M. and Reinhardt, A. and Frenkel, D.',
                     'title' => 'Communication: Theoretical Prediction of Free-Energy Landscapes for Complex Self-Assembly',
-                    'journal' => 'J. Chem. Phys',
+                    'journal' => 'J. Chem. Phys.',
                     'year' => '2015',
                     'volume' => '142',
                     'pages' => '021101',
@@ -6766,7 +6766,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Thomas, J. E. and Ekanem, A. M. and George, N. J. and Akpan, A. E.',
                     'title' => 'Ionospheric perturbations: A case study of 2007 five major earthquakes using DEMETER data',
                     'year' => '2023',
-                    'journal' => 'Acta Geophys',
+                    'journal' => 'Acta Geophys.',
                     'volume' => '71',
                     'pages' => '1607-1618',
                     ]
@@ -7464,7 +7464,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Jonas, J. B. and Aung, T. and Bourne, R. R. and Bron, A. M. and Ritch, R. and Panda-Jonas, S.',
                     'title' => 'Glaucoma',
-                    'journal' => 'Lancet',
+                    'journal' => 'Lancet.',
                     'year' => '2017',
                     'volume' => '390',
                     'number' => '10108',
@@ -8698,7 +8698,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Kim, S. H. and Lord, C.',
                     'title' => 'Restricted and repetitive behaviors in toddlers and preschoolers with autism spectrum disorders based on the Autism Diagnostic Observation Schedule (ADOS)',
                     'year' => '2010',
-                    'journal' => 'Autism Res',
+                    'journal' => 'Autism Res.',
                     'pages' => '162-173',
                     'volume' => '3',
                     ]
@@ -8975,7 +8975,7 @@ class ExampleSeeder extends Seeder
                     'doi' => '10.1038/nrdp.2017.30',
                     'author' => 'Pitts, N. B. and Zero, D. T. and Marsh, P. D. and Ekstrand, K. and Weintraub, J. A. and Ramos-Gomez, F. and others',
                     'title' => 'Dental caries',
-                    'journal' => 'Nat Rev Dis Prim',
+                    'journal' => 'Nat Rev Dis Prim.',
                     'year' => '2017',
                     ]
             ],
@@ -10454,7 +10454,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Bernacchia, R. and Preti, R. and Vinci, G.',
                     'title' => 'Chemical Composition and Health Benefits of Flaxseed',
                     'year' => '2014',
-                    'journal' => 'Austin J Nutri Food Sci',
+                    'journal' => 'Austin J Nutri Food Sci.',
                     'pages' => '1045',
                     'volume' => '2',
                     'number' => '8',
@@ -10670,7 +10670,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Webber, M. J. and Appel, E. A. and Meijer, E. W. and Langer, R.',
                     'title' => 'Supramolecular Biomaterials',
-                    'journal' => 'Nat. Mater',
+                    'journal' => 'Nat. Mater.',
                     'year' => '2016',
                     'volume' => '15',
                     'pages' => '13-26',
@@ -10900,7 +10900,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Mitra, G. and Low, J. Z. and Wei, S. and Francisco, K. R. and Deffner, M. and Herrmann, C. and Campos, L. M. and Scheer, E.',
                     'year' => '2022',
                     'title' => 'Interplay between Magnetoresistance and Kondo Resonance in Radical Single-Molecule Junctions',
-					'journal' => 'Nano Lett',
+					'journal' => 'Nano Lett.',
                     'volume' => '22',
                     'pages' => '5773-5779',
                     ]
@@ -11282,6 +11282,87 @@ class ExampleSeeder extends Seeder
                     'year' => '2003',
                     'publisher' => 'Taylor \& Francis',
 					'address' => 'London',
+                    ]
+            ],
+			// Not detected as article
+			[
+                'source' => 'Lazarus BS, Velasco-Hogan A, Gomez-del R´ıo T, Meyers MA, Jasiuk I. A review of impact resistant biological and bioinspired materials and structures. J Mater Res Technol 2020;9(6):15705e38. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Lazarus, B. S. and Velasco-Hogan, A. and Gomez-del R´ıo, T. and Meyers, M. A. and Jasiuk, I.',
+                    'title' => 'A review of impact resistant biological and bioinspired materials and structures',
+					'journal' => 'J Mater Res Technol',
+					'year' => '2020',
+					'volume' => '9',
+					'number' => '6',
+					'pages' => '15705e',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// Not detected as article
+             [
+                'source' => 'Zhang X-c, An L-q, Ding H-m. Dynamic crushing behavior and energy absorption of honeycombs with density gradient. J Sandw Struct Mater 2013;16(2):125e47. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Zhang X-c and An L-q and Ding H-m',
+                    'title' => 'Dynamic crushing behavior and energy absorption of honeycombs with density gradient',
+					'journal' => 'J Sandw Struct Mater',
+					'year' => '2013',
+					'volume' => '16',
+					'number' => '2',
+					'pages' => '125e',
+                    ]
+            ],
+			// author name ended early
+			[
+                'source' => '\bibitem{FOBI}      J-F. Cardoso,      Source separation using higher moments,      Proceedings of IEEE international conference on acustics, speech and signal processing (1989), 2109--2112. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'J.-F. Cardoso',
+                    'title' => 'Source separation using higher moments',
+                    'year' => '1989',
+                    'pages' => '2109-2112',
+                    'booktitle' => 'Proceedings of IEEE international conference on acustics, speech and signal processing',
+                    ]
+            ],
+			// journal included in title
+			 [
+                'source' => ' \bibitem{i4}	P. Ilmonen, J. Nevalainen and H. Oja, Characteristics of multivariate distributions and the invariant coordinate system, Statistics and Probability Letters, Vol. 80(23-24) (2010),  1844--1853. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'P. Ilmonen and J. Nevalainen and H. Oja',
+                    'title' => 'Characteristics of multivariate distributions and the invariant coordinate system',
+                    'journal' => 'Statistics and Probability Letters',
+                    'year' => '2010',
+                    'volume' => '80',
+					'number' => '23-24',
+                    'pages' => '1844-1853',
+                    ]
+            ],
+			// publisher included in title
+			 [
+                'source' => ' \bibitem{MMY}        R. A. Maronna, R. D. Mardin, V. J. Yohai,        Robust Statistics: Theory and Methods,        John Wiley \& Sons, Chichester (2006). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'R. A. Maronna and R. D. Mardin and V. J. Yohai',
+                    'title' => 'Robust Statistics: Theory and Methods',
+					'publisher' => 'John Wiley \& Sons',
+					'address' => 'Chichester',
+                    'year' => '2006',
+                    ]
+            ],
+			// journal needs to be ltrimmed
+			[
+                'source' => '\bibitem{Soize:2017ky}C. Soize, R. Ghanem, {{Polynomial chaos representation of databases on manifolds}}, {Journal of Computational Physics}, Volume 335, April 2017, 201--221. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'C. Soize and R. Ghanem',
+                    'title' => 'Polynomial chaos representation of databases on manifolds',
+                    'journal' => 'Journal of Computational Physics',
+                    'year' => '2017',
+                    'month' => 'April',
+                    'volume' => '335',
+                    'pages' => '201-221',
                     ]
             ],
 

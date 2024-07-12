@@ -906,7 +906,7 @@ class Converter
             $entry .= $line . (! $truncated ? ' ' : '');
         }
 
-        if (!$entry) {
+        if (! $entry) {
             return null;
         }
 
@@ -949,7 +949,7 @@ class Converter
 
             // If entry starts with '\bibitem [abc] {<label>}', get <label> and remove '\bibitem' and arguments
             if (preg_match('/^\\\bibitem *(\[[^\]]*\])? *{(?P<label>[^}]*)}(?P<entry>.*)$/', $entry, $matches)) {
-                if ($matches['label'] && !$conversion->override_labels) {
+                if ($matches['label'] && ! $conversion->override_labels) {
                     $itemLabel = $matches['label'];
                 }
                 $entry = $matches['entry'];
@@ -1180,7 +1180,7 @@ class Converter
         // Get url and access date if any //
         ////////////////////////////////////
 
-        $remainder = preg_replace('/[\(\[](online|en ligne|internet)[\)\]]/i', '', $remainder, 1, $replacementCount);
+        $remainder = preg_replace('/ ?[\(\[](online|en ligne|internet)[\)\]]/i', '', $remainder, 1, $replacementCount);
         $onlineFlag = $replacementCount > 0;
 
         // Retrieved from (site)? <url> accessed <date>
@@ -1385,7 +1385,7 @@ class Converter
         $completeRemainder = $remainder;
         $mismatchPosition = strspn($completeEntry ^ $remainder, "\0");
         $remains = substr($remainder, 0, $mismatchPosition);
-        
+
         // Put space between , and ` or ' (assumed to be typo)
         $remains = str_replace([',`', '( ', ' )'], [', `', '(', ')'], $remains);
         $remains = str_replace([",'"], [", '"], $remains);
@@ -1527,7 +1527,11 @@ class Converter
         }
 
         // restore rest of $completeRemainder
-        $remainder = $remainder . ' ' . substr($completeRemainder, $mismatchPosition);
+        if (isset($completeRemainder[$mismatchPosition]) && $completeRemainder[$mismatchPosition] == '.') {
+            $remainder = $remainder . substr($completeRemainder, $mismatchPosition);
+        } else {
+            $remainder = $remainder . ' ' . substr($completeRemainder, $mismatchPosition);
+        }
 
         $itemYear = $year;
         $itemMonth = $month;
@@ -2140,7 +2144,7 @@ class Converter
                 $this->verbose("Item type case 13");
                 $itemKind = 'incollection';
             }
-            if (! $this->itemType && !$itemKind) {
+            if (! $this->itemType && ! $itemKind) {
                 $notices[] = "Not sure of type; guessed to be " . $itemKind . ".  [3]";
             }
         } elseif (! $containsNumber && ! $containsPageRange) {
@@ -2288,7 +2292,7 @@ class Converter
                     //     $journal = substr($journal, 0, -1);
                     // }
                     $journal = trim($journal, '_');
-                    $this->setField($item, 'journal', trim($journal, '"*,;: '), 'setField 19');
+                    $this->setField($item, 'journal', trim($journal, '"*,;:{} '), 'setField 19');
                 } elseif (! $journalNameMissingButHasVolume) {
                     $warnings[] = "Item seems to be article, but journal name not found.  Setting type to unpublished.";
                     $itemKind = 'unpublished';  // but continue processing as if journal
@@ -2358,7 +2362,7 @@ class Converter
                             if ($result) {
                                 // If remainder contains article number, put it in the note field
                                 $this->addToField($item, 'note', $result[0], 'addToField 7');
-                            } elseif (! $item->pages && ! empty($item->number) && !$containsNumberDesignation) {
+                            } elseif (! $item->pages && ! empty($item->number) && ! $containsNumberDesignation) {
                                 // else if no pages have been found and a number has been set, assume the previously assigned number
                                 // is in fact a single page
                                 if (empty($numberInParens)) {
@@ -2652,7 +2656,7 @@ class Converter
                 }
 
                 $remainder = Str::replaceStart('{\em', '', $remainder);
-                $remainder = trim($remainder, '} ');
+                $remainder = trim($remainder, '}., ');
                 $this->verbose('[in3] Remainder: ' . $remainder);
                 $updateRemainder = false;
 
@@ -2736,7 +2740,7 @@ class Converter
                         if (! $containsEditors) {
                             if (strpos($tempRemainder, '.') === false && strpos($tempRemainder, ',') === false) {
                                 $this->verbose("tempRemainder contains no period or comma, so appears to not contain editors' names");
-                                if (!$booktitle) {
+                                if (! $booktitle) {
                                     $booktitle = $tempRemainder;
                                     $this->verbose('booktitle case 2');
                                 }
@@ -2764,7 +2768,7 @@ class Converter
                                         $possibleEds = $tempRemainderLeft;
                                     }
                                 }
-                                if (!$possibleEds) {
+                                if (! $possibleEds) {
                                     $this->verbose("No string that could be editors' names identified in tempRemainder");
 
                                     if ($cityString || $publisherString) {
@@ -3125,6 +3129,7 @@ class Converter
                 if ($updateRemainder) {
                     $remainder = ltrim($newRemainder, ", ");
                 }
+                $remainder = trim($remainder, '} ');
                 $this->verbose("[in9] Remainder: " . $remainder);
 
                 // If only $cityString remains, no publisher has been identified, so assume $cityString is part
@@ -3725,7 +3730,7 @@ class Converter
                                     $this->setField($item, 'publisher', $result2[2], 'setField 82');
                                 } else {
                                     $this->verbose('Series case 2b: format is <publisher>');
-                                    $this->setField($item, 'publisher', trim($seriesAndPublisher), 'setField 82a');
+                                    $this->setField($item, 'publisher', trim($seriesAndPublisher, ', '), 'setField 82a');
                                 }
                             }
                         }
@@ -3813,7 +3818,7 @@ class Converter
                     $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString);
 
                     if ($publisher) {
-                        $this->setField($item, 'publisher', trim($publisher, '(); '), 'setField 85');
+                        $this->setField($item, 'publisher', trim($publisher, '();{} '), 'setField 85');
                     }
 
                     if ($address) {
@@ -3825,7 +3830,7 @@ class Converter
                     }
 
                     // Then fall back on publisher and city previously identified.
-                    if (!$publisher && $publisherString && !$address && $cityString) {
+                    if (! $publisher && $publisherString && ! $address && $cityString) {
                         $this->setField($item, 'publisher', $publisherString, 'setField 83');
                         $this->setField($item, 'address', $cityString, 'setField 84');
                         $remainder = $this->findAndRemove((string) $remainder, $publisherString);
@@ -4233,7 +4238,7 @@ class Converter
                 $stringToNextPeriodOrComma = '';
 
                 foreach ($chars as $i => $char) {
-                    if ($char == '(') {
+                    if ($char == '(' && ($i == 0 || $chars[$i-1] == ' ')) {
                         break;
                     }
                     $stringToNextPeriodOrComma .= $char;
@@ -4255,7 +4260,7 @@ class Converter
                 $stringToNextPeriod = '';
 
                 foreach ($chars as $i => $char) {
-                    if ($char == '(') {
+                    if ($char == '(' && ($i == 0 || $chars[$i-1] == ' ')) {
                         break;
                     }
                     $stringToNextPeriod .= $char;
@@ -4282,7 +4287,7 @@ class Converter
                     $remainderFollowingNextPeriodOrComma = mb_substr($remainder, mb_strlen($stringToNextPeriodOrComma));
                     $remainderFollowingNextPeriod = mb_substr($remainder, mb_strlen($stringToNextPeriod));
                     $upcomingYear = $this->isYear(trim($remainderFollowingNextPeriodOrComma));
-                    $upcomingVolumePageYear = preg_match('/^[0-9\(\)\., p\-]{2,}$/', trim($remainderFollowingNextPeriodOrComma));
+                    $upcomingVolumePageYear = preg_match('/^(Vol\.? |Volume )?[0-9\(\)\., p\-]{2,}$/', trim($remainderFollowingNextPeriodOrComma));
                     $upcomingVolumeNumber = preg_match('/^(' . $this->volRegExp3 . ')[0-9]{1,4},? (' . $this->numberRegExp . ')? ?\(?[0-9]{1,4}\)?/', trim($remainderFollowingNextPeriodOrComma));
                     $upcomingRoman = preg_match('/^[IVXLCD]{1,6}[.,; ] ?/', trim($remainderFollowingNextPeriodOrComma));
                     $followingRemainderMinusMonth = preg_replace('/' . $this->monthsRegExp[$language] . '/', '', $remainderFollowingNextPeriodOrComma);
@@ -4430,7 +4435,7 @@ class Converter
                             preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) 
                             && in_array(trim($matches['city']), $this->cities)
                            )
-                        // publisher, address [city in db], <year>?
+                        // one-word publisher, address [city in db], <year>?
                         || (
                             preg_match('/^[A-Z][a-z]+, (?P<city>[A-Za-z ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
                             && in_array(trim($matches['city']), $this->cities)
@@ -4447,6 +4452,10 @@ class Converter
                         // <publisher>, <address>, <year>
                         || (
                             preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}), (?P<year>(19|20)[0-9]{2})\.?$/', $remainder, $matches) 
+                           )
+                        // <publisher>, <address> (<year>)
+                        || (
+                            preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}) \((?P<year>(19|20)[0-9]{2})\)\.?$/', $remainder, $matches) 
                            )
                         // (<publisher> in db
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
@@ -4824,7 +4833,7 @@ class Converter
             PREG_OFFSET_CAPTURE
         );
 
-        if (!$matched) {
+        if (! $matched) {
             return false;
         }
 
@@ -4893,7 +4902,7 @@ class Converter
         foreach ($codes as $code) {
             $length = strlen($code);
             $startPos = strpos($string, $code);
-            if ($startPos !== false && (($start && $startPos == 0) || !$start)) {
+            if ($startPos !== false && (($start && $startPos == 0) || ! $start)) {
                 return true;
             }
         }
@@ -4914,7 +4923,7 @@ class Converter
             $case = 4;
         } elseif (preg_match('/^[A-Z][A-Z][A-Z]$/', $word)) { // ABC
             $case = 5;
-        } elseif (preg_match('/^[A-Z]\.-[A-Z]\.$/', $word)) { // A.-B.
+        } elseif (preg_match('/^[A-Z]\.?-[A-Z]\.$/', $word)) { // A.-B. or A-B.
             $case = 6;
         } elseif (preg_match('/^{\\\\.I}$/', $word)) { // capital I with dot
             $case = 7;
@@ -6561,13 +6570,24 @@ class Converter
         // (1980), [1980], ' 1980 ', '1980,', '1980.', or '1980)' if at start; instead of 1980, can be of form
         // 1980/1 or 1980/81 or 1980/1981 or 1980-1 or 1980-81 or 1980-1981
         // NOTE: '1980:' could be a volume number---might need to check for that
-        $monthRegExp = '((' . $months . ')([-\/](' . $months . '))?)?';
-        //$monthRegExp = '(?P<month>(' . $months . ')([-\/](' . $months . '))?)?';
+
+        //$new = false;
+        $new = true;
+
+        if ($new) {
+            $monthRegExp = '(?P<month>(' . $months . ')([-\/](' . $months . '))?)?';
+        } else {
+            $monthRegExp = '((' . $months . ')([-\/](' . $months . '))?)?';
+        }
         // In following line, [1-2]?[0-9]? added to allow second year to have four digits.  Should be (18|19|20), but that
         // would mean adding a group, which would require the recalculation of all the indices ...
         // Year should not be preceded by 'pp. ', which would mean it is in fact a page number/page range.
-        $yearRegExp = '((?<!pp\. )(' . $centuries . ')([0-9]{2})(--?[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
-        //$yearRegExp = '(?P<year>(?<!pp\. )(' . $centuries . ')([0-9]{2})(--?[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
+        if ($new) {
+            $yearRegExp = '(?P<year>(?<!pp\. )(' . $centuries . ')([0-9]{2})(--?[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
+        } else {
+            $yearRegExp = '((?<!pp\. )(' . $centuries . ')([0-9]{2})(--?[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
+        }
+
         $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
 
         // Require space or ',' in front of year if search is not restricted to start or in parens or brackets,
@@ -6577,60 +6597,60 @@ class Converter
         $regExp3 = '\(' . $regExp0 . '\)';
         $regExp4 = '\[' . $regExp0 . '\]';
 
-        // if ($start) {
-        //     $regExps = [$regExp1, $regExp3, $regExp4];
-        //     foreach ($regExps as $regExp) {
-        //         preg_match('/^(' . $regExp . ')/', $string, $matches, PREG_OFFSET_CAPTURE);
-        //         if (! empty($matches)) {
-        //             break;
-        //         }
-        //     }
-        // } else {
-        //     $regExps = [$regExp1, $regExp2, $regExp3, $regExp4];
-        //     foreach ($regExps as $i => $regExp) {
-        //         preg_match('/(' . $regExp . ')/', $string, $matches2, PREG_OFFSET_CAPTURE);
-        //         $matches[$i] = $matches2;
-        //     }
-        // }
-
-        // /J: allow duplicate names
-        if ($start) {
-            $regExp = '/^(' . $regExp1 . ')|^(' . $regExp3 . ')|^(' . $regExp4 . ')/J';
-            preg_match($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
-        } else {
-            $regExp = '/(' . $regExp1 . ')|(' . $regExp2 . ')|(' . $regExp3 . ')|(' . $regExp4 . ')/J';
-            preg_match_all($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
-        }
-
-        // Using labels for matches seems non-straightforward because the patterns are used more than once in each
-        // regular expression.
-        // These are the indexes of the matches for the subpatterns of the regular expression:
-        if ($allowMonth) {
-            $yearIndexes = $start ? [6, 15, 24] : [6, 15, 24, 33];
-        } else {
-            $yearIndexes = $start ? [2, 7, 12] : [2, 7, 12, 17];
-        }
-
-        foreach ($yearIndexes as $i) {
-            if (isset($matches[$i]) && count($matches[$i])) {
-                if (! $start) {
-                    $foundMatch = $matches[$i][count($matches[$i]) - 1];
-                    $wholeMatch = $matches[0][count($matches[0]) - 1];
-                } else {
-                    $foundMatch = $matches[$i];
-                    $wholeMatch = $matches[0];
+        if ($new) {
+            if ($start) {
+                $regExps = [$regExp1, $regExp3, $regExp4];
+                foreach ($regExps as $regExp) {
+                    preg_match('/^(' . $regExp . ')[.,]?(?P<remains>.*)$/', $string, $matches);
+                    if (! empty($matches)) {
+                        $year = $matches['year'];
+                        if ($allowMonth && $matches['month']) {
+                            $month = $matches['month'];
+                        }
+                        $remains = $matches['remains'];
+                        break;
+                    }
                 }
-                if (isset($foundMatch) && $foundMatch[1] >= 0) {
-                    $year = $foundMatch[0];
-                    $remains = rtrim(substr($string, 0, $wholeMatch[1]), '.,') . ' ' . ltrim(substr($string, $wholeMatch[1] + strlen($wholeMatch[0])), '.,');
-                    break;
+            } else {
+                $regExps = [$regExp1, $regExp2, $regExp3, $regExp4];
+                $lastMatch = null;
+                foreach ($regExps as $i => $regExp) {
+                    preg_match('/^(?P<remains1>.*)(' . $regExp . ')[.,]?(?P<remains2>.*)$/', $string, $matches2);
+                    if (! empty($matches2)) {
+                        $matches[$i] = $matches2;
+                        $lastMatch = $matches2;
+                    }
+                }
+                if ($lastMatch) {
+                    $year = $lastMatch['year'];
+                    if ($allowMonth && $lastMatch && $lastMatch['month']) {
+                        $month = $lastMatch['month'];
+                    }
+                    $remains = $lastMatch['remains1'] . ' ' . $lastMatch['remains2'];
                 }
             }
-        }
+        } else {
+            // /J: allow duplicate names
+            if ($start) {
+                $regExp = '/^(' . $regExp1 . ')|^(' . $regExp3 . ')|^(' . $regExp4 . ')/J';
+                preg_match($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
+            } else {
+                $regExp = '/(' . $regExp1 . ')|(' . $regExp2 . ')|(' . $regExp3 . ')|(' . $regExp4 . ')/J';
+                preg_match_all($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
+            }
 
-        if ($allowMonth) {
-            $monthIndexes = $start ? [2, 11, 20] : [2, 11, 20, 29];
-            foreach ($monthIndexes as $i) {
+            // Using labels for matches seems non-straightforward because the patterns are used more than once in each
+            // regular expression.
+            // These are the indexes of the matches for the subpatterns of the regular expression:
+            if ($allowMonth) {
+                $yearIndexes = $start ? [6, 15, 24] : [6, 15, 24, 33];
+            } else {
+                $yearIndexes = $start ? [2, 7, 12] : [2, 7, 12, 17];
+            }
+
+            
+
+            foreach ($yearIndexes as $i) {
                 if (isset($matches[$i]) && count($matches[$i])) {
                     if (! $start) {
                         $foundMatch = $matches[$i][count($matches[$i]) - 1];
@@ -6639,10 +6659,30 @@ class Converter
                         $foundMatch = $matches[$i];
                         $wholeMatch = $matches[0];
                     }
-                    if (isset($foundMatch[1]) && $foundMatch[1] >= 0) {
-                        $month = $foundMatch[0];
+                    if (isset($foundMatch) && $foundMatch[1] >= 0) {
+                        $year = $foundMatch[0];
                         $remains = rtrim(substr($string, 0, $wholeMatch[1]), '.,') . ' ' . ltrim(substr($string, $wholeMatch[1] + strlen($wholeMatch[0])), '.,');
                         break;
+                    }
+                }
+            }
+
+            if ($allowMonth) {
+                $monthIndexes = $start ? [2, 11, 20] : [2, 11, 20, 29];
+                foreach ($monthIndexes as $i) {
+                    if (isset($matches[$i]) && count($matches[$i])) {
+                        if (! $start) {
+                            $foundMatch = $matches[$i][count($matches[$i]) - 1];
+                            $wholeMatch = $matches[0][count($matches[0]) - 1];
+                        } else {
+                            $foundMatch = $matches[$i];
+                            $wholeMatch = $matches[0];
+                        }
+                        if (isset($foundMatch[1]) && $foundMatch[1] >= 0) {
+                            $month = $foundMatch[0];
+                            $remains = rtrim(substr($string, 0, $wholeMatch[1]), '.,') . ' ' . ltrim(substr($string, $wholeMatch[1] + strlen($wholeMatch[0])), '.,');
+                            break;
+                        }
                     }
                 }
             }
@@ -7202,7 +7242,7 @@ class Converter
                 $label = Str::replaceEnd(' at', '', $label);
             }
             $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $label, 'getJournal 1');
-        } elseif ($pubInfoEndsWithForthcoming && !$containsDigit) {
+        } elseif ($pubInfoEndsWithForthcoming && ! $containsDigit) {
             // forthcoming at end
             $result = $this->extractLabeledContent($remainder, '.*', $this->endForthcomingRegExp, true);
             $journal = $result['label'];
