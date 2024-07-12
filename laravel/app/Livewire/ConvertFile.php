@@ -216,6 +216,9 @@ class ConvertFile extends Component
             $this->fileError = 'bibtex';
         } elseif (substr_count($filestring, '\bibinfo{') > 2 || substr_count($filestring, '\bibinfo {') > 2) {
             $this->fileError = 'bbl-natbib';
+        } elseif (substr_count($filestring, "\nAU ") > 3 && substr_count($filestring, "\nTI ") > 3 && substr_count($filestring, "\nSO ") > 3) {
+            // for an example, see 2740-7657-source.txt
+            $this->fileError = 'bibliographic-export';
         }
 
         if ($this->fileError) {
@@ -226,7 +229,7 @@ class ConvertFile extends Component
             // Create array of entries
             $entries = explode($entrySeparator, $filestring);
 
-            // Remove empty entries and entries that are "\n"; last condition eliminated stray lines with short text
+            // Remove empty entries and entries that are "\n"; last condition eliminates stray lines with short text
             // (has to exclude ones with strlen == 1 to clean up BOM)
             $entries = array_filter($entries, fn($value) => ! empty($value) && $value != "\n" && strlen($value) > 10);
 

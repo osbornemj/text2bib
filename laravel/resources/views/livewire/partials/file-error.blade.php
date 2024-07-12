@@ -11,12 +11,16 @@
                     BibTeX file.
                 @elseif ($fileError == 'bbl-natbib')
                     bbl file created by natbib.
+                @elseif ($fileError == 'bibliographic-export')
+                    bibliographic export file (e.g. Web of Science export file).
                 @endif
                 This system converts text references to BibTeX format.  It does not process 
                 @if ($fileError == 'bibtex')
                     BibTeX files.
                 @elseif ($fileError == 'bbl-natbib')
                     bbl files created by natbib.
+                @elseif ($fileError == 'bibliographic-export')
+                    bibliographic export files.
                 @endif
                 <x-link href="https://youtu.be/uDYHszzWhfk" target="_blank">This video</x-link> explains how to use the system.
             </p>

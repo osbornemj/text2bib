@@ -11365,6 +11365,20 @@ class ExampleSeeder extends Seeder
                     'pages' => '201-221',
                     ]
             ],
+            // brackets should not be included in label; number not detected
+            [
+                'source' => '[Crz00]         M.A de la Cruz-Tomé, “La formación pedagógica inicial y permanente del profesor universitario en España: reflexiones y propuestas”, Revista Interuniversitaria de Formación del Profesorado, no.38, pp. 19-35, 2000. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'M. A. de la Cruz-Tomé',
+                    'title' => 'La formación pedagógica inicial y permanente del profesor universitario en España: reflexiones y propuestas',
+                    'year' => '2000',
+                    'journal' => 'Revista Interuniversitaria de Formación del Profesorado',
+                    'number' => '38',
+                    'pages' => '19-35',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
 
             
 

@@ -935,8 +935,8 @@ class Converter
 
         if ($firstComponent == 'authors') {
             // interpret string like [Arrow12] at start of entry as label
-            if (preg_match('/^(?P<label>[\[{][a-zA-Z0-9:]{3,10}[\]}]) (?P<entry>.*)$/', $entry, $matches)) {
-                if ($matches['label'] && preg_match('/[a-z]/', $matches['label'])) {
+            if (preg_match('/^[\[{](?P<label>[a-zA-Z0-9:]{3,10})[\]}] (?P<entry>.*)$/', $entry, $matches)) {
+                if ($matches['label'] && preg_match('/[A-Za-z]/', $matches['label'])) {
                     $itemLabel = $matches['label'];
                     $entry = $matches['entry'] ?? '';
                 }
@@ -2362,7 +2362,7 @@ class Converter
                             if ($result) {
                                 // If remainder contains article number, put it in the note field
                                 $this->addToField($item, 'note', $result[0], 'addToField 7');
-                            } elseif (! $item->pages && ! empty($item->number) && ! $containsNumberDesignation) {
+                            } elseif (empty($item->pages) && ! empty($item->number) && ! $containsNumberDesignation) {
                                 // else if no pages have been found and a number has been set, assume the previously assigned number
                                 // is in fact a single page
                                 if (empty($numberInParens)) {
