@@ -4444,6 +4444,8 @@ class Converter
                             preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?, (?P<city>[A-Za-z, ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
                             && in_array(trim($matches['city']), $this->cities)
                            )
+                        // one- or two-word publisher, city (up to 2 words), US State, <year>?
+                        || preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?, (?P<city>[A-Z][a-z]+( [A-Z][a-z]+)?, [A-Z]{2})(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
                         // . <address>: <publisher>(, <year>)?$ OR (<address>: <publisher>(, <year>)?)
                         // Note that ',' is allowed in address and
                         // '.' and '&' are allowed in publisher.  May need to put a limit on length of publisher part?
