@@ -5357,8 +5357,9 @@ class ExampleSeeder extends Seeder
                     'month' => '05',
                     'date' => '2006-05-30',
                     'title' => 'Logistics and Time as a Trade Barrier',
-                    'journal' => 'OECD Trade Policy Papers, No.',
-                    'volume' => '35, OECD Publishing, Paris',
+                    'journal' => 'OECD Trade Policy Papers',
+                    'number' => '35',
+                    'note' => 'OECD Publishing, Paris',
                 ],
                 'char_encoding' => 'utf8leave',
             ],
@@ -11379,6 +11380,131 @@ class ExampleSeeder extends Seeder
                 ],
                 'char_encoding' => 'utf8leave',
             ],
+			// problem with names
+			[
+                'source' => 'BÖRSTLER, Jürgen; BIN ALI, Nauman; PETERSEN, Kai. Double-counting in software engineering tertiary studies — An overlooked threat to validity. Information and Software Technology, v. 158, p. 107174, 2023. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Börstler, Jürgen and Bin Ali, Nauman and Petersen, Kai',
+                    'title' => 'Double-counting in software engineering tertiary studies --- An overlooked threat to validity',
+                    'year' => '2023',
+                    'journal' => 'Information and Software Technology',
+                    'volume' => '158',
+                    'pages' => '107174',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// classified as article, not book
+			[
+                'source' => '[Tyl49]         Tyler, R.W., Basic Principles of Curriculum and Instruction. University of Chicago Press, Chicago, 1949. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Tyler, R. W.',
+                    'title' => 'Basic Principles of Curriculum and Instruction',
+                    'year' => '1949',
+                    'publisher' => 'University of Chicago Press',
+					'address' => 'Chicago',
+                    ]
+            ],
+			// art. no. for article number
+            [
+                'source' => '\bibitem{t8} Daura L.U., Tian G., Yi Q., Sophian A. ``Wireless power transfer-based eddy current non-destructive testing using a flexible printed coil array: WPT based FPC-ECT\'\' \emph{Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences}, vol. 378, (2182), art. no. 20190579. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Daura, L. U. and Tian, G. and Yi, Q. and Sophian, A.',
+                    'title' => 'Wireless power transfer-based eddy current non-destructive testing using a flexible printed coil array: WPT based FPC-ECT',
+                    'journal' => 'Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences',
+                    'volume' => '378',
+                    'number' => '2182',
+                    'note' => 'art. no. 20190579',
+                    ]
+            ],
+            // organization name not detected correctly
+			[
+                'source' => 'Official Statistics of Sweden (2022), Transport Analysis – Road traffic injuries. Available at: https://www.trafa.se/en/road-traffic/road-traffic-injuries/ ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'Official Statistics of Sweden',
+                    'title' => 'Transport Analysis -- Road traffic injuries',
+                    'year' => '2022',
+                    'url' => 'https://www.trafa.se/en/road-traffic/road-traffic-injuries/',
+                    ]
+            ],
+			// organization name not detected correctly
+			 [
+                'source' => 'Bundesministerium für Verkehr und Digitale Infrastruktur (2019), MiD - Mobilität in Deutschland. Available at: https://nachhaltige-mobilitaet.region-stuttgart.de/wp-content/uploads/2020/04/infas\_Pr\%C3\%A4sentation\_Mobilit\%C3\%A4tskongress-2019.pdf ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => 'Bundesministerium für Verkehr und Digitale Infrastruktur',
+                    'title' => 'MiD - Mobilität in Deutschland',
+                    'year' => '2019',
+                    'url' => 'https://nachhaltige-mobilitaet.region-stuttgart.de/wp-content/uploads/2020/04/infas\_Pr\%C3\%A4sentation\_Mobilit\%C3\%A4tskongress-2019.pdf',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// organization name not detected correctly
+			 [
+                'source' => 'Port Network Authority of the Eastern Adriatic Sea (2019), Action Plan for a Sustainable and Low Carbon - Port of Trieste. Available at: https://supair.adrioninterreg.eu/wp-content/uploads/2020/02/DT1.3.1-Action-Plan-for-a-sustainable-and-low-carbon-Port-of-Trieste-with-ANNEX.pdf ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => 'Port Network Authority of the Eastern Adriatic Sea',
+                    'title' => 'Action Plan for a Sustainable and Low Carbon - Port of Trieste',
+                    'year' => '2019',
+                    'url' => 'https://supair.adrioninterreg.eu/wp-content/uploads/2020/02/DT1.3.1-Action-Plan-for-a-sustainable-and-low-carbon-Port-of-Trieste-with-ANNEX.pdf',
+                    ]
+            ],
+			// organization not detected correctly
+			[
+                'source' => 'Transport for London (2021), Casualties in Greater London during 2020. Available at: https://content.tfl.gov.uk/casualties-in-greater-london-2020.pdf ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => 'Transport for London',
+                    'title' => 'Casualties in Greater London during 2020',
+                    'year' => '2021',
+                    'url' => 'https://content.tfl.gov.uk/casualties-in-greater-london-2020.pdf',
+                    ]
+            ],
+			// author format
+			[
+                'source' => 'Wang X-L, Wang D-Q, Jiao F-C, Ding K-M, Ji Y-B, Lu L 2020. Diurnal rhythm disruptions induced by chronic unpredictable stress relate to depression-like behaviors in rats. Pharmacol Biochem Behav. 194. doi: 10.1016/j.pbb.2020.172939. PMID: 32437704. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'PMID: 32437704',
+                    'doi' => '10.1016/j.pbb.2020.172939',
+                    'author' => 'Wang, X.-L. and Wang, D.-Q. and Jiao, F.-C. and Ding, K.-M. and Ji, Y.-B. and Lu, L.',
+                    'year' => '2020',
+                    'title' => 'Diurnal rhythm disruptions induced by chronic unpredictable stress relate to depression-like behaviors in rats',
+                    'journal' => 'Pharmacol Biochem Behav.',
+                    'volume' => '194',
+                    ]
+            ],
+			// author with 4 initials (not pattern matched)
+            [
+                'source' => '    [12] Irawan, A., Yin, T. Y., Lezaini, W. M. N. W., Razali, A. R., & Yusof, M. S. M. (2017). Reconfigurable foot-to-gripper leg for underwater bottom operator, Hexaquad. USYS 2016 - 2016 IEEE 6th International Conference on Underwater System Technology: Theory and Applications, 94–99. https://doi.org/10.1109/USYS.2016.7893929 ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'doi' => '10.1109/USYS.2016.7893929',
+                    'author' => 'Irawan, A. and Yin, T. Y. and Lezaini, W. M. N. W. and Razali, A. R. and Yusof, M. S. M.',
+                    'year' => '2017',
+                    'title' => 'Reconfigurable foot-to-gripper leg for underwater bottom operator, Hexaquad',
+                    'pages' => '94-99',
+                    'booktitle' => 'USYS 2016 - 2016 IEEE 6th International Conference on Underwater System Technology: Theory and Applications',
+                    ]
+            ],
+			// book with short title
+            [
+                'source' => 'Arendt, H. (1981). The Life of the Mind, Mariner Books, Boston, MA.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Arendt, H.',
+                    'title' => 'The Life of the Mind',
+                    'year' => '1981',
+                    'publisher' => 'Mariner Books',
+					'address' => 'Boston, MA',
+                    ]
+            ],
+
+
 
             
 

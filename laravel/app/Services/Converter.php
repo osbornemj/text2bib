@@ -256,7 +256,7 @@ class Converter
                 ['1e', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e', '10e'],
         ];
 
-        $this->articleRegExp = 'article (id |no\.? ?)?[0-9]*';
+        $this->articleRegExp = 'art(icle|\.) (id |no\.? ?)?[0-9]*';
 
         // 'a cura di': Italian. რედ: Georgian.  Hrsgg.: German
         $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|რედ?\.?|Hrsgg\.|[Ee]ditors?|a cura di)[\)\]]/';
@@ -281,7 +281,7 @@ class Converter
 
         // page range
         // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
-        $this->pageRange = '(?P<pages>[A-Z]?[1-9][0-9]{0,4} ?-{1,3} ?[A-Z]?[0-9]{1,5})(?![a-zA-Z])';
+        $this->pageRange = '(?P<pages>(?P<startPage>[A-Z]?[1-9][0-9]{0,4}) ?-{1,3} ?(?P<endPage>[A-Z]?[0-9]{1,5}))(?![a-zA-Z])';
         // single page or page range
         $this->page = '(?P<pages>[A-Z]?[1-9][0-9]{0,4})( ?-{1,3} ?[A-Z]?[0-9]{1,5})?(?![a-zA-Z])';
 
@@ -511,12 +511,14 @@ class Converter
          * 
          * If end2 = end3 = null:
          * name1 end1 (name2 end1)*
+         * 
          * If end3 = null:
          * name1 end1 (name2 end1)* name2 end2
+         * 
          * Otherwise:
          * name1 end1 (name2 end1)* name2 end2 name2 end3
          * 
-         * name2 is name1 unless explicitly specified, so if name2 is not explicitly specified, pattern is
+         * name2 == name1 unless explicitly specified, so if name2 is not explicitly specified, pattern is
          * (name1 end1)* name1 end2 name1 end3
          * 
          * Precisely:
@@ -533,7 +535,7 @@ class Converter
          * }
          * $regExp .= '(?P<remainder>.*)%u';
          * 
-         * (Notice that first name can have different format from following names, to accommodate author strings like
+         * (Notice that first name can have different format from that of following names, to accommodate author strings like
          * Smith, A., B. Jones, and C. Gonzalez.)
          * 
          * 'initials' => true means treat string of u.c. letters as initials if length is at most 4 (rather than default 2)
@@ -563,12 +565,12 @@ class Converter
         // other name (string before first space) has to start with uppercase letter and include at least one lowercase letter
         $otherNameRegExp = '(?=[^ ]*\p{Ll})\p{Lu}[\p{L}\-\']+';
         // Uppercase name
-        $ucNameRegExp = '\p{Lu}+';
-        $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.?-\p{Lu}\.)';
+        $ucNameRegExp = '\p{Lu}+( \p{Lu}+)?';
+        $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.?-\p{Lu}\.?)';
 
         // Spaces between initials are added before an item is processed, so "A.B." doesn't need to be matched
         $initialsLastName = '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp;
-        $lastNameInitials = $lastNameRegExp . ',?( ' . $initialRegExp . '){1,3}';
+        $lastNameInitials = $lastNameRegExp . ',?( ' . $initialRegExp . '){1,4}';
         $firstNameInitialsLastName = $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp;
         $lastNameFirstNameInitials = $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?';
 
@@ -822,7 +824,7 @@ class Converter
             ],
             // 28. SMITH Jane, JONES Susan, GONZALEZ Hilda.
             [
-                'name1' => $ucNameRegExp . ' ' . $otherNameRegExp, 
+                'name1' => $ucNameRegExp . ',? ' . $otherNameRegExp, 
                 'end1' => '[,;] ' . $notAnd, 
                 'end2' => '[,;] ' . $notAnd, 
                 'end3' => $periodOrColonOrCommaYear, 
@@ -2557,6 +2559,7 @@ class Converter
                     $this->verbose('Remainder without date: ' . $remainderWithoutDate);
 
                     // Get pages in $remainderWithoutDate
+                    // First look for 12-34 or 12--34, then for 12 - 34?  Or take last match from preg_match_all?
                     preg_match('/(\()?' . $this->pagesRegExp . '(\))?/', $remainderWithoutDate, $matches, PREG_OFFSET_CAPTURE);
                     $pagesPos = isset($matches['pages']) ? $matches[0][1] : false;
                     if (isset($matches['pages'])) {
@@ -4364,7 +4367,8 @@ class Converter
                             // numbers to be preceded by letters.
                             || preg_match('/^[A-Z][A-Za-z &()]+[,.]? (19|20)[0-9]{2},? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $this->pagesRegExp . '\.? ?$/', $remainder)
                             // $word ends in period && journal name (can include commma), pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
-                            || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?([0-9, \-p\.():\/]*$|\([0-9]{2,4}\))/', $remainderMinusArticle))
+                            || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:( ] ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\/]*$/', $remainderMinusArticle))
+                            || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?\([0-9]{2,4}\)/', $remainderMinusArticle))
                         )
                     ) {
                         $upcomingJournalAndPubInfo = true;
@@ -4435,9 +4439,9 @@ class Converter
                             preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) 
                             && in_array(trim($matches['city']), $this->cities)
                            )
-                        // one-word publisher, address [city in db], <year>?
+                        // one- or two-word publisher, address [city in db], <year>?
                         || (
-                            preg_match('/^[A-Z][a-z]+, (?P<city>[A-Za-z ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
+                            preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?, (?P<city>[A-Za-z, ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
                             && in_array(trim($matches['city']), $this->cities)
                            )
                         // . <address>: <publisher>(, <year>)?$ OR (<address>: <publisher>(, <year>)?)
@@ -4450,13 +4454,9 @@ class Converter
                             && $this->isAddressPublisher($remainder)
                            )
                         // <publisher>, <address>, <year>
-                        || (
-                            preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}), (?P<year>(19|20)[0-9]{2})\.?$/', $remainder, $matches) 
-                           )
+                        || preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}), (?P<year>(19|20)[0-9]{2})\.?$/u', $remainder, $matches) 
                         // <publisher>, <address> (<year>)
-                        || (
-                            preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}) \((?P<year>(19|20)[0-9]{2})\)\.?$/', $remainder, $matches) 
-                           )
+                        || preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}) \((?P<year>(19|20)[0-9]{2})\)\.?$/u', $remainder, $matches) 
                         // (<publisher> in db
                         || Str::startsWith(ltrim($remainder, '('), $this->publishers)
                         // (<city> in db
@@ -4650,7 +4650,7 @@ class Converter
                                 $remainder = '';
                             }
                             break;
-                        // Next case was intended for title followed by authors (as is <booktitle> <editors>) ---
+                        // Next case was intended for title followed by authors (as in <booktitle> <editors>) ---
                         // but that case is now handled separately
                         // } elseif (Str::endsWith($word, [',']) && preg_match('/[A-Z][a-z]+, [A-Z]\. /', $remainder)) {
                         //     $this->verbose("Ending title, case 6a (word '" . $word ."')");
@@ -4712,7 +4712,9 @@ class Converter
         return $title;
     }
 
-    // Get title from a string that starts with title and then has authors (e.g. editors, in <booktitle> <editor> format)
+    /*
+     * Get title from a string that starts with title and then has authors (e.g. editors, in <booktitle> <editor> format)
+     */
     private function getTitlePrecedingAuthor(string &$remainder, string $language = 'en'): string|null
     {
         $title = null;
@@ -4754,7 +4756,9 @@ class Converter
         return $returnString;
     }
 
-    // Truncate $string at first '%' that is not preceded by '\'.  Return true if truncated, false if not.
+    /*
+     * Truncate $string at first '%' that is not preceded by '\'.  Return true if truncated, false if not.
+     */
     private function uncomment(string &$string) : bool
     {
         $truncated = false;
@@ -4767,10 +4771,12 @@ class Converter
         return $truncated;
     }
 
-    // Replace every substring of multiple spaces with a single space.  (\h is a horizontal white space.)
+    /*
+     * Replace every substring of multiple spaces with a single space.
+     */ 
     private function regularizeSpaces(string $string): string
     {
-        // Using \h seems to mess up utf-8
+        // Using \h (horizontal white space) seems to mess up utf-8.
         //return preg_replace('%\h+%', ' ', $string);  
         return preg_replace('% +%', ' ', $string);  
     }
@@ -4847,8 +4853,7 @@ class Converter
     }
     
     /*
-     * Split an array of words into sentences.  Each period that 
-     * does not follow a single uc letter 
+     * Split an array of words into sentences.  Each period that does not follow a single uc letter 
      * AND follows a word that is (EITHER in the dictionary OR follows an initial [in which case it is presumably a name])
      * AND is not an excluded word
      * ends a sentence.
@@ -5091,8 +5096,8 @@ class Converter
     }
 
     /*
-     * Determine whether string plausibly starts with a name
-     * The method checks only the first few words in the string, not the whole string
+     * Determine whether string plausibly starts with a name.
+     * The method checks only the first few words in the string, not the whole string.
      */
     private function initialNameString(string $string): bool
     {
@@ -5137,84 +5142,21 @@ class Converter
      */
     private function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
     {
-        $namePart = $authorIndex = $case = 0;
-        $prevWordAnd = $prevWordVon = $done = $isEditor = $hasAnd = $multipleAuthors = false;
-        $authorstring = $fullName = '';
-        $remainingWords = $words;
-        if ($type == 'authors') {
-            $remainder = implode(' ', $remainingWords);
-        }
-        $warnings = [];
-        $skip = false;
-
         // if author list is in \textsc, remove the \textsc
         if (isset($words[0]) && Str::startsWith($words[0], '\textsc{')) {
             $words[0] = substr($words[0], 8);
         }
-
-        $wordHasComma = $prevWordHasComma = false;
-
-        /////////////////////////////////
-        // Check for organization name //
-        /////////////////////////////////
-        /*
-         * If first 3-6 words are all letters and in the dictionary except possibly last one, which is letters with a period at the end
-         * then they make up the name of an organization
-         * (Dictionary check is to exclude strings like 'John Doe and Jane Doe' or 'Doe J and Doe K', which needs processing
-         * as names, to insert commas after the last names.  A word that is not in the dictionary and could not be part
-         * of a name, like 'American', is also possible.)
-         */
-        $this->verbose('convertToAuthors: Checking for name of organization');
-        $name = '';
-        foreach ($words as $i => $word) {
-            if ($this->isInitials($word)) {
-                break;
-            } elseif ($i == 0 && strlen($word) > 3 && substr($word, -1) == '.') {
-                $remainder = implode(' ', array_slice($words, 1));
-                $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
-                return [
-                    'authorstring' => substr($word, 0, -1),
-                    'warnings' => [],
-                    'organization' => true,
-                ];
-            } elseif (ctype_alpha((string) $word) && ($this->inDict($word) || in_array($word, ['American']))) {
-                $name .= ($i ? ' ' : '') . $word;
-            } else {
-                $xword = substr($word, 0, -1);
-                // possibly last character could be other punctuation?
-                if (ctype_alpha((string) $xword) && $this->inDict($xword) && in_array(substr($word, -1), ['.'])) {
-                    if ($i >= 2 && $i <= 5) {
-                        $remainder = implode(' ', array_slice($words, $i+1));
-                        $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
-                        return [
-                            'authorstring' => $name . ' ' . $xword,
-                            'warnings' => [],
-                            'organization' => true,
-                        ];
-                    } else {
-                        break;
-                    }
-                } elseif ($i >= 3 && $i <= 6) {
-                    $remainder = implode(' ', array_slice($words, $i));
-                    $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
-                    return [
-                        'authorstring' => $name,
-                        'warnings' => [],
-                        'organization' => true,
-                    ];
-                } else {
-                    break;
-                }        
-            }
+        $remainingWords = $words;
+        if ($type == 'authors') {
+            $remainder = implode(' ', $remainingWords);
         }
 
-        $this->verbose('convertToAuthors: Organization name not found.');
+        $authorstring = '';
 
         ////////////////////////////////////
         // Check for some common patterns //
         ////////////////////////////////////
 
-        $authorstring = '';
         foreach ($this->authorRegExps as $i => $r) {
             $name1 = $r['name1'];
             $name2 = $r['name2'] ?? $name1;
@@ -5286,9 +5228,94 @@ class Converter
             ];
         }
 
+        $this->verbose('Authors do not match any pattern');
+
+        /////////////////////////////////
+        // Check for organization name //
+        /////////////////////////////////
+
+        $this->verbose('Checking author string for name of organization');
+
+        /*
+         * Between 3 and 80 letters and spaces (no punctuation) followed by year in parens or brackets
+         * Author strings without spaces, like 'John Doe and Jane Doe' or 'Doe J and Doe K' should have been
+         * taken care of by author patterns (above).
+         */
+        preg_match('/^(?P<name>[\p{L} ]{3,80})(?P<remains>[\(\[]?[1-9][0-9]{3}.*$)/u', $remainder, $matches);
+        if (! empty($matches)) {
+            $remainder = $matches['remains'];
+            $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
+            return [
+                'authorstring' => trim($matches['name']),
+                'warnings' => [],
+                'organization' => true,
+            ];
+        }
+
+        /*
+         * If organization name does not match previous pattern:
+         * If first 3-6 words are all letters and in the dictionary except possibly last one, which is letters with a period at the end
+         * then they make up the name of an organization
+         * Coded before author-pattern check moved first, so may be unnecessary now:
+         * Dictionary check is to exclude strings like 'John Doe and Jane Doe' or 'Doe J and Doe K', which needs processing
+         * as names, to insert commas after the last names.  A word that is not in the dictionary and could not be part
+         * of a name, like 'American', is also possible.
+         */
+        $name = '';
+        foreach ($words as $i => $word) {
+            if ($this->isInitials($word)) {
+                break;
+            } elseif ($i == 0 && strlen($word) > 3 && substr($word, -1) == '.') {
+                $remainder = implode(' ', array_slice($words, 1));
+                $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
+                return [
+                    'authorstring' => substr($word, 0, -1),
+                    'warnings' => [],
+                    'organization' => true,
+                ];
+            } elseif (ctype_alpha((string) $word) && ($this->inDict($word) || in_array($word, ['American']))) {
+                $name .= ($i ? ' ' : '') . $word;
+            } else {
+                $xword = substr($word, 0, -1);
+                // possibly last character could be other punctuation?
+                if (ctype_alpha((string) $xword) && $this->inDict($xword) && in_array(substr($word, -1), ['.'])) {
+                    if ($i >= 2 && $i <= 5) {
+                        $remainder = implode(' ', array_slice($words, $i+1));
+                        $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
+                        return [
+                            'authorstring' => $name . ' ' . $xword,
+                            'warnings' => [],
+                            'organization' => true,
+                        ];
+                    } else {
+                        break;
+                    }
+                } elseif ($i >= 3 && $i <= 6) {
+                    $remainder = implode(' ', array_slice($words, $i));
+                    $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
+                    return [
+                        'authorstring' => $name,
+                        'warnings' => [],
+                        'organization' => true,
+                    ];
+                } else {
+                    break;
+                }        
+            }
+        }
+
+        $this->verbose('convertToAuthors: Organization name not found.');
+
         ///////////////////////////////////////////////////////////
         // If no pattern matches, go through string word by word //
         ///////////////////////////////////////////////////////////
+
+        $namePart = $authorIndex = $case = 0;
+        $prevWordAnd = $prevWordVon = $done = $isEditor = $hasAnd = $multipleAuthors = false;
+        $wordHasComma = $prevWordHasComma = false;
+        $fullName = '';
+        $warnings = [];
+        $skip = false;
 
         foreach ($words as $i => $word) {
             if ($skip) {
@@ -5867,7 +5894,7 @@ class Converter
                 foreach ($bareWords as $bareWord) {
                     if (
                         isset($bareWord[0])
-                        && preg_match('/^\p{L}$/', $bareWord[0])
+                        && preg_match('/^\p{L}$/u', $bareWord[0])
                         && mb_strtolower($bareWord[0]) == $bareWord[0] 
                         && ! in_array($bareWord, $this->vonNames) 
                         && ! $this->isAnd($bareWord, $language)
@@ -6459,13 +6486,17 @@ class Converter
     }
 
     /**
-     * getDate: get *last* substring in $string that is a date, unless $start is true, in which case restrict to 
-     * start of string and take only first match
+     * getDate: get last best (a non-range, if there is one) substring in $string that is a date,
+     * unless $start is true, in which case restrict to start of string and take only first match.
      * @param string $string 
      * @param string|null $remains what is left of the string after the substring is removed
      * @param string|null $month
+     * @param string|null $day
+     * @param string|null $date
      * @param boolean $start = true (if true, check only for substring at start of string)
      * @param boolean $allowMonth = false (allow string like "(April 1998)" or "(April-May 1998)" or "April 1998:"
+     * @param boolean $allowEarlyYears = false (allow centuries starting with 13
+     * @param string $language = 'en'
      * @return string year
      */
     private function getDate(string $string, string|null &$remains, string|null &$month, string|null &$day, string|null &$date, bool $start = true, bool $allowMonth = false, bool $allowEarlyYears = false, string $language = 'en'): string
@@ -6563,30 +6594,19 @@ class Converter
             }
         }
 
-        // Remove labels from months (because of hard-coded indexes below)
+        // Remove labels from months (to avoid duplicate names in regexp)
         $months = preg_replace('/\(\?P<m[1-9][0-2]?>/', '', $months);
         $months = preg_replace('/\)|/', '', $months);
+        
         // Year can be (1980), [1980], '1980 ', '1980,', '1980.', '1980)', '1980:' or end with '1980' if not at start and
         // (1980), [1980], ' 1980 ', '1980,', '1980.', or '1980)' if at start; instead of 1980, can be of form
         // 1980/1 or 1980/81 or 1980/1981 or 1980-1 or 1980-81 or 1980-1981
         // NOTE: '1980:' could be a volume number---might need to check for that
 
-        //$new = false;
-        $new = true;
+        $monthRegExp = '(?P<month>(' . $months . ')([-\/](' . $months . '))?)?';
 
-        if ($new) {
-            $monthRegExp = '(?P<month>(' . $months . ')([-\/](' . $months . '))?)?';
-        } else {
-            $monthRegExp = '((' . $months . ')([-\/](' . $months . '))?)?';
-        }
-        // In following line, [1-2]?[0-9]? added to allow second year to have four digits.  Should be (18|19|20), but that
-        // would mean adding a group, which would require the recalculation of all the indices ...
         // Year should not be preceded by 'pp. ', which would mean it is in fact a page number/page range.
-        if ($new) {
-            $yearRegExp = '(?P<year>(?<!pp\. )(' . $centuries . ')([0-9]{2})(--?[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
-        } else {
-            $yearRegExp = '((?<!pp\. )(' . $centuries . ')([0-9]{2})(--?[1-2]?[0-9]?[0-9]{1,2}|\/[0-9]{1,4})?)[a-z]?';
-        }
+        $yearRegExp = '(?P<year>(?<!pp\. )(' . $centuries . ')([0-9]{2})(?P<yearRange>(--?((18|19|20)[0-9]{2}|[0-9]{1,2})|\/[0-9]{1,4}))?)[a-z]?';
 
         $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
 
@@ -6594,128 +6614,49 @@ class Converter
         // to avoid picking up second part of page range (e.g. 1913-1920).  (Comma allowed in case of no space: e.g. 'vol. 17,1983'.)
         $regExp1 = ($start ? '' : '[ ,]') . $regExp0 . '[ .,):;]';
         $regExp2 = '[ ,]' . $regExp0 . '$';
-        $regExp3 = '\(' . $regExp0 . '\)';
-        $regExp4 = '\[' . $regExp0 . '\]';
+        $regExp3 = '\[' . $regExp0 . '\]';
+        $regExp4 = '\(' . $regExp0 . '\)';
 
-        if ($new) {
-            if ($start) {
-                $regExps = [$regExp1, $regExp3, $regExp4];
-                foreach ($regExps as $regExp) {
-                    preg_match('/^(' . $regExp . ')[.,]?(?P<remains>.*)$/', $string, $matches);
-                    if (! empty($matches)) {
-                        $year = $matches['year'];
-                        if ($allowMonth && $matches['month']) {
-                            $month = $matches['month'];
-                        }
-                        $remains = $matches['remains'];
-                        break;
+        if ($start) {
+            $regExps = [$regExp1, $regExp3, $regExp4];
+            foreach ($regExps as $regExp) {
+                preg_match('/^(' . $regExp . ')[.,]?(?P<remains>.*)$/', $string, $matches);
+                if (! empty($matches)) {
+                    $year = $matches['year'];
+                    if ($allowMonth && $matches['month']) {
+                        $month = $matches['month'];
                     }
-                }
-            } else {
-                $regExps = [$regExp1, $regExp2, $regExp3, $regExp4];
-                $lastMatch = null;
-                foreach ($regExps as $i => $regExp) {
-                    preg_match('/^(?P<remains1>.*)(' . $regExp . ')[.,]?(?P<remains2>.*)$/', $string, $matches2);
-                    if (! empty($matches2)) {
-                        $matches[$i] = $matches2;
-                        $lastMatch = $matches2;
-                    }
-                }
-                if ($lastMatch) {
-                    $year = $lastMatch['year'];
-                    if ($allowMonth && $lastMatch && $lastMatch['month']) {
-                        $month = $lastMatch['month'];
-                    }
-                    $remains = $lastMatch['remains1'] . ' ' . $lastMatch['remains2'];
+                    $remains = $matches['remains'];
+                    break;
                 }
             }
         } else {
-            // /J: allow duplicate names
-            if ($start) {
-                $regExp = '/^(' . $regExp1 . ')|^(' . $regExp3 . ')|^(' . $regExp4 . ')/J';
-                preg_match($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
-            } else {
-                $regExp = '/(' . $regExp1 . ')|(' . $regExp2 . ')|(' . $regExp3 . ')|(' . $regExp4 . ')/J';
-                preg_match_all($regExp, $string, $matches, PREG_OFFSET_CAPTURE);
-            }
-
-            // Using labels for matches seems non-straightforward because the patterns are used more than once in each
-            // regular expression.
-            // These are the indexes of the matches for the subpatterns of the regular expression:
-            if ($allowMonth) {
-                $yearIndexes = $start ? [6, 15, 24] : [6, 15, 24, 33];
-            } else {
-                $yearIndexes = $start ? [2, 7, 12] : [2, 7, 12, 17];
-            }
-
-            
-
-            foreach ($yearIndexes as $i) {
-                if (isset($matches[$i]) && count($matches[$i])) {
-                    if (! $start) {
-                        $foundMatch = $matches[$i][count($matches[$i]) - 1];
-                        $wholeMatch = $matches[0][count($matches[0]) - 1];
-                    } else {
-                        $foundMatch = $matches[$i];
-                        $wholeMatch = $matches[0];
+            $regExps = [$regExp1, $regExp2, $regExp3, $regExp4];
+            $bestMatch = null;
+            $bestMatchScore = 0;
+            foreach ($regExps as $i => $regExp) {
+                preg_match('/^(?P<remains1>.*)(' . $regExp . ')[.,]?(?P<remains2>.*)$/', $string, $matches2);
+                if (! empty($matches2)) {
+                    if (empty($matches2['yearRange'])) {
+                        $bestMatchScore = 1;
                     }
-                    if (isset($foundMatch) && $foundMatch[1] >= 0) {
-                        $year = $foundMatch[0];
-                        $remains = rtrim(substr($string, 0, $wholeMatch[1]), '.,') . ' ' . ltrim(substr($string, $wholeMatch[1] + strlen($wholeMatch[0])), '.,');
-                        break;
+                    // Best match is one that has no year range and comes later (regExp3 or regExp4, which have parens/brackets)
+                    if (! $bestMatch || empty($matches2['yearRange']) || ($matches2['yearRange'] && $bestMatchScore == 0)) {
+                        $bestMatch = $matches2;
                     }
                 }
             }
-
-            if ($allowMonth) {
-                $monthIndexes = $start ? [2, 11, 20] : [2, 11, 20, 29];
-                foreach ($monthIndexes as $i) {
-                    if (isset($matches[$i]) && count($matches[$i])) {
-                        if (! $start) {
-                            $foundMatch = $matches[$i][count($matches[$i]) - 1];
-                            $wholeMatch = $matches[0][count($matches[0]) - 1];
-                        } else {
-                            $foundMatch = $matches[$i];
-                            $wholeMatch = $matches[0];
-                        }
-                        if (isset($foundMatch[1]) && $foundMatch[1] >= 0) {
-                            $month = $foundMatch[0];
-                            $remains = rtrim(substr($string, 0, $wholeMatch[1]), '.,') . ' ' . ltrim(substr($string, $wholeMatch[1] + strlen($wholeMatch[0])), '.,');
-                            break;
-                        }
-                    }
+            if ($bestMatch) {
+                $year = $bestMatch['year'];
+                if ($allowMonth && ! empty($bestMatch['month'])) {
+                    $month = $bestMatch['month'];
                 }
+                $remains = $bestMatch['remains1'] . ' ' . $bestMatch['remains2'];
             }
         }
 
         return $year;
     }
-
-    /**
-     * trimRightPeriod: remove trailing period if preceding character is not uppercase letter and word is in dictionary
-     * @param $string string
-     * return trimmed string
-     */
-    /* Unused
-    private function trimRightPeriod(string $string): string
-    {
-        $lastWord = substr($string, strrpos($string, ' ')+1, -1);
-
-        if ($string == '' || $string == '.') {
-            $trimmedString = '';
-        } elseif (strlen($string) == 1) {
-            $trimmedString = $string;
-        } elseif (substr($string, -1) == '.' 
-                && strtoupper(substr($string, -2, 1)) != substr($string, -2, 1)
-                && $this->inDict($lastWord)) {
-            $trimmedString = substr($string, 0, -1);
-        } else {
-            $trimmedString = $string;
-        }
-
-        return $trimmedString;
-    }
-    */
 
     /**
      * trimRightBrace: remove trailing brace if and only if string contains one more right brace than left brace
@@ -6885,7 +6826,7 @@ class Converter
         }
 
         if (preg_match('/' . $this->proceedingsRegExp . '/i', $string)
-                && ! preg_match('/' . $this->proceedingsExceptions . '/i', $string)) {
+                && ! preg_match('/' . $this->proceedingsExceptions . '/iu', $string)) {
             $isProceedings = true;
         }
 
@@ -7141,7 +7082,7 @@ class Converter
                 &&
                 (strlen($lettersOnlyName) < 3 || ($commaPassed && ($initials || strlen($lettersOnlyName) < 4)))
                 &&
-                strtoupper($lettersOnlyName) == $lettersOnlyName
+                mb_strtoupper($lettersOnlyName) == $lettersOnlyName
                 &&
                 $lettersOnlyName != 'III'
                ) {
@@ -7178,7 +7119,7 @@ class Converter
             // If name is ALL uppercase and contains no period, translate uppercase component to an u.c. first letter and the rest l.c.
             // (Contains no period to deal with name H.-J., which should not be convered to H.-j.)
             } elseif (
-                strtoupper($lettersOnlyName) == $lettersOnlyName
+                mb_strtoupper($lettersOnlyName) == $lettersOnlyName
                 &&
                 (strpos($name, '.') === false || strpos($name, '.') < strlen($name)) 
                 &&
@@ -7195,7 +7136,15 @@ class Converter
                     $fName .= strlen($lcName) > 2 ? rtrim($lcName, '.') : $lcName;
                 }
 
-                if ($i == 0 && mb_strtoupper($name) == $name && strlen($name) > 1 && ! in_array(substr($name, -1), ['.', ','])) {
+                if (
+                    $i == 0 
+                    && mb_strtoupper($name) == $name 
+                    && strlen($name) > 1 
+                    && ! in_array(substr($name, -1), ['.', ','])
+                    && (
+                        ! isset($names[$i+1]) || substr($names[$i+1], -1) != ',' || ! mb_strtoupper($names[$i+1]) == $names[$i+1]
+                       )
+                   ) {
                     $fName .= ',';
                 }
             } else {
@@ -7258,13 +7207,14 @@ class Converter
                     || (isset($words[$key+1]) && Str::contains($words[$key+1], range('1', '9'))) // next word contains a digit
                     || (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}:?$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
                     || preg_match('/^(' . $this->monthsRegExp[$language] . ')( [0-9]{1,2})?[.,;]/', $remainder) // <month> or <month day> next
+                    || preg_match('/^(' . $this->numberRegExp . ') /', $remainder) // followed by number info
                     || preg_match($this->volRegExp2, $remainder) // followed by volume info
                     || preg_match($this->startPagesRegExp, ltrim($remainder, '( ')) // followed by pages info
                     || preg_match('/^' . $this->articleRegExp . '/i', $remainder) // followed by article info
                     || $this->containsFontStyle($remainder, true, 'bold', $posBold, $lenBold) // followed by bold
                     || $this->containsFontStyle($remainder, true, 'italics', $posItalic, $lenItalic) // followed by italics
                     // (Str::endsWith($word, '.') && strlen($word) > 2 && $this->inDict($word) && !in_array($word, $this->excludedWords))
-                )
+                   )
                 {
                     $this->verbose('[getJournal] Remainder: ' . $remainder);
                     $journal = rtrim(implode(' ', $initialWords), ', ');
@@ -7318,7 +7268,7 @@ class Converter
         $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?\(\(?|\* ?\()';
         $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
 
-        $dashEquivalents = ['---', '--', ' - ', '- ', ' -', '_', 'Ð', '?'];
+        $dashEquivalents = ['---', '--', ' - ', '- ', ' -', '_', '?'];
 
         // e.g. Volume 6, No. 3, pp. 41-75 OR 6(3) 41-75
         if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
@@ -7433,8 +7383,7 @@ class Converter
             // $item->number can be a range (e.g. '6-7')
             // Look for something like 123:6-19
             // First consider case in which there is only a volume
-            $this->verbose('[v3]');
-            $this->verbose('Remainder: ' . $remainder);
+            $this->verbose('[v3] Remainder: ' . $remainder);
             // 'Volume? 123$'
             $numberOfMatches1 = preg_match('/^(' . $this->volumeRegExp . ')?([1-9][0-9]{0,3})$/', $remainder, $matches1, PREG_OFFSET_CAPTURE);
             // $this->volumeRegExp has space at end of it, but no further space is allowed.
@@ -7467,7 +7416,7 @@ class Converter
                     $remainder = trim(str_replace($matches[0], '', $remainder));
                     // Does a number follow the volume?
                     // The /? allows a format 125/6 for volume/number
-                    preg_match('%^(?P<numberDesignation>' . $this->numberRegExp . ')?[ /]?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?%', $remainder, $matches);
+                    preg_match('%^\(?(?P<numberDesignation>' . $this->numberRegExp . ')?[ /]?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?%', $remainder, $matches);
                     if (isset($matches['number'])) {
                         $number = $matches['number'];
                         $this->setField($item, 'number', $number, 'getVolumeAndNumberForArticle 18');
@@ -7524,6 +7473,12 @@ class Converter
                                     if (empty($item->volume)) {
                                         $this->setField($item, 'volume', $matches[1], 'getVolumeAndNumberForArticle 12');
                                     }
+                                } elseif (preg_match('/^(' . $this->numberRegExp . ')(?P<number>[0-9]{1,4})(?P<remains>.*)$/', $remainder, $matches)) {
+                                    if ($matches['number']) {
+                                        $this->setField($item, 'number', $matches['number'], 'getVolumeAndNumberForArticle 12b');
+                                        $this->addToField($item, 'note', trim($matches['remains'], '., '), 'getVolumeAndNumberForArticle 12c');
+                                        $containsNumberDesignation = true;
+                                    }
                                 } else {
                                     // Assume all of $remainder is volume (might be something like '123 (Suppl. 19)')
                                     if (! Str::contains($remainder, ['('])) {
@@ -7535,7 +7490,6 @@ class Converter
                                     }
                                     $this->setField($item, 'volume', trim($remainder, ' ,;:.{}'), 'getVolumeAndNumberForArticle 13');
                                 }
-                                unset($item->number);
                                 $take = 0;
                                 $drop = strlen($remainder);
                             } else {
@@ -7560,7 +7514,8 @@ class Converter
         }
     }
 
-    private function translate(string $string, string $language) {
+    private function translate(string $string, string $language): string
+    {
         if ($language == 'my') {
             $string = str_replace("0", "\xE1\x81\x80", $string);
             $string = str_replace("1", "\xE1\x81\x81", $string);
