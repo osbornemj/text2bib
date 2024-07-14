@@ -665,7 +665,7 @@ class Converter
                 'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
                 'end1' => ', ', 
                 'end2' => ', ' . $notAnd, 
-                'end3' => ', et\.? al\.?', 
+                'end3' => ',? et\.? al\.?', 
                 'initials' => true,
                 'etal' => true,
             ],
