@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Conversion;
+use App\Models\Output;
 use App\Models\Statistic;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -10,6 +13,10 @@ class StatisticsController extends Controller
 {
     public function index()
     {
+        $userCount = User::count();
+        $conversionCount = Conversion::count();
+        $itemCount = Output::count();
+
         $data = Statistic::orderBy('stat_date')->get();
         $labels = $data->pluck('stat_date')->toArray();
         $userCounts = $data->pluck('user_count')->toArray();
@@ -110,6 +117,17 @@ class StatisticsController extends Controller
                  ]
           ]);
  
-         return view('statistics', compact('chartjsUsers', 'chartjsConversions', 'chartjsItems', 'chartjsUses'));
+         return view(
+            'statistics', 
+            compact(
+                'chartjsUsers', 
+                'chartjsConversions', 
+                'chartjsItems', 
+                'chartjsUses',
+                'userCount',
+                'conversionCount',
+                'itemCount',
+            )
+        );
     }
 }

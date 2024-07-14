@@ -2,11 +2,23 @@
 
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Usage statistics by day') }}
+            {{ __('Total numbers since 2024.3.15') }}
         </h2>
     </x-slot>
 
-    <div class="mx-4 font-semibold">
+    <div class="mx-4">
+        Registered users: {{ number_format($userCount) }}
+        <br/>
+        Files converted: {{ number_format($conversionCount) }}
+        <br/>
+        Items converted: {{ number_format($itemCount) }}
+    </div>
+
+    <h2 class="mx-4 mt-2 font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        {{ __('Usage statistics by day') }}
+    </h2>
+
+    <div class="mx-4 mt-2 font-semibold">
         <h2 class="text-lg">Users</h2>
 
         <div style="width:100%;">
