@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use Carbon\Exceptions\InvalidFormatException;
+//use Carbon\Carbon;
+//use Carbon\Exceptions\InvalidFormatException;
 
 use Illuminate\Support\Str;
 
@@ -11,7 +11,7 @@ use App\Models\City;
 use App\Models\Conversion;
 use App\Models\DictionaryName;
 use App\Models\ExcludedWord;
-use App\Models\Journal;
+//use App\Models\Journal;
 use App\Models\Name;
 use App\Models\Publisher;
 use App\Models\StartJournalAbbreviation;
@@ -20,12 +20,13 @@ use App\Models\VonName;
 use App\Traits\MakeScholarTitle;
 use App\Traits\Stopwords;
 use App\Traits\Countries;
+use App\Traits\Dates;
 
 use PhpSpellcheck\Spellchecker\Aspell;
-use SebastianBergmann\Type\NullType;
+//use SebastianBergmann\Type\NullType;
 use stdClass;
 
-use function Safe\strftime;
+//use function Safe\strftime;
 
 class Converter
 {
@@ -111,6 +112,7 @@ class Converter
     // Countries are used to check last word of title, following a comma and followed by a period --- country
     // names that are not abbreviations used at the start of journal names or other publication info
     use Countries;
+    use Dates;
     use MakeScholarTitle;
 
     public function __construct()
@@ -292,19 +294,31 @@ class Converter
             'p\. ?',
             'p ?',
             '[Pp]ágs?\. ?',// Spanish, Portuguese
-            'стр\. ?',     // Russian
             '[Bb]lz\. ?',  // Dutch
-            '[Hh]lm\. ?',
             '[Hh]al\. ?',  // Indonesian
-            '[Ss]s?\. ?',  // Turkish
+            '[Hh]lm\. ?',
+            '[Ss]s?\. ?',  // Turkish, Polish
             '[Ss]tr\. ?',  // Czech
+            'стр\. ?',     // Russian
             'გვ\. ?',      // Georgian
         ];
 
-        // 'y' is for Spanish, 'e' for Portuguese, 'et' for French, 'en' for Dutch, 'und' for German, 'и' for Russian, 'v' for Turkish,
-        // 'dan' for Indonesian, 'şi' for Romanian
         $this->andWords = [
-            'and', '/', '\&', '&', '$\&$', 'y', 'e', 'et', 'en', 'und', 'и', 've', 'dan', 'şi'
+            'and', 
+            '/', 
+            '\&', 
+            '&', 
+            '$\&$', 
+            'dan', // Indonesian
+            'e',   // Portuguese, Italian
+            'en',  // Dutch
+            'et',  // French
+            'i',   // Polish
+            'şi',  // Romanian
+            'und', // German
+            've',  // Turkish
+            'y',   // Spanish
+            'и',   // Russian
         ];
 
         $startPagesRegExp = '/(';
@@ -898,8 +912,8 @@ class Converter
 
         $phrases = $this->phrases[$language];
 
-        // Remove comments and concatenate lines in entry
-        // (do so before cleaning text, otherwise \textquotedbleft, e.g., at end of line will not be cleaned)
+        // Concatenate lines in entry, removing comments.
+        // (Do so before cleaning text, otherwise \textquotedbleft, e.g., at end of line will not be cleaned.)
         $entryLines = explode("\n", $rawEntry);
 
         $entry = '';
@@ -908,15 +922,18 @@ class Converter
             $entry .= $line . (! $truncated ? ' ' : '');
         }
 
+        // If nothing is left, return.
         if (! $entry) {
             return null;
         }
 
-        // If entry has some HTML markup that will be useful, translate it to TeX
+        // If entry has HTML markup that will be useful, translate it to TeX
         $entry = str_replace(['<em>', '</em>'], ['\textit{', '}'], $entry);
 
         // Remove remaining HTML markup
         $entry = strip_tags($entry);
+
+        // Save original entry, to return as 'source'
         $originalEntry = $entry;
 
         // Note that cleanText translates « and », and „ and ”, to `` and ''.
@@ -927,15 +944,15 @@ class Converter
         // Replace "\' " with "\'" because "\' abc" is equivalent to "\'abc", and the space causes problems if it is within a name.
         $entry = str_replace("\' ", "\'", $entry);
 
-        $firstComponent = 'authors';
-        // If entry starts with year, extract it.
+        // If entry starts with year, extract it.  Otherwise extract label, if any, and remove numbers and other stray characters
+        // at start of entry
         if (preg_match('/^(?P<year>[1-9][0-9]{3})\*? (?P<remainder>.*)$/', $entry, $matches)) {
             $firstComponent = 'year';
             $year = $matches['year'];
             $remainder = ltrim($matches['remainder'], ' |*+');
-        }
+        } else {
+            $firstComponent = 'authors';
 
-        if ($firstComponent == 'authors') {
             // interpret string like [Arrow12] at start of entry as label
             if (preg_match('/^[\[{](?P<label>[a-zA-Z0-9:]{3,10})[\]}] (?P<entry>.*)$/', $entry, $matches)) {
                 if ($matches['label'] && preg_match('/[A-Za-z]/', $matches['label'])) {
@@ -965,6 +982,7 @@ class Converter
             }
         }
 
+        // If nothing is left, return.
         if (! strlen($entry)) {
             return null;
         }
@@ -1019,9 +1037,9 @@ class Converter
         $accessedRegExp1 = $this->accessedRegExp1[$language];
 
         // doi in a Markdown-formatted url
-        if (preg_match('%\[https://doi\.org/(?P<doi1>[^ \]]+)\]\(https://doi\.org/(?P<doi2>[^ \)]+)\)%', $remainder, $matches)) {
-            $doi = $matches['doi1'];
-            $doi1 = $matches['doi2'];
+        if (preg_match('%\[https://doi\.org/(?P<doi>[^ \]]+)\]\(https://doi\.org/(?P<doi1>[^ \)]+)\)%', $remainder, $matches)) {
+            $doi = $matches['doi'];
+            $doi1 = $matches['doi1'];
             if ($doi != $doi1) {
                 $warnings[] = "doi's in URL are not the same.";                
             }
@@ -2414,13 +2432,6 @@ class Converter
                 }
                 $remainder = '';
 
-                // Somehow strlen of $item->note can be 1 even though dd says it is "".
-                // if (strlen($item->note) <= 1 && ! empty($item->url)) {
-                //     $this->verbose('Moving content of url field to note');
-                //     $this->addToField($item, 'note', trim($item->url, '{}'), 'addToField 9');
-                //     unset($item->url);
-                // }
-
                 break;
 
             //////////////////////////
@@ -2558,19 +2569,18 @@ class Converter
                     }
                     $this->verbose('Remainder without date: ' . $remainderWithoutDate);
 
-                    // Get pages in $remainderWithoutDate
-                    // First look for 12-34 or 12--34, then for 12 - 34?  Or take last match from preg_match_all?
-                    preg_match('/(\()?' . $this->pagesRegExp . '(\))?/', $remainderWithoutDate, $matches, PREG_OFFSET_CAPTURE);
-                    $pagesPos = isset($matches['pages']) ? $matches[0][1] : false;
-                    if (isset($matches['pages'])) {
-                        $pages = $matches['pages'][0];
+                    // Get last match for page range in $remainderWithoutDate
+                    $numberOfMatches = preg_match_all('/(\()?' . $this->pagesRegExp . '(\))?/', $remainderWithoutDate, $matches, PREG_OFFSET_CAPTURE);
+                    if ($numberOfMatches) {
+                        $matchIndex = $numberOfMatches - 1;
+                        $pagesPos = $matches[0][$matchIndex][1];
+                        $pages = $matches['pages'][$matchIndex][0];
                         $this->setField($item, 'pages', $pages ? str_replace(['--', ' '], ['-', ''], $pages) : '', 'setField 31a');
                         if ($datePos && $pagesPos && $datePos < $pagesPos) {
-                            $remainder = str_replace($matches[0][0], '', $remainderWithMonthYear);
+                            $remainder = str_replace($matches[0][$matchIndex][0], '', $remainderWithMonthYear);
                         } else {
-                            $remainder = str_replace(trim($matches[0][0] , ' :'), '', $remainder);
-                            $remainder = str_replace(', ,', ',', $remainder);
-                            $remainder = str_replace(', .', ',', $remainder);
+                            $remainder = str_replace(trim($matches[0][$matchIndex][0] , ' :'), '', $remainder);
+                            $remainder = str_replace([', ,', ', .'], ',', $remainder);
                         }
                         $remainder = rtrim($remainder, ';,. ');
                     } else {
@@ -4035,43 +4045,6 @@ class Converter
         return $returner;
     }
 
-    /*
-     * If month (or month range) is parsable, parse it: 
-     * translate 'Jan' or 'Jan.' or 'January' or 'JANUARY', for example, to 'January'.
-    */
-    private function fixMonth(string $month, string $language = 'en'): array
-    {
-        if (is_numeric($month)) {
-            return ['months' => $month, 'month1number' => $month, 'month2number' => null];
-        }
-
-        Carbon::setLocale($language);
-
-        $month1number = $month2number = null;
-
-        $month1 = trim(Str::before($month, '-'), ', ');
-        if (preg_match('/^[a-zA-Z.]*$/', $month1)) {
-            $fullMonth1 = Carbon::parseFromLocale('1 ' . $month1, $language)->monthName;
-            $month1number = Carbon::parseFromLocale('1 ' . $month1, $language)->format('m');
-        } else {
-            $fullMonth1 = $month1;
-        }
-
-        $month2 = Str::contains($month, '-') ? Str::after($month, '-') : null;
-        if ($month2 && preg_match('/^[a-zA-Z.]*$/', $month2)) {
-            $fullMonth2 = Carbon::parseFromLocale('1 ' . $month2, $language)->monthName;
-            $month2number = Carbon::parseFromLocale('1 ' . $month2, $language)->format('m');
-        } elseif ($month2) {
-            $fullMonth2 = $month2;
-        } else {
-            $fullMonth2 = null;
-        }
-
-        $months = $fullMonth1 . ($fullMonth2 ? '-' . $fullMonth2 : '');
-
-        return ['months' => $months, 'month1number' => $month1number, 'month2number' => $month2number];
-    }
-
     private function setField(stdClass &$item, string $fieldName, string|null $string, string $id = ''): void
     {
         if ($string) {
@@ -4946,76 +4919,6 @@ class Converter
         }
     }
 
-    /*
-     * Report whether string is a date OR, if $type is 'contains', report the date it contains,
-     * in a range of formats, including 2 June 2018, 2 Jun 2018, 2 Jun. 2018, June 2, 2018,
-     * 6-2-2018, 6/2/2018, 2-6-2018, 2/6/2018.
-     * If $allowRange is true, dates like 6-8 June, 2024 are allowed AND year is optional
-     */
-    private function isDate(string $string, string $language = 'en', string $type = 'is', bool $allowRange = false): bool|array
-    {
-        $ofs = ['en' => '', 'cz' => '', 'fr' => '', 'es' => 'de', 'my' => '', 'nl' => '', 'pt' => 'de '];
-
-        $year = '(?P<year>(19|20)[0-9]{2})';
-        $monthName = '(?P<monthName>' . $this->monthsRegExp[$language] . ')';
-        $of = $ofs[$language];
-        $day = '(?P<day>[0-3]?[0-9])';
-        $dayRange = '(?P<day>[0-3]?[0-9](--?[0-3]?[0-9])?)';
-        $monthNumber = '(?P<monthNumber>[01]?[0-9])';
-
-        if ($type == 'is') {
-            $starts = '^';
-            $ends = '$';
-        } elseif ($type == 'contains') {
-            $starts = '';
-            $ends = '';
-        } elseif ($type == 'starts') {
-            $starts = '^';
-            $ends = '';
-        }
-
-        $matches = [];
-        $isDates = [];
-        if ($allowRange) {
-            $isDates[1] = preg_match('/(' . $starts . $dayRange . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ' )?' . $year . '?' . $ends . ')/i' , $string, $matches[1]);
-            $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $dayRange . ',? '. $year . '?' . $ends . ')/i', $string, $matches[2]);
-        } else {
-            $isDates[1] = preg_match('/(' . $starts . $day . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ' )?' . $year . $ends . ')/i' , $string, $matches[1]);
-            $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $day . '(,? ' . $year . ')?' . $ends . ')/i', $string, $matches[2]);
-            $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/ ]' . $of . $monthNumber . ',?[\-\/ ]'. $of . $year . $ends . ')/i', $string, $matches[3]);
-            $isDates[4] = preg_match('/(' . $starts . $monthNumber . '[\-\/ ]' . $day . ',?[\-\/ ]'. $year . $ends . ')/i', $string, $matches[4]);
-            $isDates[5] = preg_match('/(' . $starts . $year . '[\-\/, ]' . $day . '[\-\/ ]' . $monthNumber . $ends . ')/i', $string, $matches[5]);
-            $isDates[6] = preg_match('/(' . $starts . $year . '[, ]' . $monthName . ' ' . $day . $ends . ')/i', $string, $matches[6]);
-            $isDates[7] = preg_match('/(' . $starts . $year . '[, ]' . $day . ' ' . $monthName . $ends . ')/i', $string, $matches[7]);
-        }
-
-        if ($type == 'is') {
-            return max($isDates);
-        } elseif (in_array($type, ['contains', 'starts'])) {
-            $monthNumber = '';
-            foreach ($isDates as $i => $isDate) {
-                if (isset($matches[$i][0]) && $matches[$i][0]) {
-                    if (! isset($matches[$i]['monthNumber'])) {
-                        for ($j = 1; $j <= 12; $j++) {
-                            if ($matches[$i]['m' . $j]) {
-                                $monthNumber = $j;
-                                break;
-                            }
-                        }
-                    }
-                    return [
-                        'date' => $matches[$i][0],
-                        'year' => $matches[$i]['year'] ?? '',
-                        'day' => $matches[$i]['day'] ?? '',
-                        'monthNumber' => $matches[$i]['monthNumber'] ?? $monthNumber,
-                        'monthName' => $matches[$i]['monthName'] ?? '',
-                    ];
-                }
-            }
-            return false;
-        }
-    }
-
     private function isAnd(string $string, $language = 'en'): bool
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
@@ -5247,10 +5150,12 @@ class Converter
         if (! empty($matches)) {
             $remainder = $matches['remains'];
             $year = $this->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
+            $this->verbose('Authors match pattern 128');
             return [
                 'authorstring' => trim($matches['name']),
                 'warnings' => [],
                 'organization' => true,
+                'author_pattern' => 128,
             ];
         }
 
@@ -5777,7 +5682,6 @@ class Converter
                                 && isset($words[$i+2]) 
                                 && Str::endsWith($words[$i+2], [',', ';']) 
                                 && ! $this->isYear(trim($words[$i+2], ',()[]'))
-                                //&& ! $this->isYearRange(trim($words[$i+2], ',()[]'))
                             ) {
                             // $words[$i] does not end in a comma AND $words[$i+1] is set and ends in a comma and is not initials AND $words[$i+2]
                             // is set and ends in a comma AND $words[$i+2] is not a year.
@@ -6488,179 +6392,6 @@ class Converter
     }
 
     /**
-     * getDate: get last best (a non-range, if there is one) substring in $string that is a date,
-     * unless $start is true, in which case restrict to start of string and take only first match.
-     * @param string $string 
-     * @param string|null $remains what is left of the string after the substring is removed
-     * @param string|null $month
-     * @param string|null $day
-     * @param string|null $date
-     * @param boolean $start = true (if true, check only for substring at start of string)
-     * @param boolean $allowMonth = false (allow string like "(April 1998)" or "(April-May 1998)" or "April 1998:"
-     * @param boolean $allowEarlyYears = false (allow centuries starting with 13
-     * @param string $language = 'en'
-     * @return string year
-     */
-    private function getDate(string $string, string|null &$remains, string|null &$month, string|null &$day, string|null &$date, bool $start = true, bool $allowMonth = false, bool $allowEarlyYears = false, string $language = 'en'): string
-    {
-        $year = '';
-        $remains = $string;
-        $months = $this->monthsRegExp[$language];
-
-        $centuries = $allowEarlyYears ? '13|14|15|16|17|18|19|20' : '18|19|20';
-
-        // en => n.d., es => 's.f.', pt => 's.d.'?
-        if (preg_match('/^(?P<year>[\(\[]?(n\. ?d\.|s\. ?f\.|s\. ?d\.)[\)\]]?|[\(\[]?[Ff]orthcoming[\)\]]?|[\(\[]?[Ii]n [Pp]ress[\)\]]?)(?P<remains>.*)$/', $remains, $matches0)) {
-            $remains = $matches0['remains'];
-            $year = trim($matches0['year'], '[]()');
-            return $year;
-        // (2020) [1830] OR 2020 [1830]
-        } elseif (preg_match('/^(?P<year>\(?(' . $centuries . ')[0-9]{2}\)? [\[\(](' . $centuries . ')[0-9]{2}[\]\)])(?P<remains>.*)$/i', $remains, $matches0)) {
-            $remains = trim($matches0['remains'], ') ');
-            if ($matches0['year'][0] == '(') {
-                $year = substr($matches0['year'], 1);
-            } else {
-                $year = $matches0['year'];
-            }
-            //$year = str_replace(['(', ')'], '', $matches0['year']);
-            return $year;
-        }
-
-        if ($allowMonth) {
-            if (
-                // (year month) or (year month day) (or without parens or with brackets)
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]?/i', $string, $matches1)
-                ||
-                // (year, day month) 
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),? (?P<day>[0-9]{1,2}) (?P<month>' . $months . ') ?)[\)\]]?/i', $string, $matches1)
-                ||                
-                // (day month year) or (month year) (or without parens or with brackets)
-                // The optional "de" between day and month and between month and year is for Portuguese
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
-                ||
-                // (day monthNumber year) or (monthNumber year) (or without parens or with brackets)
-                // The optional "de" between day and month and between month and year is for Portuguese
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>[0-9]{1,2}) ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
-                ||
-                // (year-monthNumber-day) (or without parens or with brackets)
-                // The optional "de" between day and month and between month and year is for Portuguese
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
-                ||
-                // (year,? monthNumber day) (or without parens or with brackets)
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),?[ \/](?P<month>[0-9]{1,2})[ \/](?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
-                ||
-                // (month day, year) (or without parens or with brackets)
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<month>' . $months . ') (?P<day>[0-9]{1,2}), (?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
-                ) {
-                $year = $matches1['year'] ?? null;
-                $month = $matches1['month'] ?? null;
-                $day = $matches1['day'] ?? null;
-                $date = $matches1['date'] ?? null;
-                $remains = substr($remains, strlen($matches1[0]));
-
-                return $year;
-            }
-        }
-
-        if (! $start && $allowMonth) {
-            if (
-                // <year> <month> <day>? [month cannot be followed by '-': in that case it's a month range, picked up in next preg_match]
-                // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug;9(8):473-480'
-                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>(' . $months . ')(?!-))( (?P<day>[0-9]{1,2}))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
-                ||
-                // <year> <month>-<month> <day>?
-                // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug-Sep;9(8):473-480'
-                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>(' . $months . ')-(' . $months . '))( (?P<day>[0-9]{1,2}))?)/iJ', $string, $matches2, PREG_OFFSET_CAPTURE)
-                ||
-                // <month> <day> <year>
-                preg_match('/[ \(](?P<date>(?P<month>' . $months . ') (?P<day>[0-9]{1,2}) (?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
-                ||
-                // <day>? <month> <year>
-                // The optional "de" between day and month and between month and year is for Spanish
-                preg_match('/[ \(](?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
-                ||
-                // <year> followed by volume, number, pages
-                // volume, number, pages pattern may need to be relaxed
-                // (pages might look like years, so this case should not be left to the routine below, which takes the last year-like string)
-                preg_match('/(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}))[.,;] ?[0-9]{1,4} ?\([0-9]{1,4}\)[:,.] ?[0-9]{1,5} ?- ?[0-9]{1,5}/i', $string, $matches2, PREG_OFFSET_CAPTURE)
-                ) {
-                $year = $matches2['year'][0] ?? null;
-                $month = $matches2['month'][0] ?? null;
-                if ($month) {
-                    $month = rtrim($month, '.,; ');
-                }
-                $day = $matches2['day'][0] ?? null;
-                $date = $matches2['date'][0] ?? null;
-                $remains = substr($string, 0, $matches2['date'][1]) . substr($string, $matches2['date'][1] + strlen($matches2['date'][0]));
-                return $year;
-            }
-        }
-
-        // Remove labels from months (to avoid duplicate names in regexp)
-        $months = preg_replace('/\(\?P<m[1-9][0-2]?>/', '', $months);
-        $months = preg_replace('/\)|/', '', $months);
-        
-        // Year can be (1980), [1980], '1980 ', '1980,', '1980.', '1980)', '1980:' or end with '1980' if not at start and
-        // (1980), [1980], ' 1980 ', '1980,', '1980.', or '1980)' if at start; instead of 1980, can be of form
-        // 1980/1 or 1980/81 or 1980/1981 or 1980-1 or 1980-81 or 1980-1981
-        // NOTE: '1980:' could be a volume number---might need to check for that
-
-        $monthRegExp = '(?P<month>(' . $months . ')([-\/](' . $months . '))?)?';
-
-        // Year should not be preceded by 'pp. ', which would mean it is in fact a page number/page range.
-        $yearRegExp = '(?P<year>(?<!pp\. )(' . $centuries . ')([0-9]{2})(?P<yearRange>(--?((18|19|20)[0-9]{2}|[0-9]{1,2})|\/[0-9]{1,4}))?)[a-z]?';
-
-        $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
-
-        // Require space or ',' in front of year if search is not restricted to start or in parens or brackets,
-        // to avoid picking up second part of page range (e.g. 1913-1920).  (Comma allowed in case of no space: e.g. 'vol. 17,1983'.)
-        $regExp1 = ($start ? '' : '[ ,]') . $regExp0 . '[ .,):;]';
-        $regExp2 = '[ ,]' . $regExp0 . '$';
-        $regExp3 = '\[' . $regExp0 . '\]';
-        $regExp4 = '\(' . $regExp0 . '\)';
-
-        if ($start) {
-            $regExps = [$regExp1, $regExp3, $regExp4];
-            foreach ($regExps as $regExp) {
-                preg_match('/^(' . $regExp . ')[.,]?(?P<remains>.*)$/', $string, $matches);
-                if (! empty($matches)) {
-                    $year = $matches['year'];
-                    if ($allowMonth && $matches['month']) {
-                        $month = $matches['month'];
-                    }
-                    $remains = $matches['remains'];
-                    break;
-                }
-            }
-        } else {
-            $regExps = [$regExp1, $regExp2, $regExp3, $regExp4];
-            $bestMatch = null;
-            $bestMatchScore = 0;
-            foreach ($regExps as $i => $regExp) {
-                preg_match('/^(?P<remains1>.*)(' . $regExp . ')[.,]?(?P<remains2>.*)$/', $string, $matches2);
-                if (! empty($matches2)) {
-                    if (empty($matches2['yearRange'])) {
-                        $bestMatchScore = 1;
-                    }
-                    // Best match is one that has no year range and comes later (regExp3 or regExp4, which have parens/brackets)
-                    if (! $bestMatch || empty($matches2['yearRange']) || ($matches2['yearRange'] && $bestMatchScore == 0)) {
-                        $bestMatch = $matches2;
-                    }
-                }
-            }
-            if ($bestMatch) {
-                $year = $bestMatch['year'];
-                if ($allowMonth && ! empty($bestMatch['month'])) {
-                    $month = $bestMatch['month'];
-                }
-                $remains = $bestMatch['remains1'] . ' ' . $bestMatch['remains2'];
-            }
-        }
-
-        return $year;
-    }
-
-    /**
      * trimRightBrace: remove trailing brace if and only if string contains one more right brace than left brace
      * (e.g. deals with author's name Andr\'{e})
      * @param $string string
@@ -6803,19 +6534,6 @@ class Converter
         $address = ltrim($address, '} ');
 
         return $remainder;
-    }
-
-    // Report whether $string is a year between 1700 and 2100
-    private function isYear(string $string): bool
-    {
-        $number = (int) $string;
-        return $number > 1700 && $number < 2100;
-    }
-
-    // Report whether $string is a year between 1700 and 2100
-    private function isYearRange(string $string): bool
-    {
-        return preg_match('/(19|20)[0-9]{2} ?- ?(19|20)[0-9]{2}/', $string);
     }
 
     // Report whether $string is the start of the name of the proceedings of a conference
@@ -7752,17 +7470,17 @@ class Converter
             $string = str_replace("\xC4\xAE", "{\k{I}}", $string);
             $string = str_replace("\xC4\xAF", "{\k{i}}", $string);
 
-            $string = str_replace("\xC4\xb0", "{\.I}", $string);
-            $string = str_replace("\xC4\xb1", "{\i}", $string);
+            $string = str_replace("\xC4\xB0", "{\.I}", $string);
+            $string = str_replace("\xC4\xB1", "{\i}", $string);
             //$string = str_replace("\xC4\xb2", "", $string);
             //$string = str_replace("\xC4\xb3", "", $string);
-            $string = str_replace("\xC4\xb4", "{\^J}", $string);
-            $string = str_replace("\xC4\xb5", "{\^\j}", $string);
+            $string = str_replace("\xC4\xB4", "{\^J}", $string);
+            $string = str_replace("\xC4\xB5", "{\^\j}", $string);
             //$string = str_replace("\xC4\xb6", "{}", $string);
             //$string = str_replace("\xC4\xb7", "{}", $string);
             //$string = str_replace("\xC4\xb8", "{\~I}", $string);
-            $string = str_replace("\xC4\xb9", "{\'L}", $string);
-            $string = str_replace("\xC4\xbA", "{\'l}", $string);
+            $string = str_replace("\xC4\xB9", "{\'L}", $string);
+            $string = str_replace("\xC4\xBA", "{\'l}", $string);
             //$string = str_replace("\xC4\xbB", "", $string);
             //$string = str_replace("\xC4\xbC", "", $string);
             //$string = str_replace("\xC4\xbD", "", $string);
@@ -7772,51 +7490,6 @@ class Converter
             $string = str_replace("\xC5\xA0", "\\v{S}", $string);
             $string = str_replace("\xC5\xA1", "\\v{s}", $string);
         }
-
-        /*
-        if($charEncoding == 'windows1252') {
-            // Following two are windows encoding of opening and closing quotes(?) [might conflict with other encodings?---
-            // 93 is o circumflex and 94 is o umlaut]
-            // see http://en.wikipedia.org/wiki/Windows-1252#Codepage_layout
-            $string = str_replace("\x91", "`", $string);
-            $string = str_replace("\x92", "'", $string);
-            $string = str_replace("\x93", "``", $string);
-            $string = str_replace("\x94", "''", $string);
-            $string = str_replace("\x95", ".", $string);
-            $string = str_replace("\x96", "--", $string);
-            $string = str_replace("\x97", "---", $string);
-            $string = str_replace("\x98", "~", $string);
-            $string = str_replace("\xE0", "{\`a}", $string);
-            $string = str_replace("\xE1", "{\'a}", $string);
-            $string = str_replace("\xE2", "{\^a}", $string);
-            $string = str_replace("\xE3", "{\~a}", $string);
-            $string = str_replace("\xE4", "{\"a}", $string);
-            $string = str_replace("\xE5", "{\aa}", $string);
-            $string = str_replace("\xE6", "{\ae}", $string);
-            $string = str_replace("\xE7", "{\c{c}}", $string);
-            $string = str_replace("\xE8", "{\`e}", $string);
-            $string = str_replace("\xE9", "{\'e}", $string);
-            $string = str_replace("\xEA", "{\^e}", $string);
-            $string = str_replace("\xEB", "{\"e}", $string);
-            $string = str_replace("\xEC", "{\`\i}", $string);
-            $string = str_replace("\xED", "{\'\i}", $string);
-            $string = str_replace("\xEE", "{\^\i}", $string);
-            $string = str_replace("\xEF", "{\"\i}", $string);
-            $string = str_replace("\xF0", "{\dh}", $string);
-            $string = str_replace("\xF1", "{\~n}", $string);
-            $string = str_replace("\xF2", "{`\o}", $string);
-            $string = str_replace("\xF3", "{\'o}", $string);
-            $string = str_replace("\xF4", "{\^o}", $string);
-            $string = str_replace("\xF5", "{\~o}", $string);
-            $string = str_replace("\xF6", "{\"o}", $string);
-            //$string = str_replace("\xF7", "", $string);
-            $string = str_replace("\xF8", "{\o}", $string);
-            $string = str_replace("\xF9", "{\`u}", $string);
-            $string = str_replace("\xFA", "{\'u}", $string);
-            $string = str_replace("\xFB", "{\^u}", $string);
-            $string = str_replace("\xFC", "{\"u}", $string);
-        }
-        */
 
         $string = str_replace("&nbsp;", " ", $string);
         $string = str_replace("\\ ", " ", $string);
