@@ -674,7 +674,7 @@ class Converter
                 'name1' => $lastNameInitials, 
                 'end1' => ', ', 
                 'end2' => ', ' . $notAnd, 
-                'end3' => ', et\.? al\.?', 
+                'end3' => ',? et\.? al\.?', 
                 'initials' => true,
                 'etal' => true,
             ],
