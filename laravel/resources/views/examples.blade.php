@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="ml-4 mt-0">
-        The algorithm converts all of these examples correctly.
+        When I am made aware of an item that is not converted correctly, I add it to this collection of examples and modify the code so that it is converted correctly and all the other examples are also still converted correctly.
     </div>
 
     <div class="sm:px-0 lg:px-0 space-y-6">
