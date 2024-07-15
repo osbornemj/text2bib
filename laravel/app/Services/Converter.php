@@ -21,6 +21,7 @@ use App\Traits\AuthorPatterns;
 use App\Traits\Countries;
 use App\Traits\Dates;
 use App\Traits\MakeScholarTitle;
+use App\Traits\Months;
 use App\Traits\Stopwords;
 use App\Traits\StringCleaners;
 
@@ -74,7 +75,7 @@ class Converter
     var $journalNames;
     var $masterRegExp;
     var $monthsRegExp;
-    var $monthsAbbreviations;
+    var $monthsAbbreviationsRegExp;
     var $names;
     var $nameSuffixes;
     var $numberRegExp;
@@ -115,6 +116,7 @@ class Converter
     use Countries;
     use Dates;
     use MakeScholarTitle;
+    use Months;
     use Stopwords;
     use StringCleaners;
 
@@ -165,6 +167,8 @@ class Converter
             ->toArray();
 
         $this->names = Name::all()->pluck('name')->toArray();
+
+        $this->vonNames = VonName::all()->pluck('name')->toArray();
 
         $this->nameSuffixes = ['Jr', 'Sr', 'III'];
 
@@ -459,47 +463,8 @@ class Converter
             'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken|[Bb]ezocht op|[Gg]eopend),? (?P<date2>' . $dateRegExp . ')',
         ];
 
-        // Month abbreviations in many languages: https://web.library.yale.edu/cataloging/months
-        // Do not add ';' to following list of punctuation marks
-        $p = '[.,]?';
-        $this->monthsRegExp = [
-            'en' => '(?P<m1>January|Jan' . $p . ')|(?P<m2>February|Feb' . $p . ')|(?P<m3>March|Mar' . $p . ')|(?P<m4>April|Apr' . $p . ')|'
-                . '(?P<m5>May)|(?P<m6>June|Jun' . $p . ')|(?P<m7>July|Jul' . $p . ')|(?P<m8>August|Aug' . $p . ')|'
-                . '(?P<m9>September|Sept?' . $p . ')|(?P<m10>October|Oct' . $p . ')|(?P<m11>November|Nov' . $p . ')|(?P<m12>December|Dec' . $p . ')',
-            'cz' => '(?P<m1>leden|led' . $p . ')|(?P<m2>únor|ún' . $p . ')|(?P<m3>březen|břez' . $p . ')|(?P<m4>duben|dub' . $p . ')|'
-                . '(?P<m5>květen|květ' . $p . ')|(?P<m6>červen|červ' . $p . ')|(?P<m7>červenec|červen' . $p . ')|(?P<m8>srpen|srp' . $p . ')|'
-                . '(?P<m9>září|zář' . $p . ')|(?P<m10>říjen|říj' . $p . ')|(?P<m11>listopad|listopadu|list' . $p . ')|(?P<m12>prosinec|pros' . $p . ')',
-            'fr' => '(?P<m1>janvier|janv' . $p . ')|(?P<m2>février|févr' . $p . ')|(?P<m3>mars)|(?P<m4>avril|avr' . $p . ')|'
-                . '(?P<m5>mai)|(?P<m6>juin)|(?P<m7>juillet|juill?' . $p . ')|(?P<m8>aout|août)|'
-                . '(?P<m9>septembre|sept?' . $p . ')|(?P<m10>octobre|oct' . $p . ')|(?P<m11>novembre|nov' . $p . ')|(?P<m12>décembre|déc' . $p . ')',
-            // 'id' => '(?P<m1>Januari|Jan' . $p . '|Djan' . $p . ')|(?P<m2>Februari|Peb' . $p . ')|(?P<m3>Maret|Mrt' . $p . ')|(?P<m4>April|Apr' . $p . ')|'
-            //     . '(?P<m5>Mei)|(?P<m6>Juni|Djuni)|(?P<m7>Juli|Djuli)|(?P<m8>Augustus|Ag' . $p . ')|'
-            //     . '(?P<m9>September|Sept' . $p . ')|(?P<m10>Oktober|Okt' . $p . ')|(?P<m11>November|Nop' . $p . ')|(?P<m12>Desember|des' . $p . ')',
-            'es' => '(?P<m1>enero)|(?P<m2>febrero|feb' . $p . ')|(?P<m3>marzo|mar' . $p . ')|(?P<m4>abril|abr' . $p . ')|'
-                . '(?P<m5>mayo)|(?P<m6>junio|jun' . $p . ')|(?P<m7>julio|jul' . $p . ')|(?P<m8>agosto)|'
-                . '(?P<m9>septiembre|sept?' . $p . ')|(?P<m10>octubre|oct' . $p . ')|(?P<m11>noviembre|nov' . $p . ')|(?P<m12>deciembre|dec' . $p . ')',
-            'pt' => '(?P<m1>janeiro|jan' . $p . ')|(?P<m2>fevereiro|fev' . $p . ')|(?P<m3>março|mar' . $p . ')|(?P<m4>abril|abr' . $p . ')|'
-                . '(?P<m5>maio|mai' . $p . ')|(?P<m6>junho|jun' . $p . ')|(?P<m7>julho|jul' . $p . ')|(?P<m8>agosto|ago' . $p . ')|'
-                . '(?P<m9>setembro|set' . $p . ')|(?P<m10>outubro|oct' . $p . ')|(?P<m11>novembro|nov' . $p . ')|(?P<m12>dezembro|dez' . $p . ')',
-            'my' => '(?P<m1>ဇန်နဝါရီလ)|(?P<m2>ဖေဖော်ဝါရီ)|(?P<m3>မတ်လ)|(?P<m4>ဧပြီလ)|'
-                . '(?P<m5>မေ)|(?P<m6>ဇွန်လ)|(?P<m7>ဇူလိုင်လ)|(?P<m8>ဩဂုတ်လ)|'
-                . '(?P<m9>စက်တင်ဘာ)|(?P<m10>အောက်တိုဘာလ)|(?P<m11>နိုဝင်ဘာလ)|(?P<m12>ဒီဇင်ဘာ)',
-            'nl' => '(?P<m1>januari|jan' . $p . ')|(?P<m2>februari|febr' . $p . ')|(?P<m3>maart|mrt' . $p . ')|(?P<m4>april|apr' . $p . ')|'
-                . '(?P<m5>mei)|(?P<m6>juni)|(?P<m7>juli)|(?P<m8>augustus|aug' . $p . ')|'
-                . '(?P<m9>september|sep' . $p . ')|(?P<m10>oktober|okt' . $p . ')|(?P<m11>november|nov' . $p . ')|(?P<m12>december|dec' . $p . ')',
-        ];
-
-        $this->monthsAbbreviations = [
-            'en' => ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Sept', 'Oct', 'Nov', 'Dec'],
-            'cz' => ['led', 'ún', 'břez', 'dub', 'květ', 'červ', 'červen', 'srp', 'zář', 'říj', 'list', 'pros'],
-            'fr' => ['janv', 'févr', 'avr', 'juil', 'juill', 'sept', 'oct', 'nov', 'déc'],
-            'es' => ['feb', 'mar', 'abr', 'jun', 'jul', 'set', 'sept', 'oct', 'nov', 'dec'],
-            'pt' => ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dez'],
-            'my' => ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Sept', 'Oct', 'Nov', 'Dec'],
-            'nl' => ['jan', 'febr', 'mrt', 'apr', 'aug', 'sep', 'Okt', 'nov', 'dec'],
-        ];
-
-        $this->vonNames = VonName::all()->pluck('name')->toArray();
+        $this->monthsRegExp = $this->makeMonthsRegExp();
+        $this->monthsAbbreviationsRegExp = $this->makeMonthsAbbreviationsRegExp();
 
         // Codes are ended by } EXCEPT \em, \it, and \sl, which have to be ended by something like \normalfont.  Code
         // that gets italic text handles only the cases in which } ends italics.
@@ -2178,12 +2143,8 @@ class Converter
                 $this->verbose("[in1b] Remainder with month and year: " . $remainderWithMonthYear);
 
                 // If booktitle ends with period, not preceded by month abbreviations, then year, remove year.
-                $regExp = '';
-                foreach ($this->monthsAbbreviations[$language] as $month) {
-                    $regExp .= ($i ? '|' : '') . $month;
-                }
                 if (isset($year) && preg_match('/^(?P<remainder>.*)\. ' . $year . '$/', $remainderWithMonthYear, $matches)) {
-                    if (! preg_match('/ (' . $regExp . ')$/', $matches['remainder'])) {
+                    if (! preg_match('/ (' . $this->monthsAbbreviationsRegExp[$language] . ')$/', $matches['remainder'])) {
                         $remainderWithMonthYear = $matches['remainder'];
                     }
                 }
@@ -2354,7 +2315,8 @@ class Converter
                         $itemKind == 'inproceedings'
                         && $periodPosition !== false
                         && ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->bookTitleAbbrevs)
-                        && ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->monthsAbbreviations[$language])
+                        && ! preg_match('/ (' . $this->monthsAbbreviationsRegExp[$language] . ')$/', substr($remainder, 0, $periodPosition))
+                        //&& ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->monthsAbbreviationsOld[$language])
                         && ! preg_match('/ edited |[ \(]eds?\.|[ \(]pp\./i', $remainder)
                        ) {
                         if ($periodPosition > $datePos) {
@@ -4165,12 +4127,16 @@ class Converter
                             &&
                             ! in_array($words[$key+2], ['J', 'J.', 'Journal'])
                             &&
-                            (! Str::endsWith($word, ',') || 
-                                (! $this->inDict(substr($nextWord, 0, -1)) && ! in_array(substr($nextWord, 0, -1), $this->countries)) || 
-                                $this->isInitials($nextWord) || 
-                                (mb_strtolower($nextWord[0]) == $nextWord[0]
-                                &&
-                                mb_strtolower($words[$key+2][0]) == $words[$key+2][0])
+                            (! Str::endsWith($word, ',') 
+                                || (! $this->inDict(substr($nextWord, 0, -1)) && ! in_array(substr($nextWord, 0, -1), $this->countries)) 
+                                || $this->isInitials($nextWord) 
+                                || (
+                                    mb_strtolower($nextWord[0]) == $nextWord[0]
+                                    &&
+                                    isset($words[$key+2][0])
+                                    &&
+                                    mb_strtolower($words[$key+2][0]) == $words[$key+2][0]
+                                   )
                             ) 
                             && 
                             (! $journal || rtrim($nextWord, '.') == rtrim(strtok($journal, ' '), '.'))
