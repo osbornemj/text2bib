@@ -1,17 +1,22 @@
 <?php
-namespace App\Traits;
+namespace App\Services;
 
 use Str;
 use Carbon\Carbon;
+//use Carbon\Exceptions\InvalidFormatException;
 
-trait Dates
+use App\Traits\Months;
+
+class Dates
 {
+    use Months;
+
     /**
      * Report whether $string is a year between 1800 and 2100
      * @param string $string
      * @return bool
      */
-    private function isYear(string $string): bool
+    public function isYear(string $string): bool
     {
         $number = (int) $string;
         return $number > 1800 && $number < 2100;
@@ -23,7 +28,7 @@ trait Dates
      * @return bool
      */
     /*
-    private function isYearRange(string $string): bool
+    public function isYearRange(string $string): bool
     {
         return preg_match('/(19|20)[0-9]{2} ?- ?(19|20)[0-9]{2}/', $string);
     }
@@ -43,11 +48,12 @@ trait Dates
      * @param string $language = 'en'
      * @return string year
      */
-    private function getDate(string $string, string|null &$remains, string|null &$month, string|null &$day, string|null &$date, bool $start = true, bool $allowMonth = false, bool $allowEarlyYears = false, string $language = 'en'): string
+    public function getDate(string $string, string|null &$remains, string|null &$month, string|null &$day, string|null &$date, bool $start = true, bool $allowMonth = false, bool $allowEarlyYears = false, string $language = 'en'): string
     {
         $year = '';
         $remains = $string;
-        $months = $this->monthsRegExp[$language];
+        //$months = $this->monthsRegExp[$language];
+        $months = ($this->makeMonthsRegExp())[$language];
 
         $centuries = $allowEarlyYears ? '13|14|15|16|17|18|19|20' : '18|19|20';
 
@@ -213,12 +219,13 @@ trait Dates
      * @param bool $allowRange = false
      * @return bool|array
      */
-    private function isDate(string $string, string $language = 'en', string $type = 'is', bool $allowRange = false): bool|array
+    public function isDate(string $string, string $language = 'en', string $type = 'is', bool $allowRange = false): bool|array
     {
         $ofs = ['en' => '', 'cz' => '', 'fr' => '', 'es' => 'de', 'my' => '', 'nl' => '', 'pt' => 'de '];
 
         $year = '(?P<year>(19|20)[0-9]{2})';
-        $monthName = '(?P<monthName>' . $this->monthsRegExp[$language] . ')';
+        $monthName = '(?P<monthName>' . ($this->makeMonthsRegExp())[$language] . ')';
+
         $of = $ofs[$language];
         $day = '(?P<day>[0-3]?[0-9])';
         $dayRange = '(?P<day>[0-3]?[0-9](--?[0-3]?[0-9])?)';
@@ -285,7 +292,7 @@ trait Dates
      * @param string $language = 'en'
      * @return array ['months' => ..., 'month1Number' => ..., 'month2number' => ...]
     */
-    private function fixMonth(string $month, string $language = 'en'): array
+    public function fixMonth(string $month, string $language = 'en'): array
     {
         if (is_numeric($month)) {
             return ['months' => $month, 'month1number' => $month, 'month2number' => null];
