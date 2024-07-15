@@ -9,7 +9,16 @@ use App\Traits\Months;
 
 class Dates
 {
+    var $monthsRegExp;
+    var $monthsAbbreviationsRegExp;
+    
     use Months;
+
+    public function __construct()
+    {
+        $this->monthsRegExp = $this->makeMonthsRegExp();
+        $this->monthsAbbreviationsRegExp = $this->makeMonthsAbbreviationsRegExp();
+    }
 
     /**
      * Report whether $string is a year between 1800 and 2100
@@ -52,7 +61,6 @@ class Dates
     {
         $year = '';
         $remains = $string;
-        //$months = $this->monthsRegExp[$language];
         $months = ($this->makeMonthsRegExp())[$language];
 
         $centuries = $allowEarlyYears ? '13|14|15|16|17|18|19|20' : '18|19|20';

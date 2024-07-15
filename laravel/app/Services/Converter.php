@@ -462,8 +462,8 @@ class Converter
             'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken|[Bb]ezocht op|[Gg]eopend),? (?P<date2>' . $dateRegExp . ')',
         ];
 
-        $this->monthsRegExp = $this->makeMonthsRegExp();
-        $this->monthsAbbreviationsRegExp = $this->makeMonthsAbbreviationsRegExp();
+        $this->monthsRegExp = $this->dates->monthsRegExp;
+        $this->monthsAbbreviationsRegExp = $this->dates->monthsAbbreviationsRegExp;
 
         // Codes are ended by } EXCEPT \em, \it, and \sl, which have to be ended by something like \normalfont.  Code
         // that gets italic text handles only the cases in which } ends italics.
@@ -5685,7 +5685,7 @@ class Converter
       * isEd: determine if string is 'Eds.' or 'Editors' (or with parens or brackets) or
       * singular version of one of these, with possible trailig . or ,
       * @param $string string
-      * @return 0 if not match, 1 if singular form is matched, 2 if plural form is matched
+      * @return 0 if no match, 1 if singular form is matched, 2 if plural form is matched
       */
     private function isEd(string $string): int
     {
