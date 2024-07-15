@@ -17,10 +17,12 @@ use App\Models\Publisher;
 use App\Models\StartJournalAbbreviation;
 use App\Models\VonName;
 
-use App\Traits\MakeScholarTitle;
-use App\Traits\Stopwords;
+use App\Traits\AuthorPatterns;
 use App\Traits\Countries;
 use App\Traits\Dates;
+use App\Traits\MakeScholarTitle;
+use App\Traits\Stopwords;
+use App\Traits\StringCleaners;
 
 use PhpSpellcheck\Spellchecker\Aspell;
 //use SebastianBergmann\Type\NullType;
@@ -33,7 +35,6 @@ class Converter
     var $accessedRegExp1;
     var $andWords;
     var $articleRegExp;
-    var $authorRegExps;
     var $boldCodes;
     var $bookTitleAbbrevs;
     var $cities;
@@ -108,12 +109,14 @@ class Converter
     var $workingPaperRegExp;
     var $workingPaperNumberRegExp;
 
-    use Stopwords;
+    use AuthorPatterns;
     // Countries are used to check last word of title, following a comma and followed by a period --- country
     // names that are not abbreviations used at the start of journal names or other publication info
     use Countries;
     use Dates;
     use MakeScholarTitle;
+    use Stopwords;
+    use StringCleaners;
 
     public function __construct()
     {
@@ -521,364 +524,6 @@ class Converter
             "{\\bfseries "
         ];
 
-        /* AUTHOR PATTERNS
-         * 
-         * If end2 = end3 = null:
-         * name1 end1 (name2 end1)*
-         * 
-         * If end3 = null:
-         * name1 end1 (name2 end1)* name2 end2
-         * 
-         * Otherwise:
-         * name1 end1 (name2 end1)* name2 end2 name2 end3
-         * 
-         * name2 == name1 unless explicitly specified, so if name2 is not explicitly specified, pattern is
-         * (name1 end1)* name1 end2 name1 end3
-         * 
-         * Precisely:
-         * $name1 = $r['name1'];
-         * $name2 = $r['name2'] ?? $name1;
-         * 
-         * $regExp = '%^(?P<firstAuthor>' . $name1 . ')' . $r['end1']; 
-         * if ($r['end2']) {
-         *      $regExp .= '(?P<middleAuthors>(' . $name2 . $r['end1'] . ')*)';
-         *      $regExp .= '(?P<penultimateAuthor>' . $name2 . ')' . $r['end2'];
-         * }
-         * if ($r['end3']) {
-         *      $regExp .= '(?P<lastAuthor>' . $name2 . ')' . $r['end3'];
-         * }
-         * $regExp .= '(?P<remainder>.*)%u';
-         * 
-         * (Notice that first name can have different format from that of following names, to accommodate author strings like
-         * Smith, A., B. Jones, and C. Gonzalez.)
-         * 
-         * 'initials' => true means treat string of u.c. letters as initials if length is at most 4 (rather than default 2)
-         */
-        $vonNameRegExp = '(';
-        foreach ($this->vonNames as $i => $vonName) {
-            $vonNameRegExp .= ($i ? '|' : '') . $vonName;
-        }
-        $vonNameRegExp .= ')';
-
-        $andRegExp = '(';
-        foreach ($this->andWords as $i => $andWord) {
-            if ($andWord == '\&') {
-                $andWord = '\\\&';
-            } elseif ($andWord == '$\&$') {
-                $andWord = '\$\\\&\$';
-            }
-            $andRegExp .= ($i ? '|' : '') . $andWord;
-        }
-        $andRegExp .= ')';
-
-        // last name has to start with uppercase letter
-        //$lastNameRegExp = '(' . $vonNameRegExp . ' )?\p{Lu}[\p{L}\-\']+';
-        // Following allows double-barelled last name with space; doesn't produce any errors in Examples, and seems OK
-        // as long as none of the patterns end with simply a space.
-        $lastNameRegExp = '(' . $vonNameRegExp . ' )?(' . $vonNameRegExp . ' )?\p{Lu}[\p{L}\-\']+( \p{Lu}[\p{L}\-\']+)?';
-        // other name (string before first space) has to start with uppercase letter and include at least one lowercase letter
-        $otherNameRegExp = '(?=[^ ]*\p{Ll})\p{Lu}[\p{L}\-\']+';
-        // Uppercase name
-        $ucNameRegExp = '\p{Lu}+( \p{Lu}+)?';
-        $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.?-\p{Lu}\.?)';
-
-        // Spaces between initials are added before an item is processed, so "A.B." doesn't need to be matched
-        $initialsLastName = '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp;
-        $lastNameInitials = $lastNameRegExp . ',?( ' . $initialRegExp . '){1,4}';
-        $firstNameInitialsLastName = $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp;
-        $lastNameFirstNameInitials = $lastNameRegExp . ', ' . $otherNameRegExp . '( ' . $initialRegExp . ')?';
-
-        $notJr = '(?!(';
-        foreach ($this->nameSuffixes as $i => $nameSuffix) {
-            $notJr .= ($i ? '|' : '') . $nameSuffix;
-        };
-        $notJr .= '))';
-
-        $notAnd = '(?!' . $andRegExp . ')';
-
-        // When used for Editors, ending with colon can be a problem if it is used in address: publisher
-        $periodOrColonOrCommaYear = '(\. |: |,? (?=[\(\[`"\'\d]))';
-        $periodNotAndOrColonOrCommaYear = '(\. ' . $notAnd . '|: |,? (?=[\(\[`"\'\d]))';
-        $periodNotAndOrCommaYear = '(\. ' . $notAnd . '|,? (?=[\(\[`"\'\d]))';
-
-        $this->authorRegExps = [
-            // 0. Smith AB[:\.] [must be at least two initials, otherwise could be start of name --- e.g. Smith A. Jones]
-            [
-                'name1' => $lastNameRegExp . ' \p{Lu}{2,3}',
-                'end1' => $periodNotAndOrColonOrCommaYear,
-                'end2' => null,
-                'end3' => null,
-                'initials' => true
-            ],
-            // 1. Smith,? A.,? et al.
-            [
-                'name1' => $lastNameInitials,
-                'end1' => ',? et.? al.?',
-                'end2' => null,
-                'end3' => null,
-                'initials' => false,
-                'etal' => true,
-            ],
-            // 2. Smith AB, Jones CD[:\.]
-            [
-                'name1' => $lastNameRegExp . ',? \p{Lu}{1,3}',
-                'end1' => ', ', 
-                'end2' => '(: |\. ' . $notAnd . ')', 
-                'end2' => $periodNotAndOrColonOrCommaYear,
-                'end3' => null, 
-                'initials' => true
-            ],
-            // 3. Smith A. B., Jones C. D.[:\.]
-            [
-                'name1' => $lastNameInitials,
-                'end1' => '[,;] ', 
-                'end2' => ': ', 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 4. Smith,? AB, Jones,? CD, Gonzalez,? JD(: |\. | followed by <paren> or <quote> or <digit>)
-            [
-                'name1' => $lastNameRegExp . ',? \p{Lu}{1,3}', 
-                'end1' => ', ', 
-                'end2' => ', ' . $notAnd, 
-                'end3' => '(: |\. | (?=[\(\[`"\'\d]))', 
-                'initials' => true
-            ],
-            // 5. Smith AB and Gonzalez JD(: |\. |, | followed by <paren> or <quote> or <digit>)
-            [
-                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
-                'end1' => ' ' . $andRegExp . ' ', 
-                'end2' => '(: |\. |, | (?=[\(\[`"\'\d]))', 
-                'end3' => null, 
-                'initials' => true
-            ],
-            // 6. Smith AB, Jones CD,? and Gonzalez JD(: |\. |, | followed by <paren> or <quote> or <digit>)
-            [
-                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
-                'end1' => ', ', 
-                'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '(: |\. |, | (?=[\(\[`"\'\d]))',  
-                'initials' => true
-            ],
-            // 7. Smith AB, Jones CD, Gonzalez JD, et al.
-            [
-                'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
-                'end1' => ', ', 
-                'end2' => ', ' . $notAnd, 
-                'end3' => ',? et\.? al\.?', 
-                'initials' => true,
-                'etal' => true,
-            ],
-            // 8. Smith A B, Jones C D, Gonzalez J D, et al.
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ', ', 
-                'end2' => ', ' . $notAnd, 
-                'end3' => ',? et\.? al\.?', 
-                'initials' => true,
-                'etal' => true,
-            ],
-            // 9. Smith, A. B.[,;] Jones, C. D.; Gonzalez, J. D.[.,] <not initial>
-            // Exclusions in end3 are to prevent the first part of a list of authors matching
-            // when the rest does not because of a typo in the punctuation.
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => '[;,] ', 
-                'end2' => '; ' . $notAnd, 
-                'end3' => '[,.] (?!(\p{Lu}\.|;|' . $lastNameInitials . '[; ]))', 
-                'initials' => false
-            ],
-            // 10. Smith, A. B.[,;] Jones, C. D.[,;] Gonzalez, J. D.:
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => '[;,] ', 
-                'end2' => '[;,] ' . $notAnd, 
-                'end3' => ': ', 
-                'initials' => false
-            ],
-            // 11. Smith,? A. B., Jones,? C. D., and Gonzalez,? J. D.(, |\. | )
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ', ' . $notAnd, 
-                'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '(, |\. | )', 
-                'initials' => false
-            ],
-            // 12. A. B. Smith[.:] 
-            [
-                'name1' => $initialsLastName, 
-                'end1' => $periodOrColonOrCommaYear, 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 13. A. B. Smith et.? al.? 
-            [
-                'name1' => $initialsLastName, 
-                'end1' => ' et\.? al\.?', 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false,
-                'etal' => true,
-            ],
-            // 14. A. B. Smith and C. D. Jones[\., ]
-            [
-                'name1' => $initialsLastName, 
-                'end1' => ',? ' . $andRegExp . ' ', 
-                'end2' => '(\. |,? ' . $notJr . ')', 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 15. A. B. Smith, C. D. Jones,? and J. D. Gonzalez[\., ]
-            [
-                'name1' => $initialsLastName, 
-                'end1' => ', ' . $notAnd, 
-                'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '(\. |,? ' . $notJr . ')', 
-                'initials' => false
-            ],
-            // 16. (A. B. Smith, )*C. D. Jones. 
-            [
-                'name1' => $initialsLastName, 
-                'end1' => '[,;] ' . $notAnd, 
-                'end2' => $periodOrColonOrCommaYear, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 17. Smith, A. B., C. D. Jones,? and J. D. Gonzalez[\., ]
-            [
-                'name1' => $lastNameInitials, 
-                'name2' => $initialsLastName, 
-                'end1' => ', ' . $notAnd, 
-                'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '(\. |, ' . $notJr . '| \()', // can't be simply space, because then if last author has two-word last name, only first is included
-                'initials' => false
-            ],
-            // 18. Smith, Jane( J)?.
-            [
-                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?', 
-                'end1' => $periodNotAndOrCommaYear, 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 19. Smith J. A.:
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ': ', 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 20. Jane A. Smith[:.]
-            [
-                'name1' => $firstNameInitialsLastName, 
-                'end1' => $periodOrColonOrCommaYear, 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 21. Smith, J. A.,? <followed by>[\(|\[|`|\'|"|\d]
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ',? (?=[\(\[`"\'\d])', 
-                'end2' => null, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 22. Smith, J. A., Jones, A. B.,? <followed by>[\(|\[|`|\'|"|\d]
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ', ', 
-                'end2' => ',? (?=[\(\[`"\'\d])', 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 23. Smith, J\.? and Jones, A[:\.,]
-            [
-                'name1' => $lastNameInitials, 
-                'end1' => ',? ' . $andRegExp . ' ', 
-                'end2' => '(:|\.(?!-)|,)? ', 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 24. Smith, J\.? and A\.? Jones[:\.,]
-            [
-                'name1' => $lastNameInitials, 
-                'name2' => $initialsLastName, 
-                'end1' => ',? ' . $andRegExp . ' ', 
-                'end2' => '(: |\. |,? ' . $notJr . ')', 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 25. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.] 
-            [
-                'name1' => $lastNameFirstNameInitials,
-                'name2' => $firstNameInitialsLastName,
-                'end1' => ',? ' . $andRegExp . ' ',
-                'end2' => '(: |\. |,? ' . $notJr . ')',
-                'end3' => null,
-                'initials' => false
-            ],
-            // 26. Jane (A. )?Smith, Susan (B. )?Jones. 
-            [
-                'name1' => $firstNameInitialsLastName, 
-                'end1' => '[,;] ' . $notAnd, 
-                'end2' => $periodOrColonOrCommaYear, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 27. Jane (A. )?Smith, Susan (B. )?Jones, Hilda (C. )?Gonzalez. 
-            [
-                'name1' => $firstNameInitialsLastName, 
-                'end1' => '[,;] ' . $notAnd, 
-                'end2' => '[,;] ' . $notAnd, 
-                'end3' => $periodOrColonOrCommaYear, 
-                'initials' => false
-            ],
-            // 28. SMITH Jane, JONES Susan, GONZALEZ Hilda.
-            [
-                'name1' => $ucNameRegExp . ',? ' . $otherNameRegExp, 
-                'end1' => '[,;] ' . $notAnd, 
-                'end2' => '[,;] ' . $notAnd, 
-                'end3' => $periodOrColonOrCommaYear, 
-                'initials' => false
-            ],
-            // 29. Jane (A. )?Smith and Susan (B. )?Jones[,.] 
-            [
-                'name1' => $firstNameInitialsLastName, 
-                'end1' => ',? ' . $andRegExp . ' ',
-                'end2' => '[\.,] ' . $notJr, 
-                'end3' => null, 
-                'initials' => false
-            ],
-            // 30. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
-            [
-                'name1' => $firstNameInitialsLastName, 
-                'end1' => ', ' . $notAnd, 
-                'end2' => ',? ' . $andRegExp . ' ',
-                'end3' => '[\.,] ' . $notJr, 
-                'initials' => false
-            ],
-            // 31. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.] 
-            [
-                'name1' => $lastNameFirstNameInitials,
-                'end1' => ',? ' . $andRegExp . ' ',
-                'end2' => '[\.,] ' . $notJr,
-                'end3' => null,
-                'initials' => false
-            ],
-            // 32. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
-            [
-                'name1' => $lastNameFirstNameInitials,
-                'name2' => $firstNameInitialsLastName,
-                'end1' => ', ' . $notAnd, 
-                'end2' => ',? ' . $andRegExp . ' ',
-                'end3' => '[\.,] ' . $notJr,
-                'initials' => false
-            ],
-        ];
-
     }
 
     ///////////////////////////////////////////////////
@@ -937,7 +582,16 @@ class Converter
         $originalEntry = $entry;
 
         // Note that cleanText translates « and », and „ and ”, to `` and ''.
-        $entry = $this->cleanText($entry, $charEncoding, $language);
+        $entry = $this->cleanText($entry);
+        $entry = $this->regularizeSpaces($entry);
+
+        if ($charEncoding == 'utf8') {
+            $entry = $this->utf8ToTeX($entry);
+        }
+        
+        if ($language == 'my') {
+            $entry = $this->burmeseNumeralsToDigits($entry);
+        }
 
         $entry = str_replace(['[Google Scholar]', '[PubMed]', '[Green Version]', '[CrossRef]'], '', $entry);
 
@@ -4023,9 +3677,7 @@ class Converter
 
         if ($language == 'my') {
             foreach ($item as $name => $field) {
-//                if ($name != 'year') {
-                    $item->$name = $this->translate($field, 'my');
-//                }
+                $item->$name = $this->digitsToBurmeseNumerals($field);
             }
             $item->language = 'Burmese';
         }
@@ -4747,16 +4399,6 @@ class Converter
     }
 
     /*
-     * Replace every substring of multiple spaces with a single space.
-     */ 
-    private function regularizeSpaces(string $string): string
-    {
-        // Using \h (horizontal white space) seems to mess up utf-8.
-        //return preg_replace('%\h+%', ' ', $string);  
-        return preg_replace('% +%', ' ', $string);  
-    }
-
-    /*
      * Remove all matches for $regExp (regular expression without delimiters), case insensitive, from $string
      * and return resulting string (unaltered if there are no matches).
      */
@@ -5062,9 +4704,12 @@ class Converter
         // Check for some common patterns //
         ////////////////////////////////////
 
-        foreach ($this->authorRegExps as $i => $r) {
+        $authorRegExps = $this->authorPatterns();
+
+        foreach ($authorRegExps as $i => $r) {
             $name1 = $r['name1'];
             $name2 = $r['name2'] ?? $name1;
+            $initials = $r['initials'] ?? false;
 
             $regExp = '%^(?P<firstAuthor>' . $name1 . ')' . $r['end1']; 
             if ($r['end2']) {
@@ -5077,7 +4722,7 @@ class Converter
             $regExp .= '(?P<remainder>.*)%u';
 
             if (preg_match($regExp, $remainder, $matches)) {
-                $authorstring .= $this->formatAuthor($matches['firstAuthor'], $r['initials']);
+                $authorstring .= $this->formatAuthor($matches['firstAuthor'], $initials);
 
                 if (isset($matches['middleAuthors'])) {
                     // process middle authors
@@ -5086,17 +4731,17 @@ class Converter
                     while ($result == 1) {
                         $result = preg_match('%^(?P<author>'. $name2 . ')' . $r['end1'] . '(?P<remainder>.*)$%u', $subremainder, $submatches);
                         if (isset($submatches['author'])) {
-                            $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($submatches['author'], $r['initials']);
+                            $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($submatches['author'], $initials);
                             $subremainder = $submatches['remainder'];
                         }
                     }
                 }
 
                 if (isset($matches['penultimateAuthor'])) {
-                    $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['penultimateAuthor'], $r['initials']);
+                    $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['penultimateAuthor'], $initials);
                 }
                 if (isset($matches['lastAuthor'])) {
-                    $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['lastAuthor'], $r['initials']);
+                    $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['lastAuthor'], $initials);
                 }
 
                 if (preg_match('%^et.? al.?(?P<remainder>.*)$%', $matches['remainder'], $endmatches)) {
@@ -7234,285 +6879,4 @@ class Converter
         }
     }
 
-    private function translate(string $string, string $language): string
-    {
-        if ($language == 'my') {
-            $string = str_replace("0", "\xE1\x81\x80", $string);
-            $string = str_replace("1", "\xE1\x81\x81", $string);
-            $string = str_replace("2", "\xE1\x81\x82", $string);
-            $string = str_replace("3", "\xE1\x81\x83", $string);
-            $string = str_replace("4", "\xE1\x81\x84", $string);
-            $string = str_replace("5", "\xE1\x81\x85", $string);
-            $string = str_replace("6", "\xE1\x81\x86", $string);
-            $string = str_replace("7", "\xE1\x81\x87", $string);
-            $string = str_replace("8", "\xE1\x81\x88", $string);
-            $string = str_replace("9", "\xE1\x81\x89", $string);
-        }
-
-        return $string;
-    }
-
-    private function cleanText(string $string, string|null $charEncoding, string|null $language): string
-    {
-        $string = str_replace("\\newblock", "", $string);
-        $string = str_replace("\\newpage", "", $string);
-        // Replace each tab with a space
-        $string = str_replace("\t", " ", $string);
-        $string = str_replace("\\textquotedblleft ", "``", $string);
-        $string = str_replace("\\textquotedblleft{}", "``", $string);
-        $string = str_replace("\\textquotedblright ", "''", $string);
-        $string = str_replace("\\textquotedblright", "''", $string);
-        $string = str_replace("\\textquoteright ", "'", $string);
-        $string = str_replace("\\textendash ", "--", $string);
-        $string = str_replace("\\textendash{}", "--", $string);
-        $string = str_replace("\\textemdash ", "---", $string);
-        $string = str_replace("\\textemdash{}", "---", $string);
-        $string = str_replace("•", "", $string);
-
-        if ($charEncoding == 'utf8' || $charEncoding == 'utf8leave') {
-            // Replace non-breaking space with regular space
-            $string = str_replace("\xC2\xA0", " ", $string);
-            // Replace thin space with regular space
-            $string = str_replace("\xE2\x80\x89", " ", $string);
-            // Replace punctuation space with regular space
-            $string = str_replace("\xE2\x80\x88", " ", $string);
-            // Remove left-to-right mark
-            $string = str_replace("\xE2\x80\x8E", "", $string);
-            // Remove zero width joiner
-            $string = str_replace("\xE2\x80\x8D", "", $string);
-            // Replace zero-width non-breaking space with regular space
-            // Change is now made when file is uploaded
-            //$string = str_replace("\xEF\xBB\xBF", " ", $string);
-
-            // http://www.utf8-chartable.de/unicode-utf8-table.pl (change "go to other block" to see various parts)
-            $string = str_replace("\xE2\x80\x90", "-", $string);
-            $string = str_replace("\xE2\x80\x91", "-", $string);
-            $string = str_replace("\xE2\x80\x93", "--", $string);
-            $string = str_replace("\xE2\x80\x94", "---", $string);
-            $string = str_replace("\xE2\x80\x98", "`", $string);
-            $string = str_replace("\xE2\x80\x99", "'", $string);
-            $string = str_replace("\xE2\x80\x9C", "``", $string);
-            $string = str_replace("\xE2\x80\x9D", "''", $string);
-            $string = str_replace("\xEF\xAC\x80", "ff", $string);
-            $string = str_replace("\xEF\xAC\x81", "fi", $string);
-            $string = str_replace("\xEF\xAC\x82", "fl", $string);
-            $string = str_replace("\xEF\xAC\x83", "ffi", $string);
-            $string = str_replace("\xEF\xAC\x84", "ffl", $string);
-
-            // French guillemets
-            $string = str_replace("\xC2\xAB", "``", $string);
-            $string = str_replace("\xC2\xBB", "''", $string);
-            // „ and ”
-            $string = str_replace("\xE2\x80\x9E", "``", $string);
-            $string = str_replace("\xE2\x80\x9D", "''", $string);
-            // ‘ and ’
-            $string = str_replace("\xE2\x80\x98", "``", $string);
-            $string = str_replace("\xE2\x80\x99", "''", $string);
-            // ‚ [single low quotation mark, but here translated to comma, which it looks like]
-            // If it is ever used as an opening quote, may need to make translation depend on
-            // whether it is preceded or followed by a space
-            $string = str_replace("\xE2\x80\x9A", ",", $string);
-
-            $string = str_replace("\xEF\xBC\x81", "!", $string);
-            $string = str_replace("\xEF\xBC\x82", '"', $string);
-            $string = str_replace("\xEF\xBC\x83", '#', $string);
-            $string = str_replace("\xEF\xBC\x84", '$', $string);
-            $string = str_replace("\xEF\xBC\x85", '%', $string);
-            $string = str_replace("\xEF\xBC\x86", '&', $string);
-            $string = str_replace("\xEF\xBC\x87", "'", $string);
-            $string = str_replace("\xEF\xBC\x88", "(", $string);
-            $string = str_replace("\xEF\xBC\x89", ")", $string);
-            $string = str_replace("\xEF\xBC\x8A", "*", $string);
-            $string = str_replace("\xEF\xBC\x8B", "+", $string);
-            $string = str_replace("\xEF\xBC\x8C", ", ", $string);
-            $string = str_replace("\xEF\xBC\x8D", "-", $string);
-            $string = str_replace("\xEF\xBC\x8E", ".", $string);
-            $string = str_replace("\xEF\xBC\x8F", "/", $string);
-            $string = str_replace("\xEF\xBC\x9A", ":", $string);
-            $string = str_replace("\xEF\xBC\x9B", ";", $string);
-            $string = str_replace("\xEF\xBC\x9F", "?", $string);
-            $string = str_replace("\xEF\xBC\x3B", "[", $string);
-            $string = str_replace("\xEF\xBC\x3D", "]", $string);
-            $string = str_replace("\xEF\xBD\x80", "`", $string);
-            $string = str_replace("\xEF\xBC\xBB", "[", $string);
-            $string = str_replace("\xEF\xBC\xBD", "]", $string);
-            $string = str_replace("\xEF\xBC\xBE", "^", $string);
-
-            if ($language == 'my') {
-                // Burmese numerals
-                $string = str_replace("\xE1\x81\x80", "0", $string);
-                $string = str_replace("\xE1\x81\x81", "1", $string);
-                $string = str_replace("\xE1\x81\x82", "2", $string);
-                $string = str_replace("\xE1\x81\x83", "3", $string);
-                $string = str_replace("\xE1\x81\x84", "4", $string);
-                $string = str_replace("\xE1\x81\x85", "5", $string);
-                $string = str_replace("\xE1\x81\x86", "6", $string);
-                $string = str_replace("\xE1\x81\x87", "7", $string);
-                $string = str_replace("\xE1\x81\x88", "8", $string);
-                $string = str_replace("\xE1\x81\x89", "9", $string);
-            }
-        }
-
-        if ($charEncoding == 'utf8') {
-            $string = str_replace("\xC3\x80", "{\`A}", $string);
-            $string = str_replace("\xC3\x81", "{\\'A}", $string);
-            $string = str_replace("\xC3\x82", "{\^A}", $string);
-            $string = str_replace("\xC3\x83", "{\~A}", $string);
-            $string = str_replace("\xC3\x84", "{\\\"A}", $string);
-            $string = str_replace("\xC3\x85", "{\AA}", $string);
-            $string = str_replace("\xC3\x86", "{\AE}", $string);
-            $string = str_replace("\xC3\x87", "{\c{C}}", $string);
-            $string = str_replace("\xC3\x88", "{\`E}", $string);
-            $string = str_replace("\xC3\x89", "{\\'E}", $string);
-            $string = str_replace("\xC3\x8A", "{\^E}", $string);
-            $string = str_replace("\xC3\x8B", "{\\\"E}", $string);
-            $string = str_replace("\xC3\x8C", "{\`I}", $string);
-            $string = str_replace("\xC3\x8D", "{\\'I}", $string);
-            $string = str_replace("\xC3\x8E", "{\^I}", $string);
-            $string = str_replace("\xC3\x8F", "{\\\"I}", $string);
-
-            $string = str_replace("\xC3\x90", "{\DH}", $string);
-            $string = str_replace("\xC3\x91", "{\~N}", $string);
-            $string = str_replace("\xC3\x92", "{\`O}", $string);
-            $string = str_replace("\xC3\x93", "{\\'O}", $string);
-            $string = str_replace("\xC3\x94", "{\^O}", $string);
-            $string = str_replace("\xC3\x95", "{\~O}", $string);
-            $string = str_replace("\xC3\x96", "{\\\"O}", $string);
-            $string = str_replace("\xC3\x98", "{\O}", $string);
-            $string = str_replace("\xC3\x99", "{\`U}", $string);
-            $string = str_replace("\xC3\x9A", "{\\'U}", $string);
-            $string = str_replace("\xC3\x9B", "{\^U}", $string);
-            $string = str_replace("\xC3\x9C", "{\\\"U}", $string);
-            $string = str_replace("\xC3\x9D", "{\\'Y}", $string);
-            $string = str_replace("\xC3\x9E", "{\Thorn}", $string);
-            $string = str_replace("\xC3\x9F", "{\ss}", $string);
-
-            $string = str_replace("\xC3\xA0", "{\`a}", $string);
-            $string = str_replace("\xC3\xA1", "{\\'a}", $string);
-            $string = str_replace("\xC3\xA2", "{\^a}", $string);
-            $string = str_replace("\xC3\xA3", "{\=a}", $string);
-            $string = str_replace("\xC3\xA4", "{\\\"a}", $string);
-            $string = str_replace("\xC3\xA5", "{\aa}", $string);
-            $string = str_replace("\xC3\xA6", "{\ae}", $string);
-            $string = str_replace("\xC3\xA7", "\c{c}", $string);
-            $string = str_replace("\xC3\xA8", "{\`e}", $string);
-            $string = str_replace("\xC3\xA9", "{\\'e}", $string);
-            $string = str_replace("\xC3\xAA", '{\^e}', $string);
-            $string = str_replace("\xC3\xAB", '{\\"e}', $string);
-            $string = str_replace("\xC3\xAC", "{\`\i}", $string);
-            $string = str_replace("\xC3\xAD", "{\\'\i}", $string);
-            $string = str_replace("\xC3\xAE", "{\^\i}", $string);
-            $string = str_replace("\xC3\xAF", "{\\\"\i}", $string);
-
-            $string = str_replace("\xC3\xB0", "{\dh}", $string);
-            $string = str_replace("\xC3\xB1", "{\~n}", $string);
-            $string = str_replace("\xC3\xB2", "{\`o}", $string);
-            $string = str_replace("\xC3\xB3", "{\\'o}", $string);
-            $string = str_replace("\xC3\xB4", "{\^o}", $string);
-            $string = str_replace("\xC3\xB5", "{\=o}", $string);
-            $string = str_replace("\xC3\xB6", "{\\\"o}", $string);
-            $string = str_replace("\xC3\xB8", "{\o}", $string);
-            $string = str_replace("\xC3\xB9", "{\`u}", $string);
-            $string = str_replace("\xC3\xBA", "{\\'u}", $string);
-            $string = str_replace("\xC3\xBB", "{\^u}", $string);
-            $string = str_replace("\xC3\xBC", "{\\\"u}", $string);
-            $string = str_replace("\xC3\xBD", "{\\'y}", $string);
-            $string = str_replace("\xC3\xBE", "{\\thorn}", $string);
-            $string = str_replace("\xC3\xBF", "{\\\"y}", $string);
-
-            $string = str_replace("\xC4\x80", "{\=A}", $string);
-            $string = str_replace("\xC4\x81", "{\=a}", $string);
-            $string = str_replace("\xC4\x82", "{\u{A}}", $string);
-            $string = str_replace("\xC4\x83", "{\u{a}}", $string);
-            $string = str_replace("\xC4\x84", "{\k{A}}", $string);
-            $string = str_replace("\xC4\x85", "{\k{a}}", $string);
-            $string = str_replace("\xC4\x86", "{\\'C}", $string);
-            $string = str_replace("\xC4\x87", "{\\'c}", $string);
-            $string = str_replace("\xC4\x88", "{\^C}", $string);
-            $string = str_replace("\xC4\x89", "{\^c}", $string);
-            $string = str_replace("\xC4\x8A", "{\.C}", $string);
-            $string = str_replace("\xC4\x8B", "{\.c}", $string);
-            $string = str_replace("\xC4\x8C", "\\v{C}", $string);
-            $string = str_replace("\xC4\x8D", "\\v{c}", $string);
-            $string = str_replace("\xC4\x8E", "\\v{D}", $string);
-
-            //$string = str_replace("\xC4\x90", "{}", $string);
-            //$string = str_replace("\xC4\x91", "{}", $string);
-            $string = str_replace("\xC4\x92", "{\=E}", $string);
-            $string = str_replace("\xC4\x93", "{\=e}", $string);
-            $string = str_replace("\xC4\x94", "{\u{E}}", $string);
-            $string = str_replace("\xC4\x95", "{\u{e}}", $string);
-            $string = str_replace("\xC4\x96", "{\.E}", $string);
-            $string = str_replace("\xC4\x97", "{\.e}", $string);
-            $string = str_replace("\xC4\x98", "{\k{E}}", $string);
-            $string = str_replace("\xC4\x99", "{\k{e}}", $string);
-            $string = str_replace("\xC4\x9A", "\\v{E}", $string);
-            $string = str_replace("\xC4\x9B", "\\v{e}", $string);
-            $string = str_replace("\xC4\x9C", "{\^G}", $string);
-            $string = str_replace("\xC4\x9D", "{\^g}", $string);
-            //$string = str_replace("\xC4\x9E", "{\u{G}}", $string);
-            //$string = str_replace("\xC4\x9F", "{\u{g}}", $string);
-
-            $string = str_replace("\xC4\xA0", "{\.G}", $string);
-            $string = str_replace("\xC4\xA1", "{\.g}", $string);
-            $string = str_replace("\xC4\xA2", "{\k{G}}", $string);
-            //$string = str_replace("\xC4\xA3", "", $string);
-            $string = str_replace("\xC4\xA4", "{\^H}", $string);
-            $string = str_replace("\xC4\xA5", "{\^h}", $string);
-            //$string = str_replace("\xC4\xA6", "{}", $string);
-            //$string = str_replace("\xC4\xA7", "{}", $string);
-            $string = str_replace("\xC4\xA8", "{\~I}", $string);
-            $string = str_replace("\xC4\xA9", "{\=\i}", $string);
-            $string = str_replace("\xC4\xAA", "{\=I}", $string);
-            $string = str_replace("\xC4\xAB", "{\=\i}", $string);
-            //$string = str_replace("\xC4\xAC", "{\u{I}}", $string);
-            //$string = str_replace("\xC4\xAD", "{\u{\i}}", $string);
-            $string = str_replace("\xC4\xAE", "{\k{I}}", $string);
-            $string = str_replace("\xC4\xAF", "{\k{i}}", $string);
-
-            $string = str_replace("\xC4\xB0", "{\.I}", $string);
-            $string = str_replace("\xC4\xB1", "{\i}", $string);
-            //$string = str_replace("\xC4\xb2", "", $string);
-            //$string = str_replace("\xC4\xb3", "", $string);
-            $string = str_replace("\xC4\xB4", "{\^J}", $string);
-            $string = str_replace("\xC4\xB5", "{\^\j}", $string);
-            //$string = str_replace("\xC4\xb6", "{}", $string);
-            //$string = str_replace("\xC4\xb7", "{}", $string);
-            //$string = str_replace("\xC4\xb8", "{\~I}", $string);
-            $string = str_replace("\xC4\xB9", "{\'L}", $string);
-            $string = str_replace("\xC4\xBA", "{\'l}", $string);
-            //$string = str_replace("\xC4\xbB", "", $string);
-            //$string = str_replace("\xC4\xbC", "", $string);
-            //$string = str_replace("\xC4\xbD", "", $string);
-            //$string = str_replace("\xC4\xbE", "", $string);
-            //$string = str_replace("\xC4\xbF", "", $string);
-
-            $string = str_replace("\xC5\xA0", "\\v{S}", $string);
-            $string = str_replace("\xC5\xA1", "\\v{s}", $string);
-        }
-
-        $string = str_replace("&nbsp;", " ", $string);
-        $string = str_replace("\\ ", " ", $string);
-        $string = str_replace("\\textbf{ }", " ", $string);
-        $string = str_replace("\\textbf{\\ }", " ", $string);
-        $string = str_replace("\\textit{ }", " ", $string);
-        $string = str_replace("\\textit{\\ }", " ", $string);
-        // Replace ~ with space if not preceded by \ or / or : (as it will be in a URL; actualy #:~: in URL)
-        $string = preg_replace('/([^\/\\\:])~/', '$1 ', $string);
-        $string = str_replace("\\/", "", $string);
-        // Remove copyright symbol
-        $string = str_replace("©", "", $string);
-
-        // Fix errors like 'x{\em ' by adding space after the x [might not be error?]
-        $string = preg_replace('/([^ ])(\{\\\[A-Za-z]{2,8} )/', '$1 $2', $string);
-
-        // Delete ^Z and any trailing space (^Z is at end of last entry of DOS file)
-        $string = rtrim($string, " \032");
-        $string = ltrim($string, ' ');
-        
-        // Regularize spaces
-        $string = $this->regularizeSpaces($string);
-        
-        return $string;
-    }
 }

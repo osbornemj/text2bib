@@ -11503,6 +11503,19 @@ class ExampleSeeder extends Seeder
 					'address' => 'Boston, MA',
                     ]
             ],
+            // author format
+            [
+                'source' => 'Cui, Jixiao; Sui, Peng; Wright, David L.; Wang, Dong; Sun, Beibei; Ran, Mengmeng; Shen, Yawen; Li, Chao; Chen, Yuanquan (2019). Carbon emission of maize-based cropping systems in the North China Plain. Journal of Cleaner Production, 213(), 300–308. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Cui, Jixiao and Sui, Peng and Wright, David L. and Wang, Dong and Sun, Beibei and Ran, Mengmeng and Shen, Yawen and Li, Chao and Chen, Yuanquan',
+                    'year' => '2019',
+                    'title' => 'Carbon emission of maize-based cropping systems in the North {C}hina Plain',
+                    'journal' => 'Journal of Cleaner Production',
+                    'pages' => '300-308',
+                    'volume' => '213()',
+                    ]
+            ],
 
 
 
