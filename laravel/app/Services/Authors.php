@@ -86,13 +86,61 @@ class Authors
             $remainder = implode(' ', $remainingWords);
         }
 
-        $authorstring = '';
-
         ////////////////////////////////////
         // Check for some common patterns //
         ////////////////////////////////////
 
+        $result = $this->checkAuthorPatterns($remainder, $year, $month, $day, $date, $isEditor, $language);
+
+        if ($result) {
+            return [
+                'authorstring' => $result['authorstring'],
+                'warnings' => [],
+                'organization' => false,
+                'author_pattern' => $result['author_pattern'],
+            ];
+        }
+
+        $this->verbose('Authors do not match any pattern');
+
+        /////////////////////////////////
+        // Check for organization name //
+        /////////////////////////////////
+
+        $result = $this->checkAuthorOrganization($words, $remainder, $year, $month, $day, $date, $isEditor, $language);
+
+        if ($result) {
+            return [
+                'authorstring' => $result['authorstring'],
+                'warnings' => [],
+                'organization' => true,
+                'author_pattern' => $result['author_pattern'],
+            ];
+        }
+
+        $this->verbose('Author is not an organization');
+
+        /////////////////////////////////////////
+        // Otherwise check words incrementally //
+        /////////////////////////////////////////
+
+        $result = $this->checkAuthorsIncrementally($words, $remainder, $year, $month, $day, $date, $isEditor, $determineEnd, $type, $language);
+
+        return [
+            'authorstring' => $result['authorstring'],
+            'warnings' => $result['warnings'],
+            'organization' => false,
+            'author_pattern' => null,
+        ];
+    }
+ 
+    /**
+     * Determine whether the author string matches any of the patterns in the AuthorPatterns trait.
+     */
+    public function checkAuthorPatterns(string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, string $language): array|null
+    {
         $authorRegExps = $this->authorPatterns();
+        $authorstring = '';
 
         foreach ($authorRegExps as $i => $r) {
             $name1 = $r['name1'];
@@ -160,20 +208,18 @@ class Authors
             }
             return [
                 'authorstring' => $authorstring,
-                'warnings' => [],
-                'organization' => false,
                 'author_pattern' => $i,
             ];
+        } else {
+            return null;
         }
+    }
 
-        $this->verbose('Authors do not match any pattern');
-
-        /////////////////////////////////
-        // Check for organization name //
-        /////////////////////////////////
-
-        $this->verbose('Checking author string for name of organization');
-
+    /**
+     * Determine whether the authorstring is the name of an organization.
+     */
+    public function checkAuthorOrganization(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, string $language): array|null
+    {
         /*
          * Between 3 and 80 letters and spaces (no punctuation) followed by year in parens or brackets
          * Author strings without spaces, like 'John Doe and Jane Doe' or 'Doe J and Doe K' should have been
@@ -186,8 +232,6 @@ class Authors
             $this->verbose('Authors match pattern 128');
             return [
                 'authorstring' => trim($matches['name']),
-                'warnings' => [],
-                'organization' => true,
                 'author_pattern' => 128,
             ];
         }
@@ -210,8 +254,7 @@ class Authors
                 $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                 return [
                     'authorstring' => substr($word, 0, -1),
-                    'warnings' => [],
-                    'organization' => true,
+                    'author_pattern' => null,
                 ];
             } elseif (ctype_alpha((string) $word) && ($this->inDict($word) || in_array($word, ['American']))) {
                 $name .= ($i ? ' ' : '') . $word;
@@ -224,8 +267,7 @@ class Authors
                         $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                         return [
                             'authorstring' => $name . ' ' . $xword,
-                            'warnings' => [],
-                            'organization' => true,
+                            'author_pattern' => null,
                         ];
                     } else {
                         break;
@@ -235,8 +277,7 @@ class Authors
                     $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                     return [
                         'authorstring' => $name,
-                        'warnings' => [],
-                        'organization' => true,
+                        'author_pattern' => null,
                     ];
                 } else {
                     break;
@@ -244,18 +285,24 @@ class Authors
             }
         }
 
-        $this->verbose('convertToAuthors: Organization name not found.');
+        return null;
+    }
 
-        ///////////////////////////////////////////////////////////
-        // If no pattern matches, go through string word by word //
-        ///////////////////////////////////////////////////////////
-
+    /**
+     * Go through the author string word by word, separating it into author names.
+     */
+    public function checkAuthorsIncrementally(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool $determineEnd = true, string $type = 'authors', string $language = 'en')
+    {
         $namePart = $authorIndex = $case = 0;
         $prevWordAnd = $prevWordVon = $done = $isEditor = $hasAnd = $multipleAuthors = false;
         $wordHasComma = $prevWordHasComma = false;
         $fullName = '';
         $warnings = [];
         $skip = false;
+
+        $authorstring = '';
+
+        $remainingWords = $words;
 
         foreach ($words as $i => $word) {
             if ($skip) {
@@ -1099,11 +1146,9 @@ class Authors
         return [
             'authorstring' => $authorstring,
             'warnings' => $warnings,
-            'organization' => false,
-            'author_pattern' => null,
         ];
+
     }
- 
     /**
      * Normalize format to Smith, A. B. or A. B. Smith or Smith, Alan B. or Alan B. Smith.
      * In particular, change Smith AB to Smith, A. B. and A.B. SMITH to A. B. Smith and SMITH Ann to SMITH, Ann
@@ -1257,32 +1302,25 @@ class Authors
 
     public function isInitials(string $word): bool
     {
+        $patterns = [
+            '\p{Lu}\.?\.?',             // A or A. or A..
+            '\p{Lu}\.\p{Lu}\.',         // A.B.
+            '\p{Lu}\p{Lu}',             // AB
+            '\p{Lu}\.\p{Lu}\.\p{Lu}\.', // A.B.C.
+            '\p{Lu}\p{Lu}\p{Lu}',       // ABC
+            '\p{Lu}\.?-\p{Lu}\.',       // A.-B. or A-B.
+        ];
+
         $case = 0;
-        // Allow two periods after letter, in case of typo or initial at end of name string.
-        if (preg_match('/^[A-Z]\.?\.?$/', $word)) { // A or A. or A..
-            $case = 1;
-        } elseif (preg_match('/^[A-Z]\.[A-Z]\.$/', $word)) { // A.B.
-            $case = 2;
-        } elseif (preg_match('/^[A-Z][A-Z]$/', $word)) { // AB
-            $case = 3;
-        } elseif (preg_match('/^[A-Z]\.[A-Z]\.[A-Z]\.$/', $word)) { // A.B.C.
-            $case = 4;
-        } elseif (preg_match('/^[A-Z][A-Z][A-Z]$/', $word)) { // ABC
-            $case = 5;
-        } elseif (preg_match('/^[A-Z]\.?-[A-Z]\.$/', $word)) { // A.-B. or A-B.
-            $case = 6;
-        } elseif (preg_match('/^{\\\\.I}$/', $word)) { // capital I with dot
-            $case = 7;
-        } elseif (in_array($word, ['Á.', 'Á'])) { // Á
-            $case = 8;
+        foreach ($patterns as $i => $pattern) {
+            if (preg_match('/^' . $pattern . '$/u', $word)) {
+                $case = $i+1;
+                $this->verbose("isInitials case " . $case);
+                break;
+            }    
         }
 
-        if ($case) {
-            $this->verbose("isInitials case " . $case);
-            return true;
-        } else {
-            return false;
-        }
+        return $case > 0;
     }
 
     /*
@@ -1292,15 +1330,14 @@ class Authors
      */
     public function isName(string $word, string $finalPunc = ''): bool
     {
-        $result = false;
         if (in_array(substr($word, -1), str_split($finalPunc))) {
             $word = substr($word, 0, -1);
         }
         if (preg_match('/^[a-z{}\\\"\'\-]+$/i', $word) && (ucfirst($word) == $word || strtoupper($word) == $word)) {
-            $result = true;
+            return true;
         }
 
-        return $result;
+        return false;
     }
 
     // The following two methods use similar logic to attempt to determine whether a string
