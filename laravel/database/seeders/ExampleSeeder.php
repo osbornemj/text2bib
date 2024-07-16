@@ -11561,6 +11561,20 @@ class ExampleSeeder extends Seeder
                 ],
                 'char_encoding' => 'utf8leave',
             ],
+            // 'and others' at end of author list
+            [
+                'source' => 'Gong, X., Z. Fan, H. Xu, H. Wang, N. Zeng, L. Li, and others. "The Risk of Offspring Mood and Anxiety Disorders in the Context of Prenatal Maternal Somatic Diseases: A Systematic Review and Meta-Analysis." Epidemiology and Psychiatric Sciences 31 (2022): e20. https://www.cambridge.org/core/journals/epidemiology-and-psychiatric-sciences/article/risk-of-offspring-mood-and-anxiety-disorders-in-the-context-of-prenatal-maternal-somatic-diseases-a-systematic-review-and-metaanalysis/517D01E6B238B85269F69865ACB740C5. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Gong, X. and Z. Fan and H. Xu and H. Wang and N. Zeng and L. Li and others',
+                    'title' => 'The Risk of Offspring Mood and Anxiety Disorders in the Context of Prenatal Maternal Somatic Diseases: A Systematic Review and Meta-Analysis',
+                    'journal' => 'Epidemiology and Psychiatric Sciences',
+                    'year' => '2022',
+                    'volume' => '31',
+                    'pages' => 'e20',
+                    'url' => 'https://www.cambridge.org/core/journals/epidemiology-and-psychiatric-sciences/article/risk-of-offspring-mood-and-anxiety-disorders-in-the-context-of-prenatal-maternal-somatic-diseases-a-systematic-review-and-metaanalysis/517D01E6B238B85269F69865ACB740C5',
+                    ]
+            ],
             
             
 
