@@ -184,12 +184,12 @@ trait AuthorPatterns
                 'end2' => '[,;] ' . $notAnd, 
                 'end3' => $periodOrColonOrCommaYear, 
             ],
-            // 12. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,] 
+            // 12. Jane (A. )?Smith, Susan (B. )?Jones,? and Hilda (C. )?Gonzalez[.,;] 
             [
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => ', ' . $notAnd, 
                 'end2' => ',? ' . $andRegExp . ' ',
-                'end3' => '[\.,] ' . $notJr, 
+                'end3' => '[\.,;] ' . $notJr, 
             ],
             // 13. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
             [
@@ -197,7 +197,7 @@ trait AuthorPatterns
                 'name2' => $firstNameInitialsLastName,
                 'end1' => ', ' . $notAnd, 
                 'end2' => ',? ' . $andRegExp . ' ',
-                'end3' => '[\.,] ' . $notJr,
+                'end3' => '[\.,;] ' . $notJr,
             ],
             // 14. (Smith, J. A., )*Jones, A. B.,? <followed by>[\(|\[|`|\'|"|\d]
             [

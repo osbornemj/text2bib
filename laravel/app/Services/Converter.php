@@ -1222,6 +1222,14 @@ class Converter
         // (may already have been found at end of author string) //
         ///////////////////////////////////////////////////////////
 
+        // Look for volume-number-year pattern, to use later when determining item type
+        //dd($this->numberRegExp);
+        $containsVolumeNumberYear = false;
+        if (preg_match('/(' . $this->volumeRegExp . ')? ?\d{1,4},? ?(' . $this->numberRegExp . ')? ?\d{1,4} [\(\[]?(19|20)[0-9]{2}[\)\]]/', $remainder)) {
+            $containsVolumeNumberYear = true;
+            $this->verbose("Contains volume-number-year string");
+        }
+
         $remainderWithMonthYear = $remainder;
         $containsMonth = false;
         if (! isset($item->year)) {
@@ -1541,6 +1549,7 @@ class Converter
                     $onlineFlag &&
                     ! $containsInteriorVolume &&
                     ! $containsVolumeNumberPages &&
+                    ! $containsVolumeNumberYear &&
                     ! $containsPageRange &&
                     ! $containsJournalName &&
                     ! $allWordsInitialCaps &&
@@ -1555,6 +1564,7 @@ class Converter
                     ! $italicStart &&
                     ! $containsInteriorVolume &&
                     ! $containsVolumeNumberPages &&
+                    ! $containsVolumeNumberYear &&
                     ! $containsPageRange &&
                     ! $containsJournalName &&
                     ! $containsThesis &&
@@ -1802,7 +1812,7 @@ class Converter
                     //     $journal = substr($journal, 0, -1);
                     // }
                     $journal = trim($journal, '_');
-                    $this->setField($item, 'journal', trim($journal, '"*,;:{} '), 'setField 19');
+                    $this->setField($item, 'journal', trim($journal, '"*,;:{}- '), 'setField 19');
                 } elseif (! $journalNameMissingButHasVolume) {
                     $warnings[] = "Item seems to be article, but journal name not found.  Setting type to unpublished.";
                     $itemKind = 'unpublished';  // but continue processing as if journal
@@ -3782,7 +3792,10 @@ class Converter
                             // || preg_match('/^[A-Z][A-Za-z &]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
                             // journal name followed by publication info, allowing issue number and page
                             // numbers to be preceded by letters --- no year.
-                            || preg_match('/^[A-Z][A-Za-z &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{0,4}\)?,? ?' . $this->pagesRegExp . '\.? ?$/', $remainder) 
+                            || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $this->pagesRegExp . '\.? ?$/u', $remainder) 
+                            // journal name followed by year and publication info, allowing issue number and page
+                            // numbers to be preceded by letters and issue numberto have / or - in it --- no year.
+                            || preg_match('/^\p{Lu}[\p{L} &()\-]+[,.]? (19|20)[0-9]{2},? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $this->pagesRegExp . '\.? ?$/u', $remainder)
                             // journal name followed by more specific publication info, year at end, allowing issue number and page
                             // numbers to be preceded by letters.
                             || preg_match('/^[A-Z][A-Za-z &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $this->pagesRegExp . '(, |. |.)(\(?(19|20)[0-9]{2}\)?)$/', $remainder) 

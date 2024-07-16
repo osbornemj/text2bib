@@ -11527,6 +11527,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2012',
                     'volume' => '2',
                     'number' => '1',
+                    'pages' => 'e000850',
                     'url' => 'https://bmjopen.bmj.com/content/2/1/e000850.short',
                     ]
             ],
