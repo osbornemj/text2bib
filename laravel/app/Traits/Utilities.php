@@ -5,9 +5,6 @@ use stdClass;
 
 use PhpSpellcheck\Spellchecker\Aspell;
 
-use App\Models\City;
-use App\Models\DictionaryName;
-
 trait Utilities
 {
     var $phrases = [
@@ -107,25 +104,6 @@ trait Utilities
         "{\\bfseries "
     ];
 
-    // The script will identify strings as cities and publishers even if they are not in these arrays---but the
-    // presence of a string in one of the arrays helps when the elements of the reference are not styled in any way.
-    private function getCities(): array
-    {
-        $cities = City::where('distinctive', 1)
-            ->where('checked', 1)
-            ->orderByRaw('CHAR_LENGTH(name) DESC')
-            ->pluck('name')
-            ->toArray();
-
-        return $cities;
-    }
-
-    private function getDictionaryNames()
-    {
-        // Words that are in dictionary but are names
-        return DictionaryName::all()->pluck('word')->toArray();
-    }
-
     private function setField(stdClass &$item, string $fieldName, string|null $string, string $id = ''): void
     {
         if ($string) {
@@ -186,12 +164,12 @@ trait Utilities
     /*
      * Determine whether $word is in the dictionary and not in the list of names in the dictionary
      */
-    private function inDict(string $word, bool $lowercaseOnly = true): bool
+    private function inDict(string $word, array $dictionaryNames, bool $lowercaseOnly = true): bool
     {
         $aspell = Aspell::create();
         // strtolower to exclude proper names (e.g. Federico is in dictionary)
         $inDict = 0 == iterator_count($aspell->check($lowercaseOnly ? strtolower($word) : $word));
-        $notName = ! in_array($word, $this->getDictionaryNames());
+        $notName = ! in_array($word, $dictionaryNames);
         return $inDict && $notName;
     }
 
@@ -212,220 +190,228 @@ trait Utilities
       * @param $style style detected: 'none', 'italic', or 'quoted'
       * @return $matchedText: quoted or italic substring
       */
-      private function getQuotedOrItalic(string $string, bool $start, bool $italicsOnly, string|null &$before, string|null &$after, string|null &$style): string|bool
-      {
-          $matchedText = $quotedText = $beforeQuote = $afterQuote = '';
-          $style = 'none';
-          $end = false;
-  
-          /* 
-           * Rather than using the following loop, could use regular expressions.  However, it seems that these expressions
-           * would be complex because of the need to exclude escaped quotes and the various other exceptions.
-           * I find the loop easier to understand and maintain.
-           * NOTE: cleanText replaces French guillemets and other quotation marks with `` and ''.
-          */
-          if (! $italicsOnly) {
-              $skip = 0;
-              $begin = '';
-              $end = false;
-              $level = 0;
-  
-              $chars = str_split($string);
-  
-              foreach ($chars as $i => $char) {
-                  if ($skip) {
-                      $skip--;
-                  // after match has ended
-                  } elseif ($end) {
-                      $afterQuote .= $char;
-                  } elseif ($char == '`') {
-                      if ((! isset($chars[$i-1]) || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "`") {
-                          $level++;
-                          if ($begin) {
-                              $quotedText .= $char . $chars[$i+1];
-                              $skip = 1;
-                          } else {
-                              $begin = '``';
-                              $skip = 1;
-                          }
-                      } elseif (
-                          // if pattern is [a-z]`s, assume the ` is a typo for '
-                          ! isset($chars[$i-1])
-                          ||
-                          ($chars[$i-1] != '\\' && ! (in_array($chars[$i-1], range('a', 'z')) && $chars[$i+1] == 's'))
-                         ) {
-                          $level++;
-                          if ($begin) {
-                              $quotedText .= $char;
-                          } else {
-                              $begin = '`';
-                          }
-                      } else {
-                          if (in_array($chars[$i-1], range('a', 'z')) && $chars[$i+1] == 's') {
-                              $char = "'";
-                          }
-                          if ($begin) {
-                              $quotedText .= $char;
-                          } else {
-                              $beforeQuote .= $char;
-                          }
-                      }
-                  } elseif ($char == "'") {
-                      // ''
-                      if (($i == 0 || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "'") {
-                          if (isset($chars[$i+2]) && $chars[$i+2] == "'") {
-                              // '''
-                              if ($begin == "''") {
-                                  $quotedText .= $char;
-                                  $end = true;
-                                  $skip = 2;
-                              } elseif ($begin == "'") {
-                                  $quotedText .= $char;
-                                  $quotedText .= $chars[$i+1];
-                                  $end = true;
-                                  $skip = 1;
-                              } else {
-                                  // Assuming quote is enclosed in '' and ' is start of nested quote.
-                                  $begin = "''";
-                                  $quotedText .= $chars[$i+2];
-                                  $level += 2;
-                              }
-                          } elseif ($begin == "``" || $begin == "''" || $begin == '"') {
-                              $end = true;
-                              $skip = 1;
-                          } elseif ($begin) {
-                              $quotedText .= $char . $chars[$i+1];
-                              $skip = 1;
-                              $level--;
-                          } else {
-                              $begin = "''";
-                              $skip = 1;
-                              $level++;
-                          }
-                      // ' at start, not followed by another '
-                      } elseif ($i == 0) {
-                          $level++;
-                          $begin = "'";
-                      // <space>' not followed by another '
-                      } elseif ($chars[$i-1] == ' ') {
-                          if ($begin == "'") {
-                              $end = true;
-                          } elseif ($begin == "`" && isset($chars[$i+1]) && $chars[$i+1] == ' ') {
-                              $end = true;
-                          } elseif ($begin) {
-                              $level++;
-                              $quotedText .= $char;
-                          } else {
-                              $level++;
-                              $begin = "'";
-                          }
-                      // ' not preceded by space and not followed by ' or letter or \ [example: "\'\i"]
-                      } elseif (! isset($chars[$i+1]) || ($chars[$i+1] != "'" && ! preg_match('/^[\p{L}\\\]$/u', $chars[$i+1]))) {
-                          $level--;
-                          if ($begin == "'" || $begin == "`") {
-                              $end = $level ? false : true;
-                              if (! $end) {
-                                  $quotedText .= $char;
-                              }
-                          } elseif ($begin) {
-                              $quotedText .= $char;
-                          } else {
-                              $beforeQuote .= $char;
-                          }
-                      // ' followed by letter and not preceded by space
-                      } elseif ($begin) {
-                          $quotedText .= $char;
-                      } else {
-                          $beforeQuote .= $char;
-                      }
-                  } elseif ($char == '"') {
-                      if ($i == 0 || $chars[$i-1] != '\\') {
-                          if ($begin == '"' || $begin == '``' || $begin == '?') {
-                              $level--;
-                              $end = $level ? false : true;
-                              if (! $end) {
-                                  $quotedText .= $char;
-                              }
-                          } elseif ($begin) {
-                              $quotedText .= $char;
-                          } else {
-                              $begin = '"';
-                              $level++;
-                          }
-                      } elseif ($begin) {
-                          $quotedText .= $char;
-                      } else {
-                          $beforeQuote .= $char;
-                      }
-                  } elseif ($char == '?' && $i == 0) {
-                      $begin = '?';
-                      $level++;
-                  } elseif ($char == '?' && $begin == '?') {
-                      $end = true;
-                  } elseif ($begin) {
-                      $quotedText .= $char;
-                  } else {
-                      $beforeQuote .= $char;
-                  }
-              }
-          
-              // There is no matching end quote
-              if (! $start && $begin && $end == false) {
-                  $quotedText = $beforeQuote = '';
-                  $afterQuote = $string;
-              }
-          }
-  
-          // If quoted text ends in a lowercase letter, not punctuation for example, and is followed by a space and then a lowercase letter,
-          // and is not followed by " in" or by " forthcoming", it is the first word of the title that is in 
-          // quotes --- it is not the entire title.  E.g. "Global" cardiac ...
-          if (
-              $quotedText 
-              && preg_match('/[a-z]$/', $quotedText)
-              && preg_match('/^ [a-z]/', $afterQuote) 
-              && ! preg_match('/^ (in|en|em)[ :,]/', $afterQuote) 
-              && ! preg_match('/^ (forthcoming|to appear|accepted|submitted)/', $afterQuote)
-              ) {
-              $quotedText = '';
-          } else {
-              $before = $beforeQuote;
-              $after = $afterQuote;
-          }
-  
-          $italicText = $this->getStyledText($string, $start, 'italics', $beforeItalics, $afterItalics, $remains);
-  
-          if ($italicsOnly) {
-              if ($italicText && (! $start || strlen($beforeItalics) == 0)) {
-                  $before = $beforeItalics;
-                  $after = $afterItalics;
-                  $matchedText = $italicText;
-              }
-          } elseif ($quotedText && $italicText) {
-              $quoteFirst = strlen($beforeQuote) < strlen($beforeItalics);
-              $style = $quoteFirst ? 'quoted' : 'italic';
-              $before =  $quoteFirst ? $beforeQuote : $beforeItalics;
-              $after = $quoteFirst ? $afterQuote : $afterItalics;
-              if (! $start || strlen($before) == 0) {
-                  $matchedText = $quoteFirst ? $quotedText : $italicText;
-              }
-          } elseif ($quotedText) {
-              $style = 'quoted';
-              $before = $beforeQuote;
-              $after = $afterQuote;
-              if (! $start || strlen($before) == 0) {
-                  $matchedText = $quotedText;
-              }
-          } elseif ($italicText) {
-              $style = 'italic';
-              $before = $beforeItalics;
-              $after = $afterItalics;
-              if (! $start || strlen($before) == 0) {
-                  $matchedText = $italicText;
-              }
-          }
-  
-          return $matchedText;
-      }
+    private function getQuotedOrItalic(string $string, bool $start, bool $italicsOnly, string|null &$before, string|null &$after, string|null &$style): string|bool
+    {
+        $matchedText = $quotedText = $beforeQuote = $afterQuote = '';
+        $style = 'none';
+        $end = false;
+
+        /* 
+        * Rather than using the following loop, could use regular expressions.  However, it seems that these expressions
+        * would be complex because of the need to exclude escaped quotes and the various other exceptions.
+        * I find the loop easier to understand and maintain.
+        * NOTE: cleanText replaces French guillemets and other quotation marks with `` and ''.
+        */
+        if (! $italicsOnly) {
+            $skip = 0;
+            $begin = '';
+            $end = false;
+            $level = 0;
+
+            $chars = str_split($string);
+
+            foreach ($chars as $i => $char) {
+                if ($skip) {
+                    $skip--;
+                // after match has ended
+                } elseif ($end) {
+                    $afterQuote .= $char;
+                } elseif ($char == '`') {
+                    if ((! isset($chars[$i-1]) || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "`") {
+                        $level++;
+                        if ($begin) {
+                            $quotedText .= $char . $chars[$i+1];
+                            $skip = 1;
+                        } else {
+                            $begin = '``';
+                            $skip = 1;
+                        }
+                    } elseif (
+                        // if pattern is [a-z]`s, assume the ` is a typo for '
+                        ! isset($chars[$i-1])
+                        ||
+                        ($chars[$i-1] != '\\' && ! (in_array($chars[$i-1], range('a', 'z')) && $chars[$i+1] == 's'))
+                        ) {
+                        $level++;
+                        if ($begin) {
+                            $quotedText .= $char;
+                        } else {
+                            $begin = '`';
+                        }
+                    } else {
+                        if (in_array($chars[$i-1], range('a', 'z')) && $chars[$i+1] == 's') {
+                            $char = "'";
+                        }
+                        if ($begin) {
+                            $quotedText .= $char;
+                        } else {
+                            $beforeQuote .= $char;
+                        }
+                    }
+                } elseif ($char == "'") {
+                    // ''
+                    if (($i == 0 || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "'") {
+                        if (isset($chars[$i+2]) && $chars[$i+2] == "'") {
+                            // '''
+                            if ($begin == "''") {
+                                $quotedText .= $char;
+                                $end = true;
+                                $skip = 2;
+                            } elseif ($begin == "'") {
+                                $quotedText .= $char;
+                                $quotedText .= $chars[$i+1];
+                                $end = true;
+                                $skip = 1;
+                            } else {
+                                // Assuming quote is enclosed in '' and ' is start of nested quote.
+                                $begin = "''";
+                                $quotedText .= $chars[$i+2];
+                                $level += 2;
+                            }
+                        } elseif ($begin == "``" || $begin == "''" || $begin == '"') {
+                            $end = true;
+                            $skip = 1;
+                        } elseif ($begin) {
+                            $quotedText .= $char . $chars[$i+1];
+                            $skip = 1;
+                            $level--;
+                        } else {
+                            $begin = "''";
+                            $skip = 1;
+                            $level++;
+                        }
+                    // ' at start, not followed by another '
+                    } elseif ($i == 0) {
+                        $level++;
+                        $begin = "'";
+                    // <space>' not followed by another '
+                    } elseif ($chars[$i-1] == ' ') {
+                        if ($begin == "'") {
+                            $end = true;
+                        } elseif ($begin == "`" && isset($chars[$i+1]) && $chars[$i+1] == ' ') {
+                            $end = true;
+                        } elseif ($begin) {
+                            $level++;
+                            $quotedText .= $char;
+                        } else {
+                            $level++;
+                            $begin = "'";
+                        }
+                    // ' not preceded by space and not followed by ' or letter or \ [example: "\'\i"]
+                    // (so followed by a space or punctuation)
+                    } elseif (! isset($chars[$i+1]) || ($chars[$i+1] != "'" && ! preg_match('/^[\p{L}\\\]$/u', $chars[$i+1]))) {
+                        if ($begin == "'" || $begin == "`") {
+                            $level--;
+                            $end = $level ? false : true;
+                            if (! $end) {
+                                $quotedText .= $char;
+                            }
+                        } elseif ($begin && $level == 1) {
+                            // ' cannot end a nested quote because $level == 1
+                            $quotedText .= $char;
+                        } elseif ($begin) {
+                            // ' might end a nested quote if that quote started with ' or `.  To be sure
+                            // it would be necessary to keep track of the starting characters of all the
+                            // nested quotes.
+                            $level--;
+                            $quotedText .= $char;
+                        } else {
+                            $beforeQuote .= $char;
+                        }
+                    // ' followed by letter and not preceded by space
+                    } elseif ($begin) {
+                        $quotedText .= $char;
+                    } else {
+                        $beforeQuote .= $char;
+                    }
+                } elseif ($char == '"') {
+                    if ($i == 0 || $chars[$i-1] != '\\') {
+                        if ($begin == '"' || $begin == '``' || $begin == '?') {
+                            $level--;
+                            $end = $level ? false : true;
+                            if (! $end) {
+                                $quotedText .= $char;
+                            }
+                        } elseif ($begin) {
+                            $quotedText .= $char;
+                        } else {
+                            $begin = '"';
+                            $level++;
+                        }
+                    } elseif ($begin) {
+                        $quotedText .= $char;
+                    } else {
+                        $beforeQuote .= $char;
+                    }
+                } elseif ($char == '?' && $i == 0) {
+                    $begin = '?';
+                    $level++;
+                } elseif ($char == '?' && $begin == '?') {
+                    $end = true;
+                } elseif ($begin) {
+                    $quotedText .= $char;
+                } else {
+                    $beforeQuote .= $char;
+                }
+            }
+        
+            // There is no matching end quote
+            if (! $start && $begin && $end == false) {
+                $quotedText = $beforeQuote = '';
+                $afterQuote = $string;
+            }
+        }
+
+        // If quoted text ends in a lowercase letter, not punctuation for example, and is followed by a space and then a lowercase letter,
+        // and is not followed by " in" or by " forthcoming", it is the first word of the title that is in 
+        // quotes --- it is not the entire title.  E.g. "Global" cardiac ...
+        if (
+            $quotedText 
+            && preg_match('/[a-z]$/', $quotedText)
+            && preg_match('/^ [a-z]/', $afterQuote) 
+            && ! preg_match('/^ (in|en|em)[ :,]/', $afterQuote) 
+            && ! preg_match('/^ (forthcoming|to appear|accepted|submitted)/', $afterQuote)
+            ) {
+            $quotedText = '';
+        } else {
+            $before = $beforeQuote;
+            $after = $afterQuote;
+        }
+
+        $italicText = $this->getStyledText($string, $start, 'italics', $beforeItalics, $afterItalics, $remains);
+
+        if ($italicsOnly) {
+            if ($italicText && (! $start || strlen($beforeItalics) == 0)) {
+                $before = $beforeItalics;
+                $after = $afterItalics;
+                $matchedText = $italicText;
+            }
+        } elseif ($quotedText && $italicText) {
+            $quoteFirst = strlen($beforeQuote) < strlen($beforeItalics);
+            $style = $quoteFirst ? 'quoted' : 'italic';
+            $before =  $quoteFirst ? $beforeQuote : $beforeItalics;
+            $after = $quoteFirst ? $afterQuote : $afterItalics;
+            if (! $start || strlen($before) == 0) {
+                $matchedText = $quoteFirst ? $quotedText : $italicText;
+            }
+        } elseif ($quotedText) {
+            $style = 'quoted';
+            $before = $beforeQuote;
+            $after = $afterQuote;
+            if (! $start || strlen($before) == 0) {
+                $matchedText = $quotedText;
+            }
+        } elseif ($italicText) {
+            $style = 'italic';
+            $before = $beforeItalics;
+            $after = $afterItalics;
+            if (! $start || strlen($before) == 0) {
+                $matchedText = $italicText;
+            }
+        }
+
+        return $matchedText;
+    }
 
     /**
      * Get first styled substring in $string, restricting to start if $start is true.  Return false if 

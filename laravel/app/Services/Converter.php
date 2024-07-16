@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Str;
 
+use App\Models\City;
 use App\Models\Conversion;
 use App\Models\ExcludedWord;
 //use App\Models\Journal;
@@ -127,7 +128,7 @@ class Converter
         //     ->pluck('name')
         //     ->toArray();
         /*
-         * The number of journals is huge, and an array of all of them is unweildy.
+         * The number of journals is huge, and an array of all of them seems unweildy.
          * Further, if a journal name is in the database and an item contains a journal 
          * with a name that is not in the database but is a superset of the one that is,
          * the shorter name gets assigned to the item.  Checking for that seems like it
@@ -142,7 +143,11 @@ class Converter
             ->pluck('word')
             ->toArray();
 
-        $this->cities = $this->getCities();
+        $this->cities = City::where('distinctive', 1)
+            ->where('checked', 1)
+            ->orderByRaw('CHAR_LENGTH(name) DESC')
+            ->pluck('name')
+            ->toArray();
 
         $this->publishers = Publisher::where('distinctive', 1)
             ->where('checked', 1)
@@ -1026,7 +1031,8 @@ class Converter
             }
             $remainder = implode(' ', $words);
         } else {
-            $authorConversion = $this->authors->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, true, 'authors', $language);
+            $authorConversion = $this->authors->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, $this->cities, true, 'authors', $language);
+            $this->detailLines = array_merge($this->detailLines, $authorConversion['author_details']);
             $authorIsOrganization = $authorConversion['organization'] ?? false;
         }
 
@@ -2136,7 +2142,7 @@ class Converter
                                 $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
                             }
                             $isEditor = true;
-                            $editorConversion = $this->authors->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $month, $day, $date, $isEditor, false, 'editors', $language);
+                            $editorConversion = $this->authors->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $month, $day, $date, $isEditor, $this->cities, false, 'editors', $language);
                             $this->setField($item, 'editor', trim($editorConversion['authorstring']), 'setField 34');
                         } else {
                             $this->verbose('No editors found');
@@ -2323,7 +2329,7 @@ class Converter
                             $this->verbose('tempRemainder contains \'(\' and ends with \')\'');
                             $booktitle = Str::beforeLast($tempRemainderMinusEds, '(');
                             $editorString = Str::afterLast($tempRemainderMinusEds, '(');
-                            $result = $this->authors->convertToAuthors(explode(' ', $editorString), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
+                            $result = $this->authors->convertToAuthors(explode(' ', $editorString), $remainder, $trash, $month, $day, $date, $isEditor, $this->cities, true, 'editors', $language);
                         } else {
                             $trash2 = false;
                             // Include edition in title (because no BibTeX field for edition for incollection)
@@ -2336,7 +2342,7 @@ class Converter
                                 $this->addToField($item, 'note', $note, 'addToField 11');
                             }
                             $isEditor = true;
-                            $result = $this->authors->convertToAuthors(explode(' ', $tempRemainder), $tempRemainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
+                            $result = $this->authors->convertToAuthors(explode(' ', $tempRemainder), $tempRemainder, $trash, $month, $day, $date, $isEditor, $this->cities, true, 'editors', $language);
                         }
                         $this->setField($item, 'editor', trim($result['authorstring']), 'setField 119');
                         $remainderContainsEds = true;
@@ -2373,10 +2379,10 @@ class Converter
                             $lastCommaPos = strrpos($before, ',');
                             $lastPeriodPos = strrpos($before, '.');
                             $editorString = substr($before, 0, max($lastCommaPos, $lastPeriodPos));
-                            $result = $this->authors->convertToAuthors(explode(' ', $editorString), $remainderFromC2A, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
+                            $result = $this->authors->convertToAuthors(explode(' ', $editorString), $remainderFromC2A, $trash, $month, $day, $date, $isEditor, $this->cities, true, 'editors', $language);
                             $remainder = $remainderFromC2A . substr($origRemainder, max($lastCommaPos, $lastPeriodPos));
                         } else {
-                            $result = $this->authors->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $date, $isEditor, true, 'editors', $language);
+                            $result = $this->authors->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $date, $isEditor, $this->cities, true, 'editors', $language);
                         }
                         $this->setField($item, 'editor', trim($result['authorstring'], ', '), 'setField 120');
                         $updateRemainder = false;
@@ -2386,7 +2392,7 @@ class Converter
                         if ($remainderContainsEds) {
                             $wordsBeforeAllNames = true;
                             foreach ($wordsBeforeEds as $word) {
-                                if ($this->inDict(trim($word, ' .,'))) {
+                                if ($this->inDict(trim($word, ' .,'), $this->authors->dictionaryNames)) {
                                     $wordsBeforeAllNames = false;
                                     break;
                                 }
@@ -2424,7 +2430,7 @@ class Converter
                                 $this->verbose("Remainder format is <booktitle> <editors> (Eds.) <publicationInfo>");
                                 $this->setField($item, 'booktitle', $matches1['booktitle'], 'setField 130');
                                 $isEditor = true;
-                                $conversionResult = $this->authors->convertToAuthors(explode(' ', $matches1['editor']), $remainder, $year, $month, $day, $date, $isEditor, determineEnd: false, type: 'editors', language: $language);
+                                $conversionResult = $this->authors->convertToAuthors(explode(' ', $matches1['editor']), $remainder, $year, $month, $day, $date, $isEditor, $this->cities, determineEnd: false, type: 'editors', language: $language);
                                 $this->setField($item, 'editor', trim($conversionResult['authorstring'], ', '), 'setField 131');
                                 $remainder = trim($matches1['pubInfo'], ',. ');
                             } elseif ($result2 && $this->authors->isNameString($matches2['editor'])) {
@@ -2432,7 +2438,7 @@ class Converter
                                 $this->verbose("Remainder format is <booktitle> <editors> (Eds.) <publicationInfo>");
                                 $this->setField($item, 'booktitle', $matches2['booktitle'], 'setField 130');
                                 $isEditor = true;
-                                $conversionResult = $this->authors->convertToAuthors(explode(' ', $matches2['editor']), $remainder, $year, $month, $day, $date, $isEditor, determineEnd: false, type: 'editors', language: $language);
+                                $conversionResult = $this->authors->convertToAuthors(explode(' ', $matches2['editor']), $remainder, $year, $month, $day, $date, $isEditor, $this->cities, determineEnd: false, type: 'editors', language: $language);
                                 $this->setField($item, 'editor', trim($conversionResult['authorstring'], ', '), 'setField 131');
                                 $remainder = trim($matches2['pubInfo'], ',. ');
                             } elseif ($this->authors->isNameString($remainder)) {
@@ -2482,7 +2488,7 @@ class Converter
                                 $booktitle = $matches['booktitle'];
                                 $remainder = $matches['edsAndPubInfo'];
                                 $remainingWords = explode(' ', $remainder);
-                                $editorConversion = $this->authors->convertToAuthors($remainingWords, $remainder, $trash2, $trash3, $trash4, $trash5, $isEditor, true, 'editors', $language);
+                                $editorConversion = $this->authors->convertToAuthors($remainingWords, $remainder, $trash2, $trash3, $trash4, $trash5, $isEditor, $this->cities, true, 'editors', $language);
                                 $this->setField($item, 'booktitle', $booktitle, 'setField 121');
                                 $editorString = trim($editorConversion['authorstring'], ', ');
                                 $this->setField($item, 'editor', $editorString, 'setField 122');
@@ -2530,7 +2536,7 @@ class Converter
                                 // $isEditor is used only for a book (with an editor, not an author)
                                 $isEditor = false;
 
-                                $editorConversion = $this->authors->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, $determineEnd ?? true, 'editors', $language);
+                                $editorConversion = $this->authors->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, $this->cities, $determineEnd ?? true, 'editors', $language);
                                 $editorString = trim($editorConversion['authorstring'], '() ');
                                 foreach ($editorConversion['warnings'] as $warning) {
                                     $warnings[] = $warning;
@@ -2602,7 +2608,7 @@ class Converter
                                     if (! empty($endAuthorPos)) {
                                         // CASE 2
                                         $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
-                                        $editorConversion = $this->authors->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $month, $day, $date, $isEditor, false, 'editors', $language);
+                                        $editorConversion = $this->authors->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $month, $day, $date, $isEditor, $this->cities, false, 'editors', $language);
                                         $this->setField($item, 'editor', trim($editorConversion['authorstring'], ' '), 'setField 44');
                                         foreach ($editorConversion['warnings'] as $warning) {
                                             $warnings[] = $warning;
@@ -2674,7 +2680,7 @@ class Converter
                             $remainder = implode(' ', array_splice($possibleEditors, $j)) . ' ' . $remainder;
                             $remainder = trim($remainder);
 
-                            $editorConversion = $this->authors->convertToAuthors($editors, $remainder, $trash2, $month, $day, $date, $isEditor, false, 'editors', $language);
+                            $editorConversion = $this->authors->convertToAuthors($editors, $remainder, $trash2, $month, $day, $date, $isEditor, $this->cities, false, 'editors', $language);
                             $editor = trim($editorConversion['authorstring']);
                             // If editor ends in period and previous letter is lowercase, remove period
                             if (substr($editor, -1) == '.' && strtolower(substr($editor, -2, 1)) == substr($editor, -2, 1)) {
@@ -2713,13 +2719,13 @@ class Converter
                             if ($containsPublisher) {
                                 $publisherPos = strpos($remainder, $publisher);
                                 $editorString = substr($remainder, 0, $publisherPos);
-                                $editorConversion = $this->authors->convertToAuthors(explode(' ', trim($remainder)), $remainder, $year, $month, $day, $date, $isEditor, true, 'editors', $language);
+                                $editorConversion = $this->authors->convertToAuthors(explode(' ', trim($remainder)), $remainder, $year, $month, $day, $date, $isEditor, $this->cities, true, 'editors', $language);
 
                                 $editor = $editorConversion['authorstring'];
                                 $this->verbose("Editor is: " . $editor);                                
                                 $newRemainder = substr($remainder, $publisherPos);
                             } else {
-                                $editorConversion = $this->authors->convertToAuthors(explode(' ', trim($remainder)), $remainder, $year, $month, $day, $date, $isEditor, true, 'editors', $language);
+                                $editorConversion = $this->authors->convertToAuthors(explode(' ', trim($remainder)), $remainder, $year, $month, $day, $date, $isEditor, $this->cities, true, 'editors', $language);
 
                                 $editor = $editorConversion['authorstring'];
                                 $this->verbose("Editor is: " . $editor);
@@ -2736,7 +2742,7 @@ class Converter
                         $this->verbose("[ed6] Remainder starts with editor string");
                         $editorString = substr($remainder, 0, $matches[0][1]);
                         $this->verbose("editorString is " . $editorString);
-                        $editorConversion = $this->authors->convertToAuthors(explode(' ', $editorString), $trash1, $trash2, $month, $day, $date, $isEditor, false, 'editors', $language);
+                        $editorConversion = $this->authors->convertToAuthors(explode(' ', $editorString), $trash1, $trash2, $month, $day, $date, $isEditor, $this->cities, false, 'editors', $language);
                         $editor = $editorConversion['authorstring'];
                         foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
@@ -2748,7 +2754,7 @@ class Converter
                         // seem unlikely to have editors), but an 
                         // editor of an incollection does not need such a string
                         $this->verbose("[ed4] Remainder starts with editor string");
-                        $editorConversion = $this->authors->convertToAuthors(explode(' ', $remainder), $remainder, $trash2, $month, $day, $date, $isEditor, true, 'editors', $language);
+                        $editorConversion = $this->authors->convertToAuthors(explode(' ', $remainder), $remainder, $trash2, $month, $day, $date, $isEditor, $this->cities, true, 'editors', $language);
                         $editor = $editorConversion['authorstring'];
                         foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
@@ -2774,7 +2780,7 @@ class Converter
                         // convertToAuthors determine end of string, need to redefine remainder below.
                         $isEditor = false;
 
-                        $editorConversion = $this->authors->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, true, 'editors', $language);
+                        $editorConversion = $this->authors->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, $this->cities, true, 'editors', $language);
                         $authorstring = $editorConversion['authorstring'];
                         $this->setField($item, 'editor', trim($authorstring, '() '), 'setField 47');
                         foreach ($editorConversion['warnings'] as $warning) {
@@ -3005,12 +3011,12 @@ class Converter
                 }
 
                 $lastWordInBooktitle = Str::afterLast($booktitle, ' ');
-                if ($this->inDict($lastWordInBooktitle)) {
+                if ($this->inDict($lastWordInBooktitle, $this->authors->dictionaryNames)) {
                     $booktitle = rtrim($booktitle, '.');
                 }
 
                 if (! isset($item->booktitle)) {
-                    $booktitle = trim($booktitle, ' .,(:');
+                    $booktitle = trim($booktitle, ' .,(:;');
                     if ($booktitle) {
                         // If title starts with In <uc letter>, take off the "In".
                         if (preg_match('/^[IiEe]n [A-Z]/', $booktitle)) {
@@ -3582,7 +3588,7 @@ class Converter
                 ! in_array($lastWord, $this->startJournalAbbreviations)
                 &&
                 (
-                    ($this->inDict($lastWord, false) && ! in_array($lastWord, $this->excludedWords))
+                    ($this->inDict($lastWord, $this->authors->dictionaryNames, false) && ! in_array($lastWord, $this->excludedWords))
                     ||
                     mb_strtolower($lastWord[0]) == $lastWord[0]
                 )
@@ -3958,7 +3964,7 @@ class Converter
                             ! in_array($words[$key+2], ['J', 'J.', 'Journal'])
                             &&
                             (! Str::endsWith($word, ',') 
-                                || (! $this->inDict(substr($nextWord, 0, -1)) && ! in_array(substr($nextWord, 0, -1), $this->countries)) 
+                                || (! $this->inDict(substr($nextWord, 0, -1), $this->authors->dictionaryNames) && ! in_array(substr($nextWord, 0, -1), $this->countries)) 
                                 || $this->authors->isInitials($nextWord) 
                                 || (
                                     mb_strtolower($nextWord[0]) == $nextWord[0]

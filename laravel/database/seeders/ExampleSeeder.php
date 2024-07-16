@@ -11516,6 +11516,36 @@ class ExampleSeeder extends Seeder
                     'volume' => '213()',
                     ]
             ],
+            // detected as online
+            [
+                'source' => 'Kripke, Daniel F., Robert D. Langer, and Lawrence E. Kline. "Hypnotics\' Association with Mortality or Cancer: A Matched Cohort Study." BMJ Open 2, no. 1 (2012): e000850. https://bmjopen.bmj.com/content/2/1/e000850.short. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kripke, Daniel F. and Robert D. Langer and Lawrence E. Kline',
+                    'title' => 'Hypnotics\' Association with Mortality or Cancer: A Matched Cohort Study',
+                    'journal' => 'BMJ Open',
+                    'year' => '2012',
+                    'volume' => '2',
+                    'number' => '1',
+                    'url' => 'https://bmjopen.bmj.com/content/2/1/e000850.short',
+                    ]
+            ],
+			// Problem with author pattern 28
+            [
+                'source' => 'Michal Kaut, Kjetil T. Midthun, Adrian S. Werner, Asgeir Tomasgard, Lars Hellemo, and Marte Fodstad; Multi-horizon stochastic programming; Computational Management Science — 2014, Volume 11, Issue 1-2, pp. 179-193 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Michal Kaut and Kjetil T. Midthun and Adrian S. Werner and Asgeir Tomasgard and Lars Hellemo and Marte Fodstad',
+                    'title' => 'Multi-horizon stochastic programming',
+                    'journal' => 'Computational Management Science',
+                    'year' => '2014',
+                    'volume' => '11',
+                    'number' => '1-2',
+                    'pages' => '179-193',
+                    ]
+            ],
+            
+            
 
 
 

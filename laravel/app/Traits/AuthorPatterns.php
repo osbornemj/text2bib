@@ -310,10 +310,14 @@ trait AuthorPatterns
                 'end2' => null, 
                 'end3' => null, 
             ],
-            // 28. Smith, Jane( J)?(period not and or comma year)
+            // 28. Smith, Jane( J)?(period not preceded by capital letter and not followed by and, or comma year)
+            // (If period is preceded by capital letter, could be start of string like
+            // Jane Smith, Susan A. Jones, Elizabeth Gonzalez, ...
+            // with "Jane Smith" being interpreted as a last name.)
             [
                 'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?', 
-                'end1' => $periodNotAndOrCommaYear, 
+                'end1' => '((?<!\p{Lu})\. ' . $notAnd . '|' . $commaYear . ')',
+                //'end1' => $periodNotAndOrCommaYear, 
                 'end2' => null, 
                 'end3' => null, 
             ],

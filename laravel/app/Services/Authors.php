@@ -15,7 +15,7 @@ use App\Models\VonName;
 class Authors
 {
     var $andWords;
-    var $cities;
+    var $authorDetails;
     var $dictionaryNames;
     var $nameSuffixes;
     var $vonNames;
@@ -32,8 +32,6 @@ class Authors
         $this->vonNames = VonName::all()->pluck('name')->toArray();
         // Words that are in dictionary but are names
         $this->dictionaryNames = DictionaryName::all()->pluck('word')->toArray();
-
-        $this->cities = $this->getCities();
 
         $this->nameSuffixes = ['Jr', 'Sr', 'III'];
 
@@ -56,6 +54,12 @@ class Authors
         ];
     }
 
+    // Overrides method in Utilities trait
+    private function verbose(string|array $arg): void
+    {
+        $this->authorDetails[] = $arg;
+    }
+
     public function addToAuthorString(int $i, string &$string, string $addition): void
     {
         $string .= $addition;
@@ -75,7 +79,7 @@ class Authors
      * @param string $type: 'authors' or 'editors'
      * @return array, with author string and warnings
      */
-    public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
+    public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $cities, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
     {
         // if author list is in \textsc, remove the \textsc
         if (isset($words[0]) && Str::startsWith($words[0], '\textsc{')) {
@@ -98,6 +102,7 @@ class Authors
                 'warnings' => [],
                 'organization' => false,
                 'author_pattern' => $result['author_pattern'],
+                'author_details' => $this->authorDetails,
             ];
         }
 
@@ -115,6 +120,7 @@ class Authors
                 'warnings' => [],
                 'organization' => true,
                 'author_pattern' => $result['author_pattern'],
+                'author_details' => $this->authorDetails,
             ];
         }
 
@@ -124,13 +130,14 @@ class Authors
         // Otherwise check words incrementally //
         /////////////////////////////////////////
 
-        $result = $this->checkAuthorsIncrementally($words, $remainder, $year, $month, $day, $date, $isEditor, $determineEnd, $type, $language);
+        $result = $this->checkAuthorsIncrementally($words, $remainder, $year, $month, $day, $date, $isEditor, $cities, $determineEnd, $type, $language);
 
         return [
             'authorstring' => $result['authorstring'],
             'warnings' => $result['warnings'],
             'organization' => false,
             'author_pattern' => null,
+            'author_details' => $this->authorDetails,
         ];
     }
  
@@ -191,6 +198,7 @@ class Authors
                 }
 
                 $this->verbose('Authors match pattern ' . $i);
+
                 break;
             }
         }
@@ -256,12 +264,12 @@ class Authors
                     'authorstring' => substr($word, 0, -1),
                     'author_pattern' => null,
                 ];
-            } elseif (ctype_alpha((string) $word) && ($this->inDict($word) || in_array($word, ['American']))) {
+            } elseif (ctype_alpha((string) $word) && ($this->inDict($word, $this->dictionaryNames) || in_array($word, ['American']))) {
                 $name .= ($i ? ' ' : '') . $word;
             } else {
                 $xword = substr($word, 0, -1);
                 // possibly last character could be other punctuation?
-                if (ctype_alpha((string) $xword) && $this->inDict($xword) && in_array(substr($word, -1), ['.'])) {
+                if (ctype_alpha((string) $xword) && $this->inDict($xword, $this->dictionaryNames) && in_array(substr($word, -1), ['.'])) {
                     if ($i >= 2 && $i <= 5) {
                         $remainder = implode(' ', array_slice($words, $i+1));
                         $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
@@ -291,7 +299,7 @@ class Authors
     /**
      * Go through the author string word by word, separating it into author names.
      */
-    public function checkAuthorsIncrementally(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool $determineEnd = true, string $type = 'authors', string $language = 'en')
+    public function checkAuthorsIncrementally(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $cities, bool $determineEnd = true, string $type = 'authors', string $language = 'en')
     {
         $namePart = $authorIndex = $case = 0;
         $prevWordAnd = $prevWordVon = $done = $isEditor = $hasAnd = $multipleAuthors = false;
@@ -706,7 +714,7 @@ class Authors
                 } elseif (
                     // $word is publication city and either it ends in a colon or next word is two-letter state abbreviation followed by colon
                     $type == 'editors'
-                    && in_array(trim($word, ',: '), $this->cities)
+                    && in_array(trim($word, ',: '), $cities)
                     && 
                         (
                             substr($word, -1) == ':'
@@ -943,7 +951,7 @@ class Authors
                         (
                             substr($remainingWords[0], -1) != ':'
                             ||
-                            $this->inDict($remainingWords[0])
+                            $this->inDict($remainingWords[0], $this->dictionaryNames)
                             ||
                             (
                                 isset($remainingWords[1])
@@ -972,13 +980,13 @@ class Authors
                             )
                             ||
                             (
-                                $this->inDict(trim($remainingWords[0], ',;')) 
+                                $this->inDict(trim($remainingWords[0], ',;'), $this->dictionaryNames) 
                                 && ! $this->isInitials(trim($remainingWords[0], ',;'))
                                 && ! in_array(trim($remainingWords[0], '.,'), $this->nameSuffixes)
                                 && ! preg_match('/[0-9]/', $remainingWords[0])
                                 && ! empty($remainingWords[1]) 
                                 && (
-                                    $this->inDict(trim($remainingWords[1], ': ')) 
+                                    $this->inDict(trim($remainingWords[1], ': '), $this->dictionaryNames) 
                                     ||
                                     mb_strtolower($remainingWords[1][0]) == $remainingWords[1][0]
                                    )
@@ -990,7 +998,7 @@ class Authors
                                 && ! in_array($remainingWords[1][0], ["'", "`"])
                                 && (! isset($remainingWords[2]) 
                                     ||
-                                    ($this->inDict($remainingWords[2])
+                                    ($this->inDict($remainingWords[2], $this->dictionaryNames)
                                     && ! $this->isInitials(trim($remainingWords[2], ',;'))
                                     && ! in_array(trim($remainingWords[2], '.,'), $this->nameSuffixes)
                                     && ! preg_match('/[0-9]/', $remainingWords[2])
@@ -1051,7 +1059,7 @@ class Authors
                     // $word ends in comma or semicolon and next word is not string for editors
                     if (
                         $type == 'editors'
-                        && in_array(trim($words[$i+1], ', '), $this->cities)
+                        && in_array(trim($words[$i+1], ', '), $cities)
                         &&
                             (
                                 substr($words[$i+1], -1) == ':'
@@ -1297,6 +1305,7 @@ class Authors
         }
 
         $this->verbose(['text' => 'formatAuthor: result ', 'words' => [$fName]]);
+
         return $fName;
     }
 
