@@ -11545,6 +11545,22 @@ class ExampleSeeder extends Seeder
                     'pages' => '179-193',
                     ]
             ],
+            // "and others" not handled
+            [
+                'source' => 'Lindström, Anna C., E. von Oelreich, J. Eriksson, and others. "Onset of Prolonged High-Potency Benzodiazepine Use Among ICU Survivors: A Nationwide Cohort Study." Critical Care Explorations 6, no. 7 (2024): 7000. https://journals.lww.com/ccejournal/fulltext/2024/07000/onset_of_prolonged_high_potency_benzodiazepine_use.19.aspx. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Lindström, Anna C. and E. von Oelreich and J. Eriksson and others',
+                    'title' => 'Onset of Prolonged High-Potency Benzodiazepine Use Among ICU Survivors: A Nationwide Cohort Study',
+                    'journal' => 'Critical Care Explorations',
+                    'year' => '2024',
+                    'volume' => '6',
+                    'number' => '7',
+                    'pages' => '7000',
+                    'url' => 'https://journals.lww.com/ccejournal/fulltext/2024/07000/onset_of_prolonged_high_potency_benzodiazepine_use.19.aspx',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
             
             
 

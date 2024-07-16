@@ -475,6 +475,11 @@ class Authors
                 $this->verbose("\$namePart set to 0");
                 $authorIndex++;
                 $reason = 'Word is "and" or equivalent';
+            } elseif (rtrim($word, '.') == 'others') {
+                $this->verbose('[convertToAuthors 3a]');
+                $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName) . ' others');
+                $remainder = implode(" ", $remainingWords);
+                $done = true;
             } elseif (in_array($word, ['et', 'et.'])) {
                 // Word is 'et'
                 $this->verbose('nextWord: ' . $nextWord);
@@ -628,8 +633,9 @@ class Authors
                 // So $words[$i+1] is first word of title.  So terminate name string now.
                 $type == 'authors'
                 && $this->isInitials($word)
-                && isset($words[$i+1])
+                && isset($words[$i+1], $language)
                 && ! in_array($words[$i+1], ['et', 'et.', 'al', 'al.'])
+                && (! isset($words[$i+2]) || ! $this->isAnd($words[$i+2]))
                 && isset($words[$i+2])
                 && isset($words[$i+2][0])
                 && ! preg_match('/^eds?/', $words[$i+2])
@@ -922,7 +928,7 @@ class Authors
                         $case = 7;
                     }
                 } elseif ($determineEnd && $year = $this->dates->getDate(implode(" ", $remainingWords), $remainder, $month, $day, $date, true, true, true, $language)) {
-                    $this->verbose('[convertToAuthors 14a] Ending author string: word is "'. $word . '", year is next.');
+                    $this->verbose('[convertToAuthors 14b] Ending author string: word is "'. $word . '", year is next.');
                     $done = true;
                     $fullName = ($fullName[0] != ' ' ? ' ' : '') . $fullName;
                     $this->addToAuthorString(10, $authorstring, $this->formatAuthor($fullName));
