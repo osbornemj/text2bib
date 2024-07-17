@@ -9,14 +9,12 @@ use App\Traits\AuthorPatterns;
 use App\Traits\Stopwords;
 use App\Traits\Utilities;
 
-use App\Models\DictionaryName;
 use App\Models\VonName;
 
-class Authors
+class AuthorParser
 {
     var $andWords;
     var $authorDetails;
-    var $dictionaryNames;
     var $nameSuffixes;
     var $vonNames;
 
@@ -30,8 +28,6 @@ class Authors
     {
         $this->dates = new Dates();
         $this->vonNames = VonName::all()->pluck('name')->toArray();
-        // Words that are in dictionary but are names
-        $this->dictionaryNames = DictionaryName::all()->pluck('word')->toArray();
 
         $this->nameSuffixes = ['Jr', 'Sr', 'III'];
 
@@ -79,7 +75,7 @@ class Authors
      * @param string $type: 'authors' or 'editors'
      * @return array, with author string and warnings
      */
-    public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $cities, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
+    public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
     {
         // if author list is in \textsc, remove the \textsc
         if (isset($words[0]) && Str::startsWith($words[0], '\textsc{')) {
@@ -112,7 +108,7 @@ class Authors
         // Check for organization name //
         /////////////////////////////////
 
-        $result = $this->checkAuthorOrganization($words, $remainder, $year, $month, $day, $date, $isEditor, $language);
+        $result = $this->checkAuthorOrganization($words, $remainder, $year, $month, $day, $date, $isEditor, $dictionaryNames, $language);
 
         if ($result) {
             return [
@@ -130,7 +126,7 @@ class Authors
         // Otherwise check words incrementally //
         /////////////////////////////////////////
 
-        $result = $this->checkAuthorsIncrementally($words, $remainder, $year, $month, $day, $date, $isEditor, $cities, $determineEnd, $type, $language);
+        $result = $this->checkAuthorsIncrementally($words, $remainder, $year, $month, $day, $date, $isEditor, $cities, $dictionaryNames, $determineEnd, $type, $language);
 
         return [
             'authorstring' => $result['authorstring'],
@@ -226,7 +222,7 @@ class Authors
     /**
      * Determine whether the authorstring is the name of an organization.
      */
-    public function checkAuthorOrganization(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, string $language): array|null
+    public function checkAuthorOrganization(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $dictionaryNames, string $language): array|null
     {
         /*
          * Between 3 and 80 letters and spaces (no punctuation) followed by year in parens or brackets
@@ -264,12 +260,12 @@ class Authors
                     'authorstring' => substr($word, 0, -1),
                     'author_pattern' => null,
                 ];
-            } elseif (ctype_alpha((string) $word) && ($this->inDict($word, $this->dictionaryNames) || in_array($word, ['American']))) {
+            } elseif (ctype_alpha((string) $word) && ($this->inDict($word, $dictionaryNames) || in_array($word, ['American']))) {
                 $name .= ($i ? ' ' : '') . $word;
             } else {
                 $xword = substr($word, 0, -1);
                 // possibly last character could be other punctuation?
-                if (ctype_alpha((string) $xword) && $this->inDict($xword, $this->dictionaryNames) && in_array(substr($word, -1), ['.'])) {
+                if (ctype_alpha((string) $xword) && $this->inDict($xword, $dictionaryNames) && in_array(substr($word, -1), ['.'])) {
                     if ($i >= 2 && $i <= 5) {
                         $remainder = implode(' ', array_slice($words, $i+1));
                         $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
@@ -299,7 +295,7 @@ class Authors
     /**
      * Go through the author string word by word, separating it into author names.
      */
-    public function checkAuthorsIncrementally(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $cities, bool $determineEnd = true, string $type = 'authors', string $language = 'en')
+    public function checkAuthorsIncrementally(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en')
     {
         $namePart = $authorIndex = $case = 0;
         $prevWordAnd = $prevWordVon = $done = $isEditor = $hasAnd = $multipleAuthors = false;
@@ -881,7 +877,7 @@ class Authors
                 $wordAfterBareWords = $bareWordsResult['nextword'];
                 // If 'and' has not already occurred ($hasAnd is false), its occurrence in $barewords is compatible
                 // with $barewords being part of the authors' names OR being part of the title, so should be ignored.
-                $nameScore = $this->nameScore($bareWords, ! $hasAnd);
+                $nameScore = $this->nameScore($bareWords, ! $hasAnd, $dictionaryNames);
                 $this->verbose("bareWords (no trailing punct, not year in parens): " . implode(' ', $bareWords));
                 $this->verbose("nameScore: " . $nameScore['score'] . ". Count: " . $nameScore['count']);
                 if ($nameScore['count']) {
@@ -957,7 +953,7 @@ class Authors
                         (
                             substr($remainingWords[0], -1) != ':'
                             ||
-                            $this->inDict($remainingWords[0], $this->dictionaryNames)
+                            $this->inDict($remainingWords[0], $dictionaryNames)
                             ||
                             (
                                 isset($remainingWords[1])
@@ -986,13 +982,13 @@ class Authors
                             )
                             ||
                             (
-                                $this->inDict(trim($remainingWords[0], ',;'), $this->dictionaryNames) 
+                                $this->inDict(trim($remainingWords[0], ',;'), $dictionaryNames) 
                                 && ! $this->isInitials(trim($remainingWords[0], ',;'))
                                 && ! in_array(trim($remainingWords[0], '.,'), $this->nameSuffixes)
                                 && ! preg_match('/[0-9]/', $remainingWords[0])
                                 && ! empty($remainingWords[1]) 
                                 && (
-                                    $this->inDict(trim($remainingWords[1], ': '), $this->dictionaryNames) 
+                                    $this->inDict(trim($remainingWords[1], ': '), $dictionaryNames) 
                                     ||
                                     mb_strtolower($remainingWords[1][0]) == $remainingWords[1][0]
                                    )
@@ -1004,7 +1000,7 @@ class Authors
                                 && ! in_array($remainingWords[1][0], ["'", "`"])
                                 && (! isset($remainingWords[2]) 
                                     ||
-                                    ($this->inDict($remainingWords[2], $this->dictionaryNames)
+                                    ($this->inDict($remainingWords[2], $dictionaryNames)
                                     && ! $this->isInitials(trim($remainingWords[2], ',;'))
                                     && ! in_array(trim($remainingWords[2], '.,'), $this->nameSuffixes)
                                     && ! preg_match('/[0-9]/', $remainingWords[2])
@@ -1315,29 +1311,6 @@ class Authors
         return $fName;
     }
 
-    public function isInitials(string $word): bool
-    {
-        $patterns = [
-            '\p{Lu}\.?\.?',             // A or A. or A..
-            '\p{Lu}\.\p{Lu}\.',         // A.B.
-            '\p{Lu}\p{Lu}',             // AB
-            '\p{Lu}\.\p{Lu}\.\p{Lu}\.', // A.B.C.
-            '\p{Lu}\p{Lu}\p{Lu}',       // ABC
-            '\p{Lu}\.?-\p{Lu}\.',       // A.-B. or A-B.
-        ];
-
-        $case = 0;
-        foreach ($patterns as $i => $pattern) {
-            if (preg_match('/^' . $pattern . '$/u', $word)) {
-                $case = $i+1;
-                $this->verbose("isInitials case " . $case);
-                break;
-            }    
-        }
-
-        return $case > 0;
-    }
-
     /*
      * Determine whether $word is component of a name: all letters and either all u.c. or first letter u.c. and rest l.c.
      * (and may be TeX accents)
@@ -1502,7 +1475,7 @@ class Authors
      * +2 for each word in the string that is a von name
      * -2 for each word in the string that is a stopword
      */
-    public function nameScore(array $words, bool $ignoreAnd): array
+    public function nameScore(array $words, bool $ignoreAnd, array $dictionaryNames): array
     {
         $aspell = Aspell::create();
         $wordsToCheck = [];
@@ -1519,7 +1492,7 @@ class Authors
                     ($word != 'and' || ! $ignoreAnd) &&
 //                    ((isset($word[0]) && mb_strtoupper($word[0]) == $word[0]) || in_array($word, $this->vonNames)) &&
                     ! $this->isInitials($word) &&
-                    ! in_array($word, $this->dictionaryNames)
+                    ! in_array($word, $dictionaryNames)
                 ) {
                 $wordsToCheck[] = $lcword;
                 if (in_array($lcword, $this->stopwords) && ! in_array($word, $this->vonNames)) {

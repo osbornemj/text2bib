@@ -9,6 +9,8 @@ use App\Traits\Months;
 
 class Dates
 {
+    private Dates $dates;
+
     var $monthsRegExp;
     var $monthsAbbreviationsRegExp;
     

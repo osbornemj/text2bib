@@ -11575,6 +11575,19 @@ class ExampleSeeder extends Seeder
                     'url' => 'https://www.cambridge.org/core/journals/epidemiology-and-psychiatric-sciences/article/risk-of-offspring-mood-and-anxiety-disorders-in-the-context-of-prenatal-maternal-somatic-diseases-a-systematic-review-and-metaanalysis/517D01E6B238B85269F69865ACB740C5',
                     ]
             ],
+   			// publisher identified as '2008'
+			[
+                'source' => '\bibitem{context10} R. Regele, ``Using ontology-based traffic models for more efficient decision making of autonomous vehicles,\'\' in \textit{Fourth International Conference on Autonomic and Autonomous Systems (ICAS’08)}, 2008, pp. 94–99. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'R. Regele',
+                    'title' => 'Using ontology-based traffic models for more efficient decision making of autonomous vehicles',
+                    'year' => '2008',
+                    'pages' => '94-99',
+                    'booktitle' => 'Fourth International Conference on Autonomic and Autonomous Systems (ICAS\'08)',
+                    ]
+            ],
+
             
             
 

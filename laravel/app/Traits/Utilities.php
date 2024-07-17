@@ -104,6 +104,63 @@ trait Utilities
         "{\\bfseries "
     ];
 
+    var $forthcomingRegExp = 'forthcoming( at| in)?|in press|accepted( at)?|to appear in';
+    var $endForthcomingRegExp = '( |\()(forthcoming|in press|accepted|to appear)\.?\)?$';
+    var $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
+
+    var $volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
+    var $volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
+    var $volRegExp2 = '/^\(?vol(\.|ume)? ?|^\(?v\. /i';
+    var $volumeRegExp = '[Vv]olume ?|[Vv]ols? ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{|\*';
+    var $volRegExp3 = '[Vv]olume ?|[Vv]ol ?\.? ?|VOL ?\.? ?|[Vv]\. ';
+
+    var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ ?|n\.? ?° ?|n\. ?º ?|[Ii]ssues?:? ?|Issue no. ?|Iss: ';
+
+    // page range
+    // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
+    var $pageRange = '(?P<pages>(?P<startPage>[A-Z]?[1-9][0-9]{0,4}) ?-{1,3} ?(?P<endPage>[A-Z]?[0-9]{1,5}))(?![a-zA-Z])';
+    // single page or page range
+    var $page = '(?P<pages>[A-Z]?[1-9][0-9]{0,4})( ?-{1,3} ?[A-Z]?[0-9]{1,5})?(?![a-zA-Z])';
+
+    var $editionRegExp = '(?P<fullEdition>((?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie))|[1-9] ?ed\.)';
+
+    var $workingPaperRegExp = '(preprint|arXiv preprint|bioRxiv|working paper|texto para discussão|discussion paper|'
+        . 'technical report|report no.|'
+        . 'research paper|mimeo|unpublished paper|unpublished manuscript|manuscript|'
+        . 'under review|submitted|in preparation)';
+    // Working paper number can contain letters and dashes, but must contain at least one digit
+    // (otherwise word following "manuscript" will be matched, for example)
+    var $workingPaperNumberRegExp = ' (\\\\#|number|no\.?)? ?(?=.*[0-9])([a-zA-Z0-9\-]+),?';
+
+    var $journalWord = 'Journal';
+
+    // en for Spanish (and French?), em for Portuguese
+    var $inRegExp1 = '/^[iIeE]n:? /';
+    var $inRegExp2 = '/( [iIeE]n: |[,.] [IiEe]n | [ei]n\) | [eE]m: |[,.] [Ee]m | [ei]m\) )/';
+    
+    public function isInitials(string $word): bool
+    {
+        $patterns = [
+            '\p{Lu}\.?\.?',             // A or A. or A..
+            '\p{Lu}\.\p{Lu}\.',         // A.B.
+            '\p{Lu}\p{Lu}',             // AB
+            '\p{Lu}\.\p{Lu}\.\p{Lu}\.', // A.B.C.
+            '\p{Lu}\p{Lu}\p{Lu}',       // ABC
+            '\p{Lu}\.?-\p{Lu}\.',       // A.-B. or A-B.
+        ];
+
+        $case = 0;
+        foreach ($patterns as $i => $pattern) {
+            if (preg_match('/^' . $pattern . '$/u', $word)) {
+                $case = $i+1;
+                $this->verbose("isInitials case " . $case);
+                break;
+            }    
+        }
+
+        return $case > 0;
+    }
+
     private function setField(stdClass &$item, string $fieldName, string|null $string, string $id = ''): void
     {
         if ($string) {
