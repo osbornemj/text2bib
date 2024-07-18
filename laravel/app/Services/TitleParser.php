@@ -8,6 +8,8 @@ use App\Traits\Utilities;
 
 class TitleParser
 {
+    var $titleDetails = [];
+
     private Dates $dates;
 
     public function __construct()
@@ -21,6 +23,12 @@ class TitleParser
      */
     use Countries;
     use Utilities;
+
+    // Overrides method in Utilities trait
+    private function verbose(string|array $arg): void
+    {
+        $this->titleDetails[] = $arg;
+    }
 
     /**
      * Get title from a string that starts with title and then has publication information.
@@ -48,7 +56,7 @@ class TitleParser
         array $monthsRegExp, 
         bool $includeEdition = false, 
         string $language = 'en'
-       ): string|null
+       ): array
     {
         $title = null;
         $originalRemainder = $remainder;
@@ -77,7 +85,11 @@ class TitleParser
             }
             // $remainder includes $italicCode at start
             $remainder = substr($remainder, $journalStartPos);
-            return $title;
+
+            $result['title'] = $title;
+            $result['titleDetails'] = $this->titleDetails;
+    
+            return $result;
         }
 
         // If $remainder ends with string in parenthesis, look at the string
@@ -88,7 +100,11 @@ class TitleParser
                 $title = rtrim(Str::before($remainder, $match), ' (');
                 $remainder = $match;
                 $this->verbose('Taking title to be string preceding string in parentheses, which is taken to be publication info');
-                return $title;
+
+                $result['title'] = $title;
+                $result['titleDetails'] = $this->titleDetails;
+        
+                return $result;
             }
         }
 
@@ -110,7 +126,11 @@ class TitleParser
                 $title = $matches['title'];
                 $remainder = $matches['remainder'];
                 $this->verbose('Taking title to be string preceding period.');
-                return $title;
+
+                $result['title'] = $title;
+                $result['titleDetails'] = $this->titleDetails;
+        
+                return $result;
             }
         }
 
@@ -287,7 +307,7 @@ class TitleParser
                             // e.g. SIAM J. ... (Don't generalize too much, because 'J.' can be an editor's initial.)
                             preg_match('/^(SIAM (J\.|Journal)|IEEE Transactions|ACM Transactions)/', $remainder)
                             // journal name, pub info?
-                            || preg_match('/^[A-Z][a-z]+,? [0-9, -p\.]*$/', $remainder)
+                            || preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?,? [0-9, \-p\.]*$/', $remainder)
                             || in_array('Journal', $wordsToNextPeriodOrComma)
                             || preg_match('/^Revue /', $remainder)
                             // journal name, pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
@@ -655,8 +675,9 @@ class TitleParser
         //     $remainder = substr($remainder, 1);
         // }
 
-        return $title;
-    }
+        $result['title'] = $title;
+        $result['titleDetails'] = $this->titleDetails;
 
-    
+        return $result;
+    }
 }

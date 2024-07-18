@@ -50,7 +50,8 @@ trait AddLabels
                 if ($conversion->language == 'my') {
                     $authorLetters = $author;
                 } else {
-                    $authorLetters = $this->onlyLetters(Str::ascii($author));
+                    //$authorLetters = $this->onlyLetters(Str::ascii($author));
+                    $authorLetters = $this->onlyLetters($author);
                 }
                 if ($pos = mb_strpos($authorLetters, ',')) {
                     if ($conversion->label_style == 'short') {
@@ -112,7 +113,7 @@ trait AddLabels
     // Returns string consisting only of letters and spaces and commas in $string
     public function onlyLetters(string $string): string
     {
-        return preg_replace("/[^a-z,\s]+/i", "", $string);
+        return preg_replace("/[^\p{L},\s]+/u", "", $string);
     }
 
     public function translateFrom($string, $language)

@@ -14,7 +14,8 @@ use App\Models\VonName;
 class AuthorParser
 {
     var $andWords;
-    var $authorDetails;
+    var $aspell;
+    var $authorDetails = [];
     var $nameSuffixes;
     var $vonNames;
 
@@ -27,6 +28,8 @@ class AuthorParser
     public function __construct()
     {
         $this->dates = new Dates();
+        $this->aspell = Aspell::create();
+
         $this->vonNames = VonName::all()->pluck('name')->toArray();
 
         $this->nameSuffixes = ['Jr', 'Sr', 'III'];
@@ -1477,7 +1480,6 @@ class AuthorParser
      */
     public function nameScore(array $words, bool $ignoreAnd, array $dictionaryNames): array
     {
-        $aspell = Aspell::create();
         $wordsToCheck = [];
         $score = 0;
 
@@ -1506,7 +1508,7 @@ class AuthorParser
 
         $string = implode(' ', $wordsToCheck);
         // Number of words in $wordsToCheck not in dictionary
-        $score += iterator_count($aspell->check($string, ['en_US']));
+        $score += iterator_count($this->aspell->check($string, ['en_US']));
         
         $returner = ['count' => count($wordsToCheck), 'score' => $score];
 

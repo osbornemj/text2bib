@@ -214,9 +214,9 @@ class Converter
         $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the \p{L}+ (\p{L}+ )?Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! (International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
 
         $this->thesisRegExp = '[ \(\[]([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|{Tt]ezi|[Dd]issertação)([ \.,\)\]]|$)';
-        $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.?A\.?|M\.?Sc\.?|Yayınlanmamış Yüksek [Ll]isans|Yüksek [Ll]isans|Masterproef';
+        $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.?A\.?|M\.?Sc\.?|[Mm]estrado|Yayınlanmamış Yüksek [Ll]isans|Yüksek [Ll]isans|Masterproef';
         $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral|[Dd]oktora';
-        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|[Tt]ezi|Yayımlanmamış doktora tezi|Doktora Tezi|Yüksek lisans tezi|Yükseklisans Tezi)';
+        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Dissertação \(Mestrado\)|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|[Tt]ezi|Yayımlanmamış doktora tezi|Doktora Tezi|Yüksek lisans tezi|Yükseklisans Tezi)';
         // Variant in French: Thèse de Doctorat en droit, Thèse de Doctorat en droit public
         // pt: Dissertação de Mestrado | Tese de mestrado
         // es: Tesis de maestría
@@ -1061,7 +1061,11 @@ class Converter
         if (! $title) {
             $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
             $titleStyle = $style;
-            $this->verbose('Title is styled (' . $titleStyle . ')');
+            if ($style === 'none') {
+                $this->verbose('Title is not styled');
+            } else {
+                $this->verbose('Title is styled (' . $titleStyle . ')');
+            }
             $newRemainder = $before . ltrim($after, "., ");
         }
 
@@ -1086,7 +1090,7 @@ class Converter
 
             if (! $title) {
                 $originalRemainder = $remainder;
-                $title = $this->titleParser->getTitle(
+                $result = $this->titleParser->getTitle(
                     $remainder, 
                     $edition, 
                     $volume, 
@@ -1107,6 +1111,9 @@ class Converter
                     false, 
                     $language
                 );
+                $title = $result['title'];
+                $this->detailLines = array_merge($this->detailLines, $result['titleDetails']);
+
                 if (substr($originalRemainder, strlen($title), 1) == '.') {
                     $titleEndsInPeriod = true;
                 }
@@ -1555,6 +1562,8 @@ class Converter
                 ! $containsCity
                 &&
                 ! $containsPublisher
+                &&
+                ! $containsIsbn
             )
         ) {
             $this->verbose("Item type case 1");
@@ -3347,6 +3356,13 @@ class Converter
                     }
 
                     if (strpos($remainder, ':') === false) {
+                        // If there's an extra year before the $remainder, remove it
+                        if (preg_match('/^(?P<year>(19|20)[0-9]{2})/', $remainder, $matches)) {
+                            $extraYear = $matches['year'];
+                            $remainder = substr($remainder, 4);
+                            $remainder = ltrim($remainder, '., ');
+                            $warnings[] = "The string \"" . $extraYear . "\" before the schoool name remains unidentified.";
+                        }
                         $this->setField($item, 'school', $remainder, 'setField 87e');
                     } else {
                         $remArray = explode(':', $remainder);
@@ -3852,7 +3868,8 @@ class Converter
 
         $months = $this->monthsRegExp[$language];
 
-        $remainder = str_replace(['Ð', '{\DH}'], '-', $remainder);
+        // −, third character that is replaced, is minus sign (E2 88 92)
+        $remainder = str_replace(['Ð', '{\DH}', '−'], '-', $remainder);
 
         // First check for some common patterns
         // p omitted from permitted starting letters, to all p100 to be interpreted as page 100.

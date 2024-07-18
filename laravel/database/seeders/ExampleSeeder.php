@@ -4285,12 +4285,14 @@ class ExampleSeeder extends Seeder
                     ]
             ],
             [
-                'source' => 'Gehle, S. C., Kleissler, D., Heiling, H., Deal, A., Xu, Z., Ayer Miller, V. L., ... & Smitherman, A. B. (2023). Accelerated epigenetic aging and myopenia in young adult cancer survivors. Cancer Medicine. ',
+                'source' => 'Gehle, S. C., Kleissler, D., Heiling, H., Deal, A., Xu, Z., Ayer Miller, V. L., ... & Smitherman, A. B. (2023). Accelerated epigenetic aging and myopenia in young adult cancer survivors. Cancer Medicine, 12, 12149-12160. ',
                 'type' => 'article',
                 'bibtex' => [
                     'author' => 'Gehle, S. C. and Kleissler, D. and Heiling, H. and Deal, A. and Xu, Z. and Ayer Miller, V. L. and others and Smitherman, A. B.',
                     'title' => 'Accelerated epigenetic aging and myopenia in young adult cancer survivors',
                     'journal' => 'Cancer Medicine',
+                    'volume' => '12',
+                    'pages' => '12149-12160',
                     'year' => '2023',
                     ]
             ],
@@ -11585,6 +11587,74 @@ class ExampleSeeder extends Seeder
                     'year' => '2008',
                     'pages' => '94-99',
                     'booktitle' => 'Fourth International Conference on Autonomic and Autonomous Systems (ICAS\'08)',
+                    ]
+            ],
+			// mastersthesis
+            [
+                'source' => 'Marques, L. P. (2011). Utilização de Redes Neurais Artificiais e Análise de Componentes Principais no Monitoramento da Qualidade da Água. 2011. Dissertação (Mestrado). Programa de Pós-Graduação em Engenharia Química, Universidade Federal de Pernambuco, Recife. Disponível em: https://repositorio.ufpe.br/handle/123456789/6576  ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+                    'school' => 'Programa de Pós-Graduação em Engenharia Química, Universidade Federal de Pernambuco, Recife',
+                    'url' => 'https://repositorio.ufpe.br/handle/123456789/6576',
+                    'author' => 'Marques, L. P.',
+                    'year' => '2011',
+                    'title' => 'Utilização de Redes Neurais Artificiais e Análise de Componentes Principais no Monitoramento da Qualidade da Água',
+                    ],
+					'language' => 'pt',
+                    'char_encoding' => 'utf8leave',
+            ],
+			// "A" of title included in authors
+            [
+                'source' => ' 1. Terry, S. C., Herman, J. H. & Angell, J. B. A gas chromatographic air analyzer fabricated on a silicon wafer. IEEE Trans. Electron Devices 26, 1880–1886 (1979). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Terry, S. C. and Herman, J. H. and Angell, J. B.',
+                    'title' => 'A gas chromatographic air analyzer fabricated on a silicon wafer',
+                    'year' => '1979',
+                    'journal' => 'IEEE Trans. Electron Devices',
+                    'volume' => '26',
+                    'pages' => '1880-1886',
+                    ]
+            ],
+			// ending page number not detected
+			[
+                'source' => '81. Lee, A. et al. All-in-One Centrifugal Micro fluidic Device for Size-Selective Circulating Tumor Cell Isolation with High Purity. Anal. Chem. 86, 11349−11356 (2014). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Lee, A. and others',
+                    'title' => 'All-in-One Centrifugal Micro fluidic Device for Size-Selective Circulating Tumor Cell Isolation with High Purity',
+                    'journal' => 'Anal. Chem.',
+                    'year' => '2014',
+                    'volume' => '86',
+                    'pages' => '11349-11356',
+                    ]
+            ],
+			// first word of title included in authors
+            [
+                'source' => ' 1. 	Soran H., Hama S., Yadav R., Durrington PN. HDL functionality. Curr Opin Lipidol. 2012;23(4):353-366. doi:10.1097/MOL.0b013e328355ca25 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Soran, H. and Hama, S. and Yadav, R. and Durrington, P. N.',
+                    'title' => 'HDL functionality',
+                    'journal' => 'Curr Opin Lipidol.',
+                    'year' => '2012',
+                    'volume' => '23',
+                    'number' => '4',
+                    'pages' => '353-366',
+                    'doi' => '10.1097/MOL.0b013e328355ca25',
+                    ]
+            ],
+			// part of title included in author list
+			[
+                'source' => ' Grover RW. Transient acantholytic dermatosis. Arch Dermatol. 1970;101:426–434. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Grover, R. W.',
+					'title' => 'Transient acantholytic dermatosis',
+                    'journal' => 'Arch Dermatol.',
+                    'year' => '1970',
+                    'volume' => '101',
+                    'pages' => '426-434',
                     ]
             ],
 
