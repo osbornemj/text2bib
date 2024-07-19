@@ -3,6 +3,8 @@ namespace App\Traits;
 
 use stdClass;
 
+use Str;
+
 use PhpSpellcheck\Spellchecker\Aspell;
 
 trait Utilities
@@ -103,6 +105,8 @@ trait Utilities
         "{\\bf ", 
         "{\\bfseries "
     ];
+
+    var $articleRegExp = 'art(icle|\.) (id |no\.? ?)?[0-9]*';
 
     var $forthcomingRegExp = 'forthcoming( at| in)?|in press|accepted( at)?|to appear in';
     var $endForthcomingRegExp = '( |\()(forthcoming|in press|accepted|to appear)\.?\)?$';
@@ -612,6 +616,56 @@ trait Utilities
         }
         
         return false;
+    }
+
+    private function requireUc(string $string): string
+    {
+        $words = explode(" ", $string);
+        $returnString = '';
+        foreach ($words as $word) {
+            $returnString .= ' ';
+            if (in_array($word, $this->names)) {
+                $returnString .= '{' . $word[0] . '}' . substr($word, 1);
+            } else {
+                $returnString .= $word;
+            }
+        }
+
+        $returnString = ltrim($returnString, " ");
+
+        return $returnString;
+    }
+
+    /*
+     * Truncate $string at first '%' that is not preceded by '\'.  Return true if truncated, false if not.
+     */
+    private function uncomment(string &$string) : bool
+    {
+        $truncated = false;
+        $pos = strpos($string, '%');
+        if ($pos !== false && ($pos === 0 || $string[$pos-1] != '\\')) {
+            $string = substr($string, 0, $pos);
+            $truncated = true;
+        }
+
+        return $truncated;
+    }
+
+    // Report whether $string is the start of the name of the proceedings of a conference
+    private function isProceedings(string $string): bool
+    {
+        $isProceedings = false;
+
+        foreach ($this->italicCodes as $code) {
+            $string = Str::replaceStart($code, '', $string);
+        }
+
+        if (preg_match('/' . $this->proceedingsRegExp . '/i', $string)
+                && ! preg_match('/' . $this->proceedingsExceptions . '/iu', $string)) {
+            $isProceedings = true;
+        }
+
+        return $isProceedings;
     }
 
 }

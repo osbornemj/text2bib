@@ -18,6 +18,7 @@ use App\Traits\MakeScholarTitle;
 use App\Traits\Months;
 use App\Traits\Stopwords;
 use App\Traits\StringCleaners;
+use App\Traits\StringExtractors;
 use App\Traits\Utilities;
 
 //use SebastianBergmann\Type\NullType;
@@ -28,7 +29,6 @@ class Converter
 {
     var $accessedRegExp1;
     var $andWords;
-    var $articleRegExp;
     var $bookTitleAbbrevs;
     var $cities;
     var $detailLines;
@@ -79,16 +79,21 @@ class Converter
     use Months;
     use Stopwords;
     use StringCleaners;
+    use StringExtractors;
     use Utilities;
 
     public Dates $dates;
+    public ArticlePubInfoParser $articlePubInfoParser;
     public AuthorParser $authorParser;
+    public PublisherAddressParser $publisherAddressParser;
     public TitleParser $titleParser;
 
     public function __construct()
     {
         $this->dates = new Dates();
         $this->authorParser = new AuthorParser();
+        $this->articlePubInfoParser = new ArticlePubInfoParser();
+        $this->publisherAddressParser = new PublisherAddressParser();
         $this->titleParser = new TitleParser();
 
         // Words that are in dictionary but are abbreviations in journal names
@@ -153,8 +158,6 @@ class Converter
             'nl' =>
                 ['1e', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e', '10e'],
         ];
-
-        $this->articleRegExp = 'art(icle|\.) (id |no\.? ?)?[0-9]*';
 
         // 'a cura di': Italian. რედ: Georgian.  Hrsgg.: German
         $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|რედ?\.?|Hrsgg\.|[Ee]ditors?|a cura di)[\)\]]/';
@@ -363,15 +366,17 @@ class Converter
         // Replace "\' " with "\'" because "\' abc" is equivalent to "\'abc", and the space causes problems if it is within a name.
         $entry = str_replace("\' ", "\'", $entry);
 
-        // If entry starts with year, extract it.  Otherwise extract label, if any, and remove numbers and other stray characters
-        // at start of entry
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+        // If entry starts with year, extract it.                                                           //
+        // Otherwise extract label, if any, and remove numbers and other stray characters at start of entry //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+
         if (preg_match('/^(?P<year>[1-9][0-9]{3})\*? (?P<remainder>.*)$/', $entry, $matches)) {
-            $firstComponent = 'year';
             $year = $matches['year'];
             $remainder = ltrim($matches['remainder'], ' |*+');
+            $this->verbose(['item' => $entry]);
+            $this->setField($item, 'year', $year, 'setField 114');
         } else {
-            $firstComponent = 'authors';
-
             // interpret string like [Arrow12] at start of entry as label
             if (preg_match('/^[\[{](?P<label>[a-zA-Z0-9:]{3,10})[\]}] (?P<entry>.*)$/', $entry, $matches)) {
                 if ($matches['label'] && preg_match('/[A-Za-z]/', $matches['label'])) {
@@ -399,44 +404,32 @@ class Converter
                     $entry = trim(substr($entry, strlen($start)));
                 }
             }
-        }
 
-        // If nothing is left, return.
-        if (! strlen($entry)) {
-            return null;
-        }
+            // If nothing is left, return.
+            if (! strlen($entry)) {
+                return null;
+            }
 
-        // Don't put the following earlier---{} may legitimately follow \bibitem
-        $entry = str_replace("{}", "", $entry);
+            // Don't put the following earlier---{} may legitimately follow \bibitem
+            $entry = str_replace("{}", "", $entry);
 
-        // It could be that a [J] at the end signifies a journal article, in which case that info could be used.
-        $entry = Str::replaceEnd('[J].', '', $entry);
-        $entry = Str::replaceEnd('[J]', '', $entry);
+            // It could be that a [J] at the end signifies a journal article, in which case that info could be used.
+            $entry = Str::replaceEnd('[J].', '', $entry);
+            $entry = Str::replaceEnd('[J]', '', $entry);
 
-        $entry = Str::replaceEnd('\\', '', $entry);
+            $entry = Str::replaceEnd('\\', '', $entry);
 
-        // If first component is authors and entry starts with [n] or (n) for some number n, eliminate it
-        if ($firstComponent == 'authors') {
+            // If entry starts with [n] or (n) for some number n, eliminate it
             $entry = preg_replace("/^\s*\[\d*\]|^\s*\(\d*\)/", "", $entry);
-        }
 
-        $entry = ltrim($entry, ' {,');
-        $entry = rtrim($entry, ' }');
+            $entry = ltrim($entry, ' {,');
+            $entry = rtrim($entry, ' }');
 
-        $this->verbose(['item' => $entry]);
-        if ($itemLabel) {
-            $this->verbose(['label' => $itemLabel]);
-        }
+            $this->verbose(['item' => $entry]);
+            if ($itemLabel) {
+                $this->verbose(['label' => $itemLabel]);
+            }
 
-        $isArticle = $containsPageRange = $containsProceedings = false;
-
-        /////////////////////////////////////////////////////////////////
-        // If first component is year, get it and remove it from entry //
-        /////////////////////////////////////////////////////////////////
-
-        if ($firstComponent == 'year') {
-            $this->setField($item, 'year', $year, 'setField 114');
-        } else {
             $remainder = $entry;
         }
 
@@ -444,6 +437,8 @@ class Converter
         $remainder = str_replace(' ,', ',', $remainder);
 
         $completeEntry = $remainder;
+
+        $isArticle = $containsPageRange = $containsProceedings = false;
 
         ////////////////////
         // Get doi if any //
@@ -911,8 +906,8 @@ class Converter
         $containsJournalName = false;
         $wordString = ' ' . implode(' ', $words);
         foreach ($this->journalNames as $name) {
-            // Precede jounnal name by space or {, so that subsets of journal names are not matched (e.g. JASA and EJASA).
-            // { allowed because journal name might be preceded by \textit{.
+            // Precede journal name by space or {, so that subsets of journal names are not matched (e.g. JASA and EJASA).
+            // { is allowed because journal name might be preceded by \textit{.
             if (Str::contains($wordString, [' ' . $name, '{' . $name])) {
                 $journal = $name;
                 $containsJournalName = true;
@@ -985,7 +980,7 @@ class Converter
         }
         $authorstring = trim($authorstring, ',: ');
         $authorstring = $this->trimRightBrace($authorstring);
-        if ($authorstring and $authorstring[0] == '{') {
+        if ($authorstring && $authorstring[0] == '{') {
             $authorstring = strstr($authorstring, ' ');
         }
 
@@ -1742,13 +1737,13 @@ class Converter
                         }
                     }
 
-                    if ($this->getVolumeNumberPagesForArticle($remainder, $item, $language, true) || preg_match('/^' . $this->volRegExp0 . '/', $remainder)) {
+                    if ($this->articlePubInfoParser->getVolumeNumberPagesForArticle($remainder, $item, $language, $this->pagesRegExp, $this->pageWordsRegExp, true) || preg_match('/^' . $this->volRegExp0 . '/', $remainder)) {
                         $journalNameMissingButHasVolume = true;
                         $warnings[] = "Item seems to be article, but journal name not found.";
                     }
 
                     if (! $journalNameMissingButHasVolume) {
-                        $journal = $this->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming, $language);
+                        $journal = $this->articlePubInfoParser->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming, $language, $this->startPagesRegExp);
                         $journal = rtrim($journal, ' ,(');
                     }
                 }
@@ -1808,7 +1803,7 @@ class Converter
                         }
 
                         // Get pages
-                        $result = $this->getVolumeNumberPagesForArticle($remainder, $item, $language);
+                        $result = $this->articlePubInfoParser->getVolumeNumberPagesForArticle($remainder, $item, $language, $this->pagesRegExp, $this->pageWordsRegExp);
 
                         $pagesReported = false;
                         if (! empty($item->pages)) {
@@ -1834,7 +1829,7 @@ class Converter
                             if (! isset($item->volume) && ! isset($item->number)) {
                                 // Get volume and number
                                 $numberInParens = false;
-                                $this->getVolumeAndNumberForArticle($remainder, $item, $containsNumberDesignation, $numberInParens);
+                                $this->articlePubInfoParser->getVolumeAndNumberForArticle($remainder, $item, $containsNumberDesignation, $numberInParens);
                             }
 
                             $result = $this->findRemoveAndReturn($remainder, $this->articleRegExp);
@@ -2954,7 +2949,7 @@ class Converter
                             $this->setField($item, 'pages', $matches['pages'], 'setField 56a');
                             $remainder = trim($matches['remains'], ';., ');
                         }
-                        $newRemainder = $this->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString);
+                        $newRemainder = $this->publisherAddressParser->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString, $this->cities, $this->publishers);
                         $this->setField($item, 'publisher', $publisher, 'setField 56b');
                         $this->setField($item, 'address', $address, 'setField 56c');
                     }
@@ -3284,7 +3279,7 @@ class Converter
                         $remainder = $before . '.' . $result['after'];
                     }
 
-                    $remainder = $this->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString);
+                    $remainder = $this->publisherAddressParser->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString, $this->cities, $this->publishers);
 
                     if ($publisher) {
                         $this->setField($item, 'publisher', trim($publisher, '();{} '), 'setField 85');
@@ -3530,616 +3525,6 @@ class Converter
         }
  
         return $title;
-    }
-
-    private function requireUc(string $string): string
-    {
-        $words = explode(" ", $string);
-        $returnString = '';
-        foreach ($words as $word) {
-            $returnString .= ' ';
-            if (in_array($word, $this->names)) {
-                $returnString .= '{' . $word[0] . '}' . substr($word, 1);
-            } else {
-                $returnString .= $word;
-            }
-        }
-
-        $returnString = ltrim($returnString, " ");
-
-        return $returnString;
-    }
-
-    /*
-     * Truncate $string at first '%' that is not preceded by '\'.  Return true if truncated, false if not.
-     */
-    private function uncomment(string &$string) : bool
-    {
-        $truncated = false;
-        $pos = strpos($string, '%');
-        if ($pos !== false && ($pos === 0 || $string[$pos-1] != '\\')) {
-            $string = substr($string, 0, $pos);
-            $truncated = true;
-        }
-
-        return $truncated;
-    }
-
-    /*
-     * Remove all matches for $regExp (regular expression without delimiters), case insensitive, from $string
-     * and return resulting string (unaltered if there are no matches).
-     */
-    private function findAndRemove(string $string, string $regExp, int $limit = -1): string
-    {
-        return preg_replace('%' . $regExp . '%i', '', $string, $limit);
-    }
-
-    /*
-     * Find first match for $regExp (regular expression without delimiters), case insensitive, in $string,
-     * return group number $groupNumber (defined by parentheses in $regExp)
-     * and remove entire match for $regExp from $string after trimming ',. ' from substring preceding match.
-     * If no match, return false (and do not alter $string).
-     */
-    private function findRemoveAndReturn(string &$string, string $regExp, bool $caseInsensitive = true): false|string|array
-    {
-        $matched = preg_match(
-            '%' . $regExp . '%' . ($caseInsensitive ? 'i' : ''),
-            $string,
-            $matches,
-            PREG_OFFSET_CAPTURE
-        );
-
-        if (! $matched) {
-            return false;
-        }
-
-        $result = [];
-        for ($i = 0; isset($matches[$i][0]); $i++) {
-            $result[$i] = $matches[$i][0];
-        }
-
-        $result['before'] = substr($string, 0, $matches[0][1]);
-        $result['after'] = substr($string, $matches[0][1] + strlen($matches[0][0]), strlen($string));
-        $string = substr($string, 0, $matches[0][1]) . ' ' . substr($string, $matches[0][1] + strlen($matches[0][0]), strlen($string));
-        $string = $this->regularizeSpaces(trim($string));
-
-        return $result;
-    }
-
-    /*
-     * If $reportLabel is false: 
-     * For $string that matches <label><content>, remove match for <label> and <content> and return match for <content>,
-     * where <label> and <content> are regular expressions (without delimiters).  Matching is case-insensitive.
-     * If no matches, return false.
-     * If $reportLabel is true, return array with components 'label' and 'content'.
-     * Example: $doi = $this->extractLabeledContent($string, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._]+');
-     */ 
-    private function extractLabeledContent(string &$string, string $labelPattern, string $contentPattern, bool $reportLabel = false): false|string|array
-    {
-        $matched = preg_match(
-            '%(?P<label>' . $labelPattern . ')(?P<content>' . $contentPattern . ')%i',
-            $string,
-            $matches,
-            PREG_OFFSET_CAPTURE
-        );
-
-        if (! $matched) {
-            return false;
-        }
-
-        $content = trim($matches['content'][0], ' .,;');
-        $string = substr($string, 0, $matches['label'][1]) . substr($string, $matches['content'][1] + strlen($matches['content'][0]), strlen($string));
-        $string = $this->regularizeSpaces(trim($string, ' .,'));
-
-        $returner = $reportLabel ? ['label' => trim($matches['label'][0]), 'content' => $content] : $content;
-
-        return $returner;
-    }
-    
-    /**
-     * Assuming $string contains the publisher and address, isolate those two components;
-     * @param $string string
-     * @param $address string
-     * @param $publisher string
-     * @return $remainder string
-     */
-    private function extractPublisherAndAddress(string $string, string|null &$address, string|null &$publisher, string|null $cityString, string|null $publisherString): string
-    {
-        // If, after removing $publisherString and $cityString, only punctuation remains, set those strings to be
-        // publisher and address
-        $newString = Str::remove([$publisherString, $cityString], $string);
-
-        if (empty(trim($newString, ' ,.;:'))) {
-            $publisher = $publisherString;
-            $address = $cityString;
-            return '';
-        } 
-
-        $containsPublisher = $containsCity = false;
-        $string = trim($string, ' ().,');
-        // If $string contains a single ':', take city to be preceding string and publisher to be
-        // following string
-        if (substr_count($string, ':') == 1) {
-            // Work back from ':' looking for '(' not followed by ')'.  If found, take the following char to
-            // be the start of the address (covers case like "extra stuff (New York: Addison-Wesley).
-            for ($j = strpos($string, ':'); $j > 0 and $string[$j] != ')' && $string[$j] != '('; $j--) {
-
-            }
-            if ($string[$j] == '(') {
-                $remainder = substr($string, 0, $j);
-                $string = substr($string, $j + 1);
-            } else {
-                $remainder = '';
-            }
-            $colonPos = strpos($string, ':');
-            $address = rtrim(ltrim(substr($string, 0, $colonPos), ',. '), ': ');
-            $remainder = trim(substr($string, $colonPos + 1), ',.: ');
-
-            // If year is repeated at end of $remainder, remove it and put it in $remainder
-            $result = $this->findRemoveAndReturn($remainder, '((19|20)[0-9]{2})');
-            $dupYear = $result ? $result[0] : null;
-
-            $periodPos = strpos($remainder, '.');
-
-            // If period follows 'St.' at start of string or ' St.' later in string, ignore it and find next period
-            if (
-                $periodPos !== false 
-                && 
-                (($periodPos == 2 && substr($remainder, 0, 3) == 'St.') || ($periodPos > 2 && substr($remainder, $periodPos - 3, 4) == ' St.'))
-               ) {
-                $pos = strpos(substr($remainder, $periodPos + 1), '.');
-                $periodPos = ($pos === false) ? false : $periodPos + 1 + $pos;
-            }
-
-            if ($periodPos !== false && preg_match('/[^A-Z]/', $remainder[$periodPos-1])) {
-                $publisher = substr($remainder, 0, $periodPos);
-                $remainder = substr($remainder, $periodPos);
-            } else {
-                $publisher = trim($remainder, '., ');
-                $remainder = '';
-            }
-
-            if ($dupYear) {
-                $remainder .= ' ' . $dupYear;
-            }
-
-            // If publisher ends in " [A-Z][A-Z]" (US 2-letter state abbreviation) then in fact it must be the address, so swith the publisher and address
-            if (preg_match('/ [A-Z]{2}$/', $publisher)) {
-                $oldPublisher = $publisher;
-                $publisher = $address;
-                $address = $oldPublisher;
-            }
-        // else if string contains no colon and at least one ',', take publisher to be string
-        // preceding first comma and city to be rest
-        } elseif (! substr_count($string, ':') && substr_count($string, ',')) {
-            $wordBeforeComma = trim(substr($string, 0, strpos($string, ',')), ',. ');
-            $wordAfterComma = trim(substr($string, strpos($string, ',') + 1), ',.: ');
-            if ($wordBeforeComma == $cityString) {
-                $address = $wordBeforeComma . ', ' . $wordAfterComma;
-                $publisher = '';
-            } else {
-                $publisher = $wordBeforeComma;
-                $address = $wordAfterComma;
-            }
-            $remainder = '';
-        // else take publisher/city to be strings that match list above and report rest to be
-        // city/publisher
-        } else {
-            $stringMinusPubInfo = $string;
-            foreach ($this->publishers as $publisherFromList) {
-                $publisherPos = strpos($string, $publisherFromList);
-                if ($publisherPos !== false) {
-                    $containsPublisher = true;
-                    $publisher = $publisherFromList;
-                    $stringMinusPubInfo = substr($string, 0, $publisherPos) . substr($string, $publisherPos + strlen($publisherFromList));
-                    break;
-                }
-            }
-            foreach ($this->cities as $cityFromList) {
-                $cityPos = strpos($stringMinusPubInfo, $cityFromList);
-                if ($cityPos !== false) {
-                    $containsCity = true;
-                    $address = $cityFromList;
-                    $stringMinusPubInfo = substr($stringMinusPubInfo, 0, $cityPos) . substr($stringMinusPubInfo, $cityPos + strlen($cityFromList));
-                    break;
-                }
-            }
-
-            // These two lines seem necessary---why??
-            if (! $containsPublisher) {
-                $publisher = '';
-            }
-            if (! $containsCity) {
-                $address = '';
-            }
-
-            $remainder = $stringMinusPubInfo;
-            // If only publisher has been identified, take rest to be city
-            if ($containsPublisher and ! $containsCity) {
-                $address = trim($remainder, ',.: }{ ');
-                $remainder = '';
-                // elseif publisher has not been identified, take rest to be publisher (whether or not city has been identified)
-            } elseif (! $containsPublisher) {
-                $publisher = trim($remainder, ',.: }{ ');
-                $remainder = '';
-            }
-        }
-        $publisher = Str::of($publisher)->replaceStart('by', '')->trim();
-        $address = ltrim($address, '} ');
-
-        return $remainder;
-    }
-
-    // Report whether $string is the start of the name of the proceedings of a conference
-    private function isProceedings(string $string): bool
-    {
-        $isProceedings = false;
-
-        foreach ($this->italicCodes as $code) {
-            $string = Str::replaceStart($code, '', $string);
-        }
-
-        if (preg_match('/' . $this->proceedingsRegExp . '/i', $string)
-                && ! preg_match('/' . $this->proceedingsExceptions . '/iu', $string)) {
-            $isProceedings = true;
-        }
-
-        return $isProceedings;
-    }
-
-    // Get journal name from $remainder, which includes also publication info
-    private function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming, string $language): string
-    {
-        if ($italicStart) {
-            // (string) on next line to stop VSCode complaining
-            $italicText = (string) $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
-            if (preg_match('/ [0-9]/', $italicText)) {
-                // Seems that more than just the journal name is included in the italics/quotes, so forget the quotes/italics
-                // and continue
-                $remainder = $before . $italicText . $after;
-            } else {
-                $remainder = $before . $after;
-                return $italicText;
-            }
-        }
-
-        $containsDigit = preg_match('/[0-9]/', $remainder);
-
-        if ($pubInfoStartsWithForthcoming && ! $containsDigit) {
-            // forthcoming at start
-            $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
-            $journal = $this->getQuotedOrItalic($result['content'], true, false, $before, $after, $style);
-            if (! $journal) {
-                $journal = $result['content'];
-            }
-            $label = $result['label'];
-            if (Str::startsWith($label, ['Forthcoming', 'forthcoming', 'Accepted', 'accepted', 'To appear', 'to appear'])) {
-                $label = Str::replaceEnd(' in', '', $label);
-                $label = Str::replaceEnd(' at', '', $label);
-            }
-            $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $label, 'getJournal 1');
-        } elseif ($pubInfoEndsWithForthcoming && ! $containsDigit) {
-            // forthcoming at end
-            $result = $this->extractLabeledContent($remainder, '.*', $this->endForthcomingRegExp, true);
-            $journal = $result['label'];
-            $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . trim($result['content'], '()'), 'getJournal 2');
-        } else {
-            $words = $remainingWords = explode(' ', $remainder);
-            $initialWords = [];
-            foreach ($words as $key => $word) {
-                $initialWords[] = $word;
-                array_shift($remainingWords);
-                $remainder = implode(' ', $remainingWords);
-                if ($key === count($words) - 1 // last word in remainder
-                    || (isset($words[$key+1]) && Str::contains($words[$key+1], range('1', '9'))) // next word contains a digit
-                    || (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}:?$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
-                    || preg_match('/^(' . $this->monthsRegExp[$language] . ')( [0-9]{1,2})?[.,;]/', $remainder) // <month> or <month day> next
-                    || preg_match('/^(' . $this->numberRegExp . ') /', $remainder) // followed by number info
-                    || preg_match($this->volRegExp2, $remainder) // followed by volume info
-                    || preg_match($this->startPagesRegExp, ltrim($remainder, '( ')) // followed by pages info
-                    || preg_match('/^' . $this->articleRegExp . '/i', $remainder) // followed by article info
-                    || $this->containsFontStyle($remainder, true, 'bold', $posBold, $lenBold) // followed by bold
-                    || $this->containsFontStyle($remainder, true, 'italics', $posItalic, $lenItalic) // followed by italics
-                    // (Str::endsWith($word, '.') && strlen($word) > 2 && $this->inDict($word) && !in_array($word, $this->excludedWords))
-                   )
-                {
-                    $this->verbose('[getJournal] Remainder: ' . $remainder);
-                    $journal = rtrim(implode(' ', $initialWords), ', ');
-                    $remainder = ltrim($remainder, ',.');
-                    break;
-                }
-            }
-        }
-
-        // To deal with (erroneous) extra quotes at start
-        $journal = ltrim($journal, "' ");
-
-        return $journal;
-    }
-
-    // Allows page number to be preceded by uppercase letter.  Second number in range should really be allowed
-    // to start with uppercase letter only if first number in range does so---and if pp. is present, almost
-    // anything following should be allowed as page numbers?
-    // '---' shouldn't be used in page range, but might be used by mistake
-    private function getVolumeNumberPagesForArticle(string &$remainder, object &$item, string $language, bool $start = false): bool
-    {
-        $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
-        $result = false;
-
-        $months = $this->monthsRegExp[$language];
-
-        // −, third character that is replaced, is minus sign (E2 88 92)
-        $remainder = str_replace(['Ð', '{\DH}', '−'], '-', $remainder);
-
-        // First check for some common patterns
-        // p omitted from permitted starting letters, to all p100 to be interpreted as page 100.
-        $number = '[A-Za-oq-z]?([Ss]upp )?[0-9][0-9]{0,12}[A-Za-z]?';
-        $numberWithRoman = '([1-9][0-9]{0,3}|[IVXLCD]{1,6})';
-        $letterNumber = '([A-Z]{1,3})?-?' . $number;
-        $numberRange = $number . '(( ?--?-? ?|_|\?)' . $number . ')?';
-        // slash is permitted in range of issues (e.g. '1/2'), but not for volume, because '12/3' is interepreted to mean
-        // volume 12 number 3
-        $numberRangeWithSlash = $number . '(( ?--?-? ?|_|\/)' . $number . ')?( ?\(?(' . $months . ')([-\/](' . $months . '))?\)?)?';
-        //$monthRange = '\(?(?P<month1>' . $months . ')(-(?P<month2>' . $months . '))?\)?';
-        // Ð is for non-utf8 encoding of en-dash(?)
-        $letterNumberRange = $letterNumber . '(( ?--?-? ?|_|\?)' . $letterNumber . ')?';
-        $numberRangeWithRoman = $numberWithRoman . '((--?-?|_)' . $numberWithRoman . ')?';
-        // }? at end is because $this->volumeRegExp includes \textbf{
-        $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')}?';
-        $volumeWithRomanRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')}?';
-        $numberRx = '('. $this->numberRegExp . ')?(?P<num>' . $numberRangeWithSlash . ')';
-        //$volumeWordRx = '('. $this->volumeRegExp . ')(?P<vol>' . $numberRange . ')';
-        // Letter in front of volume is allowed only if preceded by "vol(ume)" and is single number
-        $volumeWordLetterRx = '('. $this->volumeRegExp . ')(?P<vol>' . $letterNumber . ')';
-        $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRangeWithSlash . ')';
-        $pagesRx = '(?P<pageWord>'. $this->pageWordsRegExp . ')?(?P<pp>' . $letterNumberRange . ')';
-        $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?\(\(?|\* ?\()';
-        $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
-
-        $dashEquivalents = ['---', '--', ' - ', '- ', ' -', '_', '?'];
-
-        // e.g. Volume 6, No. 3, pp. 41-75 OR 6(3) 41-75
-        if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
-            $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
-            $this->setField($item, 'number', str_replace(['---', '--', ' - '], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
-            $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
-            $remainder = trim(substr($remainder, strlen($matches[0])));
-            $result = true;
-        // e.g. Volume 6, 41-75$ OR 6 41-75$
-       } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/J', $remainder, $matches)) {
-            $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
-            if (Str::contains($matches['pp'], ['-', '_', '?']) || strlen($matches['pp']) < 7 || (isset($matches['pageWord']) && $matches['pageWord'])) {
-                $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5a');
-            } else {
-                $this->addToField($item, 'note', 'Article ' . $matches['pp'], 'getVolumeNumberPagesForArticle 5b');
-            }
-            $remainder = '';
-            $result = true;
-        // e.g. Volume A6, No. 3 
-        } elseif (preg_match('/^' . $volumeWordLetterRx . $punc1 . $numberWordRx . '$/J', $remainder, $matches)) {
-            $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 6');
-            $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 7');
-            $remainder = '';
-            $result = true;
-        // e.g. Volume A6, 41-75$
-        } elseif (preg_match('/^' . $volumeWordLetterRx . $punc1 . $pagesRx . '$/J', $remainder, $matches)) {
-               $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 8');
-               $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 9');
-               $remainder = '';
-               $result = true;
-        } elseif (! $start) {
-            // If none of the common patterns fits, fall back on approach that first looks for a page range then
-            // uses the method getVolumeAndNumberForArticle to figure out the volume and number, if any
-            $numberOfMatches = preg_match_all('/' . $this->pagesRegExp . '/J', $remainder, $matches, PREG_OFFSET_CAPTURE);
-            if ($numberOfMatches) {
-                $matchIndex = $numberOfMatches - 1;
-                $this->verbose('[p0] matches: 1: ' . $matches[1][$matchIndex][0] . '; 2: ' . $matches[2][$matchIndex][0] . '; 3: ' . $matches[3][$matchIndex][0]);
-                $this->verbose("Number of matches for a potential page range: " . $numberOfMatches);
-                $this->verbose("Match index: " . $matchIndex);
-                $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches[3][$matchIndex][0]), 'getVolumeNumberPagesForArticle 10');
-
-                // If pages surrounded by parens, don't include parens in remainder
-                $take = $matches[0][$matchIndex][1];
-                if (isset($remainder[$take - 1]) && $remainder[$take - 1] == '(') {
-                    $take -= 1;
-                }
-
-                $drop = $matches[3][$matchIndex][1] + strlen($matches[3][$matchIndex][0]);
-                if (isset($remainder[$drop]) && $remainder[$drop] == '(') {
-                    $drop += 1;
-                }
-
-                $result = true;
-                // single page
-            } elseif (preg_match('/p\. (?P<pp>[1-9][0-9]{0,5})/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-                if (isset($matches['pp'])) {
-                    $this->setField($item, 'pages', $matches['pp'][0], 'getVolumeNumberPagesForArticle 10a');
-                    $take = $matches[0][1];
-                    $drop = $matches[1][1] + strlen($matches[1][0]);
-                    $result = true;
-                }
-            } else {
-                $item->pages = '';
-                $take = 0;
-                $drop = 0;
-            }
-
-            $remainder = rtrim(substr($remainder, 0, $take) . ' ' . substr($remainder, $drop), ',.: ');
-            $remainder = trim($remainder, ',. ');
-        }
-
-        return $result;
-    }
-
-    private function getVolumeAndNumberForArticle(string &$remainder, object &$item, bool &$containsNumberDesignation, bool &$numberInParens): void
-    {
-        $numberInParens = false;
-        if (ctype_digit($remainder)) {
-            $this->verbose('Remainder is entirely numeric, so assume it is the volume');
-            $this->setField($item, 'volume', $remainder, 'getVolumeAndNumberForArticle 1');
-            $remainder = '';
-        } elseif ($remainder && preg_match('/^[IVXLCDM]{0,8}$/', $remainder)) {
-            $this->verbose('Remainder is Roman number, so assume it is the volume');
-            $this->setField($item, 'volume', $remainder, 'getVolumeAndNumberForArticle 2');
-            $remainder = '';
-        } elseif ($this->containsFontStyle($remainder, false, 'bold', $startPos, $length)) {
-            $this->verbose('[v2] bold (startPos: ' . $startPos . ')');
-            $this->setField($item, 'volume', $this->getStyledText($remainder, false, 'bold', $before, $after, $remainder), 'getVolumeAndNumberForArticle 3');
-            $this->verbose('remainder: ' . ($remainder ? $remainder : '[empty]'));
-            $remainder = ltrim($remainder, ':');
-            $number = '[a-z]?[1-9][0-9]{0,5}[A-Za-z]?';
-            $numberRange = $number . '((--?-?|_)' . $number . ')';
-            if (preg_match('/^' . $numberRange . '$/', $remainder, $matches)) {
-                $this->setField($item, 'pages', str_replace(['---', '--', '_'], '-', $remainder), 'getVolumeAndNumberForArticle 3a');
-                $this->verbose('[p3a] pages: ' . $item->pages);
-            } elseif ($remainder && ctype_digit($remainder)) {
-                if (strlen($remainder) < 7) {
-                    if (isset($item->pages)) {
-                        $this->setField($item, 'number', $remainder, 'getVolumeAndNumberForArticle 3d');
-                        $this->verbose('[p3d] number: ' . $item->number);
-                    } else {
-                        $this->setField($item, 'pages', $remainder, 'getVolumeAndNumberForArticle 3b');  // could be a single page
-                        $this->verbose('[p3b] pages: ' . $item->pages);
-                    }
-                } else {
-                    $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . 'Article ' . $remainder, 'getVolumeAndNumberForArticle 3c');  // could be a single page
-                    $this->verbose('[p3c] note: ' . $item->note);
-                }
-                $remainder = '';
-            }
-        } else {
-            // $item->number can be a range (e.g. '6-7')
-            // Look for something like 123:6-19
-            // First consider case in which there is only a volume
-            $this->verbose('[v3] Remainder: ' . $remainder);
-            // 'Volume? 123$'
-            $numberOfMatches1 = preg_match('/^(' . $this->volumeRegExp . ')?([1-9][0-9]{0,3})$/', $remainder, $matches1, PREG_OFFSET_CAPTURE);
-            // $this->volumeRegExp has space at end of it, but no further space is allowed.
-            // So 'Vol. A2' is matched but not 'Vol. 2, no. 3'
-            $numberOfMatches2 = preg_match('/^(' . $this->volumeRegExp . ')([^ 0-9]*[1-9][0-9]{0,3})$/', $remainder, $matches2, PREG_OFFSET_CAPTURE);
-
-            if ($numberOfMatches1) {
-                $matches = $matches1;
-            } elseif ($numberOfMatches2) {
-                $matches = $matches2;
-            } else {
-                $matches = null;
-            }
-
-            if ($matches) {
-                $this->verbose('[p2a] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0]);
-                $this->setField($item, 'volume', $matches[2][0], 'getVolumeAndNumberForArticle 4');
-                unset($item->number);
-                // if a match is empty, [][1] component is -1
-                $take = $matches[1][1] >= 0 ? $matches[1][1] : $matches[2][1];
-                $drop = $matches[2][1] + strlen($matches[2][0]);
-                $this->verbose('take: ' . $take . ', drop: ' . $drop);
-                $this->verbose('No number assigned');
-            } else {
-                // Starts with volume
-                preg_match('/^(' . $this->volumeRegExp . ')(?P<volume>[1-9][0-9]{0,3})[,\.\/ ](--? ?)?/', $remainder, $matches);
-                if (isset($matches['volume'])) {
-                    $volume = $matches['volume'];
-                    $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 17');
-                    $remainder = trim(str_replace($matches[0], '', $remainder));
-                    // Does a number follow the volume?
-                    // The /? allows a format 125/6 for volume/number
-                    preg_match('%^\(?(?P<numberDesignation>' . $this->numberRegExp . ')?[ /]?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?%', $remainder, $matches);
-                    if (isset($matches['number'])) {
-                        $number = $matches['number'];
-                        $this->setField($item, 'number', $number, 'getVolumeAndNumberForArticle 18');
-                        $remainder = trim(str_replace($matches[0], '', $remainder));
-                        if (isset($matches['numberDesignation'][0])) {
-                            $containsNumberDesignation = true;
-                        }
-                    }
-                    $take = $drop = 0;
-                } else {
-                    // A letter or sequence of letters is permitted after an issue number
-                    $numberOfMatches = preg_match('%(' . $this->volumeRegExp . '|[^0-9]|^)(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;|/)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)([/-][1-9][0-9]{0,6})?)\)?%', $remainder, $matches, PREG_OFFSET_CAPTURE);
-                    $numberInParens = isset($matches['punc1']) && in_array($matches['punc1'][0], ['(', ' (']);
-
-                    if ($numberOfMatches) {
-                        $this->verbose('[p2b] matches: 1: ' . $matches[1][0] . ', 2: ' . $matches[2][0] . ', 3: ' . $matches[3][0] . ', 4: ' . $matches[4][0] . ', 5: ' . $matches[5][0] . (isset($matches[6][0]) ? ', 6: ' . $matches[6][0] : '') . (isset($matches[7][0]) ? ', 7: ' . $matches[7][0] : '') . (isset($matches[8][0]) ? ', 8: ' . $matches[8][0] : ''));
-                        $this->setField($item, 'volume', $matches['volume'][0], 'getVolumeAndNumberForArticle 14');
-                        if (strlen($matches['number'][0]) < 7) {
-                            $this->setField($item, 'number', $matches['number'][0], 'getVolumeAndNumberForArticle 5');
-                            if ($matches['numberDesignation'][0]) {
-                                $containsNumberDesignation = true;
-                            }
-                        } else {
-                            $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . 'Article ' . $matches['number'][0], 'getVolumeAndNumberForArticle 6');
-                        }
-                        // if a match is empty, [][1] component is -1
-                        $take = $matches[1][1] >= 0 ? $matches[1][1] : $matches[2][1];
-                        $drop = $matches['number'][1] + strlen($matches['number'][0]);
-                        $this->verbose('take: ' . $take . ', drop: ' . $drop);
-                    } else {
-                        // Look for "vol" etc. followed possibly by volume number and then something other than an issue number
-                        // (e.g. some extraneous text after the entry)
-                        $volume = $this->extractLabeledContent($remainder, $this->volumeRegExp, '[1-9][0-9]{0,3}');
-                        if ($volume) {
-                            $this->verbose('[p2c]');
-                            $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 7');
-                            $take = $drop = 0;
-                        } elseif (preg_match('/^article (id )?.*$/i', $remainder)) {
-                            $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $remainder, 'getVolumeAndNumberForArticle 8');
-                            $take = 0;
-                            $drop = strlen($remainder);
-                        } else {
-                            // Look for something like 123:xxx (where xxx is not a page range)
-                            $numberOfMatches = preg_match('/([1-9][0-9]{0,3})( ?, |\(| | \(|\.|:)*(.*)/', $remainder, $matches, PREG_OFFSET_CAPTURE);
-                            if ($numberOfMatches) {
-                                $this->verbose('[p2d]');
-                                if (Str::startsWith($matches[3][0], ['Article', 'article', 'Paper', 'paper'])) {
-                                    $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $matches[3][0], 'getVolumeAndNumberForArticle 9');
-                                    $this->setField($item, 'volume', $matches[1][0], 'getVolumeAndNumberForArticle 10');
-                                } elseif (preg_match('/^([0-9]*) *([0-9]*)[ ]*$/', $remainder, $matches)) {
-                                    if (empty($item->pages)) {
-                                        $this->setField($item, 'pages', $matches[2], 'getVolumeAndNumberForArticle 11');
-                                    }
-                                    if (empty($item->volume)) {
-                                        $this->setField($item, 'volume', $matches[1], 'getVolumeAndNumberForArticle 12');
-                                    }
-                                } elseif (preg_match('/^(' . $this->numberRegExp . ')(?P<number>[0-9]{1,4})(?P<remains>.*)$/', $remainder, $matches)) {
-                                    if ($matches['number']) {
-                                        $this->setField($item, 'number', $matches['number'], 'getVolumeAndNumberForArticle 12b');
-                                        $this->addToField($item, 'note', trim($matches['remains'], '., '), 'getVolumeAndNumberForArticle 12c');
-                                        $containsNumberDesignation = true;
-                                    }
-                                } else {
-                                    // Assume all of $remainder is volume (might be something like '123 (Suppl. 19)')
-                                    if (! Str::contains($remainder, ['('])) {
-                                        $remainder = rtrim($remainder, ')');
-                                    }
-                                    // If volume is in parens, remove them.
-                                    if (preg_match('/^\((?P<volume>.*?)\)$/', $remainder, $matches)) {
-                                        $remainder = $matches['volume'];
-                                    }
-                                    $this->setField($item, 'volume', trim($remainder, ' ,;:.{}'), 'getVolumeAndNumberForArticle 13');
-                                }
-                                $take = 0;
-                                $drop = strlen($remainder);
-                            } else {
-                                $this->verbose('[p2e]');
-                                unset($item->volume);
-                                unset($item->number);
-                                $take = $drop = 0;
-                            }
-                        }
-                    }
-                }
-            }
-            $remainder = substr($remainder, 0, $take) . substr($remainder, $drop);
-            $remainder = trim($remainder, ',. )(');
-
-            $this->verbose('remainder: ' . ($remainder ? $remainder : '[empty]'));
-            if ($remainder && ctype_digit($remainder)) {
-                $this->setField($item, 'pages', $remainder, 'getVolumeAndNumberForArticle 24'); // could be a single page
-                $remainder = '';
-                $this->verbose('[p4] pages: ' . $item->pages);
-            }
-        }
     }
 
 }
