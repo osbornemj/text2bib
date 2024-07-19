@@ -688,13 +688,13 @@ class Converter
             $siteName = (! empty($matches['siteName']) && $matches['siteName'] != '\url{') ? $matches['siteName'] : null;
             $url = $matches['url'] ?? null;
             $note = $matches['note'] ?? null;
-            $trimmedNote = trim($note);
+            $trimmedNote = $note == null ? '' : trim($note);
             if ($this->dates->isYear($trimmedNote)) {
                 $this->setField($item, 'year', $trimmedNote, 'setField 4c');
                 $note = null;
             }
 
-            $dateResult = $this->dates->isDate(trim($date, ' .,'), $language, 'contains');
+            $dateResult = $date ? $this->dates->isDate(trim($date, ' .,'), $language, 'contains') : null;
 
             if ($dateResult) {
                 $accessDate = $dateResult['date'];
@@ -1061,7 +1061,7 @@ class Converter
             } else {
                 $this->verbose('Title is styled (' . $titleStyle . ')');
             }
-            $newRemainder = $before . ltrim($after, "., ");
+            $newRemainder = $before . ($after ? ltrim($after, "., ") : '');
         }
 
         if ($language == 'my') {
@@ -2644,7 +2644,8 @@ class Converter
                             $remainder = implode(' ', array_splice($possibleEditors, $j)) . ' ' . $remainder;
                             $remainder = trim($remainder);
 
-                            $editorConversion = $this->authorParser->convertToAuthors($editors, $remainder, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, false, 'editors', $language);
+                            $editorConversion = $this->authorParser->convertToAuthors($editors, $trash1, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, false, 'editors', $language);
+
                             $editor = trim($editorConversion['authorstring']);
                             // If editor ends in period and previous letter is lowercase, remove period
                             if (substr($editor, -1) == '.' && strtolower(substr($editor, -2, 1)) == substr($editor, -2, 1)) {

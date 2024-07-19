@@ -85,8 +85,15 @@ class AuthorParser
             $words[0] = substr($words[0], 8);
         }
         $remainingWords = $words;
-        if ($type == 'authors') {
-            $remainder = implode(' ', $remainingWords);
+        $remainder = implode(' ', $remainingWords);
+        if (! $remainder) {
+            return [
+                'authorstring' => '',
+                'warnings' => [],
+                'organization' => false,
+                'author_pattern' => null,
+                'author_details' => [],
+            ];
         }
 
         ////////////////////////////////////

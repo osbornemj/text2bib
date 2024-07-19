@@ -186,7 +186,7 @@ class TitleParser
                 $nextWord = $words[$key + 1] ?? null;
                 $nextButOneWord = $words[$key + 2] ?? null;
                 $word = trim($word);
-                $nextWord = trim($nextWord);
+                $nextWord = $nextWord == null ? '' : trim($nextWord);
 
                 if (empty($nextWord)) {
                     $title = rtrim(implode(' ', $initialWords), ',:;.');
