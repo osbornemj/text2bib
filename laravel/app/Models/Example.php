@@ -21,7 +21,7 @@ class Example extends Model
     public function bibtexFields(): stdClass
     {
         $output = new \stdClass();
-        foreach($this->fields as $field) {
+        foreach ($this->fields as $field) {
             $output->{$field->name} = $field->content; 
         }
 

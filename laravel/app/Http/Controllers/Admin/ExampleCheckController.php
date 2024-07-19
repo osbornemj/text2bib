@@ -44,7 +44,7 @@ class ExampleCheckController extends Controller
             ]);
             $examples = [$example];
         } else {
-            $examples = Example::all();
+            $examples = Example::with('fields')->get();
         }
 
         $results = [];
@@ -54,6 +54,8 @@ class ExampleCheckController extends Controller
 
         $authorPatternCounts = [];
         foreach ($examples as $example) {
+
+            $bibtexFields = $example->bibtexFields();
 
             $correctType = $correctContent = true;
             $result = null;
@@ -86,12 +88,12 @@ class ExampleCheckController extends Controller
                 $correctType = false;
             }
 
-            if ((array) $output['item'] != (array) $example->bibtexFields()) {
+            if ((array) $output['item'] != (array) $bibtexFields) {
                 $correctContent = false;
             }
 
-            $diff1 = array_diff_assoc((array) $output['item'], (array) $example->bibtexFields());
-            $diff2 = array_diff_assoc((array) $example->bibtexFields(), (array) $output['item']);
+            $diff1 = array_diff_assoc((array) $output['item'], (array) $bibtexFields);
+            $diff2 = array_diff_assoc((array) $bibtexFields, (array) $output['item']);
 
             $result = [];
             $result['source'] = $example->source;
@@ -111,7 +113,6 @@ class ExampleCheckController extends Controller
 
             if (!$correctContent) {
                 foreach ($diff1 as $key => $content) {
-                    $bibtexFields = $example->bibtexFields();
                     $result['errors'][$key] = 
                         [
                             'content' => $content,
