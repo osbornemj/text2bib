@@ -3,23 +3,25 @@ namespace App\Services;
 
 use Str;
 
-use App\Traits\StringExtractors;
 use App\Traits\Months;
+use App\Traits\StringExtractors;
+use App\Traits\Utilities;
 
 class PublisherAddressParser
 {
     use Months;
     use StringExtractors;
+    use Utilities;
 
     /**
-     * Assuming $string contains the publisher and address, isolate those two components;
+     * Assuming $string contains the publisher and address, isolate those two components.
      * @param $string string
-     * @param $address string
-     * @param $publisher string
+     * @param $address string|null
+     * @param $publisher string|null
      * @param $cityString string
      * @param $publisherString string
-     * @param $cities string
-     * @param $publishers string
+     * @param $cities array: from database
+     * @param $publishers array: from database
      * @return $remainder string
      */
     public function extractPublisherAndAddress(string $string, string|null &$address, string|null &$publisher, string|null $cityString, string|null $publisherString, array $cities, array $publishers): string
@@ -55,7 +57,7 @@ class PublisherAddressParser
             $remainder = trim(substr($string, $colonPos + 1), ',.: ');
 
             // If year is repeated at end of $remainder, remove it and put it in $remainder
-            $result = $this->findRemoveAndReturn($remainder, '((19|20)[0-9]{2})');
+            $result = $this->findRemoveAndReturn($remainder, '(' . $this->yearRegExp . ')');
             $dupYear = $result ? $result[0] : null;
 
             $periodPos = strpos($remainder, '.');

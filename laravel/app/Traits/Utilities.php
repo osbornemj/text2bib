@@ -108,6 +108,8 @@ trait Utilities
 
     var $articleRegExp = 'art(icle|\.) (id |no\.? ?)?[0-9]*';
 
+    var $yearRegExp = '(18|19|20)[0-9]{2}';
+
     var $forthcomingRegExp = 'forthcoming( at| in)?|in press|accepted( at)?|to appear in';
     var $endForthcomingRegExp = '( |\()(forthcoming|in press|accepted|to appear)\.?\)?$';
     var $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
@@ -551,7 +553,7 @@ trait Utilities
         $addressPublisher = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-. ]{0,50})';
 
         if ($allowYear) {
-            $match = preg_match($begin . '\(?' . $addressPublisher . '(, (?P<year>(19|20)[0-9]{2}))?\)?' . $end, $string, $matches);
+            $match = preg_match($begin . '\(?' . $addressPublisher . '(, (?P<year>' . $this->yearRegExp . '))?\)?' . $end, $string, $matches);
         } else {
             $match = preg_match($begin . '\(?' . $addressPublisher . '\)?' . $end, $string, $matches);
         }

@@ -23,7 +23,7 @@ trait StringExtractors
     private function findRemoveAndReturn(string &$string, string $regExp, bool $caseInsensitive = true): false|string|array
     {
         $matched = preg_match(
-            '%' . $regExp . '%' . ($caseInsensitive ? 'i' : ''),
+            '%' . $regExp . '%u' . ($caseInsensitive ? 'i' : ''),
             $string,
             $matches,
             PREG_OFFSET_CAPTURE
@@ -48,9 +48,9 @@ trait StringExtractors
 
     /*
      * If $reportLabel is false: 
-     * For $string that matches <label><content>, remove match for <label> and <content> and return match for <content>,
-     * where <label> and <content> are regular expressions (without delimiters).  Matching is case-insensitive.
-     * If no matches, return false.
+     *   For $string that matches <label><content>, remove match for <label> and <content> and return match for <content>,
+     *   where <label> and <content> are regular expressions (without delimiters).  Matching is case-insensitive.
+     *   If no matches, return false.
      * If $reportLabel is true, return array with components 'label' and 'content'.
      * Example: $doi = $this->extractLabeledContent($string, ' doi:? | doi: ?|https?://dx.doi.org/|https?://doi.org/', '[a-zA-Z0-9/._]+');
      */ 

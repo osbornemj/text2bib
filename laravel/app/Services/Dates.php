@@ -2,10 +2,12 @@
 namespace App\Services;
 
 use Str;
+
 use Carbon\Carbon;
 //use Carbon\Exceptions\InvalidFormatException;
 
 use App\Traits\Months;
+use App\Traits\Utilities;
 
 class Dates
 {
@@ -15,6 +17,7 @@ class Dates
     var $monthsAbbreviationsRegExp;
     
     use Months;
+    use Utilities;
 
     public function __construct()
     {
@@ -32,18 +35,6 @@ class Dates
         $number = (int) $string;
         return $number > 1800 && $number < 2100;
     }
-
-    /**
-     * Report whether $string is a range of years between 1900 and 2099
-     * @param string $string
-     * @return bool
-     */
-    /*
-    public function isYearRange(string $string): bool
-    {
-        return preg_match('/(19|20)[0-9]{2} ?- ?(19|20)[0-9]{2}/', $string);
-    }
-    */
 
     /**
      * Get last best (a non-range, if there is one) substring in $string that is a date,
@@ -166,9 +157,9 @@ class Dates
         $monthRegExp = '(?P<month>(' . $months . ')([-\/](' . $months . '))?)?';
 
         // Year should not be preceded by 'pp. ', which would mean it is in fact a page number/page range.
-        $yearRegExp = '(?P<year>(?<!pp\. )(' . $centuries . ')([0-9]{2})(?P<yearRange>(--?((18|19|20)[0-9]{2}|[0-9]{1,2})|\/[0-9]{1,4}))?)[a-z]?';
+        $yearOrRangeRegExp = '(?P<year>(?<!pp\. )(' . $centuries . ')([0-9]{2})(?P<yearRange>(--?(' . $this->yearRegExp . '|[0-9]{1,2})|\/[0-9]{1,4}))?)[a-z]?';
 
-        $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearRegExp : $yearRegExp;
+        $regExp0 = $allowMonth ? $monthRegExp . '\.?,? *?' . $yearOrRangeRegExp : $yearOrRangeRegExp;
 
         // Require space or ',' in front of year if search is not restricted to start or in parens or brackets,
         // to avoid picking up second part of page range (e.g. 1913-1920).  (Comma allowed in case of no space: e.g. 'vol. 17,1983'.)
@@ -233,7 +224,7 @@ class Dates
     {
         $ofs = ['en' => '', 'cz' => '', 'fr' => '', 'es' => 'de', 'my' => '', 'nl' => '', 'pt' => 'de '];
 
-        $year = '(?P<year>(19|20)[0-9]{2})';
+        $year = '(?P<year>' . $this->yearRegExp . ')';
         $monthName = '(?P<monthName>' . ($this->makeMonthsRegExp())[$language] . ')';
 
         $of = $ofs[$language];

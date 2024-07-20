@@ -110,7 +110,7 @@ class TitleParser
 
         // Common pattern for journal article.  (Allow year at end of title, but no other pattern with digits, otherwise whole string,
         // including journal name and volume, number, and page info may be included.)
-        if (preg_match('/^(?P<title>[^\.]+ (?P<lastWord>([a-zA-Z]+|(19|20)[0-9]{2})))\. (?P<remainder>[a-zA-Z\.,\\\' ]{5,30} [0-9;():\-.,\. ]*)$/', $remainder, $matches)) {
+        if (preg_match('/^(?P<title>[^\.]+ (?P<lastWord>([a-zA-Z]+|' . $this->yearRegExp . ')))\. (?P<remainder>[a-zA-Z\.,\\\' ]{5,30} [0-9;():\-.,\. ]*)$/', $remainder, $matches)) {
             $lastWord = $matches['lastWord'];
             // Last word has to be in the dictionary (proper nouns allowed) and not an excluded word, OR start with a lowercase letter
             // That excludes cases in which the period ends an abbreviation in a journal name (like "A theory of something, Bull. Amer.").
@@ -264,7 +264,7 @@ class TitleParser
                 // }
                 $upcomingBookVolume = preg_match('/(^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. )\S+ (?!of)/', $remainder);
                 $upcomingVolumeCount = preg_match('/^\(?(?P<note>[1-9][0-9]{0,1} ([Vv]ols?\.?|[Vv]olumes))\)?/', $remainder, $volumeCountMatches);
-                $journalPubInfoNext = preg_match('/^(19|20)[0-9]{2}(,|;| ) ?(' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?([0-9, \-p\.():]*$|\([0-9]{2,4}\))/', $remainder);
+                $journalPubInfoNext = preg_match('/^' . $this->yearRegExp . '(,|;| ) ?(' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?([0-9, \-p\.():]*$|\([0-9]{2,4}\))/', $remainder);
 
                 if ($journalPubInfoNext) {
                     $this->verbose("Ending title, case 2a (journal pub info next, with no journal name");
@@ -319,13 +319,13 @@ class TitleParser
                             || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder) 
                             // journal name followed by year and publication info, allowing issue number and page
                             // numbers to be preceded by letters and issue numberto have / or - in it --- no year.
-                            || preg_match('/^\p{Lu}[\p{L} &()\-]+[,.]? (19|20)[0-9]{2},? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder)
+                            || preg_match('/^\p{Lu}[\p{L} &()\-]+[,.]? ' . $this->yearRegExp . ',? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder)
                             // journal name followed by more specific publication info, year at end, allowing issue number and page
                             // numbers to be preceded by letters.
-                            || preg_match('/^[A-Z][A-Za-z &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '(, |. |.)(\(?(19|20)[0-9]{2}\)?)$/', $remainder) 
+                            || preg_match('/^[A-Z][A-Za-z &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '(, |. |.)(\(?' . $this->yearRegExp . '\)?)$/', $remainder) 
                             // journal name followed by more specific publication info, year first, allowing issue number and page
                             // numbers to be preceded by letters.
-                            || preg_match('/^[A-Z][A-Za-z &()]+[,.]? (19|20)[0-9]{2},? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '\.? ?$/', $remainder)
+                            || preg_match('/^[A-Z][A-Za-z &()]+[,.]? ' . $this->yearRegExp . ',? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '\.? ?$/', $remainder)
                             // $word ends in period && journal name (can include commma), pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
                             || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:( ] ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\/]*$/', $remainderMinusArticle))
                             || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?\([0-9]{2,4}\)/', $remainderMinusArticle))
@@ -372,7 +372,7 @@ class TitleParser
                            )
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($startPagesRegExp, $remainder)
-                        || preg_match('/^[Ii]n:? [`\']?([A-Z]|[19|20][0-9]{2})|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^[Ii]n:? [`\']?([A-Z]|' . $this->yearRegExp . ')|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || (
                             $nextWord 
                             && Str::endsWith($nextWord, '.') 
@@ -388,7 +388,7 @@ class TitleParser
                         // pages (e.g. within book)
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
-                        || preg_match('/^(19|20)[0-9][0-9](\.|$)/', $remainder)
+                        || preg_match('/^' . $this->yearRegExp . '(\.|$)/', $remainder)
                         // address [no spaces]: publisher in db
                         || (
                             preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) 
@@ -401,11 +401,11 @@ class TitleParser
                            )
                         // one- or two-word publisher, address [city in db], <year>?
                         || (
-                            preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?, (?P<city>[A-Za-z, ]+)(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
+                            preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?, (?P<city>[A-Za-z, ]+)(, ' . $this->yearRegExp . ')?$/', $remainder, $matches) 
                             && in_array(trim($matches['city']), $cities)
                            )
                         // one- or two-word publisher, city (up to 2 words), US State, <year>?
-                        || preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?, (?P<city>[A-Z][a-z]+( [A-Z][a-z]+)?, [A-Z]{2})(, (19|20)[0-9]{2})?$/', $remainder, $matches) 
+                        || preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?, (?P<city>[A-Z][a-z]+( [A-Z][a-z]+)?, [A-Z]{2})(, ' . $this->yearRegExp . ')?$/', $remainder, $matches) 
                         // . <address>: <publisher>(, <year>)?$ OR (<address>: <publisher>(, <year>)?)
                         // Note that ',' is allowed in address and
                         // '.' and '&' are allowed in publisher.  May need to put a limit on length of publisher part?
@@ -416,9 +416,9 @@ class TitleParser
                             && $this->isAddressPublisher($remainder)
                            )
                         // <publisher>, <address>, <year>
-                        || preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}), (?P<year>(19|20)[0-9]{2})\.?$/u', $remainder, $matches) 
+                        || preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}), (?P<year>' . $this->yearRegExp . ')\.?$/u', $remainder, $matches) 
                         // <publisher>, <address> (<year>)
-                        || preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}) \((?P<year>(19|20)[0-9]{2})\)\.?$/u', $remainder, $matches) 
+                        || preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}) \((?P<year>' . $this->yearRegExp . ')\)\.?$/u', $remainder, $matches) 
                         // (<publisher> in db
                         || Str::startsWith(ltrim($remainder, '('), $publishers)
                         // (<city> in db

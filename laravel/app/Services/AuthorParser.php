@@ -15,7 +15,7 @@ class AuthorParser
 {
     var $andWords;
     var $aspell;
-    var $authorDetails = [];
+    var $authorDetails;
     var $nameSuffixes;
     var $vonNames;
 
@@ -80,6 +80,8 @@ class AuthorParser
      */
     public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
     {
+        $this->authorDetails = [];
+
         // if author list is in \textsc, remove the \textsc
         if (isset($words[0]) && Str::startsWith($words[0], '\textsc{')) {
             $words[0] = substr($words[0], 8);
@@ -239,7 +241,7 @@ class AuthorParser
          * Author strings without spaces, like 'John Doe and Jane Doe' or 'Doe J and Doe K' should have been
          * taken care of by author patterns (above).
          */
-        preg_match('/^(?P<name>[\p{L} ]{3,80})(?P<remains>[\(\[]?[1-9][0-9]{3}.*$)/u', $remainder, $matches);
+        preg_match('/^(?P<name>[\p{L} ]{3,80})\.? ?(?P<remains>[\(\[]?[1-9][0-9]{3}.*$)/u', $remainder, $matches);
         if (! empty($matches)) {
             $remainder = $matches['remains'];
             $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
@@ -495,7 +497,7 @@ class AuthorParser
                     if (count($remainingWords)) {
                         $remainder = implode(" ", $remainingWords);
                         $this->verbose('[c2a getDate 2]');
-                        if (preg_match('/^(18|19|20)[0-9]{2}$/', $remainingWords[0])) {
+                        if (preg_match('/^' . $this->yearRegExp . '$/', $remainingWords[0])) {
                             // If first remaining word is a year **with no punctuation**, assume it starts title
                         } else {
                             $year = $this->dates->getDate($remainder, $remains, $trash1, $trash2, $trash3, true, true, true, $language);
@@ -658,7 +660,7 @@ class AuthorParser
                     (isset($words[$i+3][0]) && preg_match('/[a-z]/', $words[$i+3][0]) && ! in_array($words[$i+3], $this->vonNames))
                    )
                 && ! in_array($words[$i+2], ['et', 'et.', 'al', 'al.'])
-                && (! isset($words[$i+3]) || ! preg_match('/^[\(\[]?(19|20)[0-9]{2}[\)\]]?$/', trim($words[$i+3], '.')))
+                && (! isset($words[$i+3]) || ! preg_match('/^[\(\[]?' . $this->yearRegExp . '[\)\]]?$/', trim($words[$i+3], '.')))
                 ) {
                 $this->verbose('[convertToAuthors 14a]');
                 $fullName .= ' ' . $word;
@@ -1447,7 +1449,7 @@ class AuthorParser
                 $endsWithPunc = true;
             }
 
-            if (preg_match('/(\(|\[)?(18|19|20)([0-9][0-9])(\)|\])?/', $word) || Str::startsWith($word, '(')) {
+            if (preg_match('/(\(|\[)?' . $this->yearRegExp . '(\)|\])?/', $word) || Str::startsWith($word, '(')) {
                 $stop = true;
                 $include = false;
             }

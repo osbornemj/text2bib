@@ -129,6 +129,9 @@ trait StringCleaners
         // Fix errors like 'x{\em ' by adding space after the x [might not be error?]
         $string = preg_replace('/([^ ])(\{\\\[A-Za-z]{2,8} )/', '$1 $2', $string);
 
+        // Remove spaces before commas (assumed to be errors)
+        $string = str_replace(' ,', ',', $string);
+
         // Delete ^Z and any trailing space (^Z is at end of last entry of DOS file)
         $string = rtrim($string, " \032");
         $string = ltrim($string, ' ');

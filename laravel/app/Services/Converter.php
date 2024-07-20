@@ -40,13 +40,15 @@ class Converter
     var $edsRegExp1;
     var $edsRegExp2;
     var $edsRegExp4;
+    var $entryPrefixes;
+    var $entrySuffixes;
     var $excludedWords;
     var $fullThesisRegExp;
     var $inReviewRegExp1;
     var $inReviewRegExp2;
     var $inReviewRegExp3;
-    var $isbnRegExp1;
-    var $isbnRegExp2;
+    var $isbnLabelRegExp;
+    var $isbnNumberRegExp;
     var $issnRegExps;
     var $italicTitle;
     var $itemType;
@@ -55,8 +57,8 @@ class Converter
     var $monthsRegExp;
     var $monthsAbbreviationsRegExp;
     var $names;
-    var $oclcRegExp1;
-    var $oclcRegExp2;
+    var $oclcLabelRegExp;
+    var $oclcNumberRegExp;
     var $ordinals;
     var $pagesRegExp;
     var $pageRegExp;
@@ -232,9 +234,9 @@ class Converter
         $this->inReviewRegExp2 = '/^[Ii]n [Rr]eview/';
         $this->inReviewRegExp3 = '/(\(?[Ii]n [Rr]eview\.?\)?)$/';
 
-        $this->isbnRegExp1 = 'ISBN(-(10|13))?:? ?';
+        $this->isbnLabelRegExp = 'ISBN(-(10|13))?:? ?';
         // ISBN should not have spaces, but allow them.  (ISBN has 10 or 13 digits.)
-        $this->isbnRegExp2 = '[0-9X -]{10,17}';
+        $this->isbnNumberRegExp = '[0-9X -]{10,17}';
 
         $issnNumberFormat = '[0-9]{4}-[0-9]{3}[0-9X]';
         $this->issnRegExps = [
@@ -244,8 +246,8 @@ class Converter
             '/[( ,](e-|p-)?ISSN(:|: | )(\(?(online|digital|print)[) ])?' . '(e-?|p-?)?' . $issnNumberFormat . '(\)|,|.| |$)/',
         ];
 
-        $this->oclcRegExp1 = 'OCLC:? ';
-        $this->oclcRegExp2 = '[0-9]+';
+        $this->oclcLabelRegExp = 'OCLC:? ';
+        $this->oclcNumberRegExp = '[0-9]+';
 
         $this->bookTitleAbbrevs = ['Proc', 'Amer', 'Conf', 'Cont', 'Sci', 'Int', "Auto", 'Symp'];
 
@@ -292,6 +294,12 @@ class Converter
 
         $this->monthsRegExp = $this->dates->monthsRegExp;
         $this->monthsAbbreviationsRegExp = $this->dates->monthsAbbreviationsRegExp;
+
+        // These string are removed from the start of an entry.
+        $this->entryPrefixes = ["\\noindent", "\\smallskip", "\\item", "\\bigskip"];
+        // These string are removed from the end of an entry.
+        // (If "[J]" means the item is a journal article, that info could be used.)
+        $this->entrySuffixes = ["\\", "[J].", "[J]"];
     }
 
     ///////////////////////////////////////////////////
@@ -318,6 +326,8 @@ class Converter
         $item->note = '';
         $itemKind = null;
         $itemLabel = null;
+
+        $isArticle = $containsPageRange = $containsProceedings = false;
 
         $language = $language ?: $conversion->language;
         $charEncoding = $charEncoding ?: $conversion->char_encoding;
@@ -371,26 +381,29 @@ class Converter
         // Otherwise extract label, if any, and remove numbers and other stray characters at start of entry //
         //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        if (preg_match('/^(?P<year>[1-9][0-9]{3})\*? (?P<remainder>.*)$/', $entry, $matches)) {
+        if (preg_match('/^(?P<year>' . $this->yearRegExp . ')\*? (?P<remainder>.*)$/', $entry, $matches)) {
             $year = $matches['year'];
             $remainder = ltrim($matches['remainder'], ' |*+');
             $this->verbose(['item' => $entry]);
             $this->setField($item, 'year', $year, 'setField 114');
         } else {
-            // interpret string like [Arrow12] at start of entry as label
-            if (preg_match('/^[\[{](?P<label>[a-zA-Z0-9:]{3,10})[\]}] (?P<entry>.*)$/', $entry, $matches)) {
-                if ($matches['label'] && preg_match('/[A-Za-z]/', $matches['label'])) {
+            // interpret string like [Arrow12] or {Arrow12} (must contain at least one letter) at start of entry as label
+            if (preg_match('/^[\[{](?P<label>[\p{L}0-9:]{3,10})[\]}] (?P<entry>.*)$/u', $entry, $matches)) {
+                if ($matches['label'] && preg_match('/\p{L}/u', $matches['label'])) {
                     $itemLabel = $matches['label'];
                     $entry = $matches['entry'] ?? '';
                 }
             }
-            // Remove numbers and other symbols at start of entry, like '6.' or '[14]'.
+
+            // If whole entry is is quotes ("), remove them.
             if (substr($entry, 0, 1) == '"' && substr($entry, -1) == '"') {
                 $entry = substr($entry, 1, strlen($entry) - 2);
             }
+
+            // Remove numbers and other symbols at start of entry, like '6.' or '[14]'.
             $entry = ltrim($entry, ' .0123456789[]()|*+:^');
 
-            // If entry starts with '\bibitem [abc] {<label>}', get <label> and remove '\bibitem' and arguments
+            // If entry starts with '\bibitem [abc] {<label>}', get <label> and remove '\bibitem' and arguments.
             if (preg_match('/^\\\bibitem *(\[[^\]]*\])? *{(?P<label>[^}]*)}(?P<entry>.*)$/', $entry, $matches)) {
                 if ($matches['label'] && ! $conversion->override_labels) {
                     $itemLabel = $matches['label'];
@@ -398,11 +411,9 @@ class Converter
                 $entry = $matches['entry'];
             }
 
-            $starts = ["\\noindent", "\\smallskip", "\\item", "\\bigskip"];
-            foreach ($starts as $start) {
-                if (Str::startsWith($entry, $start)) {
-                    $entry = trim(substr($entry, strlen($start)));
-                }
+            // Remove members of $this->entryPrefixes from start of entry
+            foreach ($this->entryPrefixes as $entryPrefix) {
+                $entry = Str::replaceStart($entryPrefix, '', $entry);
             }
 
             // If nothing is left, return.
@@ -413,11 +424,10 @@ class Converter
             // Don't put the following earlier---{} may legitimately follow \bibitem
             $entry = str_replace("{}", "", $entry);
 
-            // It could be that a [J] at the end signifies a journal article, in which case that info could be used.
-            $entry = Str::replaceEnd('[J].', '', $entry);
-            $entry = Str::replaceEnd('[J]', '', $entry);
-
-            $entry = Str::replaceEnd('\\', '', $entry);
+            // Remove members of $this->entrySufixes from end of entry
+            foreach ($this->entrySuffixes as $entrySuffix) {
+                $entry = Str::replaceEnd($entrySuffix, '', $entry);
+            }
 
             // If entry starts with [n] or (n) for some number n, eliminate it
             $entry = preg_replace("/^\s*\[\d*\]|^\s*\(\d*\)/", "", $entry);
@@ -433,16 +443,13 @@ class Converter
             $remainder = $entry;
         }
 
-        // Remove spaces before commas (assumed to be errors)
-        $remainder = str_replace(' ,', ',', $remainder);
-
         $completeEntry = $remainder;
-
-        $isArticle = $containsPageRange = $containsProceedings = false;
 
         ////////////////////
         // Get doi if any //
         ////////////////////
+
+        $containsUrlAccessInfo = false;
 
         $urlRegExp = '(\\\url{|\\\href{)?(?P<url>https?://\S+)(})?';
 
@@ -450,6 +457,7 @@ class Converter
         $retrievedFromRegExp2 = $this->retrievedFromRegExp2[$language];
         $accessedRegExp1 = $this->accessedRegExp1[$language];
 
+        $urlDate = null;
         // doi in a Markdown-formatted url
         if (preg_match('%\[https://doi\.org/(?P<doi>[^ \]]+)\]\(https://doi\.org/(?P<doi1>[^ \)]+)\)%', $remainder, $matches)) {
             $doi = $matches['doi'];
@@ -489,7 +497,7 @@ class Converter
 
             if ($dateResult) {
                 $accessDate = $dateResult['date'];
-                $this->setField($item, 'urldate', rtrim($accessDate, '., '), 'setField 5c');
+                $urlDate = rtrim($accessDate, '., ');
                 $containsUrlAccessInfo = true;
             }
         }
@@ -533,6 +541,7 @@ class Converter
         $doi = Str::replaceStart('doi.', '', $doi);
         $doi = rtrim($doi, ']');
         $doi = ltrim($doi, '/:');
+
         if (in_array($use, ['latex'])) {
             $doi = preg_replace('/([^\\\])_/', '$1\_', $doi);
         }
@@ -541,6 +550,10 @@ class Converter
         $remainder = str_replace('{\tt ' . $doi . '}', '', $remainder);
         $remainder = str_replace('{' . $doi . '}', '', $remainder);
         // $remainder = str_replace($doi, '', $remainder);
+
+        if ($urlDate) {
+            $this->setField($item, 'urldate', $urlDate, 'setField 5c');
+        }
 
         if ($doi) {
             $this->setField($item, 'doi', $doi, 'setField 1');
@@ -554,16 +567,14 @@ class Converter
         // Get PMID and PMCID if any //
         ///////////////////////////////
 
-        if (preg_match('/pmid: [0-9]{6,9}/i', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-            $this->addToField($item, 'note', $matches[0][0], 'addToField 1a');
-            $remainder = substr($remainder, 0, $matches[0][1]) . substr($remainder, $matches[0][1] + strlen($matches[0][0]));
-            $remainder = trim($remainder, ' .;');
-        }
+        $pmCodePatterns = ['pmid: [0-9]{6,9}', 'pmcid: [A-Z]{1,4}[0-9]{6,9}'];
 
-        if (preg_match('/pmcid: [A-Z]{1,4}[0-9]{6,9}/i', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
-            $this->addToField($item, 'note', $matches[0][0], 'addToField 1b');
-            $remainder = substr($remainder, 0, $matches[0][1]) . substr($remainder, $matches[0][1] + strlen($matches[0][0]));
-            $remainder = trim($remainder, ' .;');
+        foreach ($pmCodePatterns as $pmCodePattern) {
+            if (preg_match('/^(?P<before>.*)(?P<pmcode>' . $pmCodePattern . ')(?P<after>.*)$/i', $remainder, $matches)) {
+                $this->addToField($item, 'note', $matches['pmcode'], 'addToField 1a');
+                $remainder = $matches['before'] . $matches['after'];
+                $remainder = trim($remainder, ' .;');
+            }
         }
 
         //////////////////////////////////////
@@ -584,7 +595,7 @@ class Converter
                 $hasFullDate = true;
                 $remainder = substr($remainder, 0, $matches1[0][1]) . ' ' . substr($remainder, $matches1['afterArxiv'][1] + strlen($dateResult['date']));
             } else {
-                if (preg_match('/^(?P<year>(19|20)[0-9]{2})[,.]? /', $matches1['afterArxiv'][0], $matches2)) {
+                if (preg_match('/^(?P<year>' . $this->yearRegExp . ')[,.]? /', $matches1['afterArxiv'][0], $matches2)) {
                     $this->setField($item, 'archiveprefix', 'arXiv', 'setField 2b');
                     $this->setField($item, 'year', $matches2['year'], 'setField 2c');
                     $remainder = substr($remainder, 0, $matches1[0][1]) . ' ' . substr($remainder, $matches1['afterArxiv'][1] + strlen($matches2[0]));
@@ -599,8 +610,6 @@ class Converter
                 }
             }
         }
-
-        //$eprint = $this->extractLabeledContent($remainder, ' arxiv[:,] ?', '\S+');
 
         $eprint = $this->extractLabeledContent($remainder, '([Ii]n|{\\\em)? bioRxiv[ }]?', '\S+ \S+');
 
@@ -617,65 +626,27 @@ class Converter
         $remainder = preg_replace('/ ?[\(\[](online|en ligne|internet)[\)\]]/i', '', $remainder, 1, $replacementCount);
         $onlineFlag = $replacementCount > 0;
 
-        // Retrieved from (site)? <url> accessed <date>
-        preg_match(
+        $patterns = [
+            // Retrieved from (site)? <url> accessed <date>
             '%(?P<retrievedFrom> ' . $retrievedFromRegExp1 . ')\[?(?P<siteName>.*)? ?\[?' . $urlRegExp . '[.,]? \[?' . $accessedRegExp1 . '\]?$%i',
-            $remainder,
-            $matches,
-        );
+            // Retrieved from (site)? <url> <date>?
+            '%(?P<retrievedFrom> ' . $retrievedFromRegExp1 . ')\[?(?P<siteName>.*)? ?\[?' . $urlRegExp . '(?P<date1> .*)?$%i',
+            // Retrieved <date>? from <url> <note>?
+            '%(?P<retrievedFrom> ' . $retrievedFromRegExp2 . ')\[?(?P<siteName>.*)? ?\[?' . $urlRegExp . '(?P<note> .*)?$%iJ',
+            // <url> accessed <date>
+            '%(url: ?)?' . $urlRegExp . ',? ?\(?' . $accessedRegExp1 . '\)?\.?$%i',
+            // accessed <date> <url>
+            '%' . $accessedRegExp1 . '\.? ' . $urlRegExp . '$%i',
+            // accessed <date> [no url]
+            '%' . $accessedRegExp1 . '\.?$%i',
+            // <url> <note>
+            '%(url: ?)?' . $urlRegExp . '(?P<note>.*)$%i',
+        ];
 
-        // Retrieved from (site)? <url> <date>?
-        if (! count($matches)) {
-            preg_match(
-                '%(?P<retrievedFrom> ' . $retrievedFromRegExp1 . ')\[?(?P<siteName>.*)? ?\[?' . $urlRegExp . '(?P<date1> .*)?$%i',
-                $remainder,
-                $matches,
-            );
-        }
-
-        // Retrieved <date>? from <url> <note>?
-        if (! count($matches)) {
-            preg_match(
-                '%(?P<retrievedFrom> ' . $retrievedFromRegExp2 . ')\[?(?P<siteName>.*)? ?\[?' . $urlRegExp . '(?P<note> .*)?$%iJ',
-                $remainder,
-                $matches,
-            );
-        }
-
-        // <url> accessed <date>
-        if (! count($matches)) {
-            preg_match(
-                '%(url: ?)?' . $urlRegExp . ',? ?\(?' . $accessedRegExp1 . '\)?\.?$%i',
-                $remainder,
-                $matches,
-            );
-        }
-
-        // accessed <date> <url>
-        if (! count($matches)) {
-            preg_match(
-                '%' . $accessedRegExp1 . '\.? ' . $urlRegExp . '$%i',
-                $remainder,
-                $matches,
-            );
-        }
-
-        // accessed <date> [no url]
-        if (! count($matches)) {
-            preg_match(
-                '%' . $accessedRegExp1 . '\.?$%i',
-                $remainder,
-                $matches,
-            );
-        }
-
-        // <url> <note>
-        if (! count($matches)) {
-            preg_match(
-                '%(url: ?)?' . $urlRegExp . '(?P<note>.*)$%i',
-                $remainder,
-                $matches,
-            );
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $remainder, $matches)) {
+                break;
+            }
         }
 
         if (count($matches)) {
@@ -701,7 +672,6 @@ class Converter
             }
         }
 
-        $containsUrlAccessInfo = false;
         $urlHasPdf = false;
 
         // Write access date even if there is no URL.  (Presumably "accessed ..." means it is in fact an online item.)
@@ -731,7 +701,7 @@ class Converter
         /////////////////////
 
         $containsIsbn = false;
-        $match = $this->extractLabeledContent($remainder, ' \(?' . $this->isbnRegExp1, $this->isbnRegExp2 . '\)?');
+        $match = $this->extractLabeledContent($remainder, ' \(?' . $this->isbnLabelRegExp, $this->isbnNumberRegExp . '\)?');
         if ($match) {
             $containsIsbn = true;
             $this->setField($item, 'isbn', trim(str_replace(' ', '', $match), '()'), 'setField 16');
@@ -763,7 +733,7 @@ class Converter
         // Get OCLC if any //
         /////////////////////
 
-        $match = $this->extractLabeledContent($remainder, ' ' . $this->oclcRegExp1, $this->oclcRegExp2);
+        $match = $this->extractLabeledContent($remainder, ' ' . $this->oclcLabelRegExp, $this->oclcNumberRegExp);
         if ($match) {
             $this->setField($item, 'oclc', $match, 'setField 17a');
         }
@@ -771,6 +741,7 @@ class Converter
         //////////////////////////
         // Get Epub info if any //
         //////////////////////////
+
         $result = $this->findRemoveAndReturn($remainder, '(Epub ahead of print|Epub \d{4} [A-Za-z]+ \d{1,2}\.?)');
         if ($result !== false) {
             $this->addToField($item, 'note', rtrim($result[0], '.') . '.', 'addToField 2b');
@@ -792,7 +763,7 @@ class Converter
         $containsTranslator = false;
         // Translators: string up to first period preceded by a lowercase letter.
         // Case of "Trans." is handled later, after item type is determined, because "Trans." is an abbreviation used in journal names.
-        $result = $this->findRemoveAndReturn($remainder, '[Tt]ranslat(ed|ion) by .*?[a-z]\)?(\.| \()', false);
+        $result = $this->findRemoveAndReturn($remainder, '[Tt]ranslat(ed|ion) by .*?\p{Ll}\)?(\.| \()', false);
         if ($result) {
             $this->addToField($item, 'note', trim(ucfirst($result[0]), ')( '), 'addToField 3');
             $before = Str::replaceEnd(' and ', '', $result['before']);
@@ -948,7 +919,7 @@ class Converter
             $month = $day = $date = null;
             $isEditor = false;
             array_shift($words);
-            if (isset($words[0]) && preg_match('/^[\(\[]?(?P<year>(19|20)[0-9]{2})[a-z]?[\)\]]?$/', rtrim($words[0], '.,'), $matches)) {
+            if (isset($words[0]) && preg_match('/^[\(\[]?(?P<year>' . $this->yearRegExp . ')[a-z]?[\)\]]?$/', rtrim($words[0], '.,'), $matches)) {
                 $year = $matches['year'];
                 array_shift($words);
             } else {
@@ -1177,7 +1148,7 @@ class Converter
         // Look for volume-number-year pattern, to use later when determining item type
         //dd($this->numberRegExp);
         $containsVolumeNumberYear = false;
-        if (preg_match('/(' . $this->volumeRegExp . ')? ?\d{1,4},? ?(' . $this->numberRegExp . ')? ?\d{1,4} [\(\[]?(19|20)[0-9]{2}[\)\]]/', $remainder)) {
+        if (preg_match('/(' . $this->volumeRegExp . ')? ?\d{1,4},? ?(' . $this->numberRegExp . ')? ?\d{1,4} [\(\[]?' . $this->yearRegExp . '[\)\]]/', $remainder)) {
             $containsVolumeNumberYear = true;
             $this->verbose("Contains volume-number-year string");
         }
@@ -1425,7 +1396,7 @@ class Converter
         }
 
         if (! $hasSecondaryDate) {
-            preg_match('/[Ff]irst published (18|19|20)[0-9]{2}/', $remainder, $matches, PREG_OFFSET_CAPTURE);
+            preg_match('/[Ff]irst published ' . $this->yearRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE);
             if (isset($matches[0][0])) {
                 $hasSecondaryDate = true;
                 $this->addToField($item, 'note', $matches[0][0]);
@@ -2107,6 +2078,7 @@ class Converter
                             }
                             $isEditor = true;
                             $editorConversion = $this->authorParser->convertToAuthors(explode(' ', $possibleEditors), $remains, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, false, 'editors', $language);
+                            $this->detailLines = array_merge($this->detailLines, $editorConversion['author_details']);
                             $this->setField($item, 'editor', trim($editorConversion['authorstring']), 'setField 34');
                         } else {
                             $this->verbose('No editors found');
@@ -2294,6 +2266,7 @@ class Converter
                             $booktitle = Str::beforeLast($tempRemainderMinusEds, '(');
                             $editorString = Str::afterLast($tempRemainderMinusEds, '(');
                             $result = $this->authorParser->convertToAuthors(explode(' ', $editorString), $remainder, $trash, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'editors', $language);
+                            $this->detailLines = array_merge($this->detailLines, $result['author_details']);
                         } else {
                             $trash2 = false;
                             // Include edition in title (because no BibTeX field for edition for incollection)
@@ -2307,6 +2280,7 @@ class Converter
                             }
                             $isEditor = true;
                             $result = $this->authorParser->convertToAuthors(explode(' ', $tempRemainder), $tempRemainder, $trash, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'editors', $language);
+                            $this->detailLines = array_merge($this->detailLines, $result['author_details']);
                         }
                         $this->setField($item, 'editor', trim($result['authorstring']), 'setField 119');
                         $remainderContainsEds = true;
@@ -2344,9 +2318,11 @@ class Converter
                             $lastPeriodPos = strrpos($before, '.');
                             $editorString = substr($before, 0, max($lastCommaPos, $lastPeriodPos));
                             $result = $this->authorParser->convertToAuthors(explode(' ', $editorString), $remainderFromC2A, $trash, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'editors', $language);
+                            $this->detailLines = array_merge($this->detailLines, $result['author_details']);
                             $remainder = $remainderFromC2A . substr($origRemainder, max($lastCommaPos, $lastPeriodPos));
                         } else {
                             $result = $this->authorParser->convertToAuthors(explode(' ', $rest), $remainder, $trash, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'editors', $language);
+                            $this->detailLines = array_merge($this->detailLines, $result['author_details']);
                         }
                         $this->setField($item, 'editor', trim($result['authorstring'], ', '), 'setField 120');
                         $updateRemainder = false;
@@ -2395,6 +2371,7 @@ class Converter
                                 $this->setField($item, 'booktitle', $matches1['booktitle'], 'setField 130');
                                 $isEditor = true;
                                 $conversionResult = $this->authorParser->convertToAuthors(explode(' ', $matches1['editor']), $remainder, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, determineEnd: false, type: 'editors', language: $language);
+                                $this->detailLines = array_merge($this->detailLines, $conversionResult['author_details']);
                                 $this->setField($item, 'editor', trim($conversionResult['authorstring'], ', '), 'setField 131');
                                 $remainder = trim($matches1['pubInfo'], ',. ');
                             } elseif ($result2 && $this->authorParser->isNameString($matches2['editor'])) {
@@ -2403,6 +2380,7 @@ class Converter
                                 $this->setField($item, 'booktitle', $matches2['booktitle'], 'setField 130');
                                 $isEditor = true;
                                 $conversionResult = $this->authorParser->convertToAuthors(explode(' ', $matches2['editor']), $remainder, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, determineEnd: false, type: 'editors', language: $language);
+                                $this->detailLines = array_merge($this->detailLines, $conversionResult['author_details']);
                                 $this->setField($item, 'editor', trim($conversionResult['authorstring'], ', '), 'setField 131');
                                 $remainder = trim($matches2['pubInfo'], ',. ');
                             } elseif ($this->authorParser->isNameString($remainder)) {
@@ -2453,6 +2431,7 @@ class Converter
                                 $remainder = $matches['edsAndPubInfo'];
                                 $remainingWords = explode(' ', $remainder);
                                 $editorConversion = $this->authorParser->convertToAuthors($remainingWords, $remainder, $trash2, $trash3, $trash4, $trash5, $isEditor, $this->cities, $this->dictionaryNames, true, 'editors', $language);
+                                $this->detailLines = array_merge($this->detailLines, $editorConversion['author_details']);
                                 $this->setField($item, 'booktitle', $booktitle, 'setField 121');
                                 $editorString = trim($editorConversion['authorstring'], ', ');
                                 $this->setField($item, 'editor', $editorString, 'setField 122');
@@ -2501,6 +2480,7 @@ class Converter
                                 $isEditor = false;
 
                                 $editorConversion = $this->authorParser->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, $determineEnd ?? true, 'editors', $language);
+                                $this->detailLines = array_merge($this->detailLines, $editorConversion['author_details']);
                                 $editorString = trim($editorConversion['authorstring'], '() ');
                                 foreach ($editorConversion['warnings'] as $warning) {
                                     $warnings[] = $warning;
@@ -2573,6 +2553,7 @@ class Converter
                                         // CASE 2
                                         $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
                                         $editorConversion = $this->authorParser->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, false, 'editors', $language);
+                                        $this->detailLines = array_merge($this->detailLines, $editorConversion['author_details']);
                                         $this->setField($item, 'editor', trim($editorConversion['authorstring'], ' '), 'setField 44');
                                         foreach ($editorConversion['warnings'] as $warning) {
                                             $warnings[] = $warning;
@@ -2645,6 +2626,7 @@ class Converter
                             $remainder = trim($remainder);
 
                             $editorConversion = $this->authorParser->convertToAuthors($editors, $trash1, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, false, 'editors', $language);
+                            $this->detailLines = array_merge($this->detailLines, $editorConversion['author_details']);
 
                             $editor = trim($editorConversion['authorstring']);
                             // If editor ends in period and previous letter is lowercase, remove period
@@ -2746,6 +2728,7 @@ class Converter
                         $isEditor = false;
 
                         $editorConversion = $this->authorParser->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'editors', $language);
+                        $this->detailLines = array_merge($this->detailLines, $editorConversion['author_details']);
                         $authorstring = $editorConversion['authorstring'];
                         $this->setField($item, 'editor', trim($authorstring, '() '), 'setField 47');
                         foreach ($editorConversion['warnings'] as $warning) {
@@ -3353,7 +3336,7 @@ class Converter
 
                     if (strpos($remainder, ':') === false) {
                         // If there's an extra year before the $remainder, remove it
-                        if (preg_match('/^(?P<year>(19|20)[0-9]{2})/', $remainder, $matches)) {
+                        if (preg_match('/^(?P<year>' . $this->yearRegExp . ')/', $remainder, $matches)) {
                             $extraYear = $matches['year'];
                             $remainder = substr($remainder, 4);
                             $remainder = ltrim($remainder, '., ');
