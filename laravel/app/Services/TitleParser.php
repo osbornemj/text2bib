@@ -342,6 +342,9 @@ class TitleParser
                         $upcomingPageRange = true;
                     }
 
+                    /////////////////
+                    // Translators //
+                    /////////////////
                     $translatorNext = false;
                     // "(John Smith, trans.)"
                     if (in_array($nextWord[0], ['('])) {
@@ -350,11 +353,16 @@ class TitleParser
                             $note = ($note ? $note . '. ' : '') . $matches['translator'];
                             $remainder = $matches['remainder'];
                         }
-                    } else {
-                        // "trans. John Smith)"
-                        // Here trans must start with lowercase, because journal name might start with Trans.
-                        $translatorNext = preg_match('/^trans\. (?P<translator>[^.]+\.)(?P<remainder>.*)/', $remainder, $matches);
-                        if (isset($matches['translator'])) {
+                    } elseif ($nextWord == 'trans.') {
+                        // "trans. John Smith."
+                        // Here trans must start with lowercase, because journal name might start with Trans. and period
+                        // cannnot be preceded by uppercase letter (which would be initial of translator)
+                        if (preg_match('/^trans\. (?P<translator>[^.]+(?<!\p{Lu})\.)(?P<remainder>.*)/u', $remainder, $matches)) {
+                            $translatorNext = true;
+                            $note = ($note ? $note . '. ' : '') . 'Translated by ' . $matches['translator'];
+                            $remainder = $matches['remainder'];
+                        } elseif (preg_match('/^trans\. (?P<translator>[^,]+), (?P<remainder>.{5,})/', $remainder, $matches)) {
+                            $translatorNext = true;
                             $note = ($note ? $note . '. ' : '') . 'Translated by ' . $matches['translator'];
                             $remainder = $matches['remainder'];
                         }

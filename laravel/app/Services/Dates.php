@@ -228,7 +228,7 @@ class Dates
         $monthName = '(?P<monthName>' . ($this->makeMonthsRegExp())[$language] . ')';
 
         $of = $ofs[$language];
-        $day = '(?P<day>[0-3]?[0-9])';
+        $day = '(?P<day>[0-3]?[0-9]((st|nd|rd|th)\.?)?)';
         $dayRange = '(?P<day>[0-3]?[0-9](--?[0-3]?[0-9])?)';
         $monthNumber = '(?P<monthNumber>[01]?[0-9])';
 
@@ -259,6 +259,7 @@ class Dates
             $isDates[7] = preg_match('/(' . $starts . $year . '[, ]' . $day . ' ' . $monthName . $ends . ')/i', $string, $matches[7]);
         }
 
+        // Take last pattern that matches if type is 'is' and first one if type is 'contains' (why?)
         if ($type == 'is') {
             return max($isDates);
         } elseif (in_array($type, ['contains', 'starts'])) {

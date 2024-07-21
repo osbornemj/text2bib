@@ -114,8 +114,6 @@ class AuthorParser
             ];
         }
 
-        $this->verbose('Authors do not match any pattern');
-
         /////////////////////////////////
         // Check for organization name //
         /////////////////////////////////
@@ -132,7 +130,7 @@ class AuthorParser
             ];
         }
 
-        $this->verbose('Author is not an organization');
+        $this->verbose('Authors do not match any pattern and author string is not an organization');
 
         /////////////////////////////////////////
         // Otherwise check words incrementally //
@@ -241,7 +239,7 @@ class AuthorParser
          * Author strings without spaces, like 'John Doe and Jane Doe' or 'Doe J and Doe K' should have been
          * taken care of by author patterns (above).
          */
-        preg_match('/^(?P<name>[\p{L} ]{3,80})\.? ?(?P<remains>[\(\[]?[1-9][0-9]{3}.*$)/u', $remainder, $matches);
+        preg_match('/^(?P<name>[\p{L} ]{3,80})[,\.]? ?(?P<remains>[\(\[]?[1-9][0-9]{3}.*$)/u', $remainder, $matches);
         if (! empty($matches)) {
             $remainder = $matches['remains'];
             $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);

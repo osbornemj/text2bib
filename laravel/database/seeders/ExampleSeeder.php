@@ -11657,6 +11657,95 @@ class ExampleSeeder extends Seeder
                     'pages' => '426-434',
                     ]
             ],
+			// should be able to detect author pattern given bare word count following second author
+			[
+                'source' => 'Harvey A. R., Appleby R. Passive mm-Wave Imaging from UAVs Using Aperture Synthesis[J]. Aeronautical Journal, 2003, V107: 87-98  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Harvey, A. R. and Appleby, R.',
+                    'title' => 'Passive mm-Wave Imaging from UAVs Using Aperture Synthesis',
+                    'year' => '2003',
+                    'journal' => 'Aeronautical Journal',
+                    'volume' => 'V107',
+                    'pages' => '87-98',
+                    ]
+            ],
+			// [A] should be removed at end of title of contribution to conference and [C] should be removed at end of booktitle
+			[
+                'source' => 'Peichl M., Still H., Dill S., et al. Imaging technologies and applications of microwave radiometry[A]. First European Radar Conference, 2004. EURAD[C]. Amsterdam, Netherlands, 2005  ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Peichl, M. and Still, H. and Dill, S. and others',
+                    'title' => 'Imaging technologies and applications of microwave radiometry',
+                    'year' => '2005',
+                    'booktitle' => 'First European Radar Conference, 2004. EURAD. Amsterdam, Netherlands, 2005',
+                    ]
+            ],
+			// translators not detected
+			[
+                'source' => 'Cabasilas, Nicholas. 1998, A Commentary on the Divine Liturgy, trans. J.M. Hussey and P.A. McNulty, Crestwood, New York: SVS. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Cabasilas, Nicholas',
+                    'title' => 'A Commentary on the Divine Liturgy',
+                    'year' => '1998',
+                    'note' => 'Translated by J. M. Hussey and P. A. McNulty',
+                    'address' => 'Crestwood, New York',
+                    'publisher' => 'SVS',
+                    ]
+            ],
+			// translator not detected
+			[
+                'source' => 'Evdokimov, Paul. 1990. The Art of the Icon: A Theology of Beauty, trans. Fr Steven Bigham, Redondo Beach: Oakwood. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Evdokimov, Paul',
+                    'title' => 'The Art of the Icon: A Theology of Beauty',
+                    'year' => '1990',
+                    'note' => 'Translated by Fr Steven Bigham',
+                    'address' => 'Redondo Beach',
+                    'publisher' => 'Oakwood',
+                    ]
+            ],
+			// Translator
+			[
+                'source' => 'Dostoevsky, F. M. (1914), The Possessed, trans. Constance Garnet, Heinemann, London. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Dostoevsky, F. M.',
+                    'title' => 'The Possessed',
+                    'year' => '1914',
+                    'note' => 'Translated by Constance Garnet',
+                    'address' => 'London',
+                    'publisher' => 'Heinemann',
+                    ]
+            ],
+   			// organization name, access date
+			[
+                'source' => 'Animal and Plant Health Agency, (2022) Avian Influenza in Wild Birds, available online at: https://www.gov.uk/government/publications/avian-influenza-in-wild-birds [Date accessed: 7th March 2022] ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'Animal and Plant Health Agency',
+                    'title' => 'Avian Influenza in Wild Birds',
+                    'year' => '2022',
+                    'url' => 'https://www.gov.uk/government/publications/avian-influenza-in-wild-birds',
+                    'urldate' => '7th March 2022',
+                    ]
+            ],
+			// urldate wrong
+			[
+                'source' => 'UNAIDS. Global HIV and AIDS Statistics-Fact Sheet (2023). Available at https://www.unaids.org/sites/default/files/media_asset/UNAIDS_FactSheet_en.pdf (Accessed on 24th June 2024) ',
+                'type' => 'online',
+                'bibtex' => [
+                    'urldate' => '24th June 2024',
+                    'url' => 'https://www.unaids.org/sites/default/files/media_asset/UNAIDS_FactSheet_en.pdf',
+                    'author' => 'UNAIDS',
+                    'title' => 'Global HIV and AIDS Statistics-Fact Sheet (2023)',
+                    ]
+            ],
+
+
+
 
             
             

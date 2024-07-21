@@ -50,7 +50,6 @@ class Converter
     var $isbnLabelRegExp;
     var $isbnNumberRegExp;
     var $issnRegExps;
-    var $italicTitle;
     var $itemType;
     var $journalNames;
     var $masterRegExp;
@@ -75,6 +74,8 @@ class Converter
     var $retrievedFromRegExp2;
     var $startJournalAbbreviations;
     var $thesisRegExp;
+    var $volumeNumberPagesRegExp;
+    var $volumeNumberYearRegExp;
 
     use AuthorPatterns;
     use MakeScholarTitle;
@@ -215,6 +216,10 @@ class Converter
         // page range, pp before is optional
         $this->pagesRegExp = $pagesRegExp;
 
+        $this->volumeNumberPagesRegExp = '/(' . $this->volRegExp3 . ')?[0-9]{1,4} ?(' . $this->numberRegExp . ')?[ \(][0-9]{1,4}[ \)]:? ?(' . $this->pageRegExp . ')/';
+
+        $this->volumeNumberYearRegExp = '/(' . $this->volumeRegExp . ')? ?\d{1,4},? ?(' . $this->numberRegExp . ')? ?\d{1,4} [\(\[]?' . $this->yearRegExp . '[\)\]]/';
+
         $this->proceedingsRegExp = '(^proceedings of |proceedings of the (.*) (conference|congress)|conference|symposium on | meeting |congress of the |^proc\.| workshop|^actas del )';
         $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the \p{L}+ (\p{L}+ )?Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! (International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
 
@@ -254,7 +259,7 @@ class Converter
         // Used in: "*Retrieved from* (site)? <url> accessed <date>"
         // and "*Retrieved from* (site)? <url> <date>?"
         $this->retrievedFromRegExp1 = [
-            'en' => '(Retrieved from:? |Available( at)?:? )',
+            'en' => '(Retrieved from:? |Available( online)?( at)?:? )',
             'cz' => '(Dostupné z:? |načteno z:? )',
             'fr' => '(Récupéré sur |Disponible( (à l\'adresse|sur))?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
@@ -283,7 +288,7 @@ class Converter
         // *acceessed <date>* <url>
         // *accessed <date>*
         $this->accessedRegExp1 = [
-            'en' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed|[Vv]isited)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
+            'en' => '(([Ll]ast|[Dd]ate) )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed|[Vv]isited)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'cz' => '([Nn]ačteno|[Zz]přístupněno|[Zz]obrazeno|[Cc]itováno)( dne)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'fr' => '([Rr]écupéré |[Cc]onsulté )(le )?(?P<date2>' . $dateRegExp . ')',
             'es' => '([Oo]btenido|[Aa]ccedido)[,:]? (?P<date2>' . $dateRegExp . ')',
@@ -895,17 +900,13 @@ class Converter
         // Look for authors //
         //////////////////////
 
-        $this->verbose("Looking for authors ...");
-
         $isEditor = false;
 
-        //$authorTitle = null;
+        // Burmese (custom format)
         if ($language == 'my') {
             preg_match('/^(?P<author>[^,]*, ?[^,]*), ?(?P<remainder>.*)$/', $remainder, $matches);
-            //$this->setField($item, 'author', rtrim($words[0], ',') ?? '', 'setField m1');
             $authorConversion = ['authorstring' => $matches['author'], 'warnings' => []];
             array_shift($words);
-            //$authorTitle = rtrim($words[0], ',') ?? '';
             array_shift($words);
             $year = trim($words[0], '(),');
             array_shift($words);
@@ -996,8 +997,6 @@ class Converter
         // Look for title //
         ////////////////////
 
-        unset($this->italicTitle);
-
         $remainder = ltrim($remainder, ': ');
 
         $title = null;
@@ -1023,18 +1022,13 @@ class Converter
             }
         }
         
-        $style = '';
         if (! $title) {
-            $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
-            $titleStyle = $style;
-            if ($style === 'none') {
-                $this->verbose('Title is not styled');
-            } else {
-                $this->verbose('Title is styled (' . $titleStyle . ')');
-            }
+            $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $titleStyle);
+            $this->verbose('Title is ' . ($titleStyle == 'none' ? 'not styled' : 'styled (' . $titleStyle . ')'));
             $newRemainder = $before . ($after ? ltrim($after, "., ") : '');
         }
 
+        // Custom format for Burmese
         if ($language == 'my') {
             $title = (string) $title;
             $this->setField($item, 'title', trim($title, ', '), 'setField m3');
@@ -1077,7 +1071,9 @@ class Converter
                     false, 
                     $language
                 );
+
                 $title = $result['title'];
+
                 $this->detailLines = array_merge($this->detailLines, $result['titleDetails']);
 
                 if (substr($originalRemainder, strlen($title), 1) == '.') {
@@ -1100,6 +1096,7 @@ class Converter
                     $note = rtrim($note, ') ');
                     $this->addToField($item, 'note', $note, 'addToField 4');
                 }
+
                 $newRemainder = $remainder;
             }
 
@@ -1115,8 +1112,8 @@ class Converter
                 $titleEndsInPeriod = substr($title, -1) == '.';
             }
             $title = rtrim($title, ' .,-');
-            // Remove '[J]' at end of title (why does it appear?)
-            if (preg_match('/\[J\]$/', $title)) {
+            // Remove '[J]' at end of title (what does it mean?)
+            if (preg_match('/\[(J|A)\]$/', $title)) {
                 $title = substr($title, 0, -3);
             }
 
@@ -1138,7 +1135,7 @@ class Converter
             $this->setField($item, 'title', $title, 'setField 12');
         }
 
-        $this->verbose("Remainder: " . $remainder);
+        $this->verbose("[2] Remainder: " . $remainder);
 
         ///////////////////////////////////////////////////////////
         // Look for year if not already found                    //
@@ -1146,9 +1143,8 @@ class Converter
         ///////////////////////////////////////////////////////////
 
         // Look for volume-number-year pattern, to use later when determining item type
-        //dd($this->numberRegExp);
         $containsVolumeNumberYear = false;
-        if (preg_match('/(' . $this->volumeRegExp . ')? ?\d{1,4},? ?(' . $this->numberRegExp . ')? ?\d{1,4} [\(\[]?' . $this->yearRegExp . '[\)\]]/', $remainder)) {
+        if (preg_match($this->volumeNumberYearRegExp, $remainder)) {
             $containsVolumeNumberYear = true;
             $this->verbose("Contains volume-number-year string");
         }
@@ -1186,7 +1182,7 @@ class Converter
             }
         }
 
-        $yearIsForthcoming = isset($item->year) && in_array($item->year, ['forthcoming', 'Forthcoming', 'in press', 'In press', 'In Press']);
+        $yearIsForthcoming = isset($item->year) && preg_match('/^([Ff]orthcoming|[Ii]n [Pp]ress)$/', $item->year);
 
         $remainder = ltrim($newRemainder, ' ');
 
@@ -1244,8 +1240,7 @@ class Converter
             $this->verbose("Contains a volume, but not at start.");
         }
 
-        $volumeNumberPagesRegExp = '/(' . $this->volRegExp3 . ')?[0-9]{1,4} ?(' . $this->numberRegExp . ')?[ \(][0-9]{1,4}[ \)]:? ?(' . $this->pageRegExp . ')/';
-        if (preg_match($volumeNumberPagesRegExp, $remainder)) {
+        if (preg_match($this->volumeNumberPagesRegExp, $remainder)) {
             $containsVolumeNumberPages = true;
             $this->verbose("Contains volume-number-pages info.");
         }
@@ -1407,11 +1402,8 @@ class Converter
         $remainderMinusPubInfo = $remainder;
         $publisher = '';
         foreach ($this->publishers as $pub) {
-            if (
-                Str::contains(mb_strtolower($remainder), ' ' . mb_strtolower($pub))
-                ||
-                Str::startsWith(mb_strtolower($remainder), mb_strtolower($pub))
-               ) {
+            $lcPub = mb_strtolower($pub);
+            if (preg_match('%(^| )' . $lcPub . '([ .,;:]|$)%', mb_strtolower($remainder))) {
                 $containsPublisher = true;
                 $publisherString = $publisher = $pub;
                 $remainderMinusPubInfo = Str::replaceFirst($publisher, '', $remainder);
@@ -1455,10 +1447,6 @@ class Converter
 
         $commaCount = substr_count($remainder, ',');
         $this->verbose("Number of commas: " . $commaCount);
-
-        if (isset($this->italicTitle)) {
-            $this->verbose("Italic title");
-        }
 
         ///////////////////////////////////////////////////
         // Use features of string to determine item type //
@@ -1566,7 +1554,7 @@ class Converter
         } elseif ($containsProceedings) {
             $this->verbose("Item type case 7");
             $itemKind = 'inproceedings';
-        } elseif ($containsIsbn || (isset($this->italicTitle) && (($containsCity || $containsPublisher) || isset($item->editor)))) {
+        } elseif ($containsIsbn || ($titleStyle == 'italic' && ($containsCity || $containsPublisher || isset($item->editor)))) {
             $this->verbose("Item type case 8");
             $itemKind = 'book';
         } elseif (! $containsIn && ($pubInfoStartsWithForthcoming || $pubInfoEndsWithForthcoming)) {
@@ -2976,6 +2964,7 @@ class Converter
                         if (! empty($editionInfo)) {
                             $booktitle .= ' ' . $editionInfo;
                         }
+                        $booktitle = preg_replace('/\[C\](?=\.)/', '', $booktitle);
                         $this->setField($item, 'booktitle', $booktitle, 'setField 58');
                     } else {
                         // Change item type to book
@@ -3381,7 +3370,7 @@ class Converter
                     preg_match('/^[a-zA-Z ]*$/', $remainder) 
                     && (! $titleEndsInPeriod || ! $allWordsInitialCaps) 
                     && ! $remainderEndsInColon
-                    && $style != 'quoted'
+                    && $titleStyle != 'quoted'
                     && (! isset($item->author) || $item->author != $remainder)
                    ) {
                     // If remainder is all letters and spaces, assume it is part of title,
