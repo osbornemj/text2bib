@@ -84,10 +84,10 @@ trait AuthorPatterns
 
         // When used for Editors, ending with colon can be a problem if it is used in address: publisher
         $commaYear = ',? (?=[\(\[`"\'\d])';
-        // With only 4 bare words, the author string
+        // Requirement of lowercase after the first word is to avoid terminating an author string like the following one
+        // too early (after Hamilton SA):
         // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T:
-        // (case 1) gets terminated after Hamilton SA.
-        $commaYearOrBareWords = '(,? (?=[\(\[`"\'\d])|, (?=(\p{Lu}\p{L}*( [\p{Ll}\-]+){3})))';
+        $commaYearOrBareWords = '(' . $commaYear . '|, (?=(\p{Lu}\p{L}*( [\p{Ll}\-]+){3})))';
         $colonOrCommaYear = '(: |' . $commaYear . ')';
         $colonOrCommaYearOrBareWords = '(: |' . $commaYearOrBareWords . ')';
         $periodOrColonOrCommaYear = '(\. |: |' . $commaYear. ')';
@@ -372,7 +372,7 @@ trait AuthorPatterns
             /////////////////////
             // ONE NAME et al. //
             /////////////////////
-            
+
             // 33. J. A. Smith et.? al.? OR Jane A. Smith,? et.? al.?
             [
                 'name1' => '(' . $initialsLastName . '|' . $firstNameInitialsLastName . ')', 
