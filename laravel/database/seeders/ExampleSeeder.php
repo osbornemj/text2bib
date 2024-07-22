@@ -11743,6 +11743,20 @@ class ExampleSeeder extends Seeder
                     'title' => 'Global HIV and AIDS Statistics-Fact Sheet (2023)',
                     ]
             ],
+            // author pattern
+            [
+                'source' => '\bibitem{Chua.1976.209.64} L.~O. Chua, S.~M. Kang, Memristive devices and systems, Proceedings of the IEEE   64~(2) (1976) 209--223. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'L. O. Chua and S. M. Kang',
+                    'title' => 'Memristive devices and systems',
+                    'year' => '1976',
+                    'journal' => 'Proceedings of the IEEE',
+                    'volume' => '64',
+                    'number' => '2',
+                    'pages' => '209-223',
+                    ]
+            ],
 
 
 
