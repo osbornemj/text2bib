@@ -1937,7 +1937,7 @@ class Converter
                 $this->verbose("[in1b] Remainder with month and year: " . $remainderWithMonthYear);
 
                 // If booktitle ends with period, not preceded by month abbreviations, then year, remove year.
-                if (isset($year) && preg_match('/^(?P<remainder>.*)\. ' . $year . '$/', $remainderWithMonthYear, $matches)) {
+                if (isset($year) && preg_match('%^(?P<remainder>.*)\. ' . $year . '$%', $remainderWithMonthYear, $matches)) {
                     if (! preg_match('/ (' . $this->monthsAbbreviationsRegExp[$language] . ')$/', $matches['remainder'])) {
                         $remainderWithMonthYear = $matches['remainder'];
                     }
