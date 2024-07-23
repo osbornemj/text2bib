@@ -346,8 +346,8 @@ class Converter
 
         $entry = '';
         foreach ($entryLines as $line) {
-            $truncated = $this->uncomment($line);
-            $entry .= $line . (! $truncated ? ' ' : '');
+            $truncated = $conversion->percent_comment ? $this->uncomment($line) : false;
+            $entry .= $line . ($truncated ? '' : ' ');
         }
 
         // If nothing is left, return.
