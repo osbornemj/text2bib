@@ -262,7 +262,7 @@ class ConvertFile extends Component
             }
 
             // If encoding is correct, check for possible item_separator error
-            if (count($this->unknownEncodingEntries) == 0 && count($entries) <= 2 && strlen($entries[array_key_first($entries)]) > 500) {
+            if (count($this->unknownEncodingEntries) == 0 && count($entries) <= 2 && count($entries) >= 1 && strlen($entries[array_key_first($entries)]) > 500) {
                 $this->entry = $entries[array_key_first($entries)];
                 $this->itemSeparatorError = true;
                 $conversion->delete();

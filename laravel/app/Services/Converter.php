@@ -606,7 +606,7 @@ class Converter
                     $remainder = substr($remainder, 0, $matches1[0][1]) . ' ' . substr($remainder, $matches1['afterArxiv'][1] + strlen($matches2[0]));
                 } else {
                     preg_match('/^\S+/', $matches1['afterArxiv'][0], $eprintMatches, PREG_OFFSET_CAPTURE);
-                    $eprint = $eprintMatches[0][0];
+                    $eprint = $eprintMatches[0][0] ?? null;
                     if ($eprint) {
                         $this->setField($item, 'archiveprefix', 'arXiv', 'setField 2');
                         $this->setField($item, 'eprint', rtrim($eprint, '}.,'), 'setField 3');
@@ -930,8 +930,9 @@ class Converter
         } else {
             $authorConversion = $this->authorParser->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'authors', $language);
             $this->detailLines = array_merge($this->detailLines, $authorConversion['author_details']);
-            $authorIsOrganization = $authorConversion['organization'] ?? false;
         }
+
+        $authorIsOrganization = $authorConversion['organization'] ?? false;
 
         // restore rest of $completeRemainder
         if (isset($completeRemainder[$mismatchPosition]) && $completeRemainder[$mismatchPosition] == '.') {

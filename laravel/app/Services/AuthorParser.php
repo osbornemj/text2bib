@@ -862,7 +862,7 @@ class AuthorParser
                         $authorIndex++;
                     }
 
-                    if (! Str::endsWith($word, ',') && ! $this->isAnd($nextWord, $language)) {
+                    if (! Str::endsWith($word, ',') && (! $nextWord || ! $this->isAnd($nextWord, $language))) {
                         $done = true;
                         $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
                         $year = $this->dates->getDate(implode(" ", $remainingWords), $remainder, $month, $day, $date, true, true, true, $language);
