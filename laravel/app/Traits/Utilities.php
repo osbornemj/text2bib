@@ -142,7 +142,7 @@ trait Utilities
 
     // en for Spanish (and French?), em for Portuguese
     var $inRegExp1 = '/^[iIeE]n:? /';
-    var $inRegExp2 = '/( [iIeE]n: |[,.] [IiEe]n | [ei]n\) | [eE]m: |[,.] [Ee]m | [ei]m\) )/';
+    var $inRegExp2 = '/( [iIeE]n: |[,.] [IiEe]n | [ei]n\) | [eE]m: |[,.] [Ee]m | [ei]m\) | [Dd]ans:? )/';
 
     var $detailLines;
     

@@ -162,8 +162,8 @@ class Converter
                 ['1e', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e', '10e'],
         ];
 
-        // 'a cura di': Italian. რედ: Georgian.  Hrsgg.: German
-        $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|რედ?\.?|Hrsgg\.|[Ee]ditors?|a cura di)[\)\]]/';
+        // 'a cura di': Italian. რედ: Georgian.  Hrsgg.: German.  dir.: French(?)
+        $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|რედ?\.?|Hrsgg\.|[Ee]ditors?|a cura di|dir\.)[\)\]]/';
         $this->edsRegExp2 = '/ed(\.|ited) by/i';
         $this->edsRegExp4 = '/( [Ee]ds?[\. ]|[\(\[][Ee]ds?\.?[\)\]]| [Ee]ditors?| [\(\[][Ee]ditors?[\)\]])/';
         $this->editorStartRegExp = '/^[\(\[]?[Ee]dited by|^[\(\[]?[Ee]ds?\.?|^[\(\[][Ee]ditors?/';

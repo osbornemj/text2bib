@@ -22,7 +22,7 @@ trait AddLabels
                 // if $baseLabel already used, add a suffix to it
                 if (in_array($baseLabel, $baseLabels)) {
                     $values = array_count_values($baseLabels);
-                    $label .= chr(96 + $values[$baseLabel]);
+                    $label .= '-' . $values[$baseLabel];
                 }
 
                 $baseLabels[] = $baseLabel;
@@ -38,6 +38,7 @@ trait AddLabels
     public function makeLabel(object $item, Conversion $conversion): string
     {
         $label = '';
+
         if (isset($item->author) && $item->author) {
             $authors = explode(" and ", $item->author);
         } elseif (isset($item->editor)) {
@@ -45,6 +46,7 @@ trait AddLabels
         } else {
             $authors = [];
         }
+
         if (isset($authors) && $authors) {
             foreach ($authors as $author) {
                 if ($conversion->language == 'my') {
@@ -53,17 +55,23 @@ trait AddLabels
                     //$authorLetters = $this->onlyLetters(Str::ascii($author));
                     $authorLetters = $this->onlyLetters($author);
                 }
-                if ($pos = mb_strpos($authorLetters, ',')) {
+                // Position of (first) comma
+                $commaPos = mb_strpos($authorLetters, ',');
+                // Position of last space
+                $spacePos = mb_strrpos($authorLetters, ' ');
+                if ($commaPos !== false || $spacePos === false) {
                     if ($conversion->label_style == 'short') {
                         $label .= mb_substr($authorLetters, 0, 1) ?? '';
                     } else {
-                        $label .= mb_substr($authorLetters, 0, $pos);
+                        $label .= mb_substr($authorLetters, 0, $commaPos);
                     }
                 } else {
                     if ($conversion->label_style == 'short') {
-                        $label .= mb_substr(trim(mb_strrchr($authorLetters, ' '), ' '), 0, 1);
+                        // Take first letter after first space ('John Smith' => 'S')
+                        $label .= mb_substr($authorLetters, $spacePos + 1, 1);
                     } else {
-                        $label .= trim(mb_strrchr($authorLetters, ' '), ' ');
+                        // Take letters after first space ('John Smith' => 'Smith')
+                        $label .= trim(mb_substr($authorLetters, $spacePos + 1), ' ');
                     }
                 }
             }

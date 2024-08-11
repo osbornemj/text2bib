@@ -11757,6 +11757,19 @@ class ExampleSeeder extends Seeder
                     'pages' => '209-223',
                     ]
             ],
+            // date format
+            [
+                'source' => 'Dobnikar, M. (2024a, February 20). How Marketers Can Use Virtual Event Data To Drive Engagement. Forbes. https://www.forbes.com/sites/forbesbusinesscouncil/2024/02/16/how-marketers-can-use-virtual-event-data-to-drive-engagement/',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'Dobnikar, M.',
+                    'title' => 'How Marketers Can Use Virtual Event Data To Drive Engagement',
+                    'year' => '2024',
+                    'month' => 'February',
+                    'url' => 'https://www.forbes.com/sites/forbesbusinesscouncil/2024/02/16/how-marketers-can-use-virtual-event-data-to-drive-engagement/',
+                    'urldate' => '2024-02-20',
+                    ]
+            ],
 
 
             
