@@ -414,14 +414,13 @@ class TitleParser
                            )
                         // one- or two-word publisher, city (up to 2 words), US State, <year>?
                         || preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?, (?P<city>[A-Z][a-z]+( [A-Z][a-z]+)?, [A-Z]{2})(, ' . $this->yearRegExp . ')?$/', $remainder, $matches) 
-                        // . <address>: <publisher>(, <year>)?$ OR (<address>: <publisher>(, <year>)?)
+                        // [,.] <address>: <publisher>(, <year>)?$ OR (<address>: <publisher>(, <year>)?)
                         // Note that ',' is allowed in address and
                         // '.' and '&' are allowed in publisher.  May need to put a limit on length of publisher part?
                         || (
-                            (Str::endsWith($word, '.') || $nextWord[0] == '(')
-                            //&& preg_match('/^\(?[\p{L}, ]+: [\p{L}&\-. ]+(, (19|20)[0-9]{2})?\)?$/u', $remainder, $matches) 
-                            //&& preg_match('/^' . $this->addressPublisherYearRegExp . '$/u', $remainder, $matches) 
-                            && $this->isAddressPublisher($remainder)
+                            (Str::endsWith($word, '.') || Str::endsWith($word, ',') || $nextWord[0] == '(')
+                            &&
+                            $this->isAddressPublisher($remainder)
                            )
                         // <publisher>, <address>, <year>
                         || preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}), (?P<year>' . $this->yearRegExp . ')\.?$/u', $remainder, $matches) 

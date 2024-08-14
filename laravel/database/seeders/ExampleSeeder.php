@@ -11760,16 +11760,113 @@ class ExampleSeeder extends Seeder
             // date format
             [
                 'source' => 'Dobnikar, M. (2024a, February 20). How Marketers Can Use Virtual Event Data To Drive Engagement. Forbes. https://www.forbes.com/sites/forbesbusinesscouncil/2024/02/16/how-marketers-can-use-virtual-event-data-to-drive-engagement/',
-                'type' => 'online',
+                'type' => 'article',
                 'bibtex' => [
                     'author' => 'Dobnikar, M.',
                     'title' => 'How Marketers Can Use Virtual Event Data To Drive Engagement',
                     'year' => '2024',
+                    'date' => '2024-02-20',
                     'month' => 'February',
+                    'journal' => 'Forbes',
                     'url' => 'https://www.forbes.com/sites/forbesbusinesscouncil/2024/02/16/how-marketers-can-use-virtual-event-data-to-drive-engagement/',
-                    'urldate' => '2024-02-20',
                     ]
             ],
+			// error in authors (could be pattern?)
+            [
+                'source' => '77. 	A. Antoszewski, C. Lorpaiboon, J. Strahan, A. R. Dinner, Kinetics of Phenol Escape from the Insulin R6 Hexamer. J. Phys. Chem. B 125, 11637–11649 (2021). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'A. Antoszewski and C. Lorpaiboon and J. Strahan and A. R. Dinner',
+                    'title' => 'Kinetics of Phenol Escape from the Insulin R6 Hexamer',
+                    'year' => '2021',
+                    'journal' => 'J. Phys. Chem. B',
+                    'volume' => '125',
+                    'pages' => '11637-11649',
+                    ]
+            ],
+            // publisher and address missed
+            [
+                'source' => 'Havel, V. (1985).The power of the powerless: Citizens Against the State in Central-Eastern Europe, London: Hutchinson. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Havel, V.',
+                    'title' => 'The power of the powerless: Citizens Against the State in Central-Eastern Europe',
+                    'year' => '1985',
+                    'address' => 'London',
+                    'publisher' => 'Hutchinson',
+                    ]
+            ],
+			// authors separated by / (others in conversion 9630)
+			[
+                'source' => 'Bogin, B./Hermanussen, M./Scheffler, C.  (2018). As tall as my peers - similarity in body height between migrants and hosts. Anthropologischer Anzeiger, 74(5), 363-374. 10.1127/anthranz/2018/0828 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1127/anthranz/2018/0828',
+                    'author' => 'Bogin, B. and Hermanussen, M. and Scheffler, C.',
+                    'year' => '2018',
+                    'title' => 'As tall as my peers - similarity in body height between migrants and hosts',
+                    'journal' => 'Anthropologischer Anzeiger',
+                    'volume' => '74',
+                    'number' => '5',
+                    'pages' => '363-374',
+                    ]
+            ],
+			// detect organization?
+			[
+                'source' => 'Ministry of Environment (MoE). 2021. Cambodia: Long-Term Strategy for Carbon Neutrality (LTS4CN). Phnom Penh: MoE',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ministry of Environment (MoE)',
+                    'title' => 'Cambodia: Long-Term Strategy for Carbon Neutrality (LTS4CN)',
+                    'year' => '2021',
+                    'address' => 'Phnom Penh',
+                    'publisher' => 'MoE',
+                    ]
+            ],
+            // detect organization?
+			[
+                'source' => 'United Nations Development Programme (UNDP). 2019. Cambodia: Derisking Renewable Energy Investment. New York: UNDP. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'United Nations Development Programme (UNDP)',
+                    'title' => 'Cambodia: Derisking Renewable Energy Investment',
+                    'year' => '2019',
+                    'address' => 'New York',
+                    'publisher' => 'UNDP',
+                    ]
+            ],
+			// error in author pattern 30
+			[
+                'source' => 'Khudri, Md. M., & Farjana, N. (2016). Identifying the key dimensions of consumer-based brand equity model: A multivariate approach. Asian Journal of Marketing, 11(1), 13–20. https://doi.org/10.3923/ajm.2017.13.20  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Khudri, Md. M. and Farjana, N.',
+                    'title' => 'Identifying the key dimensions of consumer-based brand equity model: A multivariate approach',
+                    'journal' => 'Asian Journal of Marketing',
+                    'year' => '2016',
+                    'volume' => '11',
+                    'number' => '1',
+                    'pages' => '13-20',
+                    'doi' => '10.3923/ajm.2017.13.20',
+                    ]
+            ],
+			// 'translation by' in title
+            [
+                'source' => 'Ma, S., Dong, L., Huang, S., Zhang, D., Muzio, A., Singhal, S., Awadalla, H. H., Song, X., & Wei, F. (2021). DeltaLM: Encoder-Decoder Pre-training for Language Generation and Translation by Augmenting Pretrained Multilingual Encoders. arXiv preprint arXiv:2106.13736',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => 'Ma, S. and Dong, L. and Huang, S. and Zhang, D. and Muzio, A. and Singhal, S. and Awadalla, H. H. and Song, X. and Wei, F.',
+                    'title' => 'DeltaLM: Encoder-Decoder Pre-training for Language Generation and Translation by Augmenting Pretrained Multilingual Encoders',
+                    'year' => '2021',
+                    'note' => 'arXiv preprint',
+                    'archiveprefix' => 'arXiv',
+                    'eprint' => '2106.13736',
+                    ]
+            ],
+
+
+
+            
 
 
             

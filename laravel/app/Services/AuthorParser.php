@@ -235,11 +235,13 @@ class AuthorParser
     public function checkAuthorOrganization(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $dictionaryNames, string $language): array|null
     {
         /*
-         * Between 3 and 80 letters and spaces (no punctuation) followed by year in parens or brackets
+         * Between 3 and 80 letters, spaces, '(', and ')', but no punctuation, followed by year possibly in parens or brackets.
+         * The string cannot be immediately followed by a digit, so that in 'United Nations (2020)' the name 'United Nations (' is
+         * not detected, but in 'United Nations (UN), (2020)' the name 'United Nations (UN)' is detected.
          * Author strings without spaces, like 'John Doe and Jane Doe' or 'Doe J and Doe K' should have been
-         * taken care of by author patterns (above).
+         * taken care of by author patterns earlier.
          */
-        preg_match('/^(?P<name>[\p{L} ]{3,80})[,\.]? ?(?P<remains>[\(\[]?[1-9][0-9]{3}.*$)/u', $remainder, $matches);
+        preg_match('/^(?P<name>[\p{L}() ]{3,80})(?!\d)[,\.]? ?(?P<remains>[(\[]?[1-9][0-9]{3}.*$)/u', $remainder, $matches);
         if (! empty($matches)) {
             $remainder = $matches['remains'];
             $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
@@ -876,7 +878,9 @@ class AuthorParser
                     // Don't trim comma from word before Jr. etc, because that is valuable info
                     $trimmedWord = (isset($words[$i+1]) && in_array(rtrim($words[$i+1], '.,)'), $this->nameSuffixes)) ? $word : rtrim($word, ',;');
                     $nameComponent = $this->spaceOutInitials($trimmedWord);
-                    $nameComponent = preg_replace('/([A-Za-z][a-z])\.$/', '$1', $nameComponent);
+                    if (! in_array($nameComponent, ['Md.'])) {
+                        $nameComponent = preg_replace('/([A-Za-z][a-z])\.$/', '$1', $nameComponent);
+                    }
                     $fullName .= " " . $nameComponent;
                 }
 

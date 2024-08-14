@@ -46,12 +46,12 @@
             </p>
         </div>
         <p class="mb-4">
-            <i>or</i> has each reference preceded by <code>&lt;li&gt;</code>, like this
+            <i>or</i> starts with <code>&lt;li&gt;</code> and has each subsequent reference preceded by <code>&lt;li&gt;</code>, like this
         </p>
         <div class="m-5 ml-8">
             <p>
-            <code>&lt;li&gt;Arrow, K. J., L. Hurwicz, and H. Uzawa (1961), "Constraint qualifications in maximization problems," Naval Research Logistics Quarterly 8, 175-191.<span class="bg-slate-300 dark:bg-gray-500 font-bold"></span></code><br/>
-            <code>&lt;li&gt;Van de Hulst, H.C., 1981. Light scattering by small particles, Dover Publications, New York.<span class="bg-slate-300 dark:bg-gray-500 font-bold"></span></code>
+            <code>&lt;li&gt;Arrow, K. J., L. Hurwicz, and H. Uzawa (1961), "Constraint qualifications in maximization problems," Naval Research Logistics Quarterly 8, 175-191. 
+            &lt;li&gt;Van de Hulst, H.C., 1981. Light scattering by small particles, Dover Publications, New York.<span class="bg-slate-300 dark:bg-gray-500 font-bold"></span></code>
             </p>
         </div>
         <p class="mb-4">

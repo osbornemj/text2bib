@@ -88,12 +88,16 @@ trait AuthorPatterns
         // too early (after Hamilton SA):
         // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T:
         $commaYearOrBareWords = '(' . $commaYear . '|, (?=(\p{Lu}[\p{L}\-]*( [\p{Ll}\-]+){3})))';
+        //$commaYearOrBareWords = '(' . $commaYear . '|, (?=(\p{Lu}[\p{L}\-]*(( [\p{Ll}\-]+){3}|( [\p{L}\-]+){4}))))';
         $colonOrCommaYear = '(: |' . $commaYear . ')';
         $colonOrCommaYearOrBareWords = '(: |' . $commaYearOrBareWords . ')';
         $periodOrColonOrCommaYear = '(\. |: |' . $commaYear. ')';
-        $periodOrColonOrCommaYearOrBareWords = '(\. |: |' . $commaYearOrBareWords. ')';
+        $periodOrColonOrCommaYearOrBareWords = '(\. |: |' . $commaYearOrBareWords . ')';
         $periodNotAndOrColonOrCommaYear = '(\. ' . $notAnd . '|: |' . $commaYear . ')';
         $periodNotAndOrCommaYear = '(\. ' . $notAnd . '|' . $commaYear . ')';
+        // 'and' includes 'et', so $notAnd covers 'et al' also
+        $periodOrColonOrCommaYearOrCommaNotInitialNotAnd = '(\. |: |' . $commaYear . '|, (?!' . $initialRegExp . ' )' .  $notAnd . ')';
+
 
         $authorRegExps = [
 
@@ -181,7 +185,8 @@ trait AuthorPatterns
             [
                 'name1' => $initialsLastName, 
                 'end1' => '[,;] ' . $notAnd, 
-                'end2' => $periodOrColonOrCommaYearOrBareWords, 
+                //'end2' => $periodOrColonOrCommaYearOrBareWords, 
+                'end2' => $periodOrColonOrCommaYearOrCommaNotInitialNotAnd, 
                 'end3' => null, 
             ],
             // 10. Smith, A. B., C. D. Jones,? and J. D. Gonzalez[\., ]
@@ -221,10 +226,11 @@ trait AuthorPatterns
                 'end2' => ',? ' . $andRegExp . ' ',
                 'end3' => '[\.,;]? ' . $notJr,
             ],
-            // 15. (Smith, J. A., )*Jones, A. B.,? <followed by>[\(|\[|`|\'|"|\d]
+            // 15. (Smith, J. A.(, |/))*Jones, A. B.,? <followed by>[\(|\[|`|\'|"|\d]
+            // Allow authors to be separated by '/' rather than ', '.  (Could be allowed for other patterns too.)
             [
                 'name1' => $lastNameInitials, 
-                'end1' => ', ', 
+                'end1' => '(, |\/)', 
                 'end2' => $commaYear, 
                 'end3' => null, 
             ],
@@ -343,13 +349,13 @@ trait AuthorPatterns
                 'end2' => null, 
                 'end3' => null, 
             ],
-            // 30. Smith, Jane( J)?(period not preceded by capital letter and not followed by and, or comma year)
+            // 30. Smith, Jane( J)?(period not preceded by capital letter and not followed by and or initial, or comma year)
             // (If period is preceded by capital letter, could be start of string like
             // Jane Smith, Susan A. Jones, Elizabeth Gonzalez, ...
             // with "Jane Smith" being interpreted as a last name.)
             [
                 'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?', 
-                'end1' => '((?<!\p{Lu})\. ' . $notAnd . '|' . $commaYear . ')',
+                'end1' => '((?<!\p{Lu})\. ' . $notAnd . '(?!\p{Lu}\.)' . '|' . $commaYear . ')',
                 //'end1' => $periodNotAndOrCommaYear, 
                 'end2' => null, 
                 'end3' => null, 

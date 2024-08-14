@@ -28,7 +28,6 @@ use App\Traits\Utilities;
 class Converter
 {
     var $accessedRegExp1;
-    var $andWords;
     var $bookTitleAbbrevs;
     var $cities;
     var $detailLines;
@@ -768,6 +767,7 @@ class Converter
         $containsTranslator = false;
         // Translators: string up to first period preceded by a lowercase letter.
         // Case of "Trans." is handled later, after item type is determined, because "Trans." is an abbreviation used in journal names.
+        // (?<=[.,] )
         $result = $this->findRemoveAndReturn($remainder, '[Tt]ranslat(ed|ion) by .*?\p{Ll}\)?(\.| \()', false);
         if ($result) {
             $this->addToField($item, 'note', trim(ucfirst($result[0]), ')( '), 'addToField 3');

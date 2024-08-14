@@ -77,11 +77,11 @@ class Dates
 
         if ($allowMonth) {
             if (
-                // (year month) or (year month day) (or without parens or with brackets)
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]?/i', $string, $matches1)
+                // (year,? month) or (year,? month day) (or without parens or with brackets)
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2})[a-z]?,? (?P<month>' . $months . ') ?(?P<day>[0-9]{1,2})?)[\)\]]?/i', $string, $matches1)
                 ||
-                // (year, day month) 
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),? (?P<day>[0-9]{1,2}) (?P<month>' . $months . ') ?)[\)\]]?/i', $string, $matches1)
+                // (year,? day month) 
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2})[a-z]?,? (?P<day>[0-9]{1,2}) (?P<month>' . $months . ') ?)[\)\]]?/i', $string, $matches1)
                 ||                
                 // (day month year) or (month year) (or without parens or with brackets)
                 // The optional "de" between day and month and between month and year is for Portuguese
@@ -96,7 +96,7 @@ class Dates
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
                 ||
                 // (year,? monthNumber day) (or without parens or with brackets)
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}),?[ \/](?P<month>[0-9]{1,2})[ \/](?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2})[a-z]?,?[ \/](?P<month>[0-9]{1,2})[ \/](?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
                 ||
                 // (month day, year) (or without parens or with brackets)
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<month>' . $months . ') (?P<day>[0-9]{1,2}), (?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
