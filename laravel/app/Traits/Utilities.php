@@ -120,7 +120,7 @@ trait Utilities
     var $volumeRegExp = '[Vv]olume ?|[Vv]ols? ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{|\*';
     var $volRegExp3 = '[Vv]olume ?|[Vv]ol ?\.? ?|VOL ?\.? ?|[Vv]\. ';
 
-    var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ ?|n\.? ?° ?|n\. ?º ?|[Ii]ssues?:? ?|Issue no. ?|Iss: ';
+    var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ ?|n\.? ?° ?|n\. ?º ?|[Ii]ssues?:? ?|Issue no. ?|Iss: | Heft ';
 
     // page range
     // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
@@ -140,9 +140,9 @@ trait Utilities
 
     var $journalWord = 'Journal';
 
-    // en for Spanish (and French?), em for Portuguese
+    // en for Spanish (and French?), em for Portuguese, dalam for Indonesian
     var $inRegExp1 = '/^[iIeE]n:? /';
-    var $inRegExp2 = '/( [iIeE]n: |[,.] [IiEe]n | [ei]n\) | [eE]m: |[,.] [Ee]m | [ei]m\) | [Dd]ans:? )/';
+    var $inRegExp2 = '/( [iIeE]n: |[,.] [IiEe]n | [ei]n\) | [eE]m: |[,.] [Ee]m | [ei]m\) | [Dd]ans:? | [Dd]alam: )/';
 
     var $detailLines;
     
