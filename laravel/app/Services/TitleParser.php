@@ -353,6 +353,9 @@ class TitleParser
                             $note = ($note ? $note . '. ' : '') . $matches['translator'];
                             $remainder = $matches['remainder'];
                         }
+                    } elseif (in_array($nextWord,  ['Translated', 'Translation']) && $nextButOneWord == 'by') {
+                        // Extraction of translators' names handled separately.
+                        $translatorNext = true;
                     } elseif ($nextWord == 'trans.') {
                         // "trans. John Smith."
                         // Here trans must start with lowercase, because journal name might start with Trans. and period

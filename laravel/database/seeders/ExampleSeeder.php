@@ -9376,7 +9376,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Aquinas, Thomas',
                     'title' => 'Commentary on the Letters of Saint Paul to the Corinthians',
                     'year' => '2012',
-                    'note' => 'Translated by F.R. Larcher OP, B. Mortensen, and D. Keating. Edited by J. Mortensen and E. Alarcon.',
+                    'note' => 'Translated by F. R. Larcher OP, B. Mortensen, and D. Keating. Edited by J. Mortensen and E. Alarcon.',
                     'address' => 'Lander, WY',
                     'publisher' => 'The Aquinas Institute for the Study of Sacred Doctrine',
                     ]
@@ -9818,13 +9818,13 @@ class ExampleSeeder extends Seeder
             ],
 			// detected as article
 			 [
-                'source' => 'Thomas Aquinas. 1955. Summa contra Gentiles. Translated by Anton C. Pegis et al. 5 vols. Garden City: Doubleday & Company. ',
+                'source' => 'Thomas Aquinas. 1955. Summa contra Gentiles. 5 vols. Translated by Anton C. Pegis et al. Garden City: Doubleday & Company. ',
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Thomas Aquinas',
                     'title' => 'Summa contra Gentiles',
                     'year' => '1955',
-                    'note' => 'Translated by Anton C. Pegis et al. 5 vols.',
+                    'note' => '5 vols. Translated by Anton C. Pegis et al.',
                     'address' => 'Garden City',
                     'publisher' => 'Doubleday & Company',
                     ]
@@ -9945,9 +9945,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Augustine',
-                    'title' => 'Expositions of the Psalms',
+                    'title' => 'Expositions of the Psalms translated by Maria Boulding',
                     'year' => '2002',
-                    'note' => 'Translated by Maria Boulding',
                     'address' => 'Hyde Park, NY',
                     'publisher' => 'New City Press',
                     ]
@@ -10686,7 +10685,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'D. P. Kingma and M. Welling',
                     'title' => 'Auto-encoding variational bayes',
-                    'archiveprefixl' => 'arXiv',
+                    'archiveprefix' => 'arXiv',
 					'eprint' => '1312.6114',
                     'year' => '2013',
                     ]
@@ -11861,6 +11860,21 @@ class ExampleSeeder extends Seeder
                     'note' => 'arXiv preprint',
                     'archiveprefix' => 'arXiv',
                     'eprint' => '2106.13736',
+                    ]
+            ],
+			// Nested quotes in title
+			[
+                'source' => 'Thurow, Joshua. 2013. ‘Religion, ‘Religion,’ and Tolerance’. In Religion, Intolerance, and Conflict: A Scientific and Conceptual Investigation, edited by Steve Clarke, Russell Powell, and Julian Savulescu, 146–162. Oxford: Oxford University Press. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Thurow, Joshua',
+                    'title' => 'Religion, `Religion,\' and Tolerance',
+                    'year' => '2013',
+                    'pages' => '146-162',
+                    'editor' => 'Steve Clarke and Russell Powell and Julian Savulescu',
+                    'address' => 'Oxford',
+                    'publisher' => 'Oxford University Press',
+                    'booktitle' => 'Religion, Intolerance, and Conflict: A Scientific and Conceptual Investigation',
                     ]
             ],
 

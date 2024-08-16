@@ -588,7 +588,7 @@ class Converter
         $hasArxiv = false;
         $hasFullDate = false;
 
-        preg_match('/ arxiv[:,] ?(?P<afterArxiv>.*)$/i', $remainder, $matches1, PREG_OFFSET_CAPTURE);
+        preg_match('/ arxiv( preprint)?[:,]( art no\.)? ?(?P<afterArxiv>.*)$/i', $remainder, $matches1, PREG_OFFSET_CAPTURE);
         if (isset($matches1['afterArxiv'])) {
             $hasArxiv = true;
             $dateResult = $this->dates->isDate($matches1['afterArxiv'][0], $language, 'starts');
@@ -760,22 +760,6 @@ class Converter
             $this->setField($item, 'chapter', $match, 'setField 17b');
         }
 
-        /////////////////////////////////////
-        // Put "Translated by ..." in note //
-        /////////////////////////////////////
-
-        $containsTranslator = false;
-        // Translators: string up to first period preceded by a lowercase letter.
-        // Case of "Trans." is handled later, after item type is determined, because "Trans." is an abbreviation used in journal names.
-        // (?<=[.,] )
-        $result = $this->findRemoveAndReturn($remainder, '[Tt]ranslat(ed|ion) by .*?\p{Ll}\)?(\.| \()', false);
-        if ($result) {
-            $this->addToField($item, 'note', trim(ucfirst($result[0]), ')( '), 'addToField 3');
-            $before = Str::replaceEnd(' and ', '', $result['before']);
-            $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . $result['after'];
-            $containsTranslator = true;
-        }
-
         ///////////////////////////////////////
         // Split remaining string into words //
         ///////////////////////////////////////
@@ -796,9 +780,11 @@ class Converter
         $mismatchPosition = strspn($completeEntry ^ $remainder, "\0");
         $remains = substr($remainder, 0, $mismatchPosition);
 
-        // Put space between , and ` or ' (assumed to be typo)
+        // Put space between , and ` or ' not followed by space (assumed to be typo).
+        // (So ",' " does not get a space added --- as in "'word', ".)
         $remains = str_replace([',`', '( ', ' )'], [', `', '(', ')'], $remains);
-        $remains = str_replace([",'"], [", '"], $remains);
+        $remains = preg_replace("/,'([^ ])/", ", '$1", $remains);
+        //$remains = str_replace([",'"], [", '"], $remains);
         // Replace ",'A" with ",' A", where A is anything except ' or a space
         //$remains = preg_replace('/,\\\'([^\' ])/', ', \\\'$1', $remains);
 
@@ -1186,6 +1172,24 @@ class Converter
         $yearIsForthcoming = isset($item->year) && preg_match('/^([Ff]orthcoming|[Ii]n [Pp]ress)$/', $item->year);
 
         $remainder = ltrim($newRemainder, ' ');
+
+        /////////////////////////////////////////////////
+        // Put "Translated by ..." in note.            //
+        // (Not extracted earlier, because the string  //
+        // "translated by" mayt appear in the title.)  //
+        /////////////////////////////////////////////////
+
+        $containsTranslator = false;
+        // Translators: string up to first period preceded by a lowercase letter.
+        // Case of "Trans." is handled later, after item type is determined, because "Trans." is an abbreviation used in journal names.
+        // (?<=[.,] )
+        $result = $this->findRemoveAndReturn($remainder, '[Tt]ranslat(ed|ion) by .*?\p{Ll}\)?(\.| \()', false);
+        if ($result) {
+            $this->addToField($item, 'note', trim(ucfirst($result[0]), ')( '), 'addToField 3');
+            $before = Str::replaceEnd(' and ', '', $result['before']);
+            $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . $result['after'];
+            $containsTranslator = true;
+        }
 
         ///////////////////////////////////////////////////////////////////////////////
         // To determine type of item, first record some features of publication info //
