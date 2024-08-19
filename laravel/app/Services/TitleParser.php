@@ -389,7 +389,7 @@ class TitleParser
                            )
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($startPagesRegExp, $remainder)
-                        || preg_match('/^' . $this->inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z]|' . $this->yearRegExp . ')/', $remainder)
+                        || preg_match('/^' . $this->inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
                         || preg_match('/^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || (
                             $nextWord 

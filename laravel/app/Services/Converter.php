@@ -310,7 +310,7 @@ class Converter
     //////////////// MAIN METHOD //////////////////////
     ///////////////////////////////////////////////////
 
-    // If, after removing numbers etc. at start, entry is empty, return null.
+    // If, after removing numbers etc. at start, entry is                                                                                           ty, return null.
     // Otherwise return array with components
     //   'source': original entry
     //   'item': converted entry
@@ -2148,6 +2148,7 @@ class Converter
                     // and $remainder does not contain a string for editors, take booktitle to be $remainder up to period.
                     if (
                         $itemKind == 'inproceedings'
+                        && ! $booktitle
                         && $periodPosition !== false
                         && ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->bookTitleAbbrevs)
                         && ! preg_match('/ (' . $this->monthsAbbreviationsRegExp[$language] . ')$/', substr($remainder, 0, $periodPosition))

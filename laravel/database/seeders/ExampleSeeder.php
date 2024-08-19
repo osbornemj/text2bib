@@ -11894,13 +11894,26 @@ class ExampleSeeder extends Seeder
             ],
             // inproceedings, not article
             [
-                'source' => '\bibitem[Liu et~al.(2022{\natexlab{a}})Liu, Yu, Liao, Li, Lin, Liu, and   Dustdar]{SL22} Shizhan Liu, Hang Yu, Cong Liao, Jianguo Li, Weiyao Lin, Alex~X. Liu, and   Schahram Dustdar. \newblock Pyraformer: Low-complexity pyramidal attention for long-range time   series modeling and forecasting. \newblock In \emph{The Tenth International Conference on Learning   Representations, {ICLR} 2022, Virtual Event, April 25-29, 2022}.   OpenReview.net, 2022{\natexlab{a}}. ',
+                'source' => '\bibitem[Liu et~al.(2022{\natexlab{a}})Liu, Yu, Liao, Li, Lin, Liu, and   Dustdar]{SL22} Shizhan Liu, Hang Yu, Cong Liao, Jianguo Li, Weiyao Lin, Alex~X. Liu, and   Schahram Dustdar. \newblock Pyraformer: Low-complexity pyramidal attention for long-range time   series modeling and forecasting. \newblock In \emph{The Tenth International Conference on Learning   Representations, {ICLR} 2022, Virtual Event, April 25-29, 2022}.   OpenReview.net, 2022',
                 'type' => 'inproceedings',
                 'bibtex' => [
                     'author' => 'Shizhan Liu and Hang Yu and Cong Liao and Jianguo Li and Weiyao Lin and Alex X. Liu and Schahram Dustdar',
                     'title' => 'Pyraformer: Low-complexity pyramidal attention for long-range time series modeling and forecasting',
                     'year' => '2022',
+                    'publisher' => 'OpenReview.net',
                     'booktitle' => 'The Tenth International Conference on Learning Representations, {ICLR} 2022, Virtual Event, April 25-29, 2022',
+                    ]
+            ],
+            // inproceedings, not book
+            [
+                'source' => '\bibitem[Oreshkin et~al.(2020)Oreshkin, Carpov, Chapados, and Bengio]{BO20} Boris~N. Oreshkin, Dmitri Carpov, Nicolas Chapados, and Yoshua Bengio. \newblock {N-BEATS:} neural basis expansion analysis for interpretable time   series forecasting. \newblock In \emph{8th International Conference on Learning Representations,   {ICLR} 2020, Addis Ababa, Ethiopia, April 26-30, 2020}. OpenReview.net, 2020. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Boris N. Oreshkin and Dmitri Carpov and Nicolas Chapados and Yoshua Bengio',
+                    'title' => '{N-BEATS:} neural basis expansion analysis for interpretable time series forecasting',
+                    'year' => '2020',
+                    'publisher' => 'OpenReview.net',
+                    'booktitle' => '8th International Conference on Learning Representations, {ICLR} 2020, Addis Ababa, Ethiopia, April 26-30, 2020',
                     ]
             ],
 
