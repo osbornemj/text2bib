@@ -43,6 +43,7 @@ class Converter
     var $entrySuffixes;
     var $excludedWords;
     var $fullThesisRegExp;
+    var $inWords;
     var $inRegExp;
     var $inRegExp1;
     var $inRegExp2;
@@ -164,11 +165,24 @@ class Converter
                 ['1e', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e', '10e'],
         ];
 
-        // en for Spanish (and French?), em for Portuguese, dalam for Indonesian
-        $this->inRegExp = '([IiEe][nm]|[Dd]ans|[Dd]alam)';
-        $this->inRegExp1 = '/^' . $this->inRegExp . ':? /';
-        $this->inRegExp2 = '/( [iIeE]n: |[,.] [IiEe]n | [ei]n\) | [eE]m: |[,.] [Ee]m | [ei]m\) | [Dd]ans:? | [Dd]alam: )/';
+        // en for Spanish (and French?), em for Portuguese, dans for French, dalam for Indonesian
+        $inWords = [
+            '[IiEe][nm]',
+            '[Dd]ans',
+            '[Dd]alam'
+        ];
 
+        // $this->inRegExp = '([IiEe][nm]| ...)';
+        // $this->inRegExp2 = '/( [IiEe][nm]: |[,.] [IiEe][nm] | [IiEe][nm]\) | ... )/';
+        foreach ($inWords as $i => $inWord) {
+            $this->inRegExp .= ($i ? '|' : '(') . $inWord;
+            $this->inRegExp2 .= ($i ? '|' : '/(') . ' ' . $inWord . ': |[,.] ' . $inWord . ' | ' . $inWord . '\) ';
+        }
+        $this->inRegExp .= ')';
+        $this->inRegExp2 .= ')/';
+
+        $this->inRegExp1 = '/^' . $this->inRegExp . ':? /';
+        
         // 'a cura di': Italian. რედ: Georgian.  Hrsgg., Hg.: German.  dir.: French(?)
         $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|რედ?\.?|Hrsgg\.|Hg\.|[Ee]ditors?|a cura di|dir\.)[\)\]]/';
         $this->edsRegExp2 = '/ed(\.|ited) by/i';
@@ -186,12 +200,12 @@ class Converter
             '[Pp]ages? : ',
             '[Pp]p\.? ?',
             'p\. ?',
-            'p ?',                                                                                                                                                                              
+            'p ?',
             '[Pp]ágs?\. ?',// Spanish, Portuguese
             '[Bb]lz\. ?',  // Dutch
             '[Hh]al[\.:] ?',  // Indonesian
             '[Hh]lm\. ?',
-            '[Ss]s?\. ?',  // Turkish, Polish
+            '[Ss]s?\. ?',  // Turkish, Polish, German
             '[Ss]tr\. ?',  // Czech
             'стр\. ?',     // Russian
             'გვ\. ?',      // Georgian
@@ -908,8 +922,8 @@ class Converter
             $month = $day = $date = null;
             $itemKind = 'book';
             $remainder = implode(' ', $words);
-        // Entry starts ______ or --- [i.e. author from previous entry]
-        } elseif (isset($words[0]) && preg_match('/^[_-]+[.,]?$/', $words[0])) {
+        // Entry starts with two more more _'s or -'s => author is one in previous entry
+        } elseif (isset($words[0]) && preg_match('/^[_-]{2,}[.,]?$/', $words[0])) {
             $authorConversion = ['authorstring' => $previousAuthor, 'warnings' => []];
             $month = $day = $date = null;
             $isEditor = false;
@@ -922,6 +936,7 @@ class Converter
             }
             $remainder = implode(' ', $words);
         } else {
+            $words[0] = ltrim($words[0], '_-');
             $authorConversion = $this->authorParser->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'authors', $language);
             $this->detailLines = array_merge($this->detailLines, $authorConversion['author_details']);
         }
@@ -1235,7 +1250,7 @@ class Converter
 
         if (preg_match($this->inRegExp2, $remainder)) {
             $containsIn = true;
-            $this->verbose("Contains \"in |in) |In |in: |In: \".");
+            $this->verbose("Contains variant of \"in\".");
         }
 
         if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {

@@ -11960,6 +11960,36 @@ class ExampleSeeder extends Seeder
                     'pages' => '1187-1225',
                     ]
             ],
+            // single dash should not be interpreted as implying same authors as previous entry
+            [
+                'source' => '- Blomley, M. J., Cooke, J. C., Unger, E. C., Monaghan, M. J., & Cosgrove, D. O. (2001). Science, medicine, and the future: Microbubble contrast agents: a new era in ultrasound. BMJ. British Medical Journal, 322(7296), 1222-1225. https://doi.org/10.1136/bmj.322.7296.1222  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1136/bmj.322.7296.1222',
+                    'author' => 'Blomley, M. J. and Cooke, J. C. and Unger, E. C. and Monaghan, M. J. and Cosgrove, D. O.',
+                    'title' => 'Blomley',
+                    'year' => '2001',
+                    'title' => 'Science, medicine, and the future: Microbubble contrast agents: a new era in ultrasound',
+                    'journal' => 'BMJ. British Medical Journal',
+                    'volume' => '322',
+                    'number' => '7296',
+                    'pages' => '1222-1225',
+                    ]
+            ],
+            // Title ended prematurely
+            [
+                'source' => ' 1.	Weininger, D. Smiles, a chemical language and information system. 1. Introduction to methodology and encoding rules. J. Chem. Inf. Comp. Sci. 28, 31–36 (1988). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Weininger, D.',
+                    'title' => 'Smiles, a chemical language and information system. 1. Introduction to methodology and encoding rules',
+                    'journal' => 'J. Chem. Inf. Comp. Sci.',
+                    'year' => '1988',
+                    'volume' => '28',
+                    'pages' => '31-36',
+                    ]
+            ],
+            
            
 
                        

@@ -306,6 +306,7 @@ class TitleParser
                     )
                    ) {
                     $remainderMinusArticle = preg_replace('/[\( ][Aa]rticle /', '', $remainder);
+                    $remainder = ltrim($remainder, '{ ');
 
                     if (
                         ! Str::endsWith($word, ':')
@@ -321,21 +322,20 @@ class TitleParser
                             // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
                             // The following pattern allows too much latitude --- e.g. "The MIT Press. 2015." matches it.
                             // || preg_match('/^[A-Z][A-Za-z &]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
-                            // journal name followed by publication info, allowing issue number and page
-                            // numbers to be preceded by letters --- no year.
-                            || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder) 
+                            // journal name, volume (year?) issue page
+                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder) 
                             // journal name followed by year and publication info, allowing issue number and page
                             // numbers to be preceded by letters and issue numberto have / or - in it --- no year.
                             || preg_match('/^\p{Lu}[\p{L} &()\-]+[,.]? ' . $this->yearRegExp . ',? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder)
                             // journal name followed by more specific publication info, year at end, allowing issue number and page
                             // numbers to be preceded by letters.
-                            || preg_match('/^[A-Z][A-Za-z &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '(, |. |.)(\(?' . $this->yearRegExp . '\)?)$/', $remainder) 
+                            || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '(, |. |.)(\(?' . $this->yearRegExp . '\)?)$/u', $remainder) 
                             // journal name followed by more specific publication info, year first, allowing issue number and page
                             // numbers to be preceded by letters.
-                            || preg_match('/^[A-Z][A-Za-z &()]+[,.]? ' . $this->yearRegExp . ',? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '\.? ?$/', $remainder)
+                            || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? ' . $this->yearRegExp . ',? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '\.? ?$/u', $remainder)
                             // $word ends in period && journal name (can include commma), pub info ('}' after volume # for \textbf{ (in $this->volumeRegExp))
-                            || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:( ] ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\/]*$/', $remainderMinusArticle))
-                            || (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?\([0-9]{2,4}\)/', $remainderMinusArticle))
+                            || (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L}, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:( ] ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\/]*$/u', $remainderMinusArticle))
+                            || (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L}, &]+,? (' . $this->volumeRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?\([0-9]{2,4}\)/u', $remainderMinusArticle))
                         )
                     ) {
                         $upcomingJournalAndPubInfo = true;
@@ -501,7 +501,7 @@ class TitleParser
                             (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.' && rtrim($nextWord, ':') != 'in')
                                     || ($word == 'A.' && $nextWord == 'D.')
                                     || ($word == 'B.' && $nextWord == 'C.')
-                                    || preg_match('/^(Part )?II?I?[:.] /', $remainder)
+                                    || preg_match('/^(Part )?(I|II|III|[1-9])[:.] /', $remainder)
                                 )
                         ) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
