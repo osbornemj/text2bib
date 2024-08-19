@@ -16,15 +16,24 @@ class ArticlePubInfoParser
     use Utilities;
 
     var $monthsRegExp;
+    var $pubInfoDetails;
 
     public function __construct()
     {
         $this->monthsRegExp = $this->makeMonthsRegExp();
     }
 
-    // Get journal name from $remainder, which includes also publication info
-    public function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming, string $language, string $startPagesRegExp): string
+    // Overrides method in Utilities trait
+    private function verbose(string|array $arg): void
     {
+        $this->pubInfoDetails[] = $arg;
+    }
+
+    // Get journal name from $remainder, which includes also publication info
+    public function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming, string $language, string $startPagesRegExp): array
+    {
+        $this->pubInfoDetails = [];
+
         if ($italicStart) {
             // (string) on next line to stop VSCode complaining
             $italicText = (string) $this->getQuotedOrItalic($remainder, true, false, $before, $after, $style);
@@ -34,7 +43,10 @@ class ArticlePubInfoParser
                 $remainder = $before . $italicText . $after;
             } else {
                 $remainder = $before . $after;
-                return $italicText;
+                return [
+                    'journal' => $italicText,
+                    'pub_info_details' => [],
+                ];
             }
         }
 
@@ -89,15 +101,20 @@ class ArticlePubInfoParser
         // To deal with (erroneous) extra quotes at start
         $journal = ltrim($journal, "' ");
 
-        return $journal;
+        return [
+            'journal' => $journal,
+            'pub_info_details' => $this->pubInfoDetails,
+        ];
     }
 
     // Allows page number to be preceded by uppercase letter.  Second number in range should really be allowed
     // to start with uppercase letter only if first number in range does so---and if pp. is present, almost
     // anything following should be allowed as page numbers?
     // '---' shouldn't be used in page range, but might be used by mistake
-    public function getVolumeNumberPagesForArticle(string &$remainder, object &$item, string $language, string $pagesRegExp, string $pageWordsRegExp, bool $start = false): bool
+    public function getVolumeNumberPagesForArticle(string &$remainder, object &$item, string $language, string $pagesRegExp, string $pageWordsRegExp, bool $start = false): array
     {
+        $this->pubInfoDetails = [];
+
         $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
         $result = false;
 
@@ -203,11 +220,16 @@ class ArticlePubInfoParser
             $remainder = trim($remainder, ',. ');
         }
 
-        return $result;
+        return [
+            'result' => $result,
+            'pub_info_details' => $this->pubInfoDetails,
+        ];
     }
 
-    public function getVolumeAndNumberForArticle(string &$remainder, object &$item, bool &$containsNumberDesignation, bool &$numberInParens): void
+    public function getVolumeAndNumberForArticle(string &$remainder, object &$item, bool &$containsNumberDesignation, bool &$numberInParens): array
     {
+        $this->pubInfoDetails = [];
+
         $numberInParens = false;
         if (ctype_digit($remainder)) {
             $this->verbose('Remainder is entirely numeric, so assume it is the volume');
@@ -375,6 +397,10 @@ class ArticlePubInfoParser
                 $this->verbose('[p4] pages: ' . $item->pages);
             }
         }
+
+        return [
+            'pub_info_details' => $this->pubInfoDetails,
+        ];
     }
      
 }

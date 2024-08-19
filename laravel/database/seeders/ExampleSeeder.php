@@ -11877,7 +11877,32 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Religion, Intolerance, and Conflict: A Scientific and Conceptual Investigation',
                     ]
             ],
-
+			// en-dash in number range
+			[
+                'source' => 'Venture, Olivier. “Written on Bamboo and Silk. The Beginnings of Chinese Books & Inscriptions.” T’oung Pao 93, no. 4–5 (December 2007): 503–13. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Venture, Olivier',
+                    'title' => 'Written on Bamboo and Silk. The Beginnings of Chinese Books & Inscriptions',
+                    'year' => '2007',
+                    'month' => 'December',
+                    'journal' => 'T\'oung Pao',
+                    'pages' => '503-13',
+                    'volume' => '93',
+                    'number' => '4-5',
+                    ]
+            ],
+            // inproceedings, not article
+            [
+                'source' => '\bibitem[Liu et~al.(2022{\natexlab{a}})Liu, Yu, Liao, Li, Lin, Liu, and   Dustdar]{SL22} Shizhan Liu, Hang Yu, Cong Liao, Jianguo Li, Weiyao Lin, Alex~X. Liu, and   Schahram Dustdar. \newblock Pyraformer: Low-complexity pyramidal attention for long-range time   series modeling and forecasting. \newblock In \emph{The Tenth International Conference on Learning   Representations, {ICLR} 2022, Virtual Event, April 25-29, 2022}.   OpenReview.net, 2022{\natexlab{a}}. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Shizhan Liu and Hang Yu and Cong Liao and Jianguo Li and Weiyao Lin and Alex X. Liu and Schahram Dustdar',
+                    'title' => 'Pyraformer: Low-complexity pyramidal attention for long-range time series modeling and forecasting',
+                    'year' => '2022',
+                    'booktitle' => 'The Tenth International Conference on Learning Representations, {ICLR} 2022, Virtual Event, April 25-29, 2022',
+                    ]
+            ],
 
 
             

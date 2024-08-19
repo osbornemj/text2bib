@@ -37,6 +37,24 @@
         {{ '}' }}
     </div>
 
+    {{--
+    <div class="mt-2">
+        @if (isset($convertedItem['crossref_item']))
+            {{ '@' }}{{ $convertedItem['crossref_item']->itemType }}{{ '{' }}{{ $convertedItem['label'] }},
+                <ul class="ml-6">
+                    @foreach ($fields as $field)
+                        @isset($convertedItem['crossref_item']->$field)
+                            <li>{{ $field }} = {{ '{' }}{{ $convertedItem['crossref_item']->$field }}{{ '}' }},</li>
+                        @endisset
+                    @endforeach
+                </ul>
+            {{ '}' }}
+        @else
+            No match found in Crossref.
+        @endif
+    </div>
+    --}}
+    
     <div class="mt-2">
         Check in
         <x-link href="https://scholar.google.com/scholar?q={{ $convertedItem['scholarTitle'] }}&num=100&btnG=Search+Scholar&as_sdt=1.&as_sdtp=on&as_sdtf=&as_sdts=5&hl=en" target="_blank">Google Scholar</x-link>

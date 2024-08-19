@@ -15,6 +15,7 @@ class Output extends Model
 
     protected $casts = [
         'item' => 'array',
+        'crossref_item' => 'array',
         'warnings' => 'array',
         'notices' => 'array',
         'details' => 'array',

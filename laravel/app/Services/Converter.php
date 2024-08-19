@@ -1701,14 +1701,34 @@ class Converter
                         }
                     }
 
-                    if ($this->articlePubInfoParser->getVolumeNumberPagesForArticle($remainder, $item, $language, $this->pagesRegExp, $this->pageWordsRegExp, true) || preg_match('/^' . $this->volRegExp0 . '/', $remainder)) {
+                    $result = $this->articlePubInfoParser->getVolumeNumberPagesForArticle(
+                        $remainder, 
+                        $item, 
+                        $language, 
+                        $this->pagesRegExp, 
+                        $this->pageWordsRegExp, 
+                        true,
+                    );
+
+                    $this->detailLines = array_merge($this->detailLines, $result['pub_info_details']);
+
+                    if ($result['result'] || preg_match('/^' . $this->volRegExp0 . '/', $remainder)) {
                         $journalNameMissingButHasVolume = true;
                         $warnings[] = "Item seems to be article, but journal name not found.";
                     }
 
                     if (! $journalNameMissingButHasVolume) {
-                        $journal = $this->articlePubInfoParser->getJournal($remainder, $item, $italicStart, $pubInfoStartsWithForthcoming, $pubInfoEndsWithForthcoming, $language, $this->startPagesRegExp);
-                        $journal = rtrim($journal, ' ,(');
+                        $journalResult = $this->articlePubInfoParser->getJournal(
+                            $remainder,
+                            $item, 
+                            $italicStart, 
+                            $pubInfoStartsWithForthcoming, 
+                            $pubInfoEndsWithForthcoming, 
+                            $language, 
+                            $this->startPagesRegExp
+                        );
+                        $this->detailLines = array_merge($this->detailLines, $journalResult['pub_info_details']);
+                        $journal = rtrim($journalResult['journal'], ' ,(');
                     }
                 }
 
@@ -1767,7 +1787,15 @@ class Converter
                         }
 
                         // Get pages
-                        $result = $this->articlePubInfoParser->getVolumeNumberPagesForArticle($remainder, $item, $language, $this->pagesRegExp, $this->pageWordsRegExp);
+                        $result = $this->articlePubInfoParser->getVolumeNumberPagesForArticle(
+                            $remainder, 
+                            $item, 
+                            $language, 
+                            $this->pagesRegExp, 
+                            $this->pageWordsRegExp
+                        );
+
+                        $this->detailLines = array_merge($this->detailLines, $result['pub_info_details']);
 
                         $pagesReported = false;
                         if (! empty($item->pages)) {
@@ -1793,7 +1821,14 @@ class Converter
                             if (! isset($item->volume) && ! isset($item->number)) {
                                 // Get volume and number
                                 $numberInParens = false;
-                                $this->articlePubInfoParser->getVolumeAndNumberForArticle($remainder, $item, $containsNumberDesignation, $numberInParens);
+                                $result = $this->articlePubInfoParser->getVolumeAndNumberForArticle(
+                                    $remainder, 
+                                    $item, 
+                                    $containsNumberDesignation, 
+                                    $numberInParens
+                                );
+
+                                $this->detailLines = array_merge($this->detailLines, $result['pub_info_details']);
                             }
 
                             $result = $this->findRemoveAndReturn($remainder, $this->articleRegExp);

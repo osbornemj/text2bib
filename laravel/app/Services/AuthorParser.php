@@ -81,7 +81,7 @@ class AuthorParser
     public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
     {
         $this->authorDetails = [];
-
+        
         // if author list is in \textsc, remove the \textsc
         if (isset($words[0]) && Str::startsWith($words[0], '\textsc{')) {
             $words[0] = substr($words[0], 8);

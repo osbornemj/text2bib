@@ -69,6 +69,12 @@ class TitleParser
 
         $note = null;
 
+        $italicCodesRegExp = '';
+        foreach ($this->italicCodes as $i => $italicCode) {
+            $italicCodesRegExp .= ($i ? '|' : '') . str_replace('\\', '\\\\', $italicCode);
+        }
+        //dd($italicCodesRegExp);
+
         // If $remainder contains $journal, take $title to be string up to start of $journal, possibly
         // prepended by a 'forthcoming' string.
         // Remove italic codes, if any, from remainder starting with first word of $journal
@@ -383,11 +389,12 @@ class TitleParser
                            )
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($startPagesRegExp, $remainder)
-                        || preg_match('/^[Ii]n:? [`\']?([A-Z]|' . $this->yearRegExp . ')|^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^' . $this->inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z]|' . $this->yearRegExp . ')/', $remainder)
+                        || preg_match('/^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || (
                             $nextWord 
                             && Str::endsWith($nextWord, '.') 
-                            && in_array(substr($nextWord,0,-1), $startJournalAbbreviations)
+                            && in_array(substr($nextWord, 0, -1), $startJournalAbbreviations)
                            )
                         || (
                             $nextWord 

@@ -5,7 +5,9 @@ namespace App\Livewire;
 use Livewire\WithFileUploads;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Support\Str;
 
 use App\Models\Conversion;
@@ -21,6 +23,7 @@ use Livewire\Component;
 use App\Livewire\Forms\ConvertFileForm;
 use App\Models\Version;
 use App\Services\Converter;
+use stdClass;
 
 class ConvertFile extends Component
 {
@@ -293,12 +296,22 @@ class ConvertFile extends Component
 
             $itemTypes = ItemType::all();
 
-            // Write each converted item to an Output **and key array to output ids**
+            // Write each converted item to an Output **and key array to output ids**.
             // Note that source is written to conversions table, so original file
             // is not needed except to check how entries were created from it.
             $convertedItems = [];
             foreach ($convertedEntries as $i => $convItem) {
                 if (isset($convItem['source'])) {
+                    /*
+                    $doi = $convItem['item']->doi ?? null;
+                    $doi = str_replace('\_', '_', $doi);
+
+                    $crossref_item = null;
+                    if ($doi) {
+                        $crossref_item = $this->getCrossrefItemFromDoi($doi, $conversion->use);
+                        $convItem['crossref_item'] = $crossref_item;
+                    }
+                    */
                     $output = Output::create([
                         'source' => $convItem['source'],
                         'detected_encoding' => $encodings[$i],
@@ -306,6 +319,7 @@ class ConvertFile extends Component
                         'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
                         'label' => $convItem['label'],
                         'item' => $convItem['item'],
+                    //    'crossref_item' => $crossref_item,
                         'author_pattern' => $convItem['author_pattern'],
                         'seq' => $i,
                     ]);
@@ -322,5 +336,55 @@ class ConvertFile extends Component
             $this->itemTypes = $itemTypes;
             $this->itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
         }
+    }
+
+    public function getCrossrefItemFromDoi(string $doi, string $use): object
+    {
+        $response = Http::withHeaders([
+                'User-Agent' => 'text2bib (https://text2bib.org); mailto:' . env('CROSSREF_EMAIL'),
+            ])
+            //->accept('application/x-bibtex')
+            ->acceptJson()
+            ->get('https://api.crossref.org/works/v1/' . $doi);
+
+        $body = json_decode($response->body());
+
+        if ($body) {
+            $details = $body->message;
+            $crossref_item = new \stdClass();
+            $crossref_item->doi = $use == 'latex' ? str_replace('_', '\_', $details->DOI) : $details->DOI;
+            $crossref_item->itemType = match ($details->type) {
+                'journal-article' => 'article',
+                'book-chapter' => 'incollection',
+                'book' => 'book',
+            };
+            $crossref_item->title = $details->title[0];
+            $crossref_item->author = '';
+            foreach ($details->author as $j => $author) {
+                $crossref_item->author .= ($j ? ' and ' : '') . $author->family . ', ' . $author->given;
+            }
+            $crossref_item->year = $details->{'published-print'}->{'date-parts'}[0][0];
+
+            switch ($crossref_item->itemType) {
+                case 'article':
+                    $crossref_item->journal = $details->{'container-title'}[0];
+                    $crossref_item->pages = $details->page;
+                    $crossref_item->number = $details->{'journal-issue'}->issue;
+                    $crossref_item->volume = $details->volume;
+                    break;
+                case 'incollection':
+                    $crossref_item->booktitle = $details->{'container-title'}[1];
+                    $crossref_item->address = $details->{'publisher-location'};
+                    $crossref_item->publisher = $details->publisher;
+                    $crossref_item->pages = $details->page;
+                    $crossref_item->isbn = '';
+                    foreach ($details->{'isbn-type'} as $j => $isbntype) {
+                        $crossref_item->isbn .= ($j ? ', ' : '') . $isbntype->value . ' (' . $isbntype->type .')';
+                    }
+                    break;
+            }
+        }
+
+        return $crossref_item ?? null;
     }
 }

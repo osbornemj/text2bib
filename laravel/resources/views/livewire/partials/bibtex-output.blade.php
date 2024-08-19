@@ -66,7 +66,7 @@
                                 :language="$language"
                             />
                         </div>
-                        
+
                     </li>
                     @endforeach
                 </div>

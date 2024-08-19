@@ -95,7 +95,7 @@ class Dates
                 // The optional "de" between day and month and between month and year is for Portuguese
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
                 ||
-                // (year,? monthNumber day) (or without parens or with brackets)
+                // (year,? monthNumber day) (or without parens or with brackets)                            
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<year>(' . $centuries . ')[0-9]{2})[a-z]?,?[ \/](?P<month>[0-9]{1,2})[ \/](?P<day>[0-9]{1,2}))[\)\]]?/i', $string, $matches1)
                 ||
                 // (month day, year) (or without parens or with brackets)
@@ -140,7 +140,8 @@ class Dates
                 }
                 $day = $matches2['day'][0] ?? null;
                 $date = $matches2['date'][0] ?? null;
-                $remains = substr($string, 0, $matches2['date'][1]) . substr($string, $matches2['date'][1] + strlen($matches2['date'][0]));
+                $remains = rtrim(substr($string, 0, $matches2['date'][1]), '(') . ltrim(substr($string, $matches2['date'][1] + strlen($matches2['date'][0])), ')');
+                
                 return $year;
             }
         }
