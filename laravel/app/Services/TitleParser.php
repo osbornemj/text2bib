@@ -53,7 +53,8 @@ class TitleParser
         string $pagesRegExp, 
         string $startPagesRegExp, 
         string $fullThesisRegExp, 
-        array $monthsRegExp, 
+        array $monthsRegExp,
+        string $inRegExp, 
         bool $includeEdition = false, 
         string $language = 'en'
        ): array
@@ -389,7 +390,7 @@ class TitleParser
                            )
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($startPagesRegExp, $remainder)
-                        || preg_match('/^' . $this->inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
+                        || preg_match('/^' . $inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
                         || preg_match('/^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || (
                             $nextWord 
@@ -560,7 +561,7 @@ class TitleParser
                     } elseif (
                             preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriodOrComma,0,-1))
                             //preg_match('/[a-zA-Z -]+/', substr($stringToNextPeriodOrComma,0,-1))
-                            && !preg_match($this->inRegExp1, $remainder)
+                            && ! preg_match('/^' . $inRegExp . ':? /', $remainder)
                             && strlen($remainder) > strlen($stringToNextPeriodOrComma) + ($containsPages ? 37 : 30)
                             && ! $upcomingYear
                             ) {

@@ -11916,16 +11916,51 @@ class ExampleSeeder extends Seeder
                     'booktitle' => '8th International Conference on Learning Representations, {ICLR} 2020, Addis Ababa, Ethiopia, April 26-30, 2020',
                     ]
             ],
-
-
-            
-
-
-            
-
-
-
-            
+			// incollection using 'dalam' (Indonesian) for 'in'
+			[
+                'source' => 'Harijanto PN. Gejala Klinik Malaria. Dalam: Harijanto PN (editor). Malaria, Epidemiologi, Patogenesis, Manifestasi Klinis dan Penanganan. Jakarta: EGC, Hal: 151-55, 2000. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Harijanto, P. N.',
+                    'title' => 'Gejala Klinik Malaria',
+					'editor' => 'Harijanto, P. N.',
+					'booktitle' => 'Malaria, Epidemiologi, Patogenesis, Manifestasi Klinis dan Penanganan',
+                    'year' => '2000',
+                    'publisher' => 'EGC',
+					'pages' => '151-55',
+                    'address' => 'Jakarta',
+                    ]
+            ],
+            // Use of 'heft' for 'issue' (German)
+			[
+                'source' => 'Reiner Anselm: Eizellspende aus der Sicht des Ethikers. Das geltende Verbot der Eizellspende durch das ESchG sollte überdacht werden (egg donation: an ethical perspective). In: Zeitschrift für Kinder- und Jugendmedizin in Klinik und Praxis 98 (2022) Heft 4, S.585-593. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Reiner Anselm',
+                    'title' => 'Eizellspende aus der Sicht des Ethikers. Das geltende Verbot der Eizellspende durch das ESchG sollte überdacht werden (egg donation: an ethical perspective)',
+                    'journal' => 'Zeitschrift für Kinder- und Jugendmedizin in Klinik und Praxis',
+                    'year' => '2022',
+                    'volume' => '98',
+                    'number' => '4',
+                    'pages' => '585-593',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// journal in braces
+			[
+                'source' => '\bibitem{NLWave2}      Chen, X., Lassas, M., Oksanen, L., Paternain, G.: Inverse problem for the Yang-Mills equations. { Communications in Mathematical Physics} 384 (2021), no. 2, 1187--1225.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Chen, X. and Lassas, M. and Oksanen, L. and Paternain, G.',
+                    'title' => 'Inverse problem for the Yang-Mills equations',
+                    'journal' => 'Communications in Mathematical Physics',
+                    'year' => '2021',
+                    'volume' => '384',
+                    'number' => '2',
+                    'pages' => '1187-1225',
+                    ]
+            ],
+           
 
                        
         ];

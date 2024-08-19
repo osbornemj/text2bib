@@ -140,11 +140,6 @@ trait Utilities
 
     var $journalWord = 'Journal';
 
-    // en for Spanish (and French?), em for Portuguese, dalam for Indonesian
-    var $inRegExp = '([IiEe][nm]|[Dd]ans|[Dd]alam)';
-    var $inRegExp1 = '/^[iIeE]n:? /';
-    var $inRegExp2 = '/( [iIeE]n: |[,.] [IiEe]n | [ei]n\) | [eE]m: |[,.] [Ee]m | [ei]m\) | [Dd]ans:? | [Dd]alam: )/';
-
     var $detailLines;
     
     public function isInitials(string $word): bool

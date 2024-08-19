@@ -43,6 +43,9 @@ class Converter
     var $entrySuffixes;
     var $excludedWords;
     var $fullThesisRegExp;
+    var $inRegExp;
+    var $inRegExp1;
+    var $inRegExp2;
     var $inReviewRegExp1;
     var $inReviewRegExp2;
     var $inReviewRegExp3;
@@ -161,6 +164,11 @@ class Converter
                 ['1e', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e', '10e'],
         ];
 
+        // en for Spanish (and French?), em for Portuguese, dalam for Indonesian
+        $this->inRegExp = '([IiEe][nm]|[Dd]ans|[Dd]alam)';
+        $this->inRegExp1 = '/^' . $this->inRegExp . ':? /';
+        $this->inRegExp2 = '/( [iIeE]n: |[,.] [IiEe]n | [ei]n\) | [eE]m: |[,.] [Ee]m | [ei]m\) | [Dd]ans:? | [Dd]alam: )/';
+
         // 'a cura di': Italian. რედ: Georgian.  Hrsgg., Hg.: German.  dir.: French(?)
         $this->edsRegExp1 = '/[\(\[]([Ee]ds?\.?|რედ?\.?|Hrsgg\.|Hg\.|[Ee]ditors?|a cura di|dir\.)[\)\]]/';
         $this->edsRegExp2 = '/ed(\.|ited) by/i';
@@ -178,7 +186,7 @@ class Converter
             '[Pp]ages? : ',
             '[Pp]p\.? ?',
             'p\. ?',
-            'p ?',
+            'p ?',                                                                                                                                                                              
             '[Pp]ágs?\. ?',// Spanish, Portuguese
             '[Bb]lz\. ?',  // Dutch
             '[Hh]al[\.:] ?',  // Indonesian
@@ -1055,6 +1063,7 @@ class Converter
                     $this->startPagesRegExp, 
                     $this->fullThesisRegExp,
                     $this->monthsRegExp,
+                    $this->inRegExp,
                     false, 
                     $language
                 );
@@ -1221,7 +1230,7 @@ class Converter
 
         if (preg_match($this->inRegExp1, $remainder)) {
             $inStart = true;
-            $this->verbose("Starts with \"in |In |in: |In: \".");
+            $this->verbose("Starts with variant of \"in\".");
         }
 
         if (preg_match($this->inRegExp2, $remainder)) {
@@ -1987,7 +1996,8 @@ class Converter
                 // $remainderWithMonthYear is $remainder before month and year (if any) were removed.
                 if ($inStart) {
                     $this->verbose("Starts with variant of \"in\"");
-                    $remainder = ltrim(substr($remainder, 2), ': ');
+                    $remainder = preg_replace($this->inRegExp1, '', $remainder);
+                    //$remainder = ltrim(substr($remainder, 2), ': ');
                     $remainderWithMonthYear = ltrim(substr($remainderWithMonthYear, 2), ': ');
                 }
 
