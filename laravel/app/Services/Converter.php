@@ -1000,6 +1000,10 @@ class Converter
         ];
 
         if ($isEditor === false && ! Str::contains($authorstring, $editorPhrases)) {
+            // For name like "Ash‘arī, Abū al-Ḥasan al-."
+            if (Str::endsWith($authorstring, '-.')) {
+                $authorstring = rtrim($authorstring, '.');
+            }
             $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 7');
         } else {
             $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' ,'), 'setField 8');
@@ -1599,7 +1603,7 @@ class Converter
         } elseif ($containsIsbn || ($titleStyle == 'italic' && ($containsCity || $containsPublisher || isset($item->editor)))) {
             $this->verbose("Item type case 8");
             $itemKind = 'book';
-        } elseif (! $containsIn && ($pubInfoStartsWithForthcoming || $pubInfoEndsWithForthcoming)) {
+        } elseif (! $containsIn && ! $startsAddressPublisher && ($pubInfoStartsWithForthcoming || $pubInfoEndsWithForthcoming)) {
             $this->verbose("Item type case 9");
             $itemKind = 'article';
         } elseif ($endsWithInReview) {
@@ -2428,16 +2432,29 @@ class Converter
                             // if ($this->authorParser->isNameString($remainder) || preg_match('/\([Ee]ds?\.?\),/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
 
                             // booktitle, which can contain commas, ends in period:
-                            $result1 = preg_match('/^(?P<booktitle>[\p{L}\-:, ]{15,})\. (?P<editor>[\p{L}\-., ]{8,})\([Ee]ds?\.?\)[.,]? (?P<pubInfo>.*)$/u', $remainder, $matches1);
+                            $result1 = preg_match('/^(?P<booktitle>[\p{L}\-:, ]{15,})\. (?P<editor>[\p{L}\-., ]{8,})\([Ee]ds?\.?\)[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $matches1);
                             // booktitle, which cannot contain commas, ends in comma
-                            $result2 = preg_match('/^(?P<booktitle>[\p{L}\-: ]{15,}), (?P<editor>[\p{L}\-., ]{8,})\([Ee]ds?\.?\)[.,]? (?P<pubInfo>.*)$/u', $remainder, $matches2);
+                            $result2 = preg_match('/^(?P<booktitle>[\p{L}\-: ]{15,}), (?P<editor>[\p{L}\-., ]{8,})\([Ee]ds?\.?\)[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $matches2);
 
                             if ($result1 && $this->authorParser->isNameString($matches1['editor'])) {
                                 // CASE 1a
                                 $this->verbose("Remainder format is <booktitle> <editors> (Eds.) <publicationInfo>");
                                 $this->setField($item, 'booktitle', $matches1['booktitle'], 'setField 130');
                                 $isEditor = true;
-                                $conversionResult = $this->authorParser->convertToAuthors(explode(' ', $matches1['editor']), $remainder, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, determineEnd: false, type: 'editors', language: $language);
+                                $conversionResult = $this->authorParser->convertToAuthors(
+                                    explode(' ', $matches1['editor']), 
+                                    $remainder, 
+                                    $year, 
+                                    $month, 
+                                    $day, 
+                                    $date, 
+                                    $isEditor, 
+                                    $this->cities, 
+                                    $this->dictionaryNames, 
+                                    determineEnd: false, 
+                                    type: 'editors', 
+                                    language: $language
+                                );
                                 $this->detailLines = array_merge($this->detailLines, $conversionResult['author_details']);
                                 $this->setField($item, 'editor', trim($conversionResult['authorstring'], ', '), 'setField 131');
                                 $remainder = trim($matches1['pubInfo'], ',. ');
@@ -2446,7 +2463,20 @@ class Converter
                                 $this->verbose("Remainder format is <booktitle> <editors> (Eds.) <publicationInfo>");
                                 $this->setField($item, 'booktitle', $matches2['booktitle'], 'setField 130');
                                 $isEditor = true;
-                                $conversionResult = $this->authorParser->convertToAuthors(explode(' ', $matches2['editor']), $remainder, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, determineEnd: false, type: 'editors', language: $language);
+                                $conversionResult = $this->authorParser->convertToAuthors(
+                                    explode(' ', $matches2['editor']), 
+                                    $remainder, 
+                                    $year, 
+                                    $month, 
+                                    $day, 
+                                    $date, 
+                                    $isEditor, 
+                                    $this->cities, 
+                                    $this->dictionaryNames, 
+                                    determineEnd: false, 
+                                    type: 'editors', 
+                                    language: $language
+                                );
                                 $this->detailLines = array_merge($this->detailLines, $conversionResult['author_details']);
                                 $this->setField($item, 'editor', trim($conversionResult['authorstring'], ', '), 'setField 131');
                                 $remainder = trim($matches2['pubInfo'], ',. ');
@@ -3127,6 +3157,11 @@ class Converter
                     $this->addToField($item, 'note', str_replace(' .', '.', $matches['editorString']), 'setField 110a');
                     $remainder = str_replace($matches['editorString'], '', $remainder);
                 }
+
+                if (preg_match('/(?P<remains>.*)forthcoming\)?\.?$/', $remainder, $matches)) {
+                    $this->addToField($item, 'note', 'Forthcoming.', 'setField 110b');
+                    $remainder = $matches['remains'];
+                } 
 
                 $remainingWords = explode(" ", $remainder);
 

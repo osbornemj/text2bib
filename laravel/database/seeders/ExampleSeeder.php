@@ -12098,6 +12098,45 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Consolidating the Third Wave Democracies Themes and Perspectives',
                     ]
             ],
+            // error in author pattern
+            [
+                'source' => '\bibitem{naseer2015} Naseer, Mehwish, and Dr Yasir Bin Tariq. ``The efficient market hypothesis: A critical review of the literature." The IUP journal of financial risk management 12.4 (2015): 48-63. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Naseer, Mehwish and Dr Yasir Bin Tariq',
+                    'title' => 'The efficient market hypothesis: A critical review of the literature',
+                    'journal' => 'The IUP journal of financial risk management',
+                    'year' => '2015',
+                    'volume' => '12',
+                    'number' => '4',
+                    'pages' => '48-63',
+                    ]
+            ],
+			// publisher and address missed
+			[
+                'source' => 'Shah, Mustafa. (Editor) Oxford Handbook of Islamic Ethics (New York: Oxford University Press, forthcoming).   ',
+                'type' => 'book',
+                'bibtex' => [
+                    'title' => 'Oxford Handbook of Islamic Ethics',
+                    'note' => 'Forthcoming.',
+                    'editor' => 'Shah, Mustafa',
+                    'address' => 'New York',
+                    'publisher' => 'Oxford University Press',
+                    ]
+            ],
+			// publisher and address missed
+            [
+                'source' => 'Ash‘arī, Abū al-Ḥasan al-. 1999. al-Ibāna ‘an ‘uṣūl al-dīyāna. Damascus: Dār al-Bayān.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ash`ar{\=\i}, Abū al-Ḥasan al-',
+                    'title' => 'al-Ib{\=a}na `an `uṣūl al-d{\=\i}y{\=a}na',
+                    'year' => '1999',
+                    'address' => 'Damascus',
+                    'publisher' => 'D{\=a}r al-Bay{\=a}n',
+                    ]
+            ],
+
 
             
             

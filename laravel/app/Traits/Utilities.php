@@ -471,6 +471,8 @@ trait Utilities
             }
         }
 
+        $style = $matchedText ? $style : 'none';
+
         return $matchedText;
     }
 

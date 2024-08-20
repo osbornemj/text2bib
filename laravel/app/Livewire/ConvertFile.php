@@ -312,6 +312,7 @@ class ConvertFile extends Component
                         $convItem['crossref_item'] = $crossref_item;
                     }
                     */
+
                     $output = Output::create([
                         'source' => $convItem['source'],
                         'detected_encoding' => $encodings[$i],
@@ -343,9 +344,10 @@ class ConvertFile extends Component
         $response = Http::withHeaders([
                 'User-Agent' => 'text2bib (https://text2bib.org); mailto:' . env('CROSSREF_EMAIL'),
             ])
-            //->accept('application/x-bibtex')
             ->acceptJson()
-            ->get('https://api.crossref.org/works/v1/' . $doi);
+            ->get('https://api.crossref.org/works/' . $doi);
+            //->accept('application/x-bibtex')
+            //->get('https://api.crossref.org/works/' . $doi . '/transform');
 
         $body = json_decode($response->body());
 
