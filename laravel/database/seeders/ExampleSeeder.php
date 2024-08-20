@@ -7483,7 +7483,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Barth, Karl',
                     'title' => 'Church Dogmatics 2:1',
                     'year' => '2004',
-                    'note' => 'Translated by T. H. L. Parker, W. B. Johnston, Harold Knight, and J. L. M. Haire. First published 1957. Edited by G. W. Bromiley and T. F. Torrance.',
+                    'note' => 'First published 1957. Translated by T. H. L. Parker, W. B. Johnston, Harold Knight, and J. L. M. Haire. Edited by G. W. Bromiley and T. F. Torrance.',
                     'address' => 'London/New York',
                     'publisher' => 'T&T Clark',
                     ]
@@ -9260,7 +9260,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Lane, E. W.',
                     'title' => 'Arabic--English Lexicon',
                     'year' => '2003',
-                    'note' => '2 vols. First published 1836',
+                    'note' => 'First published 1836. 2 vols.',
                     'address' => 'Cambridge',
                     'publisher' => 'Islamic Texts Society',
                     ]
@@ -9389,7 +9389,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Macdonald, Paul',
                     'title' => 'History of the Concept of Mind',
                     'year' => '2019',
-                    'note' => 'First published in 2003',
+                    'note' => 'First published in 2003.',
                     'address' => 'London',
                     'publisher' => 'Routledge',
                     ]
@@ -9402,7 +9402,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Ryle, Gilbert',
                     'title' => 'The Concept of Mind',
                     'year' => '2002',
-                    'note' => 'originally published 1949',
+                    'note' => 'originally published 1949.',
                     'address' => 'Chicago',
                     'publisher' => 'University of Chicago Press',
                     ]
@@ -11989,6 +11989,118 @@ class ExampleSeeder extends Seeder
                     'pages' => '31-36',
                     ]
             ],
+			// end of quote not detected
+			[
+                'source' => 'Nasution, Harun. 1997. ‘The Mu‘tazila and Rational Philosophy,’ in Richard C. Martin and Mark R. Woodward and Dwi S. Atmaja, Defenders of Reason in Islam: Mu’tazilism from medieval school to modern symbol. Oxford: Oneworld, 191-2. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Nasution, Harun',
+                    'title' => 'The Mu`tazila and Rational Philosophy',
+                    'year' => '1997',
+                    'pages' => '191-2',
+                    'editor' => 'Richard C. Martin and Mark R. Woodward and Dwi S. Atmaja',
+                    'address' => 'Oxford',
+                    'publisher' => 'Oneworld',
+                    'booktitle' => 'Defenders of Reason in Islam: Mu\'tazilism from medieval school to modern symbol',
+                    ]
+            ],
+			// author's name terminated early
+			 [
+                'source' => 'al-Rāzī, Fakhr al-Dīn. 1984. Maʿālim uṣūl al-dīn. Beirut: Dār al-Kitāb al-ʿArabī. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'al-Rāzī, Fakhr al-Dīn',
+                    'title' => 'Maʿālim uṣūl al-dīn',
+                    'year' => '1984',
+                    'address' => 'Beirut',
+                    'publisher' => 'Dār al-Kitāb al-ʿArabī',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// Tr. for translator
+			[
+                'source' => 'Ibn Isḥāq, Muḥammad. 1955. The Life of Muḥammad. Tr. A. Guillaume. Oxford: Oxford University Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ibn Isḥāq, Muḥammad',
+                    'title' => 'The Life of Muḥammad',
+                    'year' => '1955',
+                    'note' => 'Tr. A. Guillaume.',
+                    'address' => 'Oxford',
+                    'publisher' => 'Oxford University Press',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// // terminates title
+			[
+                'source' => 'Badhwar G.D.; Atwell X, W.; Reitz G., Beaujean R., Heinrich W. Radiation measurements on the Mir Orbital Station //Radiation Measurements 35 (2002) p. 393 –422.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Badhwar, G. D. and Atwell, X. W. and Reitz, G. and Beaujean, R. and Heinrich, W.',
+                    'title' => 'Radiation measurements on the Mir Orbital Station',
+					'journal' => 'Radiation Measurements',
+					'volume' => '35',
+                    'year' => '2002',
+                    'pages' => '393-422',
+                    ]
+            ],
+            // // as separator
+            [
+                'source' => ' Anderson H.R., Despain L.G., Neher H.V. Response to Environment and Radiation of an Ionization Chamber and matched Geiger-Tube used on Spacecraft. // Nucl. Instr. Meth., 1967, 47, p.1-9. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Anderson, H. R. and Despain, L. G. and Neher, H. V.',
+                    'title' => 'Response to Environment and Radiation of an Ionization Chamber and matched Geiger-Tube used on Spacecraft',
+                    'year' => '1967',
+                    'journal' => 'Nucl. Instr. Meth.',
+                    'volume' => '47',
+                    'pages' => '1-9',
+                    ]
+            ],
+   			// editor not identified
+			[
+                'source' => 'Browne, Harold. 1874. An Exposition of the Thirty-Nine Articles: Historical and Doctrinal. edited by J. Williams. New York: E. P. Dutton. Originally published 1850. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Browne, Harold',
+                    'title' => 'An Exposition of the Thirty-Nine Articles: Historical and Doctrinal',
+                    'year' => '1874',
+                    'note' => 'Originally published 1850. edited by J. Williams.',
+                    'address' => 'New York',
+                    'publisher' => 'E. P. Dutton',
+                    ]
+            ],
+			// publisher not identified
+			[
+                'source' => 'Burnet, Gilbert. 1837. An Exposition of the Thirty-Nine Articles of the Church of England. Edited by James Robert Page. London: Scott, Webster, and Geary. Originally published 1699.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Burnet, Gilbert',
+                    'title' => 'An Exposition of the Thirty-Nine Articles of the Church of England',
+                    'year' => '1837',
+                    'note' => 'Originally published 1699. Edited by James Robert Page.',
+                    'address' => 'London',
+                    'publisher' => 'Scott, Webster, and Geary',
+                    ]
+            ],
+			// booktitle, editors mixed up
+			[
+                'source' => 'Schimitter, Philippe C. (1997). Civil Society East and West, in  Diamond, Larry, Marc F. Plattner, Yun-han Chu and Hung-mao Tien (eds.), Consolidating the Third Wave Democracies Themes and Perspectives, Baltimore: The John Hopkins University Press, pp 239-262. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Schimitter, Philippe C.',
+                    'title' => 'Civil Society East and West',
+                    'year' => '1997',
+                    'pages' => '239-262',
+                    'editor' => 'Diamond, Larry and Marc F. Plattner and Yun-han Chu and Hung-mao Tien',
+                    'address' => 'Baltimore',
+                    'publisher' => 'The John Hopkins University Press',
+                    'booktitle' => 'Consolidating the Third Wave Democracies Themes and Perspectives',
+                    ]
+            ],
+
+            
+            
             
            
 

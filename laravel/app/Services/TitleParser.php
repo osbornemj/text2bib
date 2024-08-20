@@ -154,8 +154,15 @@ class TitleParser
                 $word = substr($word, 0, -1) . "''";
             }
 
+            if (Str::startsWith($word, '//')) {
+                $this->verbose("Ending title, case 1a");
+                $title = rtrim(implode(' ', $initialWords), ',:;.');
+                $remainder = ltrim(implode(' ', $remainingWords), '/');
+                break;
+            }
+
             array_shift($remainingWords);
-            $remainder = implode(' ', $remainingWords);
+            $remainder = ltrim(implode(' ', $remainingWords), '/');
 
             // If $word is one of the italic codes ending in a space and previous word ends in some punctuation, OR
             // word is '//' (used as separator in some references (Russian?)), stop and form title
@@ -168,13 +175,13 @@ class TitleParser
                     ||
                     $word == '//'
                 ) {
-                $this->verbose("Ending title, case 1a");
+                $this->verbose("Ending title, case 1b");
                 $title = rtrim(implode(' ', $initialWords), ',:;.');
                 break;
             }
 
             if (Str::endsWith($word, '//')) {
-                $this->verbose("Ending title, case 1b");
+                $this->verbose("Ending title, case 1c");
                 $title = rtrim(implode(' ', $initialWords), ',:;.') . ' ' . substr($word, 0, -2);
                 break;
             }
@@ -182,7 +189,7 @@ class TitleParser
             $initialWords[] = $word;
 
             if (preg_match('/^vol(\.?|ume) [0-9]/', $remainder)) {
-                $this->verbose("Ending title, case 1c");
+                $this->verbose("Ending title, case 1d");
                 $title = rtrim(implode(' ', $initialWords), ',:;.');
                 break;
             }
@@ -497,13 +504,19 @@ class TitleParser
                     // OR following string starts with a part designation, continue, skipping next word,
                     if (
                         $nextWord 
-                            && (
+                        &&
+                        (
                             (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.' && rtrim($nextWord, ':') != 'in')
-                                    || ($word == 'A.' && $nextWord == 'D.')
-                                    || ($word == 'B.' && $nextWord == 'C.')
-                                    || preg_match('/^(Part )?(I|II|III|[1-9])[:.] /', $remainder)
-                                )
-                        ) {
+                            || 
+                            ($word == 'A.' && $nextWord == 'D.')
+                            || 
+                            ($word == 'B.' && $nextWord == 'C.')
+                            || 
+                            preg_match('/^(Part )?(I|II|III|[1-9])[:.] /', $remainder)
+                        )
+                        &&
+                        ! ($nextWord == 'edited' && $nextButOneWord == 'by')
+                    ) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
                         $skipNextWord = true;
                     } elseif 

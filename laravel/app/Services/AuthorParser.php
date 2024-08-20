@@ -81,7 +81,7 @@ class AuthorParser
     public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
     {
         $this->authorDetails = [];
-        
+
         // if author list is in \textsc, remove the \textsc
         if (isset($words[0]) && Str::startsWith($words[0], '\textsc{')) {
             $words[0] = substr($words[0], 8);
@@ -1536,7 +1536,7 @@ class AuthorParser
     }
 
     /**
-     * isNotName: determine if $word1 and $word2 might be names: start with u.c. letter or is a von name
+     * isNotName: determine if $word1 and $word2 might be names: starts with u.c. letter or is a von name
      * or "d'" and is not an initial
      * @param $words array
      */
@@ -1576,6 +1576,7 @@ class AuthorParser
                     && mb_strtolower($words[$i][0]) == $words[$i][0]
                     && ! (strlen($words[$i]) == 2 && in_array($words[$i][0], range('a', 'z')) && $words[$i][1] == '.')
                     && substr($words[$i], 0, 2) != "d'" 
+                    && substr($words[$i], 0, 3) != "al-" 
                     && ! in_array($words[$i], ['...', '…']) 
                     && ! in_array($words[$i], $this->vonNames)
                     && $words[$i] != 'of'  // To deal with "Nicholas of Breslov" as author; don't add to vonNames, because they are used in other places, and adding them will mean that parts of titles are classified as names

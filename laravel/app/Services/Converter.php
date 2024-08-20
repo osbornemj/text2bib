@@ -782,6 +782,17 @@ class Converter
             $this->setField($item, 'chapter', $match, 'setField 17b');
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // If remainder ends with phrase like "first published" or "originally published", remove it and put it in Note field //
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        $containsOriginalPubDate = false;
+        if (preg_match('/(?P<note>\(?([Ff]irst|[Oo]riginally) published (in )?[0-9]{4}\.?\)?\.?)$/', $remainder, $matches)) {
+            $this->addToField($item, 'note', ' ' . trim($matches['note'], '(). ') . '.', 'setField 59b');
+            $containsOriginalPubDate = true;
+            $remainder = trim(substr($remainder, 0, -strlen($matches[0])), '() ');
+        }
+
         ///////////////////////////////////////
         // Split remaining string into words //
         ///////////////////////////////////////
@@ -1200,14 +1211,14 @@ class Converter
         /////////////////////////////////////////////////
         // Put "Translated by ..." in note.            //
         // (Not extracted earlier, because the string  //
-        // "translated by" mayt appear in the title.)  //
+        // "translated by" may appear in the title.)  //
         /////////////////////////////////////////////////
 
         $containsTranslator = false;
         // Translators: string up to first period preceded by a lowercase letter.
         // Case of "Trans." is handled later, after item type is determined, because "Trans." is an abbreviation used in journal names.
         // (?<=[.,] )
-        $result = $this->findRemoveAndReturn($remainder, '[Tt]ranslat(ed|ion) by .*?\p{Ll}\)?(\.| \()', false);
+        $result = $this->findRemoveAndReturn($remainder, '([Tt]ranslat(ed|ion) by|Tr\.) .*?\p{Ll}\)?(\.| \()', false);
         if ($result) {
             $this->addToField($item, 'note', trim(ucfirst($result[0]), ')( '), 'addToField 3');
             $before = Str::replaceEnd(' and ', '', $result['before']);
@@ -1561,7 +1572,7 @@ class Converter
             $this->verbose("Item type case 4");
             $itemKind = 'incollection';
         } elseif ($containsEditors && ! $containsProceedings) {
-            if ($hasSecondaryDate || $containsTranslator) {
+            if ($hasSecondaryDate || $containsTranslator || $containsOriginalPubDate) {
                 $this->verbose("Item type case 5a");
                 $itemKind = 'book'; // with editor as well as author
             } else {
@@ -2533,7 +2544,21 @@ class Converter
                                 // $isEditor is used only for a book (with an editor, not an author)
                                 $isEditor = false;
 
-                                $editorConversion = $this->authorParser->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, $determineEnd ?? true, 'editors', $language);
+                                $editorConversion = $this->authorParser->convertToAuthors(
+                                    $words, 
+                                    $remainder, 
+                                    $trash2, 
+                                    $month, 
+                                    $day, 
+                                    $date, 
+                                    $isEditor, 
+                                    $this->cities, 
+                                    $this->dictionaryNames, 
+                                    $determineEnd ?? true, 
+                                    'editors', 
+                                    $language
+                                );
+
                                 $this->detailLines = array_merge($this->detailLines, $editorConversion['author_details']);
                                 $editorString = trim($editorConversion['authorstring'], '() ');
                                 foreach ($editorConversion['warnings'] as $warning) {
@@ -3095,11 +3120,10 @@ class Converter
                     $remainder = trim(substr($remainder, strlen($matches[0])), '() ');
                 }
 
-                // If remainder ends with phrase like "first published" or "originally published", remove it and put it
-                // in the note field
-                if (preg_match('/(?P<note>\(?([Ff]irst|[Oo]riginally) published (in )?[0-9]{4}\.?\)?\.?)$/', $remainder, $matches)) {
-                    $this->addToField($item, 'note', ' ' . trim($matches['note'], '() '), 'setField 59b');
-                    $remainder = trim(substr($remainder, 0, -strlen($matches[0])), '() ');
+                // Look for "edited by" in remainder
+                if (preg_match('/(?P<editorString>[Ee]dited by .*?[a-z] ?\.)/', $remainder, $matches)) {
+                    $this->addToField($item, 'note', str_replace(' .', '.', $matches['editorString']), 'setField 110a');
+                    $remainder = str_replace($matches['editorString'], '', $remainder);
                 }
 
                 $remainingWords = explode(" ", $remainder);
@@ -3245,10 +3269,6 @@ class Converter
                 if (! $done) {
                     $remainder = $newRemainder ?? implode(" ", $remainingWords);
                     $remainder = trim($remainder, ' .');
-                    if (preg_match('/(?P<editorString>Edited by .*?[a-z] ?\.)/', $remainder, $matches)) {
-                        $this->addToField($item, 'note', str_replace(' .', '.', $matches['editorString']), 'setField 110a');
-                        $remainder = str_replace($matches['editorString'], '', $remainder);
-                    }
 
                     // If string is in italics, get rid of the italics
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {

@@ -288,10 +288,10 @@ trait Utilities
                             $skip = 1;
                         }
                     } elseif (
-                        // if pattern is [a-z]`s, assume the ` is a typo for '
+                        // if pattern is [a-z]`[a-z] then ` is not an opening quote, but an accent in Arabic
                         ! isset($chars[$i-1])
                         ||
-                        ($chars[$i-1] != '\\' && ! (in_array($chars[$i-1], range('a', 'z')) && $chars[$i+1] == 's'))
+                        ($chars[$i-1] != '\\' && ! (in_array($chars[$i-1], range('a', 'z')) && in_array($chars[$i+1], range('a', 'z'))))
                         ) {
                         $level++;
                         if ($begin) {
