@@ -947,7 +947,9 @@ class Converter
             }
             $remainder = implode(' ', $words);
         } else {
-            $words[0] = ltrim($words[0], '_-');
+            if (isset($words[0])) {
+                $words[0] = ltrim($words[0], '_-');
+            }
             $authorConversion = $this->authorParser->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'authors', $language);
             $this->detailLines = array_merge($this->detailLines, $authorConversion['author_details']);
         }
