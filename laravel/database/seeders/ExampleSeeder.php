@@ -12136,6 +12136,35 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'D{\=a}r al-Bay{\=a}n',
                     ]
             ],
+			// "New" of "New York" missed
+            [
+                'source' => 'Tillich, Paul. 1987. On Art and Architecture. Eds. Jane Dillenberger and John Dillenberger. New York: Crossroad. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Tillich, Paul',
+                    'title' => 'On Art and Architecture',
+                    'year' => '1987',
+                    'note' => 'Edited by Jane Dillenberger and John Dillenberger.',
+                    'address' => 'New York',
+                    'publisher' => 'Crossroad',
+                    ]
+            ],
+			// editor and booktitle misidentified
+			[
+                'source' => 'van Deusen, Nancy. 2009a. ‘Music, Rhythm’ in Augustine Through the Ages: An Encyclopedia, Ed. Allan Fitzgerald. Grand Rapids: Eerdmanns, 572-574.  ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'van Deusen, Nancy',
+                    'title' => 'Music, Rhythm',
+                    'year' => '2009',
+                    'pages' => '572-574',
+                    'editor' => 'Allan Fitzgerald',
+                    'address' => 'Grand Rapids',
+                    'publisher' => 'Eerdmanns',
+                    'booktitle' => 'Augustine Through the Ages: An Encyclopedia',
+                    ]
+            ],
+
 
 
             

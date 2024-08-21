@@ -149,7 +149,7 @@ trait Months
             4 => 'abr', 
             6 => 'jun', 
             7 => 'jul', 
-            9 => 'set|sept',
+            9 => 'sept',
             10 => 'oct', 
             11 => 'nov', 
             12 => 'dec'
