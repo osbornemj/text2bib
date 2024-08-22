@@ -12164,6 +12164,18 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Augustine Through the Ages: An Encyclopedia',
                     ]
             ],
+			// Should be author pattern 30?
+			[
+                'source' => 'Colijn, Brenda B. 2010. Images of Salvation in the New Testament. Downers Grove, IL: InterVarsity Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Colijn, Brenda B.',
+                    'year' => '2010',
+                    'title' => 'Images of Salvation in the New Testament',
+                    'publisher' => 'InterVarsity Press',
+                    'address' => 'Downers Grove, IL',
+                    ]
+            ],
 
 
 

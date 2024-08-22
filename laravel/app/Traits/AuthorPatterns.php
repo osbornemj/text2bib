@@ -360,13 +360,17 @@ trait AuthorPatterns
                 'end2' => null, 
                 'end3' => null, 
             ],
-            // 30. Smith, Jane( J)?(period not preceded by capital letter and not followed by and or initial, or comma year)
-            // (If period is preceded by capital letter, could be start of string like
+            // 30. Smith, Jane( J)?(period or colon or comma year or bare words)
+            // (Note that need to exclude
             // Jane Smith, Susan A. Jones, Elizabeth Gonzalez, ...
             // with "Jane Smith" being interpreted as a last name.)
+            // If colon is included in end1, editor extracted from 'Jane Smith, Leiden: Brill' is
+            // Jane Smith, Leiden
+            // (However, this case should be dealt with by extracing the publication info before getting the editor.)
             [
-                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?', 
-                'end1' => '((?<!\p{Lu})\. ' . $notAnd . '(?!\p{Lu}\.)' . '|' . $commaYear . ')',
+                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu}\.?)?( \p{Lu}\.?)?',
+                'end1' => $commaYearOrBareWords, 
+                //'end1' => '((?<!\p{Lu})\. ' . $notAnd . '(?!\p{Lu}\.)' . '|' . $commaYear . ')',
                 //'end1' => $periodNotAndOrCommaYear, 
                 'end2' => null, 
                 'end3' => null, 

@@ -55,7 +55,7 @@ class ArticlePubInfoParser
         if ($pubInfoStartsWithForthcoming && ! $containsDigit) {
             // forthcoming at start
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
-            $journal = $this->getQuotedOrItalic($result['content'], true, false, $before, $after, $style);
+            $journal = $result ? $this->getQuotedOrItalic($result['content'], true, false, $before, $after, $style) : null;
             if (! $journal) {
                 $journal = $result['content'];
             }

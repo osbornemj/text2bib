@@ -1349,9 +1349,11 @@ class AuthorParser
      * Determine whether $string plausibly starts with a list of names
      * The method checks only the first 2 or 3 words in the string, not the whole string
      */
-    public function isNameString(string $string): bool
+    public function isNameString(string $string, string $language): array
     {
-        $phrases = $this->phrases;
+        $this->authorDetails = [];
+
+        $phrases = $this->phrases[$language];
         $this->verbose("isNameString is examining string \"" . $string . "\"");
         $result = false;
         $words = explode(' ', $string);
@@ -1383,20 +1385,24 @@ class AuthorParser
         } elseif ($this->isName($words[0], ',') && count($words) >= 2 && $this->isInitials($word1)) {
             $this->verbose("isNameString: string is name (case 4): <name> <initial>");
             $result = true;
+//        } elseif ($this->isName($words[0], ',') && ((count($words) == 2 && $this->isName($word1, '.')) || (count($words) >=3 && $this->isName($word1, '.') && $this->isName($words[2], '.')))) {
         } elseif ($this->isName($words[0], ',') && count($words) >= 2 && $this->isName($word1, '.')) {
             $this->verbose("isNameString: string is name (case 5): <name> <name>");
             $result = true;
         } elseif ($this->isName($words[0], ',') && count($words) >= 2 && in_array($word1, $this->vonNames) && $this->isName($words[2], ',') ) {
             $this->verbose("isNameString: string is name (case 6): <name> <vonName> <name>");
             $result = true;
-        } elseif ($this->isName($words[0], ',') && count($words) >= 2 && $this->isName($word1) && $words[2] == $phrases['and']) {
+        } elseif ($this->isName($words[0], ',') && count($words) >= 3 && $this->isName($word1) && $words[2] == $phrases['and']) {
             $this->verbose("isNameString: string is name (case 7): <name> <name> and");
             $result = true;
         } else {
             $this->verbose("isNameString: string is not name (2)");
         }
 
-        return $result;
+        return [
+            'result' => $result,
+            'details' => $this->authorDetails, 
+        ];
     }
 
     /*
