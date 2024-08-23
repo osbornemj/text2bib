@@ -148,7 +148,7 @@ class AuthorParser
     }
  
     /**
-     * Determine whether the author string matches any of the patterns in the AuthorPatterns trait.
+     * Determine whether $remainder matches any of the patterns in the AuthorPatterns trait.
      */
     public function checkAuthorPatterns(string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, string $language): array|null
     {

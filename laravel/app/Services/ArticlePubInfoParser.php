@@ -167,6 +167,12 @@ class ArticlePubInfoParser
             }
             $remainder = '';
             $result = true;
+        // e.g. Volume 6 or IV, No. 3 
+        } elseif (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberWordRx . '$/J', $remainder, $matches)) {
+            $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 6');
+            $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 7');
+            $remainder = '';
+            $result = true;
         // e.g. Volume A6, No. 3 
         } elseif (preg_match('/^' . $volumeWordLetterRx . $punc1 . $numberWordRx . '$/J', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 6');

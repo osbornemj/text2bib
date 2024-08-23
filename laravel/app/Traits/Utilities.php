@@ -548,7 +548,7 @@ trait Utilities
         $begin = $start ? '/^' : '/';
         $end = $finish ? '$/u' : '/u';
 
-        $addressPublisher = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-. ]{0,50})';
+        $addressPublisher = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-.\' ]{0,50})';
 
         if ($allowYear) {
             $match = preg_match($begin . '\(?' . $addressPublisher . '(, (?P<year>' . $this->yearRegExp . '))?\)?' . $end, $string, $matches);

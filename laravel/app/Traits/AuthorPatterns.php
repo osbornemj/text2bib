@@ -369,8 +369,7 @@ trait AuthorPatterns
             // (However, this case should be dealt with by extracing the publication info before getting the editor.)
             [
                 'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu}\.?)?( \p{Lu}\.?)?',
-                'end1' => $commaYearOrBareWords, 
-                //'end1' => '((?<!\p{Lu})\. ' . $notAnd . '(?!\p{Lu}\.)' . '|' . $commaYear . ')',
+                'end1' => '((?<!\p{Lu})\. ' . $notAnd . '(?!\p{Lu}\.)' . '|' . $commaYearOrBareWords . ')',
                 //'end1' => $periodNotAndOrCommaYear, 
                 'end2' => null, 
                 'end3' => null, 

@@ -11237,19 +11237,6 @@ class ExampleSeeder extends Seeder
                     'pages' => '11',
                     ]
             ],
-			// incollection detected as book
-			[
-                'source' => '\bibitem{laville2020}  Laville A., Pardoen M., Close G., Poezart M., Gerna D.,   Robustness, Reliability and Diagnostic Aspects in Sensors for Automotive Applications: The Magnetic Sensors Case,  in Next-Generation ADCs, High-Performance Power Management, and Technology Considerations for Advanced Integrated Circuits. Baschirotto A., Harpe P., Makinwa K. (eds). Springer, Cham.   ',
-                'type' => 'incollection',
-                'bibtex' => [
-                    'author' => 'Laville, A. and Pardoen, M. and Close, G. and Poezart, M. and Gerna, D.',
-                    'title' => 'Robustness, Reliability and Diagnostic Aspects in Sensors for Automotive Applications: The Magnetic Sensors Case',
-                    'editor' => 'Baschirotto, A. and Harpe, P. and Makinwa, K.',
-                    'address' => 'Cham',
-                    'publisher' => 'Springer',
-                    'booktitle' => 'Next-Generation ADCs, High-Performance Power Management, and Technology Considerations for Advanced Integrated Circuits',
-                    ]
-            ],
 			// remove comma at start of entry
 			[
                 'source' => '\bibitem{bakker1999}, A. Bakker, A. Bellekom, S. Middelhoek and  J. H. Huijsing (1999) , Low offset low noise 3.5 mV CMOS spinning current Hall effect sensor with integrated chopper amplifier, Proc. XIII European Conference on Solid-State Transducers, The Hague, September 1999 ',
@@ -12176,6 +12163,112 @@ class ExampleSeeder extends Seeder
                     'address' => 'Downers Grove, IL',
                     ]
             ],
+			// booktitle misidentified
+			[
+                'source' => 'Akhtar, M.S., and M. Ahmad. 1997. Some features of zoogeographical interest in the biodiversity of termites of Pakistan. In S.A. Mufti, C.A. Woods, and S.A. Hasan (editors), Biodiversity of Pakistan: 213–220. Islamabad: Pakistan Museum of Natural History, viii + [1] + 537 pp.',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Akhtar, M. S. and M. Ahmad',
+                    'title' => 'Some features of zoogeographical interest in the biodiversity of termites of Pakistan',
+                    'year' => '1997',
+                    'pages' => '213-220',
+                    'editor' => 'S. A. Mufti and C. A. Woods and S. A. Hasan',
+                    'booktitle' => 'Biodiversity of Pakistan',
+					'address' => 'Islamabad',
+					'publisher' => 'Pakistan Museum of Natural History',
+					'note' => 'viii + [1] + 537 pp.'
+                    ]
+            ],
+			// Detect page count for book?
+			[
+                'source' => 'Brulle, G.A. 1832. Expedition scientifique de Moree. Section des sciences physiques zoologie. Deuxieme section—des animaux articules [Vol. 3, part 1]. Paris: F.G. Levrault, 400 pp. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Brulle, G. A.',
+                    'year' => '1832',
+                    'title' => 'Expedition scientifique de Moree. Section des sciences physiques zoologie. Deuxieme section---des animaux articules [Vol. 3, part 1]',
+                    'publisher' => 'F. G. Levrault',
+					'note' => '400 pp.',
+                    'address' => 'Paris',
+                    ]
+            ],
+			// page count
+			[
+                'source' => 'Lal, R., and R.D. Menon. 1953. Catalogue of Indian insects. Part 27—Isoptera. Delhi: Government of India Press, [4] + 94 pp. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Lal, R. and R. D. Menon',
+                    'year' => '1953',
+                    'title' => 'Catalogue of {I}ndian insects. Part 27---Isoptera',
+                    'publisher' => 'Government of India Press',
+                    'address' => 'Delhi',
+					'note' => '[4] + 94 pp.'
+                    ]
+            ],
+			// address and publisher not detected
+			[
+                'source' => 'Schmemann, Alexander. 2002. For the Life of the World: Sacraments and Orthodoxy. Crestwood, NY: St. Vladimir’s Seminary Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Schmemann, Alexander',
+                    'title' => 'For the Life of the World: Sacraments and Orthodoxy',
+                    'year' => '2002',
+                    'address' => 'Crestwood, NY',
+                    'publisher' => 'St. Vladimir\'s Seminary Press',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => 'Sarkar, A., Das, A., 2014. Groundwater Irrigation Electricity –Crop Diversification Nexus in Punjab: Trends, Turning Points and Policy Initiatives, Economic and Political Weekly, Vol XLIX No 52. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Sarkar, A. and Das, A.',
+                    'year' => '2014',
+                    'volume' => 'XLIX',
+					'number' => '52',
+                    'title' => 'Groundwater Irrigation Electricity --Crop Diversification Nexus in Punjab: Trends, Turning Points and Policy Initiatives',
+                    'journal' => 'Economic and Political Weekly',
+                    ]
+            ],
+			// school not detected
+            [
+                'source' => 'Gibbons, Christopher David. 2020. ‘Beyond the Solar Door: Yoga in the Mahābhārata and its Vedic Antecedents’, The University of Queensland. Unpublished doctoral thesis. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Gibbons, Christopher David',
+                    'title' => 'Beyond the Solar Door: Yoga in the Mahābhārata and its Vedic Antecedents',
+                    'year' => '2020',
+                    'school' => 'The University of Queensland',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// school not detected
+			[
+                'source' => 'Slatoff, Zoë. 2022. ‘Beyond the Body: Yoga and Advaita in the Aparokṣānubhūti’, Lancaster University. Unpublished doctoral thesis. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Slatoff, Zoë',
+                    'title' => 'Beyond the Body: Yoga and Advaita in the Aparokṣānubhūti',
+                    'year' => '2022',
+                    'school' => 'Lancaster University',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// Masters thesis not detected
+			[
+                'source' => 'Yeatman, C. Ellen. 2020. Ranch‐Level Economic and Ecological Tradeoffs of Water Demand Management in the Upper Green River Basin. M.S. Thesis, University of Wyoming Department of Agricultural and Applied Economics. August, 2020. ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+                    'author' => 'Yeatman, C. Ellen',
+                    'title' => 'Ranch-Level Economic and Ecological Tradeoffs of Water Demand Management in the Upper Green River Basin',
+                    'year' => '2020',
+                    'month' => 'August',
+                    'school' => 'University of Wyoming Department of Agricultural and Applied Economics',
+                    ]
+            ],
+
+
+
 
 
 
