@@ -53,6 +53,7 @@ class TitleParser
         string $pagesRegExp, 
         string $startPagesRegExp, 
         string $fullThesisRegExp, 
+        string $edsOptionalParensRegExp, 
         array $monthsRegExp,
         string $inRegExp, 
         bool $includeEdition = false, 
@@ -74,7 +75,6 @@ class TitleParser
         foreach ($this->italicCodes as $i => $italicCode) {
             $italicCodesRegExp .= ($i ? '|' : '') . str_replace('\\', '\\\\', $italicCode);
         }
-        //dd($italicCodesRegExp);
 
         // If $remainder contains $journal, take $title to be string up to start of $journal, possibly
         // prepended by a 'forthcoming' string.
@@ -117,7 +117,7 @@ class TitleParser
 
         // Common pattern for journal article.  (Allow year at end of title, but no other pattern with digits, otherwise whole string,
         // including journal name and volume, number, and page info may be included.)
-        if (preg_match('/^(?P<title>[^\.]+ (?P<lastWord>([a-zA-Z]+|' . $this->yearRegExp . ')))\. (?P<remainder>[a-zA-Z\.,\\\' ]{5,30} [0-9;():\-.,\. ]*)$/', $remainder, $matches)) {
+        if (preg_match('/^(?P<title>[^\.]+ (?P<lastWord>([a-zA-Z]+|' . $this->yearRegExp . ')))\. (?P<remainder>[a-zA-Z\.,\\\' ]{5,30} [0-9;():\-.,\. ]{6,})$/', $remainder, $matches)) {
             $lastWord = $matches['lastWord'];
             // Last word has to be in the dictionary (proper nouns allowed) and not an excluded word, OR start with a lowercase letter
             // That excludes cases in which the period ends an abbreviation in a journal name (like "A theory of something, Bull. Amer.").
@@ -417,6 +417,8 @@ class TitleParser
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^' . $this->yearRegExp . '(\.|$)/', $remainder)
+                        // editor next
+                        || preg_match('/^' . $edsOptionalParensRegExp . ' /', $remainder)
                         // address [no spaces]: publisher in db
                         || (
                             preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) 

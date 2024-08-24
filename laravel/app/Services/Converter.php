@@ -218,7 +218,7 @@ class Converter
         $this->edsNoParensRegExp = '(' . $edsRx1 . ')';
         // "([Ee]ditors?)" or "[[Ee]ditors?]" or ...
         $this->edsParensRegExp = '[(\[](' . $edsRx1 . ')[)\]]';
-        // " [Ee]ditors? " or "([Ee]ditors?)" or "[[Ee]ditors?]" or ...
+        // "[Ee]ditors?" or "([Ee]ditors?)" or "[[Ee]ditors?]" or ...
         $this->edsOptionalParensRegExp = '[(\[]?(' . $edsRx1 . ')[)\]]?';
         // " [Ee]ditors? " or "([Ee]ditors?)" or "[[Ee]ditors?]" or ...
         $this->edsRegExp = '/(' . $edsRx2 . ')/u';
@@ -1057,6 +1057,11 @@ class Converter
             '(' . $phrases['eds.'] . ')'
         ];
 
+        if (preg_match('/^\(eds?\.?\)[.,;]? (?P<remainder>.*)$/', $remainder, $matches)) {
+            $isEditor = true;
+            $remainder = $matches['remainder'] ?? '';
+        }
+
         if ($isEditor === false && ! Str::contains($authorstring, $editorPhrases)) {
             // For name like "Ash‘arī, Abū al-Ḥasan al-."
             if (Str::endsWith($authorstring, '-.')) {
@@ -1076,6 +1081,7 @@ class Converter
         }
 
         $remainder = trim($remainder, '.},;/ ');
+
         $this->verbose("[1] Remainder: " . $remainder);
 
         ////////////////////
@@ -1152,6 +1158,7 @@ class Converter
                     $this->pagesRegExp, 
                     $this->startPagesRegExp, 
                     $this->fullThesisRegExp,
+                    $this->edsOptionalParensRegExp,
                     $this->monthsRegExp,
                     $this->inRegExp,
                     false, 
@@ -3171,8 +3178,16 @@ class Converter
                             $remainder = '';
                         }
                     } else {
-                        // if remainder contains a single period, take that as end of booktitle
-                        if (substr_count($remainder, '.') == 1) {
+                        if (preg_match('/^\((?P<address>\p{L}+): (?P<publisher>.+)$/', $remainder, $matches)) {
+                            if (isset($matches['address'])) {
+                                $this->setField($item, 'address', $matches['address'], 'setField 93a');
+                            }
+                            if (isset($matches['publisher'])) {
+                                $this->setField($item, 'publisher', trim($matches['publisher'], ',. '), 'setField 94a');
+                            }
+                            $remainder = '';
+                        } elseif (substr_count($remainder, '.') == 1 && substr($remainder, strpos($remainder, '.') - 2, 3) != 'St.') {
+                            // if remainder contains a single period, not ending "St.", take that as end of booktitle
                             $this->verbose("Remainder contains single period, so take that as end of booktitle");
                             $periodPos = strpos($remainder, '.');
                             $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
@@ -3722,6 +3737,17 @@ class Converter
                             $remainder = ltrim($remainder, '., ');
                             $warnings[] = "The string \"" . $extraYear . "\" before the schoool name remains unidentified.";
                         }
+                        if (preg_match('/(?P<month>' . $this->monthsRegExp[$language] . ')?,? (?P<year>' . $this->yearRegExp . ')$/', $remainder, $matches)) {
+                            if (isset($matches['month'])) {
+                                $this->setField($item, 'month', $matches['month'], 'setField 157a');
+                            }
+                            if (! isset($item->year) && isset($matches['year'])) {
+                                $this->setField($item, 'year', $matches['year'], 'setField 157b');
+                            }
+                            $remainder = substr($remainder, 0, strlen($remainder) - strlen($matches[0]));
+                            $remainder = trim($remainder, '. ');
+                        }
+
                         $this->setField($item, 'school', $remainder, 'setField 158');
                     } else {
                         $remArray = explode(':', $remainder);

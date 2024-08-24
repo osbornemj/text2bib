@@ -12266,6 +12266,84 @@ class ExampleSeeder extends Seeder
                     'school' => 'University of Wyoming Department of Agricultural and Applied Economics',
                     ]
             ],
+  			// '(ed)' included in title
+			[
+                'source' => 'Miller, Michael J (ed); The Encyclicals of John Paul II (Huntingdon: Our Sunday Visitor, 1996). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'title' => 'The Encyclicals of John Paul II',
+                    'year' => '1996',
+                    'editor' => 'Miller, Michael J.',
+                    'address' => 'Huntingdon',
+                    'publisher' => 'Our Sunday Visitor',
+                    ]
+            ],
+			// Error in author pattern 22
+			[
+                'source' => 'Williamson, H. G. M., and Robert G. Hoyland (eds.). 2023. The Oxford History of the Holy Land. Oxford: Oxford University. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'title' => 'The Oxford History of the Holy Land',
+                    'year' => '2023',
+                    'editor' => 'Williamson, H. G. M. and Robert G. Hoyland',
+                    'address' => 'Oxford',
+                    'publisher' => 'Oxford University',
+                    ]
+            ],
+			// authors not detected (at all?)
+			[
+                'source' => 'Zalta, Edward, and Uri Nodelman (eds). The Stanford Encyclopedia of Philosophy. Stanford, CA: Stanford University. https://plato.stanford.edu/ ',
+                'type' => 'book',
+                'bibtex' => [
+                    'editor' => 'Zalta, Edward and Uri Nodelman',
+                    'title' => 'The Stanford Encyclopedia of Philosophy',
+					'address' => 'Stanford, CA',
+					'publisher' => 'Stanford University',
+                    'url' => 'https://plato.stanford.edu/',
+                    ]
+            ],
+			// Error in editor's name
+            [
+                'source' => 'Bauman, Zygmunt. 1996. ‘From Pilgrim to Tourist – Or a Short History of Identity’, in Questions of Cultural Identity. Edited by Stuart Hall and Paul du Gay. London: Sage, 18–36. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Bauman, Zygmunt',
+                    'title' => 'From Pilgrim to Tourist -- Or a Short History of Identity',
+                    'year' => '1996',
+                    'pages' => '18-36',
+                    'editor' => 'Stuart Hall and Paul du Gay',
+                    'address' => 'London',
+                    'publisher' => 'Sage',
+                    'booktitle' => 'Questions of Cultural Identity',
+                    ]
+            ],
+			// editor not detected
+			[
+                'source' => 'John Paul II, The Whole Truth about Man: John Paul II to University Faculties and Students, ed. James V. Schall (Boston: St. Paul Editions, 1981). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'John Paul II',
+                    'title' => 'The Whole Truth about Man: John Paul II to University Faculties and Students',
+                    'year' => '1981',
+                    'note' => 'Edited by James V. Schall.',
+                    'address' => 'Boston',
+                    'publisher' => 'St. Paul Editions',
+                    ]
+            ],
+			// publisher not detected
+			[
+                'source' => 'John Paul II, Crossing the Threshold of Hope (New York: Alfred A. Knopf. Inc, 1994). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'John Paul II',
+                    'title' => 'Crossing the Threshold of Hope',
+                    'year' => '1994',
+                    'address' => 'New York',
+                    'publisher' => 'Alfred A. Knopf. Inc',
+                    ]
+            ],
+
+
 
 
 

@@ -86,8 +86,9 @@ class AuthorParser
         if (isset($words[0]) && Str::startsWith($words[0], '\textsc{')) {
             $words[0] = substr($words[0], 8);
         }
-        $remainingWords = $words;
-        $remainder = implode(' ', $remainingWords);
+
+        $remainder = implode(' ', $words);
+
         if (! $remainder) {
             return [
                 'authorstring' => '',
@@ -1182,8 +1183,11 @@ class AuthorParser
     {
         $this->verbose(['text' => 'formatAuthor: argument ', 'words' => [$nameString]]);
 
+        // $nameStrings that should not be changed
+        $exceptions = ['John Paul II'];
+
         // If $nameString contains no space, just return it.  (Probably name for website?)
-        if (! str_contains(trim($nameString, ' .'), ' ')) {
+        if (! str_contains(trim($nameString, ' .'), ' ') || in_array(trim($nameString), $exceptions)) {
             return trim($nameString, ' .');
         }
 
