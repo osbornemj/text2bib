@@ -2757,7 +2757,7 @@ class Converter
                             $strings = [0 => $beforeEds, 1 => $afterEds];
 
                             foreach ($strings as $i => $string) {
-                                $string = rtrim($string, ',') . ' (';
+                                $string = rtrim($string, ',') . ' 1'; // ' 1' appended to provide termination
                                 $result = $this->authorParser->checkAuthorPatterns(
                                     $string,
                                     $year,
@@ -3901,8 +3901,8 @@ class Converter
 
         // Main routine, using author patterns
         // Go through $remainder, stopping at each comma or period and checking whether the following
-        // string matches an author pattern.  (' (' added to $remainder because author patterns require terminating string.)
-        $remains = $remainder . ' (';
+        // string matches an author pattern.  (' 1' added to $remainder because author patterns require terminating string.)
+        $remains = $remainder . ' 1';
         $isEditor = true;
         while ($remains) {
             if (preg_match('/^(?P<before>[^.,]*)(?P<punc>[.,])(?P<after>.*)$/', $remains, $matches)) {

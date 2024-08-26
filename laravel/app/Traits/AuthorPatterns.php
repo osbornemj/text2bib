@@ -83,7 +83,11 @@ trait AuthorPatterns
         $notAnd = '(?!' . $andRegExp . ')';
 
         // When used for Editors, ending with colon can be a problem if it is used in address: publisher
-        $commaYear = ',? (?=[\(\[`"\'\d])';
+        // Having '(' as a terminator is in appropriate for an entry like 
+        // "Douglas Hedley, The Iconic Imagination (New York: Bloomsbury, 2016)."
+        // because "The Iconic Imagination" gets interpreted as a second author.
+        //$commaYear = ',? (?=[(\[`"\'\d])';
+        $commaYear = ',? (?=(([(\]](\d|ed|tran))|[`"\'\d]))';
         // Requirement of lowercase after the first word is to avoid terminating an author string like the following one
         // too early (after Hamilton SA):
         // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T:
@@ -94,7 +98,7 @@ trait AuthorPatterns
         $periodOrColonOrCommaYear = '(\. |: |' . $commaYear . ')';
         $periodOrColonOrCommaYearOrBareWords = '(\. |: |; |' . $commaYearOrBareWords . ')';
         $periodOrColonOrCommaYearOrCommaNotJr = '(\. |: |; |' . $commaYear . '|, ' . $notJr . ')';
-        $periodNotAndOrColonOrCommaYear = '(\. ' . $notAnd . '|: |' . $commaYear . ')';
+        $periodNotAndOrColonOrCommaYear = '(\.,? ' . $notAnd . '|: |' . $commaYear . ')';
         $periodNotAndOrCommaYear = '(\. ' . $notAnd . '|' . $commaYear . ')';
         // 'and' includes 'et', so $notAnd covers 'et al' also
         $periodOrColonOrCommaYearOrCommaNotInitialNotAnd = '(\. |: |' . $commaYear . '|, (?!' . $initialRegExp . ' )' .  $notAnd . ')';
@@ -255,7 +259,7 @@ trait AuthorPatterns
             [
                 'name1' => $lastNameRegExp . ',? \p{Lu}{1,3}',
                 'end1' => ', ', 
-                'end2' => '(: |\. ' . $notAnd . ')', 
+                //'end2' => '(: |\. ' . $notAnd . ')', 
                 'end2' => $periodNotAndOrColonOrCommaYear,
                 'end3' => null, 
                 'initials' => true
@@ -360,7 +364,8 @@ trait AuthorPatterns
             // 29. Smith J. A.(colon or comma year)
             [
                 'name1' => $lastNameInitials, 
-                'end1' => $colonOrCommaYear, 
+                //'end1' => $colonOrCommaYear, 
+                'end1' => $colonOrCommaYearOrBareWords, 
                 'end2' => null, 
                 'end3' => null, 
             ],

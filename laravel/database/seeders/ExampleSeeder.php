@@ -12342,6 +12342,45 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Alfred A. Knopf. Inc',
                     ]
             ],
+			// error in author string (no "and") (author pattern 30)
+			[
+                'source' => '	Jouda MS, Kahraman N., “Improved Optimal Control of Transient Power Sharing in Microgrid Using H-Infinity Controller with Artificial Bee Colony Algorithm,” in Energies, vol. 15, pp. 1043,  2022, doi: 10.3390/en15031043.   ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.3390/en15031043',
+                    'author' => 'Jouda, M. S. and Kahraman, N.',
+                    'title' => 'Improved Optimal Control of Transient Power Sharing in Microgrid Using H-Infinity Controller with Artificial Bee Colony Algorithm',
+                    'year' => '2022',
+                    'journal' => 'Energies',
+                    'volume' => '15',
+                    'pages' => '1043',
+                    ]
+            ],
+			// error in author pattern 25
+			[
+                'source' => 'Douglas Hedley, The Iconic Imagination (New York: Bloomsbury, 2016).  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Douglas Hedley',
+                    'title' => 'The Iconic Imagination',
+                    'year' => '2016',
+                    'address' => 'New York',
+                    'publisher' => 'Bloomsbury',
+                    ]
+            ],
+			// error in author pattern 25
+			[
+                'source' => 'Peter Burnell, The Augustinian Person (Washington D.C.: Catholic University Press, 2005).  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Peter Burnell',
+                    'title' => 'The Augustinian Person',
+                    'year' => '2005',
+                    'address' => 'Washington D. C.',
+                    'publisher' => 'Catholic University Press',
+                    ]
+            ],
+
 
 
 
