@@ -124,6 +124,10 @@ class ConvertFile extends Component
         // There must be a better way to handle this case --- perhaps by showing and hiding the divs on
         // convert-file.blade.php rather than using @includes?
 
+        if (! Auth::check()) {
+            die;
+        }
+
         $this->uploadForm->validate();
 
         $file = $this->uploadForm->file;
