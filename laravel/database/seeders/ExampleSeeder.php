@@ -12490,6 +12490,19 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Westminster John Knox',
                     ]
             ],
+            // error in author pattern 17
+            [
+                'source' => 'Hu, L, Geng, S., Li, Y., Cheng. S., Fu, X., Yue, X. and Han, X. (2018): Exogenous fecal microbiota transplantation from local adult pigs to crossbred newborn piglets. Front. Microbiol, 8:2663.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Hu, L. and Geng, S. and Li, Y. and Cheng, S. and Fu, X. and Yue, X. and Han, X.',
+                    'year' => '2018',
+                    'title' => 'Exogenous fecal microbiota transplantation from local adult pigs to crossbred newborn piglets',
+                    'journal' => 'Front. Microbiol',
+                    'volume' => '8',
+                    'pages' => '2663',
+                    ]
+            ],
 
 
 

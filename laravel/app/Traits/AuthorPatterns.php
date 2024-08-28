@@ -81,6 +81,7 @@ trait AuthorPatterns
         $notJr .= '))';
 
         $notAnd = '(?!' . $andRegExp . ')';
+        $notAndOrLetter = '(?!' . $andRegExp . '|\p{Lu})';
 
         // When used for Editors, ending with colon can be a problem if it is used in address: publisher
         // Having '(' as a terminator is in appropriate for an entry like 
@@ -95,11 +96,12 @@ trait AuthorPatterns
         //$commaYearOrBareWords = '(' . $commaYear . '|, (?=(\p{Lu}[\p{L}\-]*(( [\p{Ll}\-]+){3}|( [\p{L}\-]+){4}))))';
         $colonOrCommaYear = '(: |' . $commaYear . ')';
         $colonOrCommaYearOrBareWords = '(: |' . $commaYearOrBareWords . ')';
-        $periodOrColonOrCommaYear = '(\. |: |' . $commaYear . ')';
+        $periodOrColonOrCommaYear = '(\. |: |' . $commaYearOrBareWords . ')';
         $periodOrColonOrCommaYearOrBareWords = '(\. |: |; |' . $commaYearOrBareWords . ')';
         $periodOrColonOrCommaYearOrCommaNotJr = '(\. |: |; |' . $commaYearOrBareWords . '|, ' . $notJr . ')';
-        $periodNotAndOrColonOrCommaYear = '(\.,? ' . $notAnd . '|: |' . $commaYear . ')';
-        $periodNotAndOrCommaYear = '(\. ' . $notAnd . '|' . $commaYear . ')';
+        $periodNotAndOrColonOrCommaYear = '(\.,? ' . $notAnd . '|: |' . $commaYearOrBareWords . ')';
+        $periodNotAndOrColonOrCommaYearNotCommaLetter = '(\.,? ' . $notAndOrLetter . '|: |' . $commaYearOrBareWords . ')';
+        $periodNotAndOrCommaYear = '(\. ' . $notAnd . '|' . $commaYearOrBareWords . ')';
         // 'and' includes 'et', so $notAnd covers 'et al' also
         $periodOrColonOrCommaYearOrCommaNotInitialNotAnd = '(\. |: |' . $commaYear . '|, (?!' . $initialRegExp . ' )' .  $notAnd . ')';
 
@@ -256,11 +258,14 @@ trait AuthorPatterns
             ///////////////
             
             // 17. Smith AB, Jones CD[:\.]
+            // The notCommaLetter restriction is so that a string like
+            // Hu, L, Geng, S., Li, Y., Cheng. S., Fu, X., Yue, X. and Han, X.
+            // which has a typo --- no period after first L --- is not truncated after Geng, S.
             [
                 'name1' => $lastNameRegExp . ',? \p{Lu}{1,3}',
                 'end1' => ', ', 
                 //'end2' => '(: |\. ' . $notAnd . ')', 
-                'end2' => $periodNotAndOrColonOrCommaYear,
+                'end2' => $periodNotAndOrColonOrCommaYearNotCommaLetter,
                 'end3' => null, 
                 'initials' => true
             ],
