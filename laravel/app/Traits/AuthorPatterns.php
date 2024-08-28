@@ -91,13 +91,13 @@ trait AuthorPatterns
         // Requirement of lowercase after the first word is to avoid terminating an author string like the following one
         // too early (after Hamilton SA):
         // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T:
-        $commaYearOrBareWords = '(' . $commaYear . '|, (?=(\p{Lu}[\p{L}\-]*( [\p{Ll}\-]+){3})))';
+        $commaYearOrBareWords = '(' . $commaYear . '|,? (?=(\p{Lu}[\p{L}\-]*( [\p{Ll}\-]+){3})))';
         //$commaYearOrBareWords = '(' . $commaYear . '|, (?=(\p{Lu}[\p{L}\-]*(( [\p{Ll}\-]+){3}|( [\p{L}\-]+){4}))))';
         $colonOrCommaYear = '(: |' . $commaYear . ')';
         $colonOrCommaYearOrBareWords = '(: |' . $commaYearOrBareWords . ')';
         $periodOrColonOrCommaYear = '(\. |: |' . $commaYear . ')';
         $periodOrColonOrCommaYearOrBareWords = '(\. |: |; |' . $commaYearOrBareWords . ')';
-        $periodOrColonOrCommaYearOrCommaNotJr = '(\. |: |; |' . $commaYear . '|, ' . $notJr . ')';
+        $periodOrColonOrCommaYearOrCommaNotJr = '(\. |: |; |' . $commaYearOrBareWords . '|, ' . $notJr . ')';
         $periodNotAndOrColonOrCommaYear = '(\.,? ' . $notAnd . '|: |' . $commaYear . ')';
         $periodNotAndOrCommaYear = '(\. ' . $notAnd . '|' . $commaYear . ')';
         // 'and' includes 'et', so $notAnd covers 'et al' also

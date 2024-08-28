@@ -126,7 +126,7 @@ class ArticlePubInfoParser
         // First check for some common patterns
         // p omitted from permitted starting letters, to all p100 to be interpreted as page 100.
         $number = '[A-Za-oq-z]?([Ss]upp )?[0-9][0-9]{0,12}[A-Za-z]?';
-        $numberWithRoman = '([1-9][0-9]{0,3}|[IVXLCD]{1,6})';
+        $numberWithRoman = '([0-9]{1,4}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
         $numberRange = $number . '(( ?--?-? ?|_|\?)' . $number . ')?';
         // slash is permitted in range of issues (e.g. '1/2'), but not for volume, because '12/3' is interepreted to mean

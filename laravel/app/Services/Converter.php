@@ -978,6 +978,7 @@ class Converter
         //////////////////////
 
         $isEditor = false;
+        $isTranslator = false;
 
         // Burmese (custom format)
         if ($language == 'my') {
@@ -1008,7 +1009,21 @@ class Converter
             if (isset($words[0])) {
                 $words[0] = ltrim($words[0], '_-');
             }
-            $authorConversion = $this->authorParser->convertToAuthors($words, $remainder, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'authors', $language);
+            $authorConversion = $this->authorParser->convertToAuthors(
+                $words, 
+                $remainder, 
+                $year, 
+                $month, 
+                $day, 
+                $date, 
+                $isEditor, 
+                $isTranslator, 
+                $this->cities, 
+                $this->dictionaryNames, 
+                true, 
+                'authors', 
+                $language
+            );
             $this->detailLines = array_merge($this->detailLines, $authorConversion['author_details']);
         }
 
@@ -1062,14 +1077,26 @@ class Converter
             $remainder = $matches['remainder'] ?? '';
         }
 
-        if ($isEditor === false && ! Str::contains($authorstring, $editorPhrases)) {
+        if (Str::contains($authorstring, $editorPhrases)) {
+            $isEditor = true;
+        }
+
+        if (preg_match('/^\(trans\.?\)[.,;]? (?P<remainder>.*)$/', $remainder, $matches)) {
+            $isTranslator = true;
+            $remainder = $matches['remainder'] ?? '';
+        }
+
+        if ($isEditor) {
+            $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' ,'), 'setField 24');
+        } elseif ($isTranslator) {
+            $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 23a');
+            $this->addToField($item, 'note', 'Author is translator.', 'setField 23b');
+        } else {
             // For name like "Ash‘arī, Abū al-Ḥasan al-."
             if (Str::endsWith($authorstring, '-.')) {
                 $authorstring = rtrim($authorstring, '.');
             }
-            $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 23');
-        } else {
-            $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' ,'), 'setField 24');
+            $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 23c');
         }
 
         $hasSecondaryDate = false;
@@ -1289,9 +1316,9 @@ class Converter
         // Translators: string up to first period preceded by a lowercase letter.
         // Case of "Trans." is handled later, after item type is determined, because "Trans." is an abbreviation used in journal names.
         // (?<=[.,] )
-        $result = $this->findRemoveAndReturn($remainder, '([Tt]ranslat(ed|ion) by|Tr\.) .*?\p{Ll}\)?(\.| \()', false);
+        $result = $this->findRemoveAndReturn($remainder, '([Tt]ranslat(ed|ion) by|Tr\.) .*?\p{Ll}(\),?|\.| \()', false);
         if ($result) {
-            $this->addToField($item, 'note', trim(ucfirst($result[0]), ')( '), 'addToField 3');
+            $this->addToField($item, 'note', trim(ucfirst($result[0]), ')(, '), 'addToField 3');
             $before = Str::replaceEnd(' and ', '', $result['before']);
             $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . $result['after'];
             $containsTranslator = true;
@@ -1302,7 +1329,7 @@ class Converter
         ///////////////////////////////////////////////////////////////////////////////
 
         // $remainder is item minus authors, year, and title
-        $remainder = ltrim($remainder, '.,; ');
+        $remainder = ltrim($remainder, '.,;,() ');
         $this->verbose("[type] Remainder: " . $remainder);
         
         $inStart = $containsIn = $italicStart = $containsEditors = $allWordsInitialCaps = false;
@@ -2224,6 +2251,7 @@ class Converter
                                 $day, 
                                 $date, 
                                 $isEditor, 
+                                $isTranslator, 
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 false, 
@@ -2435,6 +2463,7 @@ class Converter
                                 $day, 
                                 $date, 
                                 $isEditor, 
+                                $isTranslator, 
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2462,6 +2491,7 @@ class Converter
                                     $day, 
                                     $date, 
                                     $isEditor, 
+                                    $isTranslator, 
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     true, 
@@ -2502,6 +2532,7 @@ class Converter
                                 $day, 
                                 $date, 
                                 $isEditor, 
+                                $isTranslator, 
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2529,6 +2560,7 @@ class Converter
                                 $day, 
                                 $date, 
                                 $isEditor, 
+                                $isTranslator, 
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2547,6 +2579,7 @@ class Converter
                                 $day, 
                                 $date, 
                                 $isEditor, 
+                                $isTranslator, 
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2565,6 +2598,7 @@ class Converter
                         $beforeEds = Str::before($remainder, $eds);
                         $wordsBeforeEds = explode(' ', $before);
                         $afterEds = Str::after($remainder, $eds);
+                        $setRemainder = false;
 
                         // Remove address and publisher, if present, and if match one of these patterns
                         if (
@@ -2591,11 +2625,15 @@ class Converter
                                 } else {
                                     $this->setField($item, 'publisher', $addressOrPublisher, 'setField 70');
                                 }
+                                $setRemainder = true;
                             }
                             if (! isset($item->year) || ! $item->year) {
                                 $this->setField($item, 'year', $matches['year'], 'setField 71');
                             }
-                            $afterEds = trim($matches['string']);
+                            $afterEds = trim($matches['string']) . ($matches['year'] ?? '');
+                            if ($setRemainder) {
+                                $remainder = $beforeEds . $afterEds;
+                            }
                         }
 
                         //$publisherPosition = 0; //$publisher ? strpos($after, $publisher) : false;
@@ -2653,6 +2691,7 @@ class Converter
                                     $day, 
                                     $date, 
                                     $isEditor, 
+                                    $isTranslator, 
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     determineEnd: false, 
@@ -2676,6 +2715,7 @@ class Converter
                                     $day, 
                                     $date, 
                                     $isEditor, 
+                                    $isTranslator, 
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     determineEnd: false, 
@@ -2736,6 +2776,7 @@ class Converter
                                 $trash4, 
                                 $trash5, 
                                 $isEditor, 
+                                $isTranslator, 
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2765,6 +2806,7 @@ class Converter
                                     $day,
                                     $date,
                                     $isEditor,
+                                    $isTranslator,
                                     $language
                                 );
                                 if ($result) {
@@ -2776,6 +2818,7 @@ class Converter
                                         $trash4, 
                                         $trash5, 
                                         $isEditor, 
+                                        $isTranslator, 
                                         $this->cities, 
                                         $this->dictionaryNames, 
                                         true, 
@@ -2846,6 +2889,7 @@ class Converter
                                     $day, 
                                     $date, 
                                     $isEditor, 
+                                    $isTranslator, 
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     $determineEnd ?? true, 
@@ -2926,7 +2970,21 @@ class Converter
                                     if (! empty($endAuthorPos)) {
                                         // CASE 2
                                         $authorstring = trim(substr($remainder, $j, $endAuthorPos - $j), '.,: ');
-                                        $editorConversion = $this->authorParser->convertToAuthors(explode(' ', $authorstring), $trash1, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, false, 'editors', $language);
+                                        $editorConversion = $this->authorParser->convertToAuthors(
+                                            explode(' ', $authorstring), 
+                                            $trash1, 
+                                            $trash2, 
+                                            $month, 
+                                            $day, 
+                                            $date, 
+                                            $isEditor, 
+                                            $isTranslator, 
+                                            $this->cities, 
+                                            $this->dictionaryNames, 
+                                            false, 
+                                            'editors', 
+                                            $language
+                                        );
                                         $this->detailLines = array_merge($this->detailLines, $editorConversion['author_details']);
                                         $this->setField($item, 'editor', trim($editorConversion['authorstring'], ' '), 'setField 81');
                                         foreach ($editorConversion['warnings'] as $warning) {
@@ -2999,7 +3057,21 @@ class Converter
                             $remainder = implode(' ', array_splice($possibleEditors, $j)) . ' ' . $remainder;
                             $remainder = trim($remainder);
 
-                            $editorConversion = $this->authorParser->convertToAuthors($editors, $trash1, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, false, 'editors', $language);
+                            $editorConversion = $this->authorParser->convertToAuthors(
+                                $editors, 
+                                $trash1, 
+                                $trash2, 
+                                $month, 
+                                $day, 
+                                $date, 
+                                $isEditor, 
+                                $isTranslator, 
+                                $this->cities, 
+                                $this->dictionaryNames, 
+                                false, 
+                                'editors', 
+                                $language
+                            );
                             $this->detailLines = array_merge($this->detailLines, $editorConversion['author_details']);
 
                             $editor = trim($editorConversion['authorstring']);
@@ -3040,13 +3112,41 @@ class Converter
                             if ($containsPublisher) {
                                 $publisherPos = strpos($remainder, $publisher);
                                 $editorString = substr($remainder, 0, $publisherPos);
-                                $editorConversion = $this->authorParser->convertToAuthors(explode(' ', trim($remainder)), $remainder, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'editors', $language);
+                                $editorConversion = $this->authorParser->convertToAuthors(
+                                    explode(' ', trim($remainder)), 
+                                    $remainder, 
+                                    $year, 
+                                    $month, 
+                                    $day, 
+                                    $date, 
+                                    $isEditor, 
+                                    $isTranslator, 
+                                    $this->cities, 
+                                    $this->dictionaryNames, 
+                                    true, 
+                                    'editors', 
+                                    $language
+                                );
 
                                 $editor = $editorConversion['authorstring'];
                                 $this->verbose("Editor is: " . $editor);                                
                                 $newRemainder = substr($remainder, $publisherPos);
                             } else {
-                                $editorConversion = $this->authorParser->convertToAuthors(explode(' ', trim($remainder)), $remainder, $year, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'editors', $language);
+                                $editorConversion = $this->authorParser->convertToAuthors(
+                                    explode(' ', trim($remainder)), 
+                                    $remainder, 
+                                    $year, 
+                                    $month, 
+                                    $day, 
+                                    $date, 
+                                    $isEditor, 
+                                    $isTranslator, 
+                                    $this->cities, 
+                                    $this->dictionaryNames, 
+                                    true, 
+                                    'editors', 
+                                    $language
+                                );
 
                                 $editor = $editorConversion['authorstring'];
                                 $this->verbose("Editor is: " . $editor);
@@ -3063,7 +3163,21 @@ class Converter
                         $this->verbose("[ed6] Remainder starts with editor string");
                         $editorString = substr($remainder, 0, $matches[0][1]);
                         $this->verbose("editorString is " . $editorString);
-                        $editorConversion = $this->authorParser->convertToAuthors(explode(' ', $editorString), $trash1, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, false, 'editors', $language);
+                        $editorConversion = $this->authorParser->convertToAuthors(
+                            explode(' ', $editorString), 
+                            $trash1, 
+                            $trash2, 
+                            $month, 
+                            $day, 
+                            $date, 
+                            $isEditor, 
+                            $isTranslator, 
+                            $this->cities, 
+                            $this->dictionaryNames, 
+                            false, 
+                            'editors', 
+                            $language
+                        );
                         $editor = $editorConversion['authorstring'];
                         foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
@@ -3075,7 +3189,21 @@ class Converter
                         // seem unlikely to have editors), but an 
                         // editor of an incollection does not need such a string
                         $this->verbose("[ed4] Remainder starts with editor string");
-                        $editorConversion = $this->authorParser->convertToAuthors(explode(' ', $remainder), $remainder, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'editors', $language);
+                        $editorConversion = $this->authorParser->convertToAuthors(
+                            explode(' ', $remainder), 
+                            $remainder, 
+                            $trash2, 
+                            $month, 
+                            $day, 
+                            $date, 
+                            $isEditor, 
+                            $isTranslator, 
+                            $this->cities, 
+                            $this->dictionaryNames, 
+                            true, 
+                            'editors', 
+                            $language
+                        );
                         $editor = $editorConversion['authorstring'];
                         foreach ($editorConversion['warnings'] as $warning) {
                             $warnings[] = $warning;
@@ -3101,7 +3229,21 @@ class Converter
                         // convertToAuthors determine end of string, need to redefine remainder below.
                         $isEditor = false;
 
-                        $editorConversion = $this->authorParser->convertToAuthors($words, $remainder, $trash2, $month, $day, $date, $isEditor, $this->cities, $this->dictionaryNames, true, 'editors', $language);
+                        $editorConversion = $this->authorParser->convertToAuthors(
+                            $words, 
+                            $remainder, 
+                            $trash2, 
+                            $month, 
+                            $day, 
+                            $date, 
+                            $isEditor, 
+                            $isTranslator, 
+                            $this->cities, 
+                            $this->dictionaryNames, 
+                            true, 
+                            'editors', 
+                            $language
+                        );
                         $this->detailLines = array_merge($this->detailLines, $editorConversion['author_details']);
                         $authorstring = $editorConversion['authorstring'];
                         $this->setField($item, 'editor', trim($authorstring, '() '), 'setField 86');
@@ -3158,7 +3300,7 @@ class Converter
                         $address = trim($address, ', ');
                         $this->setField($item, 'address', $address, 'setField 91c');
                         $publisher = substr($remainder, $colonPos+1);
-                        $publisher = trim($publisher);
+                        $publisher = trim($publisher, '; ');
                         $this->setField($item, 'publisher', $publisher, 'setField 92');
                         $remainder = '';
                     } elseif (
@@ -3652,7 +3794,15 @@ class Converter
                         $remainder = $before . '.' . $result['after'];
                     }
 
-                    $remainder = $this->publisherAddressParser->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString, $this->cities, $this->publishers);
+                    $remainder = $this->publisherAddressParser->extractPublisherAndAddress(
+                        $remainder, 
+                        $address, 
+                        $publisher, 
+                        $cityString, 
+                        $publisherString, 
+                        $this->cities, 
+                        $this->publishers
+                    );
 
                     if ($publisher) {
                         if (preg_match('/^(?P<publisher>[^,]+)(, (?P<remains>[0-9ivx +\[\]]+pp))?$/', $publisher, $matches)) {
@@ -3904,6 +4054,7 @@ class Converter
         // string matches an author pattern.  (' 1' added to $remainder because author patterns require terminating string.)
         $remains = $remainder . ' 1';
         $isEditor = true;
+        $isTranslator = false;
         while ($remains) {
             if (preg_match('/^(?P<before>[^.,]*)(?P<punc>[.,])(?P<after>.*)$/', $remains, $matches)) {
                 $title .= $matches['before'];
@@ -3916,6 +4067,7 @@ class Converter
                     $day,
                     $date,
                     $isEditor,
+                    $isTranslator,
                     $language
                 );
 

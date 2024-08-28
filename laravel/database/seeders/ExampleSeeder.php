@@ -5661,14 +5661,14 @@ class ExampleSeeder extends Seeder
             ],
             // Not recognized as phdthesis
             [
-                'source' => 'Khanal, Y. (2008). Valuation of carbon sequestration and water supply services in community forests of Palpa district, Nepal (Doctoral dissertation, Tribhuvan University,)., Kathmanndu: Tribhuvan University. ',
+                'source' => 'Khanal, Y. (2008). Valuation of carbon sequestration and water supply services in community forests of Palpa district, Nepal (Doctoral dissertation, Tribhuvan University), Kathmanndu: Tribhuvan University. ',
                 'type' => 'phdthesis',
                 'bibtex' => [
                     'author' => 'Khanal, Y.',
                     'year' => '2008',
                     'title' => 'Valuation of carbon sequestration and water supply services in community forests of Palpa district, Nepal',
                     'school' => 'Tribhuvan University',
-                    'note' => 'Kathmanndu: Tribhuvan University',
+                    'note' => 'Tribhuvan University), Kathmanndu',
                     ]
             ],
             // \enquote used for quoted string
@@ -12378,6 +12378,116 @@ class ExampleSeeder extends Seeder
                     'year' => '2005',
                     'address' => 'Washington D. C.',
                     'publisher' => 'Catholic University Press',
+                    ]
+            ],
+			// translators' names in parens causes problems?
+			[
+                'source' => 'Aavani, Gholamreza and Ahmad Pakatchi, “Ethics” (translated by M. I. Waley and Alexander Khaleeli), in Encyclopaedia Islamica. Edited by Farhad Daftary and Wilfred Madelung. Leiden: Brill.   ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Aavani, Gholamreza and Ahmad Pakatchi',
+                    'title' => 'Ethics',
+                    'note' => 'Translated by M. I. Waley and Alexander Khaleeli',
+                    'editor' => 'Farhad Daftary and Wilfred Madelung',
+                    'address' => 'Leiden',
+                    'publisher' => 'Brill',
+                    'booktitle' => 'Encyclopaedia Islamica',
+                    ]
+            ],
+			// 'trans' in parens after author name
+			[
+                'source' => 'Roebuck, Valerie (trans.). 2010. The Dhammapada. London: Penguin.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Roebuck, Valerie',
+                    'title' => 'The Dhammapada',
+                    'year' => '2010',
+                    'address' => 'London',
+                    'publisher' => 'Penguin',
+					'note' => 'Author is translator.',
+                    ]
+            ],
+            // author pattern?
+            [
+                'source' => 'Wunderlich, Z. & Mirny, L. A. Spatial effects on the speed and reliability of protein–DNA search. Nucleic Acids Res 36, 3570–3578 (2008). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Wunderlich, Z. and Mirny, L. A.',
+                    'title' => 'Spatial effects on the speed and reliability of protein--DNA search',
+                    'year' => '2008',
+                    'journal' => 'Nucleic Acids Res',
+                    'volume' => '36',
+                    'pages' => '3570-3578',
+                    ]
+            ],
+			// remove semicolon from end of publisher
+			[
+                'source' => 'Rowland LP. Ten central themes in a decade of ALS research. In: Rowland LP, editor. Amyotrophic lateral sclerosis and other motor neuron diseases. New York: Raven Press; 1992. p 3–23. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Rowland, L. P.',
+                    'title' => 'Ten central themes in a decade of ALS research',
+                    'year' => '1992',
+                    'pages' => '3-23',
+                    'editor' => 'Rowland, L. P.',
+                    'address' => 'New York',
+                    'publisher' => 'Raven Press',
+                    'booktitle' => 'Amyotrophic lateral sclerosis and other motor neuron diseases',
+                    ]
+            ],
+			// volume and number with leading zeroes
+            [
+                'source' => '\bibitem{c8} E. Ahishakiye, M. Bastiaan Van Gijzen, J. Tumwiine, R. Wario, and J. Obungoloch, ``A survey on deep learning in medical image reconstruction,\'\' \emph{Intelligent Medicine}, vol. 01, no. 03, pp. 118--127, Nov. 2021, doi: 10.1016/j.imed.2021.03.003. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.imed.2021.03.003',
+                    'author' => 'E. Ahishakiye and M. Bastiaan Van Gijzen and J. Tumwiine and R. Wario and J. Obungoloch',
+                    'title' => 'A survey on deep learning in medical image reconstruction',
+                    'year' => '2021',
+                    'month' => 'November',
+                    'journal' => 'Intelligent Medicine',
+                    'pages' => '118-127',
+                    'volume' => '01',
+					'number' => ' 03',
+                    ]
+            ],
+			// publisher repeated in address field
+			[
+                'source' => 'Grimes, D. I. F. (2008). An Ensemble Approach to Uncertainty Estimation for Satellite-Based Rainfall Estimates. In S. Sorooshian, K.-L. Hsu, E. Coppola, B. Tomassetti, M. Verdecchia, & G. Visconti (Eds.), Hydrological Modelling and the Water Cycle: Coupling the Atmospheric and Hydrological Models (pp. 145–162). Springer. https://doi.org/10.1007/978-3-540-77843-1_7. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'doi' => '10.1007/978-3-540-77843-1\_7',
+                    'author' => 'Grimes, D. I. F.',
+                    'year' => '2008',
+                    'title' => 'An Ensemble Approach to Uncertainty Estimation for Satellite-Based Rainfall Estimates',
+                    'pages' => '145-162',
+                    'publisher' => 'Springer',
+                    'editor' => 'S. Sorooshian and K.-L. Hsu and E. Coppola and B. Tomassetti and M. Verdecchia and G. Visconti',
+                    'booktitle' => 'Hydrological Modelling and the Water Cycle: Coupling the Atmospheric and Hydrological Models',
+                    ]
+            ],
+			// publisher truncated
+			[
+                'source' => '16. P. Villaggio, Mathematical Models for Elastic Structures, Cambridge, U.K.:Cambridge Univ. Press, 1997. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'P. Villaggio',
+                    'title' => 'Mathematical Models for Elastic Structures',
+                    'year' => '1997',
+                    'publisher' => 'Cambridge Univ. Press',
+                    'address' => 'Cambridge, U. K.',
+                    ]
+            ],			
+			// publisher and address interchanged
+			[
+                'source' => 'Brueggemann, W. 2017. Sabbath as Resistance: Saying No the Culture of Now. Louisville KY, Westminster John Knox. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Brueggemann, W.',
+                    'title' => 'Sabbath as Resistance: Saying No the Culture of Now',
+                    'year' => '2017',
+                    'address' => 'Louisville KY',
+                    'publisher' => 'Westminster John Knox',
                     ]
             ],
 

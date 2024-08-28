@@ -66,7 +66,13 @@ class PublisherAddressParser
             if (
                 $periodPos !== false 
                 && 
-                (($periodPos == 2 && substr($remainder, 0, 3) == 'St.') || ($periodPos > 2 && substr($remainder, $periodPos - 3, 4) == ' St.'))
+                (
+                    ($periodPos == 2 && Str::startsWith($remainder, ['St.', 'Univ.']))
+                    ||
+                    ($periodPos > 2 && substr($remainder, $periodPos - 3, 4) == ' St.')
+                    ||
+                    ($periodPos > 4 && substr($remainder, $periodPos - 5, 6) == ' Univ.')
+                )
                ) {
                 $pos = strpos(substr($remainder, $periodPos + 1), '.');
                 $periodPos = ($pos === false) ? false : $periodPos + 1 + $pos;
@@ -91,16 +97,21 @@ class PublisherAddressParser
                 $address = $oldPublisher;
             }
         // else if string contains no colon and at least one ',', take publisher to be string
-        // preceding first comma and city to be rest
+        // preceding first comma and city to be rest UNLESS string before comma has "City,? AB" format, in which case
+        // it is a US city-state, and therefore is the address OR string before comma is a city string, in which case
+        // the whole string is the address (why?)
         } elseif (! substr_count($string, ':') && substr_count($string, ',')) {
-            $wordBeforeComma = trim(substr($string, 0, strpos($string, ',')), ',. ');
-            $wordAfterComma = trim(substr($string, strpos($string, ',') + 1), ',.: ');
-            if ($wordBeforeComma == $cityString) {
-                $address = $wordBeforeComma . ', ' . $wordAfterComma;
+            $stringBeforeComma = trim(substr($string, 0, strpos($string, ',')), ',. ');
+            $stringAfterComma = trim(substr($string, strpos($string, ',') + 1), ',.: ');
+            if (preg_match('/^\p{Lu}\p{Ll}+,? \p{Lu}{2}$/', $stringBeforeComma)) {
+                $address = $stringBeforeComma;
+                $publisher = $stringAfterComma;
+            } elseif ($stringBeforeComma == $cityString) {
+                $address = $stringBeforeComma . ', ' . $stringAfterComma;
                 $publisher = '';
             } else {
-                $publisher = $wordBeforeComma;
-                $address = $wordAfterComma;
+                $publisher = $stringBeforeComma;
+                $address = $stringAfterComma;
             }
             $remainder = '';
         // else take publisher/city to be strings that match list above and report rest to be
