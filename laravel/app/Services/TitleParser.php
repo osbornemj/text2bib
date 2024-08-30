@@ -51,6 +51,7 @@ class TitleParser
         array $cities, 
         array $dictionaryNames, 
         string $pagesRegExp, 
+        string $pageRegExp, 
         string $startPagesRegExp, 
         string $fullThesisRegExp, 
         string $edsOptionalParensRegExp, 
@@ -115,14 +116,19 @@ class TitleParser
             }
         }
 
-        // Common pattern for journal article.  (Allow year at end of title, but no other pattern with digits, otherwise whole string,
+        // Common pattern for journal article.  
+        // Find strings preceding and following first period (because of ? in expression .*?) that is followed by
+        // a space and then not a lowercase letter.
+        // (Allow year at end of title, but no other pattern with digits, otherwise whole string,
         // including journal name and volume, number, and page info may be included.)
-        if (preg_match('/^(?P<title>[^\.]+ (?P<lastWord>([a-zA-Z]+|' . $this->yearRegExp . ')))\. (?P<remainder>[a-zA-Z\.,\\\' ]{5,30} [0-9;():\-.,\. ]{6,})$/', $remainder, $matches)) {
+        if (preg_match('/^(?P<title>.*? (?P<lastWord>(\p{L}+|' . $this->yearRegExp . ')))\. (?P<remainder>[^\p{Ll}][\p{L}\.,\\\' ]{5,30} [0-9;():\-.,\. ]{9,})$/', $remainder, $matches)) {
             $lastWord = $matches['lastWord'];
-            // Last word has to be in the dictionary (proper nouns allowed) and not an excluded word, OR start with a lowercase letter
+            // Last word has to be in the dictionary (proper nouns allowed) and not an excluded word, OR start with a lowercase letter.
             // That excludes cases in which the period ends an abbreviation in a journal name (like "A theory of something, Bull. Amer.").
             if (
                 ! in_array($lastWord, $startJournalAbbreviations)
+                && 
+                ! in_array($lastWord, ['no', 'vol', 'pp'])
                 &&
                 (
                     ($this->inDict($lastWord, $dictionaryNames, false) && ! in_array($lastWord, $excludedWords))
@@ -332,8 +338,12 @@ class TitleParser
                             // journal name, volume (year?) issue page
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder) 
                             // journal name followed by year and publication info, allowing issue number and page
-                            // numbers to be preceded by letters and issue numberto have / or - in it --- no year.
+                            // numbers to be preceded by letters and issue number to have / or - in it.
                             || preg_match('/^\p{Lu}[\p{L} &()\-]+[,.]? ' . $this->yearRegExp . ',? (' . $this->volumeRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder)
+                            // year followed by journal name and publication info, allowing issue number and page
+                            // numbers to be preceded by letters and issue number to have / or - in it.
+                            // Note that this case allows a single page or a page range.
+                            || preg_match('/^' . $this->yearRegExp . ',? \p{Lu}[\p{L} &()\-]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pageRegExp . '\.? ?$/u', $remainder)
                             // journal name followed by more specific publication info, year at end, allowing issue number and page
                             // numbers to be preceded by letters.
                             || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? (' . $this->volumeRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '(, |. |.)(\(?' . $this->yearRegExp . '\)?)$/u', $remainder) 
@@ -400,7 +410,7 @@ class TitleParser
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($startPagesRegExp, $remainder)
                         || preg_match('/^' . $inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
-                        || preg_match('/^' . $this->journalWord . ' |^Annals |^Proceedings |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^' . $this->journalWord . ' |^Annals |^Proc(eedings)? |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
                         || (
                             $nextWord 
                             && Str::endsWith($nextWord, '.') 
@@ -411,7 +421,7 @@ class TitleParser
                             && $nextButOneWord 
                             && (Str::endsWith($nextWord, range('a', 'z')) || in_array($nextWord, ['IEEE', 'ACM'])) 
                             && Str::endsWith($nextButOneWord, '.') 
-                            && in_array(substr($nextButOneWord,0,-1), $startJournalAbbreviations)
+                            && in_array(substr($nextButOneWord, 0, -1), $startJournalAbbreviations)
                            )
                         // pages (e.g. within book)
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
@@ -454,6 +464,7 @@ class TitleParser
                         || Str::startsWith(ltrim($remainder, '('), $cities)
                         // Thesis
                         || preg_match('/^[\(\[\-]? ?' . $fullThesisRegExp . '/i', $remainder)
+                        || preg_match('/^[\(\[\-]? ?Thesis[.,] /', $remainder)
                         ) {
                         $this->verbose("Ending title, case 2 (word '" . $word . "')");
                         $title = rtrim(implode(' ', $initialWords), ',:;.');
@@ -576,7 +587,7 @@ class TitleParser
                     // and is followed by at least 30 characters or 37 if it contains pages (for the publication info),
                     // assume it is part of the title,
                     } elseif (
-                            preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriodOrComma,0,-1))
+                            preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriodOrComma, 0, -1))
                             //preg_match('/[a-zA-Z -]+/', substr($stringToNextPeriodOrComma,0,-1))
                             && ! preg_match('/^' . $inRegExp . ':? /', $remainder)
                             && strlen($remainder) > strlen($stringToNextPeriodOrComma) + ($containsPages ? 37 : 30)

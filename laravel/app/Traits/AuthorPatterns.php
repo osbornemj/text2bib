@@ -94,16 +94,17 @@ trait AuthorPatterns
         // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T:
         $commaYearOrBareWords = '(' . $commaYear . '|,? (?=(\p{Lu}[\p{L}\-]*( [\p{Ll}\-]+){3})))';
         //$commaYearOrBareWords = '(' . $commaYear . '|, (?=(\p{Lu}[\p{L}\-]*(( [\p{Ll}\-]+){3}|( [\p{L}\-]+){4}))))';
-        $colonOrCommaYear = '(: |' . $commaYear . ')';
-        $colonOrCommaYearOrBareWords = '(: |' . $commaYearOrBareWords . ')';
-        $periodOrColonOrCommaYear = '(\. |: |' . $commaYearOrBareWords . ')';
-        $periodOrColonOrCommaYearOrBareWords = '(\. |: |; |' . $commaYearOrBareWords . ')';
-        $periodOrColonOrCommaYearOrCommaNotJr = '(\. |: |; |' . $commaYearOrBareWords . '|, ' . $notJr . ')';
-        $periodNotAndOrColonOrCommaYear = '(\.,? ' . $notAnd . '|: |' . $commaYearOrBareWords . ')';
-        $periodNotAndOrColonOrCommaYearNotCommaLetter = '(\.,? ' . $notAndOrLetter . '|: |' . $commaYearOrBareWords . ')';
+        $colon = ': (?!\p{Ll})';
+        $colonOrCommaYear = '(' . $colon . '|' . $commaYear . ')';
+        $colonOrCommaYearOrBareWords = '(' . $colon . '|' . $commaYearOrBareWords . ')';
+        $periodOrColonOrCommaYear = '(\. |' . $colon . '|' . $commaYearOrBareWords . ')';
+        $periodOrColonOrCommaYearOrBareWords = '(\. |' . $colon . '|; |' . $commaYearOrBareWords . ')';
+        $periodOrColonOrCommaYearOrCommaNotJr = '(\. |' . $colon . '|; |' . $commaYearOrBareWords . '|, ' . $notJr . ')';
+        $periodNotAndOrColonOrCommaYear = '(\.,? ' . $notAnd . '|' . $colon . '|' . $commaYearOrBareWords . ')';
+        $periodNotAndOrColonOrCommaYearNotCommaLetter = '(\.,? ' . $notAndOrLetter . '|' . $colon . '|' . $commaYearOrBareWords . ')';
         $periodNotAndOrCommaYear = '(\. ' . $notAnd . '|' . $commaYearOrBareWords . ')';
         // 'and' includes 'et', so $notAnd covers 'et al' also
-        $periodOrColonOrCommaYearOrCommaNotInitialNotAnd = '(\. |: |' . $commaYear . '|, (?!' . $initialRegExp . ' )' .  $notAnd . ')';
+        $periodOrColonOrCommaYearOrCommaNotInitialNotAnd = '(\. |' . $colon . '|' . $commaYear . '|, (?!' . $initialRegExp . ' )' .  $notAnd . ')';
 
         $authorRegExps = [
 
@@ -142,7 +143,7 @@ trait AuthorPatterns
                 'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
                 'end1' => ', ', 
                 'end2' => ', ' . $notAnd, 
-                'end3' => ',? et\.? al\.?', 
+                'end3' => ',? et\.? al\.?,?', 
                 'initials' => true,
                 'etal' => true,
             ],
@@ -151,7 +152,7 @@ trait AuthorPatterns
                 'name1' => $lastNameInitials, 
                 'end1' => ', ', 
                 'end2' => ', ' . $notAnd, 
-                'end3' => ',? et\.? al\.?', 
+                'end3' => ',? et\.? al\.?,?', 
                 'initials' => true,
                 'etal' => true,
             ],
@@ -410,7 +411,7 @@ trait AuthorPatterns
             // 33. J. A. Smith et.? al.? OR Jane A. Smith,? et.? al.?
             [
                 'name1' => '(' . $initialsLastName . '|' . $firstNameInitialsLastName . ')', 
-                'end1' => ',? et\.? al\.?', 
+                'end1' => ',? et\.? al\.?,?', 
                 'end2' => null, 
                 'end3' => null, 
                 'etal' => true,
@@ -418,7 +419,7 @@ trait AuthorPatterns
             // 34. Smith,? A.,? et al. OR Smith, Jane A.,? et.? al.?
             [
                 'name1' => '(' . $lastNameInitials . '|' . $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?)',
-                'end1' => ',? et\.? al\.?',
+                'end1' => ',? et\.? al\.?,?',
                 'end2' => null,
                 'end3' => null,
                 'etal' => true,

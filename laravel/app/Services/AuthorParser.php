@@ -1364,7 +1364,11 @@ class AuthorParser
         $result = false;
         $words = explode(' ', $string);
         $word1 = count($words) > 1 ? rtrim($words[1], ',.;') : null;
-        if ($this->isInitials($words[0]) && count($words) >= 2) {
+        
+        if (preg_match('/^(\p{L}+ ){4,}\p{L}+[.,]/', $string)) {
+            $this->verbose("isNameString: string is not name (case 0)");
+            $result = false;
+        } elseif ($this->isInitials($words[0]) && count($words) >= 2) {
             $this->verbose('First word is initials and there are at least 2 words in string');
             if ($this->isName(rtrim($word1, '.,')) && (ctype_alpha($word1) || count($words) == 2)) {
                 $this->verbose("isNameString: string is name (case 1): <initial> <name>");
@@ -1420,7 +1424,10 @@ class AuthorParser
         $phrases = $this->phrases;
         $result = false;
         $words = explode(' ', $string);
-        if ($this->isInitials($words[0])) {
+
+        if (preg_match('/^(\p{L}+ ){4,}\p{L}+[.,]/', $string)) {
+            $result = false;
+        } elseif ($this->isInitials($words[0])) {
             if (isset($words[1]) && $this->isName($words[1], '.')) {
                 $result = true;
             } elseif (isset($words[1]) && $this->isInitials($words[1])

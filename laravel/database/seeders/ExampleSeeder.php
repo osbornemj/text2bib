@@ -4672,7 +4672,7 @@ class ExampleSeeder extends Seeder
                     ]
             ],
             [
-                'source' => '[8]	Chatterjee S, Kumari S, Rath S, Das S. Chapter 1 - Prospects and scope of microbial bioremediation for the restoration of the contaminated sites. In: Das S, Dash HR, editors. Microbial Biodegradation and Bioremediation (Second Edition), Elsevier; 2022, p. 3–31. https://doi.org/https://doi.org/10.1016/B978-0-323-85455-9.00011-4. ',
+                'source' => '[8]	Chatterjee S, Kumari S, Rath S, Das S. Chapter 1 - Prospects and scope of microbial bioremediation for the restoration of the contaminated sites. In: Das S, Dash HR, editors. Microbial Biodegradation and Bioremediation (Second Edition), Elsevier; 2022, p. 3–31. https://doi.org/10.1016/B978-0-323-85455-9.00011-4. ',
                 'type' => 'incollection',
                 'bibtex' => [
                     'doi' => '10.1016/B978-0-323-85455-9.00011-4',
@@ -7175,24 +7175,25 @@ class ExampleSeeder extends Seeder
 			// "A" included at end of author list
 			[
                 'source' => 'George Zerveas, Srideepika Jayaraman, Dhaval Patel, Anuradha Bhamidipaty, and Carsten Eickhoff. A transformerbased framework for multivariate time series representation learning. In KDD, pages 2114–2124, 2021. ',
-                'type' => 'article',
+                'type' => 'incollection',
                 'bibtex' => [
                     'author' => 'George Zerveas and Srideepika Jayaraman and Dhaval Patel and Anuradha Bhamidipaty and Carsten Eickhoff',
                     'title' => 'A transformerbased framework for multivariate time series representation learning',
                     'year' => '2021',
-                    'journal' => 'KDD',
+                    'booktitle' => 'KDD',
                     'pages' => '2114-2124',
                     ]
             ],
 			// second author included in title
+            // Item is in fact inproceedings, but there is no way to tell that
 			[
                 'source' => 'Ling Yang and Shenda Hong. Unsupervised time-series representation learning with iterative bilinear temporalspectral fusion. In ICML, pages 25038–25054, 2022. ',
-                'type' => 'article',
+                'type' => 'incollection',
                 'bibtex' => [
                     'author' => 'Ling Yang and Shenda Hong',
                     'title' => 'Unsupervised time-series representation learning with iterative bilinear temporalspectral fusion',
                     'year' => '2022',
-                    'journal' => 'ICML',
+                    'booktitle' => 'ICML',
                     'pages' => '25038-25054',
                     ]
             ],
@@ -12503,7 +12504,179 @@ class ExampleSeeder extends Seeder
                     'pages' => '2663',
                     ]
             ],
-
+            // thesis not detected
+			[
+                'source' => 'Alba, A. (2015): Captive Management, Stress, and Reproduction in the Guam Kingfisher. Thesis, University of Missouri–Columbia. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Alba, A.',
+                    'year' => '2015',
+                    'title' => 'Captive Management, Stress, and Reproduction in the Guam Kingfisher',
+					'school' => 'University of Missouri--Columbia',
+                    ]
+            ],
+			// problem due to comma after "et al"?
+			[
+                'source' => 'Cammarota, G., Ianiro, G., Tilg, H., Rajilic-Stojanovic, M., Kump, P., Satokari, R., et al., (2017): European consensus conference on faecal microbiota transplantation in clinical practice. Gut, 66: 569-580.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Cammarota, G. and Ianiro, G. and Tilg, H. and Rajilic-Stojanovic, M. and Kump, P. and Satokari, R. and others',
+					'year' => '2017',
+                    'title' => 'European consensus conference on faecal microbiota transplantation in clinical practice',
+                    'journal' => 'Gut',
+                    'volume' => '66',
+                    'pages' => '569-580',
+                    ]
+            ],
+			// year range in title confused with page range
+			[
+                'source' => 'Williams, B. 1973. ‘The Makropulos Case: Reflections of the Tedium of Immorality’, in Williams, B., Problems of the Self: Philosophical Papers 1956–1972. Cambridge; Cambridge University Press. 529–547. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Williams, B.',
+                    'title' => 'The Makropulos Case: Reflections of the Tedium of Immorality',
+                    'year' => '1973',
+                    'pages' => '529-547',
+                    'editor' => 'Williams, B.',
+                    'address' => 'Cambridge',
+                    'publisher' => 'Cambridge University Press',
+                    'booktitle' => 'Problems of the Self: Philosophical Papers 1956--1972',
+                    ]
+            ],
+			// publisher included in booktitle
+			[
+                'source' => 'Bauckham, Richard. 2008. ‘Paul’s Christology of Divine Identity’. In Jesus and the God of Israel. God Crucified and Other Studies on the New Testament’s Christology of Divine Identity, 182–232. Grand Rapids, Michigan: Eerdmans. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Bauckham, Richard',
+                    'title' => 'Paul\'s Christology of Divine Identity',
+                    'year' => '2008',
+                    'pages' => '182-232',
+                    'address' => 'Grand Rapids, Michigan',
+                    'publisher' => 'Eerdmans',
+                    'booktitle' => 'Jesus and the God of Israel. God Crucified and Other Studies on the New Testament\'s Christology of Divine Identity',
+                    ]
+            ],
+			// journal name truncated
+			[
+                'source' => 'Citti, C. et al. (2018) ‘Horizontal gene transfers in Mycoplasmas (Mollicutes)’, Current Issues in Molecular Biology, pp. 3–22. doi:10.21775/cimb.029.003. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.21775/cimb.029.003',
+                    'author' => 'Citti, C. and others',
+                    'year' => '2018',
+                    'title' => 'Horizontal gene transfers in Mycoplasmas (Mollicutes)',
+                    'journal' => 'Current',
+                    'pages' => '3-22',
+                    ]
+            ],
+            // journal not extracted
+            [
+                'source' => 'Stephan T, Burgess SM, Cheng H, Danko CG, Gill CA, Jarvis ED, Koepfli KP, Koltes JE, Lyons E, Ronald P, Ryder OA, Schriml LM, Soltis P, VandeWoude S, Zhou H, Ostrander EA, Karlsson EK. Darwinian genomics and diversity in the tree of life. Proc Natl Acad Sci U S A. 2022 Jan 25;119(4):e2115644119. doi: 10.1073/pnas.2115644119. PMID: 35042807; PMCID: PMC8795533. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'PMID: 35042807. PMCID: PMC8795533',
+                    'doi' => '10.1073/pnas.2115644119',
+                    'author' => 'Stephan, T. and Burgess, S. M. and Cheng, H. and Danko, C. G. and Gill, C. A. and Jarvis, E. D. and Koepfli, K. P. and Koltes, J. E. and Lyons, E. and Ronald, P. and Ryder, O. A. and Schriml, L. M. and Soltis, P. and VandeWoude, S. and Zhou, H. and Ostrander, E. A. and Karlsson, E. K.',
+                    'title' => 'Darwinian genomics and diversity in the tree of life',
+                    'journal' => 'Proc Natl Acad Sci U S A.',
+                    'year' => '2022',
+                    'month' => 'January',
+                    'date' => '2022-01-25',
+                    'volume' => '119',
+                    'number' => '4',
+                    'pages' => 'e2115644119',
+                    ]
+            ],
+            // journal not extracted
+            [
+                'source' => 'Dudek, K.; Szacawa, E.; Nicholas, R.A.J. Recent Developments in Vaccines for Bovine Mycoplasmoses Caused by Mycoplasma bovis and Mycoplasma mycoides subsp. mycoides. Vaccines 2021, 9, 549. https://doi.org/ 10.3390/vaccines9060549 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Dudek, K. and Szacawa, E. and Nicholas, R. A. J.',
+                    'title' => 'Recent Developments in Vaccines for Bovine Mycoplasmoses Caused by Mycoplasma bovis and Mycoplasma mycoides subsp. mycoides',
+                    'journal' => 'Vaccines',
+                    'year' => '2021',
+                    'volume' => '9',
+                    'pages' => '549',
+                    'doi' => '10.3390/vaccines9060549',
+                    ]
+            ],
+            // author pattern error
+            [
+                'source' => 'Seemann T. Prokka: rapid prokaryotic genome annotation. Bioinformatics. 2014 Jul 15;30(14):2068-9. doi: 10.1093/bioinformatics/btu153. Epub 2014 Mar 18. PMID: 24642063. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'PMID: 24642063. Epub 2014 Mar 18.',
+                    'doi' => '10.1093/bioinformatics/btu153',
+                    'author' => 'Seemann, T.',
+                    'title' => 'Prokka: rapid prokaryotic genome annotation',
+                    'year' => '2014',
+                    'month' => 'July',
+                    'date' => '2014-07-15',
+                    'journal' => 'Bioinformatics.',
+                    'volume' => '30',
+                    'number' => '14',
+                    'pages' => '2068-9',
+                    ]
+            ],
+			// Year not detected
+			[
+                'source' => '2.	Bailey, S. M., Barth, C. A., Soloman, S. C., A model of nitric oxide in the lower thermosphere, 2002, Journal of Geophyiscal Research, Vol. 107, A8, 1205. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bailey, S. M. and Barth, C. A. and Soloman, S. C.',
+                    'title' => 'A model of nitric oxide in the lower thermosphere',
+                    'journal' => 'Journal of Geophyiscal Research',
+                    'year' => '2002',
+                    'volume' => '107',
+                    'number' => 'A8',
+                    'pages' => '1205',
+                    ]
+            ],
+			// article classified as book (because of colon in title of journal?)
+			[
+                'source' => 'Faverdin, P., Guyomard, H., Puillet, L., & Forslund, A. (2022). Animal board invited review: Specialising and intensifying cattle production for better efficiency and less global warming: contrasting results for milk and meat co-production at different scales. Animal : an international journal of animal bioscience, 16(1), 100431. https://doi.org/10.1016/j.animal.2021.100431 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.animal.2021.100431',
+                    'author' => 'Faverdin, P. and Guyomard, H. and Puillet, L. and Forslund, A.',
+                    'year' => '2022',
+                    'title' => 'Animal board invited review: Specialising and intensifying cattle production for better efficiency and less global warming: contrasting results for milk and meat co-production at different scales',
+                    'journal' => 'Animal : an international journal of animal bioscience',
+					'volume' => '16',
+					'number' => '1',
+					'pages' => '100431',
+                    ]
+            ],
+			// editor misidentified
+			[
+                'source' => 'Akl GS (1989): Generating Combinations Lexicographically. In: The Design of Parallel and Analysis Algorithms. Prentice Hall, New Jersey, pp 147-150 ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Akl, G. S.',
+                    'year' => '1989',
+                    'title' => 'Generating Combinations Lexicographically',
+                    'pages' => '147-150',
+                    'publisher' => 'Prentice Hall',
+                    'address' => 'New Jersey',
+                    'booktitle' => 'The Design of Parallel and Analysis Algorithms',
+                    ]
+            ],
+			// misidentified as article
+			[
+                'source' => '\bibitem{bibStarComplete} Adamson C (2010): Multi-Valued Dimensions and Bridges. In: Star Schema The Complete Reference. Mc Graw Hill, pp 549-610 ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Adamson, C.',
+                    'year' => '2010',
+                    'title' => 'Multi-Valued Dimensions and Bridges',
+                    'booktitle' => 'Star Schema The Complete Reference',
+					'publisher' => 'Mc Graw Hill',
+                    'pages' => '549-610',
+                    ]
+            ],
+            
 
 
 
