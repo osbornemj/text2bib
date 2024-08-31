@@ -124,12 +124,6 @@ class ConvertFile extends Component
         // There must be a better way to handle this case --- perhaps by showing and hiding the divs on
         // convert-file.blade.php rather than using @includes?
 
-        // Next block added after conversion 10715 was submitted with user id null.
-        // However, 10841 was submitted with user id null after this check was added.
-        if (! Auth::check()) {
-            die;
-        }
-
         $this->uploadForm->validate();
 
         $file = $this->uploadForm->file;

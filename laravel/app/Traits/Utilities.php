@@ -138,6 +138,9 @@ trait Utilities
     // (otherwise word following "manuscript" will be matched, for example)
     var $workingPaperNumberRegExp = ' (\\\\#|number|no\.?)? ?(?=.*[0-9])([a-zA-Z0-9\-]+),?';
 
+    var $proceedingsRegExp = '(^proceedings of |proceedings of the (.*) (conference|congress)|conference|symposium on | meeting |congress of the |^proc\.| workshop|^actas del | scientific assembly of the )';
+    var $proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the \p{L}+ (\p{L}+ )?Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE (?!(International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
+
     var $journalWord = 'Journal';
 
     var $detailLines;
@@ -179,8 +182,7 @@ trait Utilities
             if (isset($item->$fieldName) && $item->$fieldName && ! in_array(substr($item->$fieldName, -1), ['.', '?', '!'])) {
                 $item->$fieldName .= '.';
             }
-            $this->setField($item, $fieldName, (isset($item->$fieldName) ? $item->$fieldName . ' ' : '') . $string) . 
-            $this->verbose(['fieldName' => ($id ? '('. $id . ') ' : '') . ucfirst($fieldName), 'content' => $item->$fieldName]);
+            $this->setField($item, $fieldName, (isset($item->$fieldName) ? $item->$fieldName . ' ' : '') . $string); 
         }
     }
 

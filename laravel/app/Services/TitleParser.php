@@ -590,6 +590,7 @@ class TitleParser
                             preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriodOrComma, 0, -1))
                             //preg_match('/[a-zA-Z -]+/', substr($stringToNextPeriodOrComma,0,-1))
                             && ! preg_match('/^' . $inRegExp . ':? /', $remainder)
+                            && ! $this->isProceedings($stringToNextPeriod)
                             && strlen($remainder) > strlen($stringToNextPeriodOrComma) + ($containsPages ? 37 : 30)
                             && ! $upcomingYear
                             ) {

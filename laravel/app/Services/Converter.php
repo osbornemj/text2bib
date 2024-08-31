@@ -69,8 +69,6 @@ class Converter
     var $pageWordsRegExp;
     var $startPagesRegExp;
     var $phdRegExp;
-    var $proceedingsRegExp;
-    var $proceedingsExceptions;
     var $publishers;
     var $retrievedFromRegExp1;
     var $retrievedFromRegExp2;
@@ -298,9 +296,6 @@ class Converter
         $this->volumeNumberPagesRegExp = '/(' . $this->volRegExp3 . ')?[0-9]{1,4} ?(' . $this->numberRegExp . ')?[ \(][0-9]{1,4}[ \)]:? ?(' . $this->pageRegExp . ')/';
 
         $this->volumeNumberYearRegExp = '/(' . $this->volumeRegExp . ')? ?\d{1,4},? ?(' . $this->numberRegExp . ')? ?\d{1,4} [\(\[]?' . $this->yearRegExp . '[\)\]]/';
-
-        $this->proceedingsRegExp = '(^proceedings of |proceedings of the (.*) (conference|congress)|conference|symposium on | meeting |congress of the |^proc\.| workshop|^actas del )';
-        $this->proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the \p{L}+ (\p{L}+ )?Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE(?! (International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
 
         $this->thesisRegExp = '(^|[ \(\[])([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|{Tt]ezi|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.? ?A\.?|M\.? ?Sc\.?|M\. ?S\.|[Mm]estrado|Yayınlanmamış Yüksek [Ll]isans|Yüksek [Ll]isans|Masterproef';
@@ -1108,6 +1103,22 @@ class Converter
             if (preg_match('/[\(\[]?[0-9]{4}[\)\]]? \[[0-9]{4}\]/', $year)) {
                 $hasSecondaryDate = true;
             }
+        }
+
+        ////////////////////////////
+        // Get page count, if any //
+        ////////////////////////////
+
+        $remainder = trim($remainder);
+
+        $hasPageCount = false;
+        if (preg_match('/^(?P<remainder>.*?)(,? (?P<pageCount>[0-9ivx +\[\]]+(pp|pgs)\.?))?$/', $remainder, $matches)) {
+            if (isset($matches['pageCount'])) {
+                $this->addToField($item, 'note', $matches['pageCount']);
+                $this->verbose('Adding page count to note field');
+                $hasPageCount = true;
+            }
+            $remainder = $matches['remainder'] ?? '';
         }
 
         $remainder = trim($remainder, '.},;/ ');
@@ -2314,9 +2325,17 @@ class Converter
                 // be replaced by } else {.
                 if ($remainder && ! isset($item->editor)) {
                     $periodPosition = strpos($remainder, '.');
-                    // if period is preceded by an ordinal (e.g. 1st., 2nd.) then go to NEXT period
-                    if (Str::endsWith(substr($remainder, 0, $periodPosition), $this->ordinals[$language])) {
-                        $periodPosition = $periodPosition + strpos(substr($remainder, $periodPosition+1), '.') + 1;
+                    // if period is preceded by an ordinal (e.g. 1st., 2nd.) or by "Vol" then go to NEXT period
+                    if (
+                        Str::endsWith(substr($remainder, 0, $periodPosition), $this->ordinals[$language])
+                        ||
+                        Str::endsWith(substr($remainder, 0, $periodPosition), [' Vol'])
+                       ) {
+                        if (strpos(substr($remainder, $periodPosition+1), '.') === false) {
+                            $periodPosition = strlen($remainder);
+                        } else {
+                            $periodPosition = $periodPosition + strpos(substr($remainder, $periodPosition+1), '.') + 1;
+                        }
                     }
 
                     // If type is inproceedings and there is a period that is not preceded by any of the $bookTitleAbbrevs
@@ -3836,12 +3855,13 @@ class Converter
                     );
 
                     if ($publisher) {
-                        if (preg_match('/^(?P<publisher>[^,]+)(, (?P<remains>[0-9ivx +\[\]]+pp))?$/', $publisher, $matches)) {
-                            if (isset($matches['remains'])) {
-                                $this->setField($item, 'note', $matches['remains'] . '.', 'setField 149');
-                                $publisher = $matches['publisher'];
-                            }
-                        }
+                        // Code moved earlier
+                        // if (preg_match('/^(?P<publisher>[^,]+)(, (?P<remains>[0-9ivx +\[\]]+pp))?$/', $publisher, $matches)) {
+                        //     if (isset($matches['remains'])) {
+                        //         $this->setField($item, 'note', $matches['remains'] . '.', 'setField 149');
+                        //         $publisher = $matches['publisher'];
+                        //     }
+                        // }
                         $this->setField($item, 'publisher', trim($publisher, '();{} '), 'setField 150');
                     }
 

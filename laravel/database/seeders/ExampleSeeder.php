@@ -7240,7 +7240,7 @@ class ExampleSeeder extends Seeder
             ],
 			// authors includes first word of title
 			[
-                'source' => '	7	Katzarkov, Ludmil; Lupercio, Ernesto; Meersseman, Laurent; Verjovsky, Alberto, Quantum (non-commutative) toric geometry: foundations, Adv. Math. 391 (2021), Paper No. 107945, 110 pp. IF: 1.530 (Q1) Cited 4 times 	8	Fan, Yu-Wei; Filip, Simion; Haiden, Fabian; Katzarkov, Ludmil; Liu, Yijia, On pseudo-Anosov autoequivalences, Adv. Math. 384 (2021), Paper No. 107732, 37 pp. IF: 1.530 (Q1)  Cited 7 times  ',
+                'source' => '	7	Katzarkov, Ludmil; Lupercio, Ernesto; Meersseman, Laurent; Verjovsky, Alberto, Quantum (non-commutative) toric geometry: foundations, Adv. Math. 391 (2021), Paper No. 107945, 110 pp.',
                 'type' => 'article',
                 'bibtex' => [
                     'author' => 'Katzarkov, Ludmil and Lupercio, Ernesto and Meersseman, Laurent and Verjovsky, Alberto',
@@ -7248,7 +7248,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2021',
                     'journal' => 'Adv. Math.',
                     'volume' => '391',
-                    'number' => '2021',
+                    'note' => '110 pp. Paper No. 107945',
                     ]
             ],
    			// problem with von name
@@ -12674,6 +12674,67 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Star Schema The Complete Reference',
 					'publisher' => 'Mc Graw Hill',
                     'pages' => '549-610',
+                    ]
+            ],
+			// misclassified as article
+			[
+                'source' => 'Jin, D., Yin, F., Fritsche, C., Zoubir, A. M., & Gustafsson, F. (2016). Cooperative localization based on severely quantized RSS measurements in wireless sensor network. ICASSP, IEEE International Conference on Acoustics, Speech and Signal Processing - Proceedings, 2016-May, 4214–4218. https://doi.org/10.1109/ICASSP.2016.7472471 ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Jin, D. and Yin, F. and Fritsche, C. and Zoubir, A. M. and Gustafsson, F.',
+                    'title' => 'Cooperative localization based on severely quantized RSS measurements in wireless sensor network',
+                    'year' => '2016',
+                    'pages' => '4214-4218',
+                    'doi' => '10.1109/ICASSP.2016.7472471',
+                    'booktitle' => 'ICASSP, IEEE International Conference on Acoustics, Speech and Signal Processing - Proceedings, 2016-May',
+                    ]
+            ],
+			// misclassified as article
+			[
+                'source' => 'Kealy A. and Retscher G. (2017). MEMS and Wireless Options Cellular Phones for User Localization. ION Pacific PNT Conference, May 1-4, Honolulu, Hawaii, USA, 13 pgs ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Kealy, A. and Retscher, G.',
+                    'title' => 'MEMS and Wireless Options Cellular Phones for User Localization',
+                    'year' => '2017',
+                    'booktitle' => 'ION Pacific PNT Conference, May 1-4, Honolulu, Hawaii, USA',
+                    'note' => '13 pgs',
+                    ]
+            ],
+			// misclassified as article
+			[
+                'source' => 'Li, S., Hedley, M., Collings, I. B., & Johnson, M. (2016). Integration of IMU in indoor positioning systems with non-Gaussian ranging error distributions. Proceedings of the IEEE/ION Position, Location and Navigation Symposium, PLANS 2016, 577–583. https://doi.org/10.1109/PLANS.2016.7479748 ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Li, S. and Hedley, M. and Collings, I. B. and Johnson, M.',
+                    'title' => 'Integration of IMU in indoor positioning systems with non-Gaussian ranging error distributions',
+                    'year' => '2016',
+                    'pages' => '577-583',
+                    'doi' => '10.1109/PLANS.2016.7479748',
+                    'booktitle' => 'Proceedings of the IEEE/ION Position, Location and Navigation Symposium, PLANS 2016',
+                    ]
+            ],
+			// misclassified as article
+			 [
+                'source' => 'Perakis H., Gikas V., Sotiriou P. (2017) “Static and kinematic experimental evaluation of a UWB ranging system for positioning applications”, Joint Scientific Assembly of the International Association of Geodesy and International Association of Seismology and Physics of the Earth’s Interior (IAG – IASPEI), July 30-August 4, 2017, Kobe Japan ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Perakis, H. and Gikas, V. and Sotiriou, P.',
+                    'title' => 'Static and kinematic experimental evaluation of a UWB ranging system for positioning applications',
+                    'booktitle' => 'Joint Scientific Assembly of the International Association of Geodesy and International Association of Seismology and Physics of the Earth\'s Interior (IAG -- IASPEI), July 30-August 4, 2017, Kobe Japan',
+                    'year' => '2017',
+                    ]
+            ],
+			// misclassified as article
+			[
+                'source' => 'Prasithsangaree P., Krishnamurthi P. and Chrysanthis P. K. (2002). On Indoor Position with Wireless LANs. 13th IEEE International Symposium on Personal, Indoor and Mobile Radio Communications PIMRC 2002, Lisbon, Portugal, Vol. 2, pp 720–724. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Prasithsangaree, P. and Krishnamurthi, P. and Chrysanthis, P. K.',
+                    'title' => 'On Indoor Position with Wireless LANs',
+                    'year' => '2002',
+                    'pages' => '720-724',
+                    'booktitle' => '13th IEEE International Symposium on Personal, Indoor and Mobile Radio Communications PIMRC 2002, Lisbon, Portugal, Vol. 2',
                     ]
             ],
             
