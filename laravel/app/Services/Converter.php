@@ -3066,6 +3066,12 @@ class Converter
                     $remainder = '';
                 }
 
+                // If $remainder consists only of letters and spaces, has to be publisher(?)
+                if (preg_match('/^[\p{L} ]+$/', $remainder) && ! isset($item->publisher)) {
+                    $this->setField($item, 'publisher', $remainder, 'setField 81a');
+                    $remainder = '';
+                }
+
                 // Get editors
                 if ($remainder && $booktitle && ! isset($item->editor)) {
                     // CASE 2

@@ -244,9 +244,8 @@ class AuthorParser
          * Author strings without spaces, like 'John Doe and Jane Doe' or 'Doe J and Doe K' should have been
          * taken care of by author patterns earlier.
          */
-        preg_match('/^(?P<name>[\p{L}() ]{3,80})(?!\d)[,\.]? ?(?P<remains>[(\[]?[1-9][0-9]{3}.*$)/u', $remainder, $matches);
-        if (! empty($matches)) {
-            $remainder = $matches['remains'];
+        if(preg_match('/^(?P<name>[\p{L}() ]{3,80})(?!\d)[,.]? ?(?P<remains>[(\[]?[1-9][0-9]{3}.*$)/u', $remainder, $matches)) {
+            $remainder = $matches['remains'] ?? '';
             $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
             $this->verbose('Authors match pattern 128');
             return [
@@ -273,7 +272,7 @@ class AuthorParser
                 $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                 return [
                     'authorstring' => substr($word, 0, -1),
-                    'author_pattern' => null,
+                    'author_pattern' => 129,
                 ];
             } elseif (ctype_alpha((string) $word) && ($this->inDict($word, $dictionaryNames) || in_array($word, ['American']))) {
                 $name .= ($i ? ' ' : '') . $word;
@@ -286,17 +285,17 @@ class AuthorParser
                         $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                         return [
                             'authorstring' => $name . ' ' . $xword,
-                            'author_pattern' => null,
+                            'author_pattern' => 130,
                         ];
                     } else {
                         break;
                     }
                 } elseif ($i >= 3 && $i <= 6) {
-                    $remainder = implode(' ', array_slice($words, $i));
+                    $remainder = implode(' ', array_slice($words, $i+1));
                     $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                     return [
-                        'authorstring' => $name,
-                        'author_pattern' => null,
+                        'authorstring' => $name . ' ' . $xword,
+                        'author_pattern' => 131,
                     ];
                 } else {
                     break;

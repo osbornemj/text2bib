@@ -12737,20 +12737,105 @@ class ExampleSeeder extends Seeder
                     'booktitle' => '13th IEEE International Symposium on Personal, Indoor and Mobile Radio Communications PIMRC 2002, Lisbon, Portugal, Vol. 2',
                     ]
             ],
-            
-
-
-
-
-
-
-
-
-            
-            
-            
-           
-
+			// author (organization) truncated
+			[
+                'source' => 'Fisheries Statistical Report of Bangladesh. Fisheries Resources Survey System. 2020. Department of Fisheries, Bangladesh. 81 pp.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Fisheries Statistical Report of Bangladesh',
+                    'title' => 'Fisheries Resources Survey System',
+                    'year' => '2020',
+                    'publisher' => 'Department of Fisheries',
+                    'address' => 'Bangladesh',
+                    'note' => '81 pp.',
+                    ]
+            ],
+			// word "symposium" used for proceedings
+			[
+                'source' => 'Bai Y.B., Kealy A., Retscher G. and Hoden L. (2020). A Comparative Evaluation of Wi-Fi RTT and GPS Based Positioning. International Global Navigation Satellite Systems Association (IGNSS) Symposium 2020 Colombo Theatres, Kensington Campus, UNSW Australia, 5 – 7 February 2020. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Bai, Y. B. and Kealy, A. and Retscher, G. and Hoden, L.',
+                    'title' => 'A Comparative Evaluation of Wi-Fi RTT and GPS Based Positioning',
+                    'year' => '2020',
+                    'booktitle' => 'International Global Navigation Satellite Systems Association (IGNSS) Symposium 2020 Colombo Theatres, Kensington Campus, UNSW Australia, 5 -- 7 February',
+                    ]
+            ],
+			// word "symposium" used for proceedings
+			[
+                'source' => 'Dabove, P., Di Pietra, V., Piras, M., Jabbar, A. A., & Kazim, S. A. (2018). Indoor positioning using Ultra-wide band (UWB) technologies: Positioning accuracies and sensors\' performances. In 2018 IEEE/ION Position, Location and Navigation Symposium (PLANS) (pp. 175-184). IEEE. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Dabove, P. and Di Pietra, V. and Piras, M. and Jabbar, A. A. and Kazim, S. A.',
+                    'title' => 'Indoor positioning using Ultra-wide band (UWB) technologies: Positioning accuracies and sensors\' performances',
+                    'year' => '2018',
+                    'pages' => '175-184',
+                    'booktitle' => '2018 IEEE/ION Position, Location and Navigation Symposium (PLANS)',
+					'publisher' => 'IEEE',
+                    ]
+            ],
+			// word "congress" used for proceedings
+			[
+                'source' => 'Clausen P., Gilliéron P-Y., Gikas V., Perakis H., Spyropoulou I. (2015) “Positioning Accuracy of Vehicle Trajectories for Road Applications”, Intelligent Transport Systems (ITS) World Congress, Bordeaux, Oct. 5-9 ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Clausen, P. and Gilliéron, P.-Y. and Gikas, V. and Perakis, H. and Spyropoulou, I.',
+                    'title' => 'Positioning Accuracy of Vehicle Trajectories for Road Applications',
+                    'year' => '2015',
+                    'booktitle' => 'Intelligent Transport Systems (ITS) World Congress, Bordeaux, Oct. 5-9',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// inproceedings not detected
+			[
+                'source' => 'Gikas V. and Retscher G., (2015) An RFID-based Virtual Gates Concept as a Complementary Tool for Indoor Vehicle Localization. International Conference on Indoor Positioning and Indoor Navigation (IPIN), 13-16 October 2015, Banff, Alberta, Canada. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Gikas, V. and Retscher, G.',
+                    'title' => 'An RFID-based Virtual Gates Concept as a Complementary Tool for Indoor Vehicle Localization',
+                    'year' => '2015',
+                    'booktitle' => 'International Conference on Indoor Positioning and Indoor Navigation (IPIN), 13-16 October 2015, Banff, Alberta, Canada',
+                    ]
+            ],
+			// booktitle included in title
+			[
+                'source' => 'Gikas V., Retscher G., Ettlinger A., Dimitratos A. and Perakis H. (2016b). Full-scale Testing and Performance Evaluation of an Active RFID System for Positioning and Personal Mobility. 7th International Conference on Indoor Positioning and Indoor Navigation (IPIN), Alcalá de Henares, Madrid, Spain, Oct. 4–7. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Gikas, V. and Retscher, G. and Ettlinger, A. and Dimitratos, A. and Perakis, H.',
+                    'title' => 'Full-scale Testing and Performance Evaluation of an Active RFID System for Positioning and Personal Mobility',
+                    'year' => '2016',
+                    'booktitle' => '7th International Conference on Indoor Positioning and Indoor Navigation (IPIN), Alcalá de Henares, Madrid, Spain, Oct. 4-7',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+            // inproceedings
+			[
+                'source' => 'Goel, S. (2017). A distributed cooperative UAV swarm localization system: Development and analysis. 30th International Technical Meeting of the Satellite Division of the Institute of Navigation, ION GNSS 2017, 4(September), 2501–2518. https://doi.org/10.33012/2017.15217  ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Goel, S.',
+                    'title' => 'A distributed cooperative UAV swarm localization system: Development and analysis',
+                    'year' => '2017',
+                    'pages' => '2501-2518',
+                    'doi' => '10.33012/2017.15217',
+                    'booktitle' => '30th International Technical Meeting of the Satellite Division of the Institute of Navigation, ION GNSS 2017, 4(September)',
+                    ]
+            ],
+            // publisher and address interchanged
+			 [
+                'source' => 'Hide C., Botterill T. and Andreotti M. (2009). An Integrated IMU, GNSS and Image Recognition Sensor for Pedestrian Navigation. ION GNSS Conference. Institute of Navigation: Savannah, Georgia, USA ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Hide, C. and Botterill, T. and Andreotti, M.',
+                    'title' => 'An Integrated IMU, GNSS and Image Recognition Sensor for Pedestrian Navigation',
+                    'year' => '2009',
+                    'publisher' => 'Institute of Navigation',
+                    'address' => 'Savannah, Georgia, USA',
+                    'booktitle' => 'ION GNSS Conference',
+                    ]
+            ],
+ 
                        
         ];
 
