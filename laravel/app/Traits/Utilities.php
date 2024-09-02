@@ -38,7 +38,7 @@ trait Utilities
             'editors' => 'editors',
             'ed.' => 'ed.',
             'eds.' => 'eds.',
-            'edited by' => 'edited by'
+            'edited by' => 'édité par'
             ],
         'es' =>
             [
@@ -48,7 +48,7 @@ trait Utilities
             'editors' => 'editors',
             'ed.' => 'ed.',
             'eds.' => 'eds.',
-            'edited by' => 'edited by'
+            'edited by' => 'editado por'
             ],
         'pt' =>
             [
@@ -114,6 +114,7 @@ trait Utilities
     var $endForthcomingRegExp = '( |\()(forthcoming|in press|accepted|to appear)\.?\)?$';
     var $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
 
+    // volume Spanish: Tomo(?)
     var $volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
     var $volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
     var $volRegExp2 = '/^\(?vol(\.|ume)? ?|^\(?v\. /i';

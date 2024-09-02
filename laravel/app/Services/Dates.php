@@ -241,7 +241,7 @@ class Dates
 
         $ends = match ($type) {
             'is' => '$',
-            'contains' => '',
+            'contains' => '(,|\.|]|\)| |$)',
             'starts' => '',
         };
 
@@ -250,7 +250,7 @@ class Dates
         if ($allowRange) {
             $isDates[1] = preg_match('/(' . $starts . $dayRange . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ' )?' . $year . '?' . $ends . ')/i' , $string, $matches[1]);
             $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $dayRange . ',? '. $year . '?' . $ends . ')/i', $string, $matches[2]);
-            //$isDates[3] = preg_match('/(' . $starts . $monthName . ' ?' . $dayRange . $ends . ')/i', $string, $matches[2]);
+            $isDates[3] = preg_match('/(' . $starts . $monthName . ' ?' . $dayRange . $ends . ')/i', $string, $matches[3]);
         } else {
             $isDates[1] = preg_match('/(' . $starts . $day . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ' )?' . $year . $ends . ')/i' , $string, $matches[1]);
             $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $day . '(,? ' . $year . ')?' . $ends . ')/i', $string, $matches[2]);

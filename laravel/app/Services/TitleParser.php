@@ -410,7 +410,7 @@ class TitleParser
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($startPagesRegExp, $remainder)
                         || preg_match('/^' . $inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
-                        || preg_match('/^' . $this->journalWord . ' |^Annals |^Proc(eedings)? |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. | Meeting /', $remainder)
+                        || preg_match('/^' . $this->journalWord . ' |^Annals |^Proc(eedings)? |^\(?Vols?\.? |^\(?VOL\.? |^\(?Volume |^\(?v\. /', $remainder)
                         || (
                             $nextWord 
                             && Str::endsWith($nextWord, '.') 
@@ -640,6 +640,7 @@ class TitleParser
                             && Str::endsWith($word, ['.', ',', '?', '!']) 
                             && ! Str::startsWith($modStringToNextPeriod, ['In']) 
                             && ! Str::contains($modStringToNextPeriod, ['pp.']) 
+                            && ! $this->isProceedings($modStringToNextPeriod)
                             && substr_count($modStringToNextPeriod, ',') == 0
                             && substr_count($modStringToNextPeriod, ':') == 0
                             && (! preg_match('/^[0-9;:\.\- ]*$/', $remainderFollowingNextPeriodOrComma) || $containsUrlAccessInfo)

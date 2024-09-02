@@ -12805,7 +12805,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Gikas, V. and Retscher, G. and Ettlinger, A. and Dimitratos, A. and Perakis, H.',
                     'title' => 'Full-scale Testing and Performance Evaluation of an Active RFID System for Positioning and Personal Mobility',
                     'year' => '2016',
-                    'booktitle' => '7th International Conference on Indoor Positioning and Indoor Navigation (IPIN), Alcalá de Henares, Madrid, Spain, Oct. 4-7',
+                    'booktitle' => '7th International Conference on Indoor Positioning and Indoor Navigation (IPIN), Alcalá de Henares, Madrid, Spain, Oct. 4--7',
                 ],
                 'char_encoding' => 'utf8leave',
             ],

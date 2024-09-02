@@ -91,7 +91,7 @@ class PublisherAddressParser
             }
 
             // If publisher ends in " [A-Z][A-Z]" (US 2-letter state abbreviation) then in fact it must be the address, so swith the publisher and address
-            if (preg_match('/ [A-Z]{2}$/', $publisher)) {
+            if (preg_match('/ ([A-Z]{2}|USA)$/', $publisher)) {
                 $oldPublisher = $publisher;
                 $publisher = $address;
                 $address = $oldPublisher;

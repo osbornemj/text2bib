@@ -203,6 +203,11 @@ class Converter
         $editedByWords = [
             '[Ee]dited by',
             '[Ee]d\. by',
+            '[Ee]ditado por',    // Spanish, Portuguese
+            '[Éé]dité par',      // French
+            '[Bb]earbeitet von', // German
+            '[Bb]ewerkt door',   // Dutch
+            '[Dd]iedit oleh',    // Indonesian
         ];
 
         $edsRx1 = $edsRx2 = '';
@@ -758,7 +763,7 @@ class Converter
 
         // Write access date even if there is no URL.  (Presumably "accessed ..." means it is in fact an online item.)
         if (! empty($accessDate)) {
-            $this->setField($item, 'urldate', rtrim($accessDate, '., '), 'setField 14');
+            $this->setField($item, 'urldate', rtrim($accessDate, '.,]) '), 'setField 14');
             $containsUrlAccessInfo = true;
         }
 
