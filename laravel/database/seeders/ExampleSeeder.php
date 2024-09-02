@@ -12835,6 +12835,47 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'ION GNSS Conference',
                     ]
             ],
+			// why do authors not match pattern?
+			[
+                'source' => '[11] A.M. Bernstein, B. Titgemeier, K. Kirkpatrick, et al., Major Cereal Grain Fibres and Psyllium about Cardiovascular Health, Nutrients. 5 (2013) 1471–1487.  https://doi.org/10.3390/nu5051471. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.3390/nu5051471',
+                    'author' => 'A. M. Bernstein and B. Titgemeier and K. Kirkpatrick and others',
+                    'title' => 'Major Cereal Grain Fibres and Psyllium about Cardiovascular Health',
+                    'year' => '2013',
+                    'journal' => 'Nutrients.',
+                    'volume' => '5',
+                    'pages' => '1471-1487',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => '[121] P. Raj, N. Ames, S. Joseph Thandapilly, et al., The effects of oat ingredients on blood pressure in spontaneously hypertensive rats, J Food Biochem. 26 (2020) e13402. https://doi.org/10.1111/jfbc.13402. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'P. Raj and N. Ames and S. Joseph Thandapilly and others',
+                    'title' => 'The effects of oat ingredients on blood pressure in spontaneously hypertensive rats',
+                    'journal' => 'J Food Biochem.',
+                    'year' => '2020',
+                    'volume' => '26',
+                    'pages' => 'e13402',
+                    'doi' => '10.1111/jfbc.13402',
+                    ]
+            ],
+            // misidentified as article
+			[
+                'source' => '1.	Abdennour, N., Ouni, T., & Amor, N. B. The importance of signal pre-processing for machine learning: The influence of Data scaling in a driver identity classification. 2021 IEEE/ACS 18th International Conference on Computer Systems and Applications (AICCSA), 1–6, 2021. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Abdennour, N. and Ouni, T. and Amor, N. B.',
+                    'title' => 'The importance of signal pre-processing for machine learning: The influence of Data scaling in a driver identity classification',
+					'booktitle' => '2021 IEEE/ACS 18th International Conference on Computer Systems and Applications (AICCSA)',
+                    'year' => '2021',
+					'pages' => '1-6',
+                    ]
+            ],
+
  
                        
         ];
