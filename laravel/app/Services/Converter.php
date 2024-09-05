@@ -206,6 +206,7 @@ class Converter
             '[Ee]ditado por',    // Spanish, Portuguese
             '[Éé]dité par',      // French
             '[Bb]earbeitet von', // German
+            '[Hh]rsg\. von',     // German
             '[Bb]ewerkt door',   // Dutch
             '[Dd]iedit oleh',    // Indonesian
         ];
@@ -258,14 +259,14 @@ class Converter
             '[Pp]p\.? ?',
             'p\. ?',
             'p ?',
-            '[Pp]ágs?\. ?',// Spanish, Portuguese
-            '[Bb]lz\. ?',  // Dutch
+            '[Pp]ágs?\. ?',   // Spanish, Portuguese
+            '[Bb]lz\. ?',     // Dutch
             '[Hh]al[\.:] ?',  // Indonesian
             '[Hh]lm\. ?',
-            '[Ss]s?\. ?',  // Turkish, Polish, German
-            '[Ss]tr\. ?',  // Czech
-            'стр\. ?',     // Russian
-            'გვ\. ?',      // Georgian
+            '[Ss]s?\. ?',     // Turkish, Polish, German
+            '[Ss]tr\. ?',     // Czech
+            'стр\. ?',        // Russian
+            'გვ\. ?',         // Georgian
         ];
 
         $startPagesRegExp = '/(';
@@ -1089,17 +1090,27 @@ class Converter
             $remainder = $matches['remainder'] ?? '';
         }
 
+        $multipleAuthors = false;
+        if (preg_match('/ and /', $authorstring)) {
+            $multipleAuthors = true;
+        }
+
         if ($isEditor) {
             $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' ,'), 'setField 24');
+            if ($isTranslator) {
+                $noteString = $multipleAuthors ? 'Editors are translators.' : 'Editor is translator.';
+                $this->addToField($item, 'note', $noteString, 'setField 23a');
+            }
         } elseif ($isTranslator) {
-            $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 23a');
-            $this->addToField($item, 'note', 'Author is translator.', 'setField 23b');
+            $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 23b');
+            $noteString = $multipleAuthors ? 'Authors are translators.' : 'Author is translator.';
+            $this->addToField($item, 'note', 'Author is translator.', 'setField 23c');
         } else {
             // For name like "Ash‘arī, Abū al-Ḥasan al-."
             if (Str::endsWith($authorstring, '-.')) {
                 $authorstring = rtrim($authorstring, '.');
             }
-            $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 23c');
+            $this->setField($item, 'author', rtrim($authorstring, ','), 'setField 23d');
         }
 
         $hasSecondaryDate = false;
@@ -2325,6 +2336,23 @@ class Converter
                     $remainder = '';
                 }
 
+                if (! $booktitle) {
+                    // Case in which $remainder format is <booktitle>, <address>: <publisher>.
+                    // Address can have one or two words, publisher can have 1-3 words, the last of which can be in parens.
+                    if (preg_match('/^(?P<booktitle>\p{Lu}[\p{L}\-: ]{5,80}), (?P<address>[\p{L}]+( [\p{L}]+)?): ?(?P<publisher>[\p{L}\-]+( [\p{L}\-]+)?( [\p{L}\-()]+)?)\.?$/u', $remainder, $matches)) {
+                        if (isset($matches['booktitle'])) {
+                            $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 55a');
+                        }
+                        if (isset($matches['address'])) {
+                            $this->setField($item, 'address', $matches['address'], 'setField 55b');
+                        }
+                        if (isset($matches['publisher'])) {
+                            $this->setField($item, 'publisher', $matches['publisher'], 'setField 55c');
+                        }
+                        $remainder = '';
+                    }
+                }
+
                 // The only reason why $item->editor could be set other than by the previous code block is that the 
                 // item is a book with an editor rather than an author.  So probably the following condition could
                 // be replaced by } else {.
@@ -2873,9 +2901,11 @@ class Converter
                                         'editors', 
                                         $language
                                     );
-                                    $this->setField($item, 'editor', trim($editorConversion['authorstring']), 'setField 78');
-                                    $this->setField($item, 'booktitle', trim($strings[1-$i], ','), 'setField 79');
-                                    $remainder = '';
+                                    $editor = trim($editorConversion['authorstring']);
+                                    $this->setField($item, 'editor', $editor, 'setField 78');
+                                    $booktitle = trim($strings[1-$i], ',');
+                                    $this->setField($item, 'booktitle', $booktitle, 'setField 79');
+                                    $remainder = substr($string, 0, -2); // remove ' 1' appended to $string
                                     $updateRemainder = false;
                                 }
                             }
@@ -3365,9 +3395,9 @@ class Converter
                         $this->setField($item, 'publisher', $publisher, 'setField 92');
                         $remainder = '';
                     } elseif (
-                        preg_match('/(?P<booktitle>[^\(]{5,150})\((?P<address>[^:]{4,22}):(?P<publisher>[^\.]{4,40})\)(?P<remains>.*)$/i', $remainder, $matches)
+                        preg_match('/(?P<booktitle>[^\(]{5,150})\((?P<address>[^:]{4,22}):(?P<publisher>[^.]{4,40})\)(?P<remains>.*)$/i', $remainder, $matches)
                         ||
-                        preg_match('/(?P<booktitle>[^\.]{5,150})\.(?P<address>[^:]{4,22}):(?P<publisher>[^\.]{4,40})([,.](?P<remains>.*)$|$)/i', $remainder, $matches)
+                        preg_match('/(?P<booktitle>.{5,150})\.(?P<address>[^:.]{4,22}):(?P<publisher>[^.]{4,40})([,.](?P<remains>.*)$|$)/i', $remainder, $matches)
                         ) {
                         // common patterns: <booktitle> (<address>: <publisher>) or <booktitle>. <address>: <publisher>
                         $booktitle = $matches['booktitle'];

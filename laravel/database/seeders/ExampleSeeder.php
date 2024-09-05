@@ -12875,6 +12875,173 @@ class ExampleSeeder extends Seeder
 					'pages' => '1-6',
                     ]
             ],
+			// hrsg. von for "edited by"?
+			[
+                'source' => 'Herrmann-Pfandt, Adelheid, ‘A First Schedule for the Revision of the Old Narthang: Bu ston’s Chos kyi rnam graṅs dkar chag’, Pāsādikadānaṃ: Festschrift für Bhikkhu Pāsādika, hrsg. von Martin Straube, Roland Steiner, Jayandra Soni, Michael Hahn und Mitsuyo Demoto, Marburg: Indica et Tibetica Verlag, 2009, 243-261. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Herrmann-Pfandt, Adelheid',
+                    'title' => 'A First Schedule for the Revision of the Old Narthang: Bu ston\'s Chos kyi rnam graṅs dkar chag',
+                    'year' => '2009',
+                    'pages' => '243-261',
+                    'editor' => 'Martin Straube and Roland Steiner and Jayandra Soni and Michael Hahn and Mitsuyo Demoto',
+                    'address' => 'Marburg',
+                    'publisher' => 'Indica et Tibetica Verlag',
+                    'booktitle' => 'P{\=a}s{\=a}dikad{\=a}naṃ: Festschrift f{\"u}r Bhikkhu P{\=a}s{\=a}dika',
+                    ]
+            ],
+   			// mastersthesis not detected
+			[
+                'source' => 'Chaoul, Marco Alejandro, ‘Tracing the Origins of Chö (gcod) in the Bön Tradition: A Dialogic Approach Cutting through Sectarian Boundaries’, Master thesis University of Virginia, Charlottesville 1999. ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+                    'author' => 'Chaoul, Marco Alejandro',
+                    'title' => 'Tracing the Origins of Ch{\"o} (gcod) in the B{\"o}n Tradition: A Dialogic Approach Cutting through Sectarian Boundaries',
+                    'year' => '1999',
+                    'school' => 'University of Virginia, Charlottesville',
+                    ]
+            ],
+			// publisher missed
+			[
+                'source' => 'Gyatso, Janet, ‘The Development of the gCod Tradition’, Soundings in Tibetan Civilization, ed. Barbara Aziz and Matthew Kapstein, New Delhi: Munshiram Manoharlal, 1985, 320-341. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Gyatso, Janet',
+                    'title' => 'The Development of the gCod Tradition',
+                    'year' => '1985',
+                    'pages' => '320-341',
+                    'editor' => 'Barbara Aziz and Matthew Kapstein',
+                    'address' => 'New Delhi',
+                    'publisher' => 'Munshiram Manoharlal',
+                    'booktitle' => 'Soundings in Tibetan Civilization',
+                    ]
+            ],
+            // publisher truncated
+			[
+                'source' => 'Turner, Victor (1969), "Liminality and Communitas," in The Ritual Process: Structure and Anti-Structure, Chicago: Aldine Publishing. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Turner, Victor',
+                    'title' => 'Liminality and Communitas',
+                    'year' => '1969',
+                    'address' => 'Chicago',
+                    'publisher' => 'Aldine Publishing',
+                    'booktitle' => 'The Ritual Process: Structure and Anti-Structure',
+                    ]
+            ],
+            // Name of journal truncated --- "Voltage" matched with "Vol"?
+			[
+                'source' => 'W. Chen, J. Wang, F. Wan, and P. Wang, “Review of optical ﬁbre sensors for electrical equipment characteristic state parameters detection,” High Voltage, vol. 4, no. 4, pp. 271–281, 2019. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'W. Chen and J. Wang and F. Wan and P. Wang',
+                    'title' => 'Review of optical fibre sensors for electrical equipment characteristic state parameters detection',
+                    'year' => '2019',
+                    'journal' => 'High Voltage',
+                    'pages' => '271-281',
+                    'volume' => '4',
+                    'number' => '4',
+                    ]
+            ],
+			// don't end booktitle after "Vol."
+			[
+                'source' => ' Ajzen, Icek (1982), "On behaving in accordance with one\'s attitudes", in M. Zanna, E. Higgins and C. Herman (Eds), Consistency in Social Behavior: the Ontario Symposium, Vol. 2. Hillsdale, NJ: Erlbaum. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Ajzen, Icek',
+                    'title' => 'On behaving in accordance with one\'s attitudes',
+                    'year' => '1982',
+                    'editor' => 'M. Zanna and E. Higgins and C. Herman',
+                    'address' => 'Hillsdale, NJ',
+                    'publisher' => 'Erlbaum',
+                    'booktitle' => 'Consistency in Social Behavior: the Ontario Symposium, Vol. 2',
+                    ]
+            ],
+
+			// translator and editor
+			[
+                'source' => 'Mallinson, James, and Mark Singleton (trans. and ed.). 2017. Roots of Yoga. London: Penguin Books. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'title' => 'Roots of Yoga',
+                    'year' => '2017',
+                    'note' => 'Editors are translators.',
+                    'editor' => 'Mallinson, James and Mark Singleton',
+                    'address' => 'London',
+                    'publisher' => 'Penguin Books',
+                    ]
+            ],
+			// editor and translator
+			[
+                'source' => 'Corbin, Henry (ed. and tr.). 1961. Trilogie Ismaélienne. Paris: A. Maisonneuve. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'title' => 'Trilogie Ismaélienne',
+                    'year' => '1961',
+                    'note' => 'Editor is translator.',
+                    'editor' => 'Corbin, Henry',
+                    'address' => 'Paris',
+                    'publisher' => 'A. Maisonneuve',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+            // edited and translated by ...
+			 [
+                'source' => 'Al-Burhānpūrī, Muḥammad ibn Faḍl Allāh. 1965. The Gift addressed to the Spirit of the Prophet (al-Tuḥfa al-mursala ilā rūḥ al-nabī). Edited and translated by A.H. Johns. Canberra: Australian National University. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Al-Burh{\=a}npūr{\=\i}, Muḥammad ibn Faḍl All{\=a}h',
+                    'title' => 'The Gift addressed to the Spirit of the Prophet (al-Tuḥfa al-mursala il{\=a} rūḥ al-nab{\=\i})',
+                    'year' => '1965',
+                    'note' => 'Edited and translated by A.H. Johns.',
+                    'address' => 'Canberra',
+                    'publisher' => 'Australian National University',
+                    ]
+            ],
+			// tr. for translator
+			[
+                'source' => 'Eliade, Mircea, Rites and Symbols of Initiation (Birth and Rebirth), tr. Willard R. Trask, London: Harvill Press, 1958. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Eliade, Mircea',
+                    'title' => 'Rites and Symbols of Initiation (Birth and Rebirth)',
+                    'year' => '1958',
+                    'note' => 'tr. Willard R. Trask',
+                    'address' => 'London',
+                    'publisher' => 'Harvill Press',
+                    ]
+            ],
+			// translator
+			[
+                'source' => 'Derrida, Jacques (1982b), "Différance", in Margins of Philosophy, trans. A. Bass, Brighton, Sussex: Harvester Press. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Derrida, Jacques',
+                    'title' => 'Différance',
+                    'year' => '1982',
+                    'note' => 'trans. A. Bass',
+                    'address' => 'Brighton, Sussex',
+                    'publisher' => 'Harvester Press',
+                    'booktitle' => 'Margins of Philosophy',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// editor, translator mixed up
+			[
+                'source' => 'Oliveros, Roberto. 1993. ‘History of the Theology of Liberation’. Trans. Robert R. Barr. In Mysterium Liberationis: Fundamental Concepts of Liberation Theology. Ed. Ignacio Ellacuría, S.J., and Jon Sobrino, S.J. Maryknoll: Orbis Books, 3-32. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Oliveros, Roberto',
+                    'title' => 'History of the Theology of Liberation',
+                    'year' => '1993',
+                    'pages' => '3-32',
+                    'note' => 'trans Robert R. Barr',
+                    'editor' => 'Ignacio Ellacuría, SJ, and Jon Sobrino, SJ',
+                    'address' => 'Maryknoll, NY',
+                    'publisher' => 'Orbis Books',
+                    'booktitle' => 'Mysterium Liberationis: Fundamental Concepts of Liberation Theology',
+                    ]
+            ],
 
  
                        

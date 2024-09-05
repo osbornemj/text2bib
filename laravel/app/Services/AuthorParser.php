@@ -212,6 +212,15 @@ class AuthorParser
         
         if ($authorstring) {
             $year = $this->dates->getDate(trim($remainder), $remainder, $month, $day, $date, true, true, true, $language);
+            if (preg_match('/^[(\[](tr(ans)?\. and ed\.|ed\. and tr(ans)?\.)[)\]]\.? (?P<remains>.*)$/', $remainder, $matches)) {
+                $isEditor = true;
+                $isTranslator = true;
+                $remainder = $matches['remains'];
+                if ($year = $this->dates->getDate($remainder, $remains, $month, $day, $date, true, true, true, $language)) {
+                    $remainder = $remains;
+                }
+            }
+
             if (preg_match('%^(?P<firstWord>[^ ]+) (?P<remains>.*)$%', $remainder, $matches)) {
                 $isEditor = $this->isEd($matches['firstWord']);
                 $isTranslator = preg_match('/^[(\[]?trans\.?[)\]]?[,.]?/', $matches['firstWord']);
