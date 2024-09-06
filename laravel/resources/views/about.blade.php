@@ -22,7 +22,6 @@
         <x-paragraph class="mt-4">
             An alternative approach would be to use a machine learning algorithm on some training data.  One difficulty with that approach is that the training data would have to consist of a large number of examples &mdash; perhaps tens of thousands of them?  I don't know where such data could be obtained.  One possible source would be the conversions marked as correct on this site, after verification by a human who understands BibTeX.  However, the number of conversions that are rated as either correct or incorrect is very small, and it would take decades to accumulate a sufficient number.  (Google Scholar produces BibTeX entries for every item it covers, but (a) those entries contain many errors and (b) I don't know how they could be obtained.)  Suggestions are welcome.
         </x-paragraph>
-
     </div>
 
 </x-app-layout>
