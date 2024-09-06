@@ -386,15 +386,15 @@ class TitleParser
                     } elseif (in_array($nextWord,  ['Translated', 'Translation']) && $nextButOneWord == 'by') {
                         // Extraction of translators' names handled separately.
                         $translatorNext = true;
-                    } elseif ($nextWord == 'trans.') {
+                    } elseif (in_array($nextWord, ['trans.', 'tr.'])) {
                         // "trans. John Smith."
                         // Here trans must start with lowercase, because journal name might start with Trans. and period
                         // cannnot be preceded by uppercase letter (which would be initial of translator)
-                        if (preg_match('/^trans\. (?P<translator>[^.]+(?<!\p{Lu})\.)(?P<remainder>.*)/u', $remainder, $matches)) {
+                        if (preg_match('/^tr(ans)?\. (?P<translator>[^.]+(?<!\p{Lu})\.)(?P<remainder>.*)/u', $remainder, $matches)) {
                             $translatorNext = true;
                             $note = ($note ? $note . '. ' : '') . 'Translated by ' . $matches['translator'];
                             $remainder = $matches['remainder'];
-                        } elseif (preg_match('/^trans\. (?P<translator>[^,]+), (?P<remainder>.{5,})/', $remainder, $matches)) {
+                        } elseif (preg_match('/^tr(ans)?\. (?P<translator>[^,]+), (?P<remainder>.{5,})/', $remainder, $matches)) {
                             $translatorNext = true;
                             $note = ($note ? $note . '. ' : '') . 'Translated by ' . $matches['translator'];
                             $remainder = $matches['remainder'];
@@ -581,7 +581,8 @@ class TitleParser
                         $this->verbose("Ending title, case 4b (next sentence contains 'series' not preceded by 'time')");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
-                    } elseif (preg_match('/edited by/i', $nextWord . ' ' . $nextButOneWord)) {
+//                    } elseif (preg_match('/edited by/i', $nextWord . ' ' . $nextButOneWord)) {
+                    } elseif (preg_match('/edited (and translated )?by/i', $remainder)) {
                         $this->verbose("Ending title, case 4c");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;

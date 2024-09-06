@@ -153,7 +153,7 @@ class Converter
             'fr' =>
                 ['1er', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e', '10e'],
             'es' =>
-                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'],
+                ['1ra', '2da', '3ra', '4ra', '5ra', '6ra', '7ra', '8ra', '9ra', '10ra', '1º', '2º', '3º', '4º', '5º', '6º', '7º', '8º', '9º'],
             'pt' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '1ª', '2ª', '3ª', '4ª', '5ª', '6ª', '7ª', '8ª', '9ª'],
             'my' =>
@@ -218,7 +218,7 @@ class Converter
             $edsRx2 .= ($i ? '|' : '') . '[(\[ ]' . $editorWord . '[)\],. ]';
         }
 
-        // "([Ee]ditors?| ... )" or ...
+        // "[Ee]ditors?" or ...
         $this->edsNoParensRegExp = '(' . $edsRx1 . ')';
         // "([Ee]ditors?)" or "[[Ee]ditors?]" or ...
         $this->edsParensRegExp = '[(\[](' . $edsRx1 . ')[)\]]';
@@ -306,7 +306,7 @@ class Converter
         $this->thesisRegExp = '(^|[ \(\[])([Tt]hesis|[Tt]esis|[Dd]issertation|[Tt]hèse|[Tt]esis|[Tt]ese|{Tt]ezi|[Dd]issertação)([ \.,\)\]]|$)';
         $this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.? ?A\.?|M\.? ?Sc\.?|M\. ?S\.|[Mm]estrado|Yayınlanmamış Yüksek [Ll]isans|Yüksek [Ll]isans|Masterproef';
         $this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral|[Dd]oktora';
-        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Dissertação \(Mestrado\)|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|[Tt]ezi|Yayımlanmamış doktora tezi|Doktora Tezi|Yüksek lisans tezi|Yükseklisans Tezi)';
+        $this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Disertación Doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Dissertação \(Mestrado\)|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|[Tt]ezi|Yayımlanmamış doktora tezi|Doktora Tezi|Yüksek lisans tezi|Yükseklisans Tezi)';
         // Variant in French: Thèse de Doctorat en droit, Thèse de Doctorat en droit public
         // pt: Dissertação de Mestrado | Tese de mestrado
         // es: Tesis de maestría
@@ -1344,12 +1344,16 @@ class Converter
         /////////////////////////////////////////////////
 
         $containsTranslator = false;
-        // Translators: string up to first period preceded by a lowercase letter.
+        // Editors and translators, or just translators: string up to first period preceded by a lowercase letter.
+        // (For an incollection, editors would be not be signified in this way.)
         // Case of "Trans." is handled later, after item type is determined, because "Trans." is an abbreviation used in journal names.
         // (?<=[.,] )
-        $result = $this->findRemoveAndReturn($remainder, '([Tt]ranslat(ed|ion) by|Tr\.) .*?\p{Ll}(\),?|\.| \()', false);
+        $result = $this->findRemoveAndReturn($remainder, '([Ee]dited and [Tt]ranslated by|(^| )[Tt]r\.) .*?\p{Ll}(\),?|\.| \()', false);
+        if (! $result) {
+            $result = $this->findRemoveAndReturn($remainder, '([Tt]ranslat(ed|ion) by|(^| )[Tt]r\.) .*?\p{Ll}(\),?|\.| \()', false);
+        }
         if ($result) {
-            $this->addToField($item, 'note', trim(ucfirst($result[0]), ')(, '), 'addToField 3');
+            $this->addToField($item, 'note', trim(ucfirst($result[0]), ')(, '), 'addToField 18');
             $before = Str::replaceEnd(' and ', '', $result['before']);
             $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . $result['after'];
             $containsTranslator = true;
@@ -2176,6 +2180,14 @@ class Converter
                     $remainderWithMonthYear = ltrim(substr($remainderWithMonthYear, 2), ': ');
                 }
 
+                // If remainder starts with "Trans.", remove it and put it in note field.
+                if (preg_match('/^(?P<note>([Tt]rans\.|[Tt]ranslated by) .*?[a-z]\.)(?P<remainder>.*)$/', $remainder, $matches)) {
+                    if (isset($matches['note'])) {
+                        $this->addToField($item, 'note', $matches['note'], 'addToField 19');
+                        $remainder = $matches['remainder'] ?? '';
+                    }
+                }
+
                 if ($itemKind == 'inproceedings') {
                     // Does $remainderWithMonthYear contain a full date or date range?
                     $dateResult = $this->dates->isDate($remainderWithMonthYear, $language, 'contains', true);
@@ -2261,6 +2273,7 @@ class Converter
                 // If a string in $remainder is quoted or italicized, take that to be book title
                 $booktitle = $this->getQuotedOrItalic($remainder, false, false, $before, $after, $style);
 
+                // If booktitle is followed by volume, append it to booktitle
                 if (preg_match('/^(?P<volume>' . $this->volRegExp0 . ')(?P<after>.*)$/', $after, $matches)) {
                     if (isset($matches['volume'])) {
                         $booktitle .= $matches['volume'];
@@ -2319,14 +2332,23 @@ class Converter
                     }
                 }
 
+                // booktitle is not quoted or in italics
                 $remainder = Str::replaceStart('{\em', '', $remainder);
                 $remainder = trim($remainder, '}., ');
                 $this->verbose('[in3] Remainder: ' . $remainder);
                 $updateRemainder = false;
 
-                // Case in which $remainder consists solely of address and publisher.
                 // Address can have one or two words, publisher can have 1-3 words, the last of which can be in parens.
-                if (preg_match('/^(?P<address>[\p{L}]+( [\p{L}]+)?): ?(?P<publisher>[\p{L}\-]+( [\p{L}\-]+)?( [\p{L}\-()]+)?)\.?$/u', $remainder, $matches)) {
+                $booktitleRegExp = '\p{Lu}[\p{L}\-: ]{5,80}';
+                $addressRegExp = '[\p{L},]+( [\p{L}]+)?';
+                $publisherRegExp = '[\p{L}\-]+( [\p{L}\-]+)?( [\p{L}\-()]+)?';
+
+                ///////////////////
+                // Some patterns //
+                ///////////////////
+
+                // $remainder is <address>: <publisher>.
+                if (preg_match('/^(?P<address>' . $addressRegExp . '): ?(?P<publisher>' . $publisherRegExp . ')\.?$/u', $remainder, $matches)) {
                     if (isset($matches['address'])) {
                         $this->setField($item, 'address', $matches['address'], 'setField 54');
                     }
@@ -2337,9 +2359,8 @@ class Converter
                 }
 
                 if (! $booktitle) {
-                    // Case in which $remainder format is <booktitle>, <address>: <publisher>.
-                    // Address can have one or two words, publisher can have 1-3 words, the last of which can be in parens.
-                    if (preg_match('/^(?P<booktitle>\p{Lu}[\p{L}\-: ]{5,80}), (?P<address>[\p{L}]+( [\p{L}]+)?): ?(?P<publisher>[\p{L}\-]+( [\p{L}\-]+)?( [\p{L}\-()]+)?)\.?$/u', $remainder, $matches)) {
+                    // $remainder is <booktitle>, <address>: <publisher>.
+                    if (preg_match('/^(?P<booktitle>' . $booktitleRegExp . '), (?P<address>' . $addressRegExp . '): ?(?P<publisher>' . $publisherRegExp . ')\.?$/u', $remainder, $matches)) {
                         if (isset($matches['booktitle'])) {
                             $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 55a');
                         }
@@ -2350,6 +2371,107 @@ class Converter
                             $this->setField($item, 'publisher', $matches['publisher'], 'setField 55c');
                         }
                         $remainder = '';
+                    // $remainder is <booktitle>. Ed. <editors> <address>: <publisher>.
+                    } elseif (preg_match('/^(?P<booktitle>' . $booktitleRegExp . ')\. ' . $this->edsNoParensRegExp . ' (?P<remains>.*)$/u', $remainder, $matches)) {
+                        if (isset($matches['remains'])) {
+                            $result = $this->authorParser->convertToAuthors(
+                                explode(' ', $matches['remains']), 
+                                $remainder, 
+                                $trash, 
+                                $month, 
+                                $day, 
+                                $date, 
+                                $isEditor, 
+                                $isTranslator, 
+                                $this->cities, 
+                                $this->dictionaryNames, 
+                                true, 
+                                'editors', 
+                                $language
+                            );
+                            if ($result) {
+                                $this->setField($item, 'editor', trim($result['authorstring']), 'setField 55d');
+                                if (isset($matches['booktitle'])) {
+                                    $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 55e');
+                                }
+                                if (preg_match('/(?P<address>' . $addressRegExp . '): ?(?P<publisher>' . $publisherRegExp . ')\.?$/u', $remainder, $matchesAddressPublisher)) {
+                                    if (isset($matchesAddressPublisher['address'])) {
+                                        $this->setField($item, 'address', $matchesAddressPublisher['address'], 'setField 55f');
+                                    }
+                                    if (isset($matchesAddressPublisher['publisher'])) {
+                                        $this->setField($item, 'publisher', $matchesAddressPublisher['publisher'], 'setField 55g');
+                                    }
+                                    $remainder = '';
+                                }
+                            }
+                        }
+                    // $remainder is <editor> Ed., <booktitle>, <publisher>, <address>.
+                    } elseif (preg_match('/^(?P<editor>.{5,80}) ' . $this->edsNoParensRegExp . ', (?P<booktitle>[^,.]*), (?P<publisher>[\p{L} ]{3,40}), (?P<address>[\p{L}, ]{5,40})$/u', $remainder, $matches)) {
+                        if (isset($matches['editor'])) {
+                            $result = $this->authorParser->convertToAuthors(
+                                explode(' ', $matches['editor']), 
+                                $remainder, 
+                                $trash, 
+                                $month, 
+                                $day, 
+                                $date, 
+                                $isEditor, 
+                                $isTranslator, 
+                                $this->cities, 
+                                $this->dictionaryNames, 
+                                false, 
+                                'editors', 
+                                $language
+                            );
+                            if ($result) {
+                                $this->setField($item, 'editor', trim($result['authorstring']), 'setField 55d');
+                                if (isset($matches['booktitle'])) {
+                                    $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 55e');
+                                }
+                                if (isset($matches['address'])) {
+                                    $this->setField($item, 'address', $matches['address'], 'setField 55f');
+                                }
+                                if (isset($matches['publisher'])) {
+                                    $this->setField($item, 'publisher', $matches['publisher'], 'setField 55g');
+                                }
+                                $remainder = '';
+                            }
+                        }
+                    // $remainder is <booktitle>, trans. <translator> <address>: <publisher>.
+                    } elseif (preg_match('/^(?P<booktitle>' . $booktitleRegExp . ')[.,] (?P<trans>[Tt]rans(\.?|lators?) )(?P<remains>.*)$/u', $remainder, $matches)) {
+                        if (isset($matches['remains'])) {
+                            $result = $this->authorParser->convertToAuthors(
+                                explode(' ', $matches['remains']), 
+                                $remainder, 
+                                $trash, 
+                                $month, 
+                                $day, 
+                                $date, 
+                                $isEditor, 
+                                $isTranslator, 
+                                $this->cities, 
+                                $this->dictionaryNames, 
+                                true, 
+                                'editors', 
+                                $language
+                            );
+                            if ($result) {
+                                $this->addToField($item, 'note', $matches['trans'] . trim($result['authorstring']), 'setField 55h');
+                                if (isset($matches['booktitle'])) {
+                                    $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 55i');
+                                }
+                                // Note: allow comma in address string
+                                if (preg_match('/(?P<address>' . $addressRegExp . '): ?(?P<publisher>' . $publisherRegExp . ')\.?$/u', $remainder, $matchesAddressPublisher)) {
+                                    if (isset($matchesAddressPublisher['address'])) {
+                                        $this->setField($item, 'address', $matchesAddressPublisher['address'], 'setField 55j');
+                                    }
+                                    if (isset($matchesAddressPublisher['publisher'])) {
+                                        $this->setField($item, 'publisher', $matchesAddressPublisher['publisher'], 'setField 55k');
+                                    }
+                                    $remainder = '';
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -3474,11 +3596,20 @@ class Converter
                                 $this->setField($item, 'publisher', trim($matches['publisher'], ',. '), 'setField 105');
                                 $this->verbose('booktitle case 14b');
                                 $remainder = '';
-                            } elseif (preg_match('/( ([^ ]*): ([^:.,]*)$)/', $remainder, $matches)) {
-                                $booktitle = Str::before($remainder, $matches[0]);
-                                $this->setField($item, 'booktitle', trim($booktitle, ',. '), 'setField 106');
+                            } elseif (preg_match('/^(?P<booktitle>.*) (?P<address>[^ ]*): (?P<publisher>[^:.,]*)$/', $remainder, $matches)) {
+                                $booktitle = $matches['booktitle'];
+                                $this->setField($item, 'booktitle', trim($booktitle, ',. '), 'setField 106a');
+                                $this->setField($item, 'address', $matches['address'], 'setField 106b');
+                                $this->setField($item, 'publisher', $matches['publisher'], 'setField 106c');
                                 $this->verbose('booktitle case 14c');
-                                $remainder = $matches[0];
+                                $remainder = '';
+                            // $remainder is <booktitle>, <publisher> [with no commas or periods in booktitle or publisher]
+                            } elseif (preg_match('/^(?P<booktitle>[^,.]*), (?P<publisher>[^,.]*)$/', $remainder, $matches)) {
+                                $booktitle = $matches['booktitle'];
+                                $this->setField($item, 'booktitle', $booktitle, 'setField 106d');
+                                $this->setField($item, 'publisher', $matches['publisher'], 'setField 106e');
+                                $this->verbose('booktitle case 14d');
+                                $remainder = '';
                             } else {
                                 $words = explode(" ", $remainder);
                                 $sentences = $this->splitIntoSentences($words);

@@ -12993,7 +12993,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Al-Burh{\=a}npūr{\=\i}, Muḥammad ibn Faḍl All{\=a}h',
                     'title' => 'The Gift addressed to the Spirit of the Prophet (al-Tuḥfa al-mursala il{\=a} rūḥ al-nab{\=\i})',
                     'year' => '1965',
-                    'note' => 'Edited and translated by A.H. Johns.',
+                    'note' => 'Edited and translated by A. H. Johns.',
                     'address' => 'Canberra',
                     'publisher' => 'Australian National University',
                     ]
@@ -13006,14 +13006,14 @@ class ExampleSeeder extends Seeder
                     'author' => 'Eliade, Mircea',
                     'title' => 'Rites and Symbols of Initiation (Birth and Rebirth)',
                     'year' => '1958',
-                    'note' => 'tr. Willard R. Trask',
+                    'note' => 'Translated by Willard R. Trask',
                     'address' => 'London',
                     'publisher' => 'Harvill Press',
                     ]
             ],
 			// translator
 			[
-                'source' => 'Derrida, Jacques (1982b), "Différance", in Margins of Philosophy, trans. A. Bass, Brighton, Sussex: Harvester Press. ',
+                'source' => 'Derrida, Jacques (1982b), "Différance", in Margins of Philosophy, trans. A. Bass. Brighton, Sussex: Harvester Press. ',
                 'type' => 'incollection',
                 'bibtex' => [
                     'author' => 'Derrida, Jacques',
@@ -13028,19 +13028,76 @@ class ExampleSeeder extends Seeder
             ],
 			// editor, translator mixed up
 			[
-                'source' => 'Oliveros, Roberto. 1993. ‘History of the Theology of Liberation’. Trans. Robert R. Barr. In Mysterium Liberationis: Fundamental Concepts of Liberation Theology. Ed. Ignacio Ellacuría, S.J., and Jon Sobrino, S.J. Maryknoll: Orbis Books, 3-32. ',
+                'source' => 'Oliveros, Roberto. 1993. ‘History of the Theology of Liberation’. Trans. Robert R. Barr. In Mysterium Liberationis: Fundamental Concepts of Liberation Theology. Ed. Ignacio Ellacuría and Jon Sobrino. Maryknoll: Orbis Books, 3-32. ',
                 'type' => 'incollection',
                 'bibtex' => [
                     'author' => 'Oliveros, Roberto',
                     'title' => 'History of the Theology of Liberation',
                     'year' => '1993',
                     'pages' => '3-32',
-                    'note' => 'trans Robert R. Barr',
-                    'editor' => 'Ignacio Ellacuría, SJ, and Jon Sobrino, SJ',
-                    'address' => 'Maryknoll, NY',
+                    'note' => 'Trans. Robert R. Barr.',
+                    'editor' => 'Ignacio Ellacuría and Jon Sobrino',
+                    'address' => 'Maryknoll',
                     'publisher' => 'Orbis Books',
                     'booktitle' => 'Mysterium Liberationis: Fundamental Concepts of Liberation Theology',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// booktitle and publisher messed up
+			[
+                'source' => '\bibitem[Boser et al. 1992]{Boser92} Boser B.E., Guyon I.M. y Vapnik V. 1992. \textit{A Training Algorithm for Optimal Margin Classifiers}, en D. Haussler ed., Proceedings of the 5th Annual ACM Workshop on Computational Learning Theory, ACM Press, Pittsburgh, PA, pp. 144-152. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Boser, B. E. and Guyon, I. M. and Vapnik, V.',
+                    'year' => '1992',
+                    'title' => 'A Training Algorithm for Optimal Margin Classifiers',
+                    'pages' => '144-152',
+                    'editor' => 'D. Haussler',
+                    'publisher' => 'ACM Press',
+                    'address' => 'Pittsburgh, PA',
+                    'booktitle' => 'Proceedings of the 5th Annual ACM Workshop on Computational Learning Theory',
                     ]
+            ],
+			// booktitle and publisher messed up
+			[
+                'source' => '\bibitem[Bousquet y Elisseeff 2001]{Bousquet01} Bousquet, O. y Elisseeff, A. 2001. \textit{Algorithmic stability and generalization performance}, en T K Leen, T G Dietterich y V Tresp, eds, Advances in neural information processing systems. MIT\ Press. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Bousquet, O. and Elisseeff, A.',
+                    'year' => '2001',
+                    'title' => 'Algorithmic stability and generalization performance',
+                    'editor' => 'T. K. Leen and T. G. Dietterich and V. Tresp',
+					'booktitle' => 'Advances in neural information processing systems',
+					'publisher' => 'MIT Press',
+                    ]
+            ],
+			// detected as book not incollection
+			 [
+                'source' => '\bibitem[Drucker et al. 1997]{Drucker97} Drucker H., Burges C., Kaufman L., Smola A. y Vapnik V. 1997. \textit{Support Vector Regression Machines}, en M. Mozer, M. Jordan y T. Petsche, eds, Advances in Neural Information Processing Systems, MIT Press, pp. 155-161. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Drucker, H. and Burges, C. and Kaufman, L. and Smola, A. and Vapnik, V.',
+                    'year' => '1997',
+                    'title' => 'Support Vector Regression Machines',
+                    'editor' => 'M. Mozer and M. Jordan and T. Petsche',
+					'booktitle' => 'Advances in Neural Information Processing Systems',
+					'publisher' => 'MIT Press',
+					'pages' => '155-161',
+                    ]
+            ],
+			// proceedings exception
+			[
+                'source' => '\bibitem{SchrIntro} E. Schrödinger, "title",  Proc. Camb. Phil. Soc., 31, 555 (1935). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'E. Schrödinger',
+                    'title' => 'title',
+                    'journal' => 'Proc. Camb. Phil. Soc.',
+                    'year' => '1935',
+                    'volume' => '31',
+                    'pages' => '555',
+                    ],
+					'char_encoding' => 'utf8leave',
             ],
 
  
