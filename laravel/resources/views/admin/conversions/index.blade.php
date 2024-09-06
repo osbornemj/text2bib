@@ -4,8 +4,15 @@
             Conversions
         </h2>
         @if ($user)
+        <p>
             by {{ $user->fullName() }}
+            &nbsp;&bull;&nbsp;
+            <x-link href="{{ url('/admin/conversions') }}">Show all</x-link>
+        </p>
         @endif
+        <p>
+            {{ $conversions->total() }} found
+        </p>
     </x-slot>
 
     <div class="m-4 -mt-2">
