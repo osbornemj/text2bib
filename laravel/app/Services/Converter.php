@@ -67,13 +67,14 @@ class Converter
     var $pageRegExpWithPp;
     var $pagesRegExpWithPp;
     var $pageWordsRegExp;
-    var $startPagesRegExp;
     var $phdRegExp;
     var $publishers;
     var $retrievedFromRegExp1;
     var $retrievedFromRegExp2;
     var $startJournalAbbreviations;
+    var $startPagesRegExp;
     var $thesisRegExp;
+    var $translatedByRegExp;
     var $volumeNumberPagesRegExp;
     var $volumeNumberYearRegExp;
 
@@ -235,6 +236,19 @@ class Converter
         $this->editedByRegExp .= '(' . $editedByRx . ')';
 
         $this->editorStartRegExp = '/^[(\[]?(' . $editedByRx . '|' . $edsRx1 . ')/u';
+
+        $translatedByWords = [
+            '[Tt]ranslat(ed|ion) by',
+            '[Tt]r\.',
+            '[Tt]raducción de',  // Spanish
+        ];
+
+        $translatedByRx = '';
+        foreach ($translatedByWords as $i => $translatedByWord) {
+            $translatedByRx .= ($i ? '|' : '') . $translatedByWord;
+        }
+
+        $this->translatedByRegExp .= '(' . $translatedByRx . ')';
 
         /////////////
         // Edition //
@@ -1350,11 +1364,11 @@ class Converter
         // (?<=[.,] )
         $result = $this->findRemoveAndReturn($remainder, '([Ee]dited and [Tt]ranslated by|(^| )[Tt]r\.) .*?\p{Ll}(\),?|\.| \()', false);
         if (! $result) {
-            $result = $this->findRemoveAndReturn($remainder, '([Tt]ranslat(ed|ion) by|(^| )[Tt]r\.) .*?\p{Ll}(\),?|\.| \()', false);
+            $result = $this->findRemoveAndReturn($remainder, '(^| |\()' . $this->translatedByRegExp . ' .*?\p{Ll}(\),?|\.| \()', false);
         }
         if ($result) {
-            $this->addToField($item, 'note', trim(ucfirst($result[0]), ')(, '), 'addToField 18');
-            $before = Str::replaceEnd(' and ', '', $result['before']);
+            $this->addToField($item, 'note', trim(ucfirst(trim($result[0], '( ')), ')(, '), 'addToField 18');
+            $before = Str::replaceEnd(' and', '', $result['before']);
             $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . $result['after'];
             $containsTranslator = true;
         }

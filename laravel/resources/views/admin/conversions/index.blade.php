@@ -21,7 +21,7 @@
                     <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/' . $conversions->currentPage()) }}">{{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}</x-link>
                     &nbsp;&bull;&nbsp;
                     @if ($conversion->user)
-                        {{ $conversion->user->fullName() }}
+                        <x-link href="{{ url('/admin/conversions/' . $conversion->user->id) }}">{{ $conversion->user->fullName() }}</x-link>
                         &nbsp;&bull;&nbsp;
                     @endif
                     user

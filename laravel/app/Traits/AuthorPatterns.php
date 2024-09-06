@@ -89,11 +89,11 @@ trait AuthorPatterns
         // because "The Iconic Imagination" gets interpreted as a second author.
         //$commaYear = ',? (?=[(\[`"\'\d])';
         $commaYear = ',? (?=(([(\]](\d|ed|tran))|[`"\'\d]))';
-        // Requirement of lowercase after the first word is to avoid terminating an author string like the following one
+        // Requirement of lowercase after the first word for 4 bare words is to avoid terminating an author string like the following one
         // too early (after Hamilton SA):
         // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T:
-        $commaYearOrBareWords = '(' . $commaYear . '|,? (?=(\p{Lu}[\p{L}\-]*( [\p{Ll}\-]+){3})))';
-        //$commaYearOrBareWords = '(' . $commaYear . '|, (?=(\p{Lu}[\p{L}\-]*(( [\p{Ll}\-]+){3}|( [\p{L}\-]+){4}))))';
+        //$commaYearOrBareWords = '(' . $commaYear . '|,? (?=(\p{Lu}[\p{L}\-]*( [\p{Ll}\-]+){3})))';
+        $commaYearOrBareWords = '(' . $commaYear . '|, (?=(\p{Lu}[\p{L}\-]*(( [\p{Ll}\-]+){3}|( [\p{L}\-]+){6}))))';
         $colon = ': (?!\p{Ll})';
         $colonOrCommaYear = '(' . $colon . '|' . $commaYear . ')';
         $colonOrCommaYearOrBareWords = '(' . $colon . '|' . $commaYearOrBareWords . ')';
