@@ -114,13 +114,6 @@ trait Utilities
     var $endForthcomingRegExp = '( |\()(forthcoming|in press|accepted|to appear)\.?\)?$';
     var $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
 
-    // volume Spanish: Tomo(?)
-    var $volRegExp0 = ',? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
-    var $volRegExp1 = '/,? ?[Vv]ol(\.|ume)? ?(\\textit\{|\\textbf\{)?\d/';
-    var $volRegExp2 = '/^\(?vol(\.|ume)? |^\(?v\. /i';
-    var $volumeRegExp = '[Vv]olume ?|[Vv]ols? ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{|\*';
-    var $volRegExp3 = '[Vv]olume ?|[Vv]ol ?\.? ?|VOL ?\.? ?|[Vv]\. ';
-
     var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ ?|n\.? ?° ?|n\. ?º ?|[Ii]ssues?:? ?|Issue no. ?|Iss: |Heft ';
 
     // page range

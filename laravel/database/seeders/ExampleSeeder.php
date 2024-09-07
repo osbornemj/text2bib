@@ -8144,7 +8144,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Ricoeur, P.',
                     'title' => 'Tempo e narrativa',
                     'year' => '1997',
-                    'note' => 'Tomo III, R. L. Ferreira trans.',
+                    'volume' => 'III',
+                    'note' => 'R. L. Ferreira trans.',
                     'publisher' => 'Papirus',
                     ],
                     'char_encoding' => 'utf8leave',
@@ -13098,6 +13099,82 @@ class ExampleSeeder extends Seeder
                     'pages' => '555',
                     ],
 					'char_encoding' => 'utf8leave',
+            ],
+			// translated by in Spanish
+			[
+                'source' => 'Derrida, Jacques. 1995. “Retóricas de la droga”. Traducción de Bruno Mazzoldi. Revista colombiana de psicología (4): 33-44. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Derrida, Jacques',
+                    'title' => 'Retóricas de la droga',
+                    'journal' => 'Revista colombiana de psicología',
+                    'year' => '1995',
+                    'volume' => '4',
+                    'pages' => '33-44',
+					'note' => 'Traducción de Bruno Mazzoldi.',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// Volume in Spanish
+			[
+                'source' => 'Escohotado, Antonio. 2022. Historia general de las drogas. Tomo 1. Madrid: Editorial Innisfree. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Escohotado, Antonio',
+                    'title' => 'Historia general de las drogas',
+                    'year' => '2022',
+                    'volume' => '1',
+                    'address' => 'Madrid',
+                    'publisher' => 'Editorial Innisfree',
+                    ]
+            ],
+			// editor not detected
+			[
+                'source' => 'Bernabé, Mónica. 1997. “Desde la otra orilla: César Vallejo”. En Las cenizas de la huella. Linajes y figuras de artista en torno al modernismo. Susana Zanetti (ed.) 85-101. Rosario: Beatriz Viterbo. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Bernabé, Mónica',
+                    'title' => 'Desde la otra orilla: César Vallejo',
+                    'year' => '1997',
+                    'pages' => '85-101',
+                    'editor' => 'Susana Zanetti',
+                    'address' => 'Rosario',
+                    'publisher' => 'Beatriz Viterbo',
+                    'booktitle' => 'Las cenizas de la huella. Linajes y figuras de artista en torno al modernismo',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// editor not detected
+			[
+                'source' => 'Bosi, Alfredo. 1991. “La parábola de las vanguardias latinoamericanas”. En Las vanguardias latinoamericanas. Textos programáticos y críticos, Jorge Schwartz (ed.) 19–31. Madrid: Cátedra. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Bosi, Alfredo',
+                    'title' => 'La parábola de las vanguardias latinoamericanas',
+                    'year' => '1991',
+                    'pages' => '19-31',
+                    'editor' => 'Jorge Schwartz',
+                    'address' => 'Madrid',
+                    'publisher' => 'Cátedra',
+                    'booktitle' => 'Las vanguardias latinoamericanas. Textos programáticos y críticos',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// editor not detected
+			[
+                'source' => 'Kosofsky Sedgwick, Eve. 2017. “Epidemias de la voluntad”. En Droga, cultura y farmacolonialidad: la alteración narcográfica, Julio Ramos y Lizardo Herrera (ed.), 202-221. Santiago de Chile: Universidad Central. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Kosofsky Sedgwick, Eve',
+                    'title' => 'Epidemias de la voluntad',
+                    'year' => '2017',
+                    'pages' => '202-221',
+                    'editor' => 'Julio Ramos and Lizardo Herrera',
+                    'address' => 'Santiago de Chile',
+                    'publisher' => 'Universidad Central',
+                    'booktitle' => 'Droga, cultura y farmacolonialidad: la alteración narcográfica',
+                    ],
+                    'char_encoding' => 'utf8leave',
             ],
 
  

@@ -30,7 +30,7 @@ class ArticlePubInfoParser
     }
 
     // Get journal name from $remainder, which includes also publication info
-    public function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming, string $language, string $startPagesRegExp): array
+    public function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming, string $language, string $startPagesRegExp, string $volumeRegExp): array
     {
         $this->pubInfoDetails = [];
 
@@ -82,7 +82,7 @@ class ArticlePubInfoParser
                     || (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}:?$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
                     || preg_match('/^(' . $this->monthsRegExp[$language] . ')( [0-9]{1,2})?[.,;]/', $remainder) // <month> or <month day> next
                     || preg_match('/^(' . $this->numberRegExp . ') /', $remainder) // followed by number info
-                    || preg_match($this->volRegExp2, $remainder) // followed by volume info
+                    || preg_match('/^\(?(' . $volumeRegExp . ') /', $remainder) // followed by volume info
                     || preg_match($startPagesRegExp, ltrim($remainder, '( ')) // followed by pages info
                     || preg_match('/^' . $this->articleRegExp . '/i', $remainder) // followed by article info
                     || $this->containsFontStyle($remainder, true, 'bold', $posBold, $lenBold) // followed by bold
@@ -111,8 +111,9 @@ class ArticlePubInfoParser
     // to start with uppercase letter only if first number in range does so---and if pp. is present, almost
     // anything following should be allowed as page numbers?
     // '---' shouldn't be used in page range, but might be used by mistake
-    public function getVolumeNumberPagesForArticle(string &$remainder, object &$item, string $language, string $pagesRegExp, string $pageWordsRegExp, bool $start = false): array
+    public function getVolumeNumberPagesForArticle(string &$remainder, object &$item, string $language, string $pagesRegExp, string $pageWordsRegExp, string $volumeAndCodesRegExp, bool $start = false): array
     {
+        //$volumeAndCodesRegExp = '[Vv]olume ?|[Vv]ols? ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{|\*';
         $this->pubInfoDetails = [];
 
         $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
@@ -136,13 +137,13 @@ class ArticlePubInfoParser
         // Ð is for non-utf8 encoding of en-dash(?)
         $letterNumberRange = $letterNumber . '(( ?--?-? ?|_|\?)' . $letterNumber . ')?';
         $numberRangeWithRoman = $numberWithRoman . '((--?-?|_)' . $numberWithRoman . ')?';
-        // }? at end is because $this->volumeRegExp includes \textbf{
-        $volumeRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRange . ')}?';
-        $volumeWithRomanRx = '('. $this->volumeRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')}?';
+        // }? at end is because $volumeAndCodesRegExp includes \textbf{
+        $volumeRx = '('. $volumeAndCodesRegExp . ')?(?P<vol>' . $numberRange . ')}?';
+        $volumeWithRomanRx = '('. $volumeAndCodesRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')}?';
         $numberRx = '('. $this->numberRegExp . ')?(?P<num>' . $numberRangeWithSlash . ')';
-        //$volumeWordRx = '('. $this->volumeRegExp . ')(?P<vol>' . $numberRange . ')';
+        //$volumeWordRx = '('. $volumeAndCodesRegExp . ')(?P<vol>' . $numberRange . ')';
         // Letter in front of volume is allowed only if preceded by "vol(ume)" and is single number
-        $volumeWordLetterRx = '('. $this->volumeRegExp . ')(?P<vol>' . $letterNumber . ')';
+        $volumeWordLetterRx = '('. $volumeAndCodesRegExp . ')(?P<vol>' . $letterNumber . ')';
         $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRangeWithSlash . ')';
         $pagesRx = '(?P<pageWord>'. $pageWordsRegExp . ')?(?P<pp>' . $letterNumberRange . ')';
         $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?\(\(?|\* ?\()';
@@ -232,7 +233,7 @@ class ArticlePubInfoParser
         ];
     }
 
-    public function getVolumeAndNumberForArticle(string &$remainder, object &$item, bool &$containsNumberDesignation, bool &$numberInParens): array
+    public function getVolumeAndNumberForArticle(string &$remainder, object &$item, bool &$containsNumberDesignation, bool &$numberInParens, string $volumeAndCodesRegExp): array
     {
         $this->pubInfoDetails = [];
 
@@ -276,10 +277,10 @@ class ArticlePubInfoParser
             // First consider case in which there is only a volume
             $this->verbose('[v3] Remainder: ' . $remainder);
             // 'Volume? 123$'
-            $numberOfMatches1 = preg_match('/^(' . $this->volumeRegExp . ')?([1-9][0-9]{0,3})$/', $remainder, $matches1, PREG_OFFSET_CAPTURE);
-            // $this->volumeRegExp has space at end of it, but no further space is allowed.
+            $numberOfMatches1 = preg_match('/^(' . $volumeAndCodesRegExp . ')?([1-9][0-9]{0,3})$/', $remainder, $matches1, PREG_OFFSET_CAPTURE);
+            // $volumeAndCodesRegExp has space at end of it, but no further space is allowed.
             // So 'Vol. A2' is matched but not 'Vol. 2, no. 3'
-            $numberOfMatches2 = preg_match('/^(' . $this->volumeRegExp . ')([^ 0-9]*[1-9][0-9]{0,3})$/', $remainder, $matches2, PREG_OFFSET_CAPTURE);
+            $numberOfMatches2 = preg_match('/^(' . $volumeAndCodesRegExp . ')([^ 0-9]*[1-9][0-9]{0,3})$/', $remainder, $matches2, PREG_OFFSET_CAPTURE);
 
             if ($numberOfMatches1) {
                 $matches = $matches1;
@@ -300,7 +301,7 @@ class ArticlePubInfoParser
                 $this->verbose('No number assigned');
             } else {
                 // Starts with volume
-                preg_match('/^(' . $this->volumeRegExp . ')(?P<volume>[1-9][0-9]{0,3})[,\.\/ ](--? ?)?/', $remainder, $matches);
+                preg_match('/^(' . $volumeAndCodesRegExp . ')(?P<volume>[1-9][0-9]{0,3})[,\.\/ ](--? ?)?/', $remainder, $matches);
                 if (isset($matches['volume'])) {
                     $volume = $matches['volume'];
                     $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 17');
@@ -319,7 +320,7 @@ class ArticlePubInfoParser
                     $take = $drop = 0;
                 } else {
                     // A letter or sequence of letters is permitted after an issue number
-                    $numberOfMatches = preg_match('%(' . $this->volumeRegExp . '|[^0-9]|^)(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;|/)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)([/-][1-9][0-9]{0,6})?)\)?%', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                    $numberOfMatches = preg_match('%(' . $volumeAndCodesRegExp . '|[^0-9]|^)(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;|/)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)([/-][1-9][0-9]{0,6})?)\)?%', $remainder, $matches, PREG_OFFSET_CAPTURE);
                     $numberInParens = isset($matches['punc1']) && in_array($matches['punc1'][0], ['(', ' (']);
 
                     if ($numberOfMatches) {
@@ -340,7 +341,7 @@ class ArticlePubInfoParser
                     } else {
                         // Look for "vol" etc. followed possibly by volume number and then something other than an issue number
                         // (e.g. some extraneous text after the entry)
-                        $volume = $this->extractLabeledContent($remainder, $this->volumeRegExp, '[1-9][0-9]{0,3}');
+                        $volume = $this->extractLabeledContent($remainder, $volumeAndCodesRegExp, '[1-9][0-9]{0,3}');
                         if ($volume) {
                             $this->verbose('[p2c]');
                             $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 7');
