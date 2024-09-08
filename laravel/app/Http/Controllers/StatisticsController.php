@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversion;
+use App\Models\ItemType;
 use App\Models\Output;
 use App\Models\Statistic;
 use App\Models\User;
@@ -29,6 +30,12 @@ class StatisticsController extends Controller
             ->groupBy('use')
             ->select(DB::raw('`use`, count(*) AS use_count'))
             ->orderByDesc('use_count')
+            ->get();
+        $itemTypeCounts = DB::table('outputs')
+            ->join('item_types', 'item_types.id', '=', 'outputs.item_type_id')
+            ->groupBy('item_type_id')
+            ->select(DB::raw('item_types.name, count(*) as item_type_count'))
+            ->orderByDesc('item_type_count')
             ->get();
 
         $colors = [
@@ -127,6 +134,7 @@ class StatisticsController extends Controller
                 'userCount',
                 'conversionCount',
                 'itemCount',
+                'itemTypeCounts',
             )
         );
     }
