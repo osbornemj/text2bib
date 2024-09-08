@@ -11,7 +11,7 @@
             When Bai graduated from the University of Toronto later in 2007, I took over the coding and wrote a front end for public use, using the Open Journals System of the <x-link href="https://pkp.sfu.ca/" target="_blank">Public Knowledge Project</x-link> as a framework.  I have continued to develop both the conversion engine and the front end since then.
         </x-paragraph>
         <x-paragraph class="mt-4">
-            Starting in the summer of 2023, Osborne reimplemented the system using the <x-link href="https://laravel.com" target="_blank">Laravel</x-link> framework, at the same time making many improvements in the conversion engine.  The new version was released on 2024.3.15.
+            Starting in the summer of 2023, I reimplemented the system using the <x-link href="https://laravel.com" target="_blank">Laravel</x-link> framework, at the same time making many improvements in the conversion engine.  The new version was released on 2024.3.15.
         </x-paragraph>
         <x-paragraph class="mt-4">
             The source code is available on Github: <x-link href="https://github.com/osbornemj/text2bib" target="_blank">https://github.com/osbornemj/text2bib</x-link>.
