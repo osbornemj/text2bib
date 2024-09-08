@@ -31,12 +31,14 @@ class StatisticsController extends Controller
             ->select(DB::raw('`use`, count(*) AS use_count'))
             ->orderByDesc('use_count')
             ->get();
+        /*
         $itemTypeCounts = DB::table('outputs')
             ->join('item_types', 'item_types.id', '=', 'outputs.item_type_id')
             ->groupBy('item_type_id')
             ->select(DB::raw('item_types.name, count(*) as item_type_count'))
             ->orderByDesc('item_type_count')
             ->get();
+        */
 
         $colors = [
             "barPercentage" => "1.0",
@@ -134,7 +136,7 @@ class StatisticsController extends Controller
                 'userCount',
                 'conversionCount',
                 'itemCount',
-                'itemTypeCounts',
+//                'itemTypeCounts',
             )
         );
     }
