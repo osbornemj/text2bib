@@ -2,7 +2,7 @@
 
     <div class="mt-6 px-4">
         <x-paragraph class="mt-4">
-            This project was initiated by <x-link href="https://economics.utoronto.ca/osborne" target="_blank">Martin J. Osborne</x-link> in 2006 when he was the first Managing Editor of the (Open Access) journal <x-link href="https://econtheory.org" target="_blank">Theoretical Economics</x-link>.  (He was a member of the independent group that founded the journal, which was later taken over by the Econometric Society.)  The  purpose of the project was to convert into BibTeX the plain text references in accepted articles so that they could easily be consistently formatted.
+            A This project was initiated by <x-link href="https://economics.utoronto.ca/osborne" target="_blank">Martin J. Osborne</x-link> in 2006 when he was the first Managing Editor of the (Open Access) journal <x-link href="https://econtheory.org" target="_blank">Theoretical Economics</x-link>.  (He was a member of the independent group that founded the journal, which was later taken over by the Econometric Society.)  The  purpose of the project was to convert into BibTeX the plain text references in accepted articles so that they could easily be consistently formatted.
         </x-paragraph>
         <x-paragraph class="mt-4">
             With funding from the Student Experience Program of <x-link href="http://open.utoronto.ca/" target="_blank">Project Open Source | Open Access</x-link> at the University of Toronto, <x-link href="https://ca.linkedin.com/in/fabian-bai-4545ab2b" target="_blank">Fabian Qifei Bai</x-link> created the first version of the conversion script in the Spring of 2007.
