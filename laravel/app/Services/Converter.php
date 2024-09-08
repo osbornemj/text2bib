@@ -2962,7 +2962,7 @@ class Converter
                                 }
                                 $setRemainder = true;
                             }
-                            if (! isset($item->year) || ! $item->year) {
+                            if (isset($matches['year']) && (! isset($item->year) || ! $item->year)) {
                                 $this->setField($item, 'year', $matches['year'], 'setField 71');
                             }
                             $afterEds = trim($matches['string']) . ($matches['year'] ?? '');
