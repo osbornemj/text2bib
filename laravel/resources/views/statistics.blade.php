@@ -13,7 +13,6 @@
         <br/>
         Items converted: {{ number_format($itemCount) }}
         <br/>
-        ABC
         {{--
         <br/>
         Types detected in items converted:
