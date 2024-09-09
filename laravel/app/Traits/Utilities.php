@@ -125,7 +125,7 @@ trait Utilities
     var $editionRegExp = '(?P<fullEdition>((?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie))|[1-9] ?ed\.)';
 
     var $workingPaperRegExp = '(preprint|arXiv preprint|bioRxiv|working paper|texto para discussão|discussion paper|'
-        . 'technical report|report no.|'
+        . 'technical report|tech\. report|report no\.|'
         . 'research paper|mimeo|unpublished paper|unpublished manuscript|manuscript|'
         . 'under review|submitted|in preparation)';
     // Working paper number can contain letters and dashes, but must contain at least one digit
