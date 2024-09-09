@@ -13,11 +13,10 @@
         <br/>
         Items converted: {{ number_format($itemCount) }}
         <br/>
-        <br/>
         Types detected in items converted:
         <x-list>
         @foreach ($itemTypeCounts as $itemTypeCount)
-            <li class="ml-5">{{ $itemTypeCount->name}}: {{ $itemTypeCount->item_type_count}}</li>
+            <li class="ml-5">{{ $itemTypeCount->name}}: {{ number_format($itemTypeCount->item_type_count) }}</li>
         @endforeach
         </x-list>
     </div>
