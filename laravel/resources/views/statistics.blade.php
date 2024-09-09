@@ -13,7 +13,6 @@
         <br/>
         Items converted: {{ number_format($itemCount) }}
         <br/>
-        {{--
         <br/>
         Types detected in items converted:
         <x-list>
@@ -21,7 +20,6 @@
             <li class="ml-5">{{ $itemTypeCount->name}}: {{ $itemTypeCount->item_type_count}}</li>
         @endforeach
         </x-list>
-        --}}
     </div>
 
     <h2 class="mx-4 mt-2 font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">

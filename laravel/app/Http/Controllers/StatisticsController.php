@@ -135,7 +135,7 @@ class StatisticsController extends Controller
                 'userCount',
                 'conversionCount',
                 'itemCount',
-//                'itemTypeCounts',
+                'itemTypeCounts',
             )
         );
     }
