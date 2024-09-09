@@ -16,7 +16,9 @@
         Types detected in items converted:
         <x-list>
         @foreach ($itemTypeCounts as $itemTypeCount)
-            <li class="ml-5">{{ $itemTypeCount->name}}: {{ number_format($itemTypeCount->item_type_count) }}</li>
+            <li class="ml-5">
+                {{ $itemTypeCount->name}}: {{ number_format($itemTypeCount->item_type_count) }} ({{ number_format(100 * $itemTypeCount->item_type_count / $itemCount) }}%)
+            </li>
         @endforeach
         </x-list>
     </div>
