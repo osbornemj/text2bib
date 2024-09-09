@@ -34,7 +34,7 @@ class StatisticsController extends Controller
 
         $itemTypeCounts = DB::table('outputs')
             ->join('item_types', 'item_types.id', '=', 'outputs.item_type_id')
-            ->groupBy('item_type_id')
+            ->groupBy('item_types.name')
             ->select(DB::raw('item_types.name, count(*) as item_type_count'))
             ->orderByDesc('item_type_count')
             ->get();
