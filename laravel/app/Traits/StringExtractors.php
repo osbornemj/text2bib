@@ -15,9 +15,10 @@ trait StringExtractors
     }
 
     /*
+     * removeAndReturn METHOD SHOULD BE USED INSTEAD
      * Find first match for $regExp (regular expression without delimiters), case insensitive, in $string,
-     * return group number $groupNumber (defined by parentheses in $regExp)
-     * and remove entire match for $regExp from $string after trimming ',. ' from substring preceding match.
+     * return groups in match (components of $result)
+     * and remove entire match for $regExp from $string.
      * If no match, return false (and do not alter $string).
      */
     private function findRemoveAndReturn(string &$string, string $regExp, bool $caseInsensitive = true): false|string|array
@@ -41,6 +42,34 @@ trait StringExtractors
         $result['before'] = substr($string, 0, $matches[0][1]);
         $result['after'] = substr($string, $matches[0][1] + strlen($matches[0][0]), strlen($string));
         $string = substr($string, 0, $matches[0][1]) . ' ' . substr($string, $matches[0][1] + strlen($matches[0][0]), strlen($string));
+        $string = $this->regularizeSpaces(trim($string));
+
+        return $result;
+    }
+
+    /*
+     * Find first match for $regExp (regular expression without delimiters), case insensitive, in $string,
+     * return matches for each string with name in $names, and remove entire match for $regExp from $string.
+     * If no match, return false (and do not alter $string).
+     */
+    private function removeAndReturn(string &$string, string $regExp, array $names, bool $caseInsensitive = true): false|string|array
+    {
+        $matched = preg_match(
+            '%^(?P<before>.*?)' . $regExp . '(?P<after>.*?)$%u' . ($caseInsensitive ? 'i' : ''),
+            $string,
+            $matches,
+        );
+
+        if (! $matched) {
+            return false;
+        }
+
+        $result['before'] = $matches['before'] ?? '';
+        $result['after'] = $matches['after'] ?? '';
+        foreach ($names as $name) {
+            $result[$name] = $matches[$name] ?? '';
+        }
+        $string = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
         $string = $this->regularizeSpaces(trim($string));
 
         return $result;

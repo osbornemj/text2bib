@@ -196,6 +196,8 @@ class TitleParser
 
             $initialWords[] = $word;
 
+            //dump('/^(' . $volumeRegExp . ') [0-9]/');
+            //if (preg_match('/^(' . $volumeRegExp . ') [0-9]/', $remainder)) {
             if (preg_match('/^vol(\.?|ume) [0-9]/', $remainder)) {
                 $this->verbose("Ending title, case 1d");
                 $title = rtrim(implode(' ', $initialWords), ',:;.');
@@ -333,7 +335,7 @@ class TitleParser
                             // journal name, pub info?
                             || preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?,? [0-9, \-p\.]*$/', $remainder)
                             || in_array('Journal', $wordsToNextPeriodOrComma)
-                            || preg_match('/^Revue /', $remainder)
+                            || preg_match('/^(Revue|Jurnal) /', $remainder)
                             // journal name, pub info ('}' after volume # for \textbf{ (in $volumeAndCodesRegExp))
                             // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
                             // The following pattern allows too much latitude --- e.g. "The MIT Press. 2015." matches it.

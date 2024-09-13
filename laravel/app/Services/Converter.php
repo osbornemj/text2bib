@@ -290,22 +290,24 @@ class Converter
             '[Ss]tr\. ?',     // Czech
             'стр\. ?',        // Russian
             'გვ\. ?',         // Georgian
+            'С\. ?',          // Russian
         ];
 
-        $startPagesRegExp = '/(';
-        $pageWordsRegExp = '';
+        $startPagesRegExp = '/(?P<pageWord>';
+        $pageWordsRegExp = '(?P<pageWord>';
         foreach ($pageWords as $i => $pageWord) {
             $startPagesRegExp .= ($i ? '|' : '') . '^' . $pageWord;
             $pageWordsRegExp .= ($i ? '|' : '') . $pageWord;
         }
         $startPagesRegExp .= ')[0-9]/';
+        $pageWordsRegExp .= ')';
 
         $this->pageWordsRegExp = $pageWordsRegExp;
 
-        $pageRegExpWithPp = '(' . $pageWordsRegExp . '):?( )?' . $this->page;
-        $pagesRegExpWithPp = '(' . $pageWordsRegExp . '):?( )?' . $this->pageRange;
-        $pageRegExp = '(' . $pageWordsRegExp . ')?:?( )?' . $this->page;
-        $pagesRegExp = '(' . $pageWordsRegExp . ')?:?( )?' . $this->pageRange;
+        $pageRegExpWithPp = '(' . $pageWordsRegExp . '):? ?' . $this->page;
+        $pagesRegExpWithPp = '(' . $pageWordsRegExp . '):? ?' . $this->pageRange;
+        $pageRegExp = '(' . $pageWordsRegExp . ')?:? ?' . $this->page;
+        $pagesRegExp = '(' . $pageWordsRegExp . ')?:? ?' . $this->pageRange;
 
         $this->startPagesRegExp = $startPagesRegExp;
         
@@ -2376,20 +2378,32 @@ class Converter
                 } else {
                     // $itemKind = 'incollection'
                     // Get pages
-                    // Return group 4 of match and remove whole match from $remainder.
+                    // Return match for 'pages' and remove whole match from $remainder.
                     // Give preference to match that has 'pp' or similar before it.
-                    $result = $this->findRemoveAndReturn($remainder, '(\(| |^)' . $this->pagesRegExpWithPp . '(\))?');
+                    $result = $this->removeAndReturn($remainder, '(\(| |^)' . $this->pagesRegExpWithPp . '(\))?', ['pages']);
                     if (! $result) {
-                        $result = $this->findRemoveAndReturn($remainder, '(\(|(?<!\p{Ll}) |^)' . $this->pagesRegExp . '(\))?');
+                        $result = $this->removeAndReturn($remainder, '(\(|(?<!\p{Ll}) |^)' . $this->pagesRegExp . '(\))?', ['pages']);
                     }
                     if (! $result) {
                         // single page number, preceded by 'p.'
-                        $result = $this->findRemoveAndReturn($remainder, '(\(| |^)' . $this->pageRegExpWithPp . '(\))?');
+                        $result = $this->removeAndReturn($remainder, '(\(| |^)' . $this->pageRegExpWithPp . '(\))?', ['pages']);
                     }
                     if ($result) {
-                        $pages = $result[4];
+                        $pages = $result['pages'];
                         $this->setField($item, 'pages', $pages ? str_replace(['--', ' '], ['-', ''], $pages) : '', 'setField 51');
                     }
+                    // $result = $this->findRemoveAndReturn($remainder, '(\(| |^)' . $this->pagesRegExpWithPp . '(\))?');
+                    // if (! $result) {
+                    //     $result = $this->findRemoveAndReturn($remainder, '(\(|(?<!\p{Ll}) |^)' . $this->pagesRegExp . '(\))?');
+                    // }
+                    // if (! $result) {
+                    //     // single page number, preceded by 'p.'
+                    //     $result = $this->findRemoveAndReturn($remainder, '(\(| |^)' . $this->pageRegExpWithPp . '(\))?');
+                    // }
+                    // if ($result) {
+                    //     $pages = $result[4];
+                    //     $this->setField($item, 'pages', $pages ? str_replace(['--', ' '], ['-', ''], $pages) : '', 'setField 51');
+                    // }
                 }
 
                 if (! isset($item->pages)) {
@@ -3613,22 +3627,28 @@ class Converter
                     $periodBeforeColonPos = ($colonPos !== false) ? strrpos(substr($remainder, 0, $colonPos - 5), '.') : false;
 
                     // Check whether publication info matches pattern for book to be a volume in a series
-                    $result = $this->findRemoveAndReturn(
+                    $result = $this->removeAndReturn(
                         $remainder,
-                        '(' . $this->volumeAndCodesRegExp . ')( ([1-9][0-9]{0,4}))(( of| in|,) )([^\.,]*\.|,)'
+                        '(?P<volumeSeriesName>(' . $this->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}))(( of| in|,) )((?P<seriesName>[^\.,]*)\.|,))',
+                        ['volumeSeriesName', 'seriesName', 'volume']
                         );
                     if ($result) {
-                        // Take series to be string following 'of' or 'in' or ',' up to next period or comma
-                        $this->setField($item, 'volume', $result[3], 'setField 87');
-                        $series = trim($result[6], '., ');
-                        if ($series) {
-                            $this->setField($item, 'series', $result[6], 'setField 88');
+                        // Take series to be matched string, starting with volume, up to next period or comma
+                        // (The volume field is for a volume of a book, not the volume number in a series.)
+                        if (strlen($result['seriesName']) < 10) {
+                            $this->setField($item, 'volume', $result['volume'], 'setField 88a');
+                            $booktitle = trim($result['before'], '., ');
+                            $remainder = trim($result['after']);
+                        } else {
+                            if (isset($result['volumeSeriesName'])) {
+                                $this->setField($item, 'series', $result['volumeSeriesName'], 'setField 88b');
+                            }
+                            $booktitle = trim($result['before'], '., ');
+                            $this->verbose('booktitle case 5');
+                            $remainder = trim($result['after'], ',. ');
+                            $this->verbose('Volume found, so book is part of a series');
+                            $this->verbose('Remainder (publisher and address): ' . $remainder);
                         }
-                        $booktitle = trim($result['before'], '., ');
-                        $this->verbose('booktitle case 5');
-                        $remainder = trim($result['after'], ',. ');
-                        $this->verbose('Volume found, so book is part of a series');
-                        $this->verbose('Remainder (publisher and address): ' . $remainder);
                     } elseif (! empty($cityString) && ! empty($publisher)) {
                         $this->setField($item, 'address', $cityString, 'setField 89');
                         $this->setField($item, 'publisher', $publisher, 'setField 90');
@@ -3961,33 +3981,42 @@ class Converter
                     }
                 }
 
+                // 1 = volumeDesignation, 4 = volume, 6 = punc
                 // If remainder contains word 'volume', take next word to be volume number.  If
                 // following word is "in" or "of" or a comma or period, following string is taken as series name
                 $this->verbose('Looking for volume');
                 $done = false;
                 $newRemainder = null;
                 $remainder = implode(" ", $remainingWords);
-                $result = $this->findRemoveAndReturn(
+                $origRemainder = $remainder;
+                $result = $this->removeAndReturn(
                     $remainder,
-                    '((\(?' . $this->volumeAndCodesRegExp . ')( ([1-9][0-9]{0,4}|[IVXL]{1,3})\)?))(( of| in|,|.)? )(.*)$'
+                    '(?P<volumeDesignation>(\(?' . $this->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}|[IVXL]{1,3})\)?))((?P<punc> of| in|,|.)? )(?P<seriesAndPubInfo>.*)$',
+                    ['volumeDesignation', 'volume', 'punc', 'seriesAndPubInfo']
                 );
+                // $result = $this->findRemoveAndReturn(
+                //     $remainder,
+                //     '(?P<volumeDesignation>(\(?' . $this->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}|[IVXL]{1,3})\)?))((?P<punc> of| in|,|.)? )(.*)$'
+                // );
                 if ($result) {
-                    if (in_array($result[6], ['.', ',']) && substr_count(trim($result['before']), ' ') <= 1) {
+                    //dump($result, $remainder, substr_count(trim($result['before']), ' '));
+                    if (in_array($result['punc'], ['.', ',']) && substr_count(trim($result['before']), ' ') <= 1) {
                         // Volume is volume of book, not part of series
                         // Publisher and possibly address
-                        $this->setField($item, 'volume', $result[4], 'setField 119');
-                        $newRemainder = $result[7];
+                        $this->setField($item, 'volume', $result['volume'], 'setField 119');
+                        $newRemainder = $remainder;
                     } elseif (substr_count(trim($result['before']), ' ') > 1) {
-                        // Words before volume designation are series name.  Book has no field for volume of
-                        // series, so add volume designation to series field.
-                        $this->setField($item, 'series', trim($result['before']) . ' ' . $result[1]);
-                        $newRemainder = $remainder = $result[7];
+                        // Words before volume designation are series name.  **Book has no field for volume of
+                        // series, so add volume designation to series field.**
+                        $this->setField($item, 'series', trim($result['before']) . ' ' . $result['volumeDesignation']);
+                        //dump($result['after'], $result['seriesAndPubInfo']);
+                        $newRemainder = $result['seriesAndPubInfo'];
                     } else {
                         // Volume is part of series
                         $this->verbose('Volume is part of series: assume format is <series>? <publisherAndAddress>');
-                        $this->setField($item, 'volume', $result[4], 'setField 120');
-                        $this->verbose(['fieldName' => 'Volume', 'content' => $item->volume]);
-                        $seriesAndPublisher = $result[7];
+                        //$this->setField($item, 'volume', $result['volume'], 'setField 120');
+                        //$this->verbose(['fieldName' => 'Volume', 'content' => $item->volume]);
+                        $seriesAndPublisher = $origRemainder;
                         // Case in which  publisher has been identified
                         if ($publisher) {
                             $this->setField($item, 'publisher', $publisher, 'setField 121');
@@ -4232,9 +4261,9 @@ class Converter
                     }
                     $remainder = trim($remainder, ' -.,)[]');
                     // if remainder contains number of pages, put them in note
-                    $result = $this->findRemoveAndReturn($remainder, '(\()?' . $this->pageRegExpWithPp . '(\))?');
+                    $result = $this->removeAndReturn($remainder, '(?P<pageWithPp>\(?' . $this->pageRegExpWithPp . '\)?)', ['pageWithPp']);
                     if ($result) {
-                        $this->setField($item, 'note', $result[0], 'setField 157');
+                        $this->setField($item, 'note', $result['pageWithPp'], 'setField 157');
                         $remainder = trim($remainder, '., ');
                     }
 

@@ -82,7 +82,7 @@ class ArticlePubInfoParser
                     || (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}:?$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
                     || preg_match('/^(' . $this->monthsRegExp[$language] . ')( [0-9]{1,2})?[.,;]/', $remainder) // <month> or <month day> next
                     || preg_match('/^(' . $this->numberRegExp . ') /', $remainder) // followed by number info
-                    || preg_match('/^\(?(' . $volumeRegExp . ') /', $remainder) // followed by volume info
+                    || preg_match('/^(\(?(' . $volumeRegExp . ')) /', $remainder) // followed by volume info
                     || preg_match($startPagesRegExp, ltrim($remainder, '( ')) // followed by pages info
                     || preg_match('/^' . $this->articleRegExp . '/i', $remainder) // followed by article info
                     || $this->containsFontStyle($remainder, true, 'bold', $posBold, $lenBold) // followed by bold
@@ -90,6 +90,7 @@ class ArticlePubInfoParser
                     // (Str::endsWith($word, '.') && strlen($word) > 2 && $this->inDict($word) && !in_array($word, $this->excludedWords))
                    )
                 {
+                    $this->verbose('Ending journal name.  Next word: ' . $word);
                     $this->verbose('[getJournal] Remainder: ' . $remainder);
                     $journal = rtrim(implode(' ', $initialWords), ', ');
                     $remainder = ltrim($remainder, ',.');
@@ -189,42 +190,31 @@ class ArticlePubInfoParser
         } elseif (! $start) {
             // If none of the common patterns fits, fall back on approach that first looks for a page range then
             // uses the method getVolumeAndNumberForArticle to figure out the volume and number, if any
-            $numberOfMatches = preg_match_all('/' . $pagesRegExp . '/J', $remainder, $matches, PREG_OFFSET_CAPTURE);
+            $numberOfMatches = preg_match_all('/^(?P<before>.*?)\(?' . $pagesRegExp . '\)?(?P<after>.*?)$/J', $remainder, $matches);
             if ($numberOfMatches) {
+                // Take last match for a page range
                 $matchIndex = $numberOfMatches - 1;
-                $this->verbose('[p0] matches: 1: ' . $matches[1][$matchIndex][0] . '; 2: ' . $matches[2][$matchIndex][0] . '; 3: ' . $matches[3][$matchIndex][0]);
                 $this->verbose("Number of matches for a potential page range: " . $numberOfMatches);
                 $this->verbose("Match index: " . $matchIndex);
-                $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches[3][$matchIndex][0]), 'getVolumeNumberPagesForArticle 10');
+                $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches['pages'][$matchIndex]), 'getVolumeNumberPagesForArticle 10');
 
                 // If pages surrounded by parens, don't include parens in remainder
-                $take = $matches[0][$matchIndex][1];
-                if (isset($remainder[$take - 1]) && $remainder[$take - 1] == '(') {
-                    $take -= 1;
-                }
-
-                $drop = $matches[3][$matchIndex][1] + strlen($matches[3][$matchIndex][0]);
-                if (isset($remainder[$drop]) && $remainder[$drop] == '(') {
-                    $drop += 1;
-                }
-
+                $remainder = $matches['before'][$matchIndex] . ' ' . $matches['after'][$matchIndex];
+                $remainder = trim($remainder, '- ');
                 $result = true;
-                // single page
-            } elseif (preg_match('/p\. (?P<pp>[1-9][0-9]{0,5})/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+            // single page
+            } elseif (preg_match('/^(?P<before>.*?)p\. (?P<pp>[1-9][0-9]{0,5})(?P<after>.*?)$/', $remainder, $matches)) {
                 if (isset($matches['pp'])) {
-                    $this->setField($item, 'pages', $matches['pp'][0], 'getVolumeNumberPagesForArticle 10a');
-                    $take = $matches[0][1];
-                    $drop = $matches[1][1] + strlen($matches[1][0]);
+                    $this->setField($item, 'pages', $matches['pp'], 'getVolumeNumberPagesForArticle 10a');
                     $result = true;
+                    $remainder = $matches['before'] . ' ' . $matches['after'];
+                    $remainder = trim($remainder, ',. ');
                 }
             } else {
                 $item->pages = '';
                 $take = 0;
                 $drop = 0;
             }
-
-            $remainder = rtrim(substr($remainder, 0, $take) . ' ' . substr($remainder, $drop), ',.: ');
-            $remainder = trim($remainder, ',. ');
         }
 
         return [
@@ -377,6 +367,7 @@ class ArticlePubInfoParser
                                         $remainder = rtrim($remainder, ')');
                                     }
                                     // If volume is in parens, remove them.
+                                    $remainder = trim($remainder, ' ,');
                                     if (preg_match('/^\((?P<volume>.*?)\)$/', $remainder, $matches)) {
                                         $remainder = $matches['volume'];
                                     }

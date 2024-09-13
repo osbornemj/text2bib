@@ -1297,8 +1297,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1984',
                     'title' => 'The Smith Conjecture',
                     'author' => 'Bass, H. and Morgan, J. W.',
-                    'volume' => '112',
-                    'series' => 'Pure and Applied Mathematics',
+                    'series' => 'Volume 112 of Pure and Applied Mathematics',
                     'publisher' => 'Academic Press',
                     ]
             ],
@@ -1311,8 +1310,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'The homotopy type of a 4-manifold with finite fundamental group',
                     'author' => 'Bauer, S.',
                     'editor' => 'T. tom Dieck',
-                    'volume' => '1361',
-                    'series' => 'Lecture Notes in Math.',
+                    'series' => 'Volume 1361 of Lecture Notes in Math.',
                     'publisher' => 'Springer-Verlag',
                     'booktitle' => 'Algebraic Topology and Transformation Groups',
                     ]
@@ -1336,8 +1334,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1987',
                     'title' => 'Einstein Manifolds',
                     'author' => 'Besse, A. L.',
-                    'series' => 'Ergeb. Math. Grenzgeb',
-                    'volume' => '10',
+                    'series' => 'Volume 10 of Ergeb. Math. Grenzgeb',
                     'publisher' => 'Springer-Verlag',
                     ]
             ],
@@ -1348,8 +1345,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1987',
                     'title' => 'Einstein Manifolds',
                     'author' => 'Besse, A. L.',
-                    'series' => 'Ergeb. Math. Grenzgeb',
-                    'volume' => '10',
+                    'series' => 'Volume 10 of Ergeb. Math. Grenzgeb',
                     'address' => 'Berlin',
                     'publisher' => 'Springer-Verlag',
                     ]
@@ -1361,8 +1357,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1987',
                     'title' => 'Einstein Manifolds',
                     'author' => 'Besse, A. L.',
-                    'series' => 'Ergeb. Math. Grenzgeb',
-                    'volume' => '10',
+                    'series' => 'Volume 10 of Ergeb. Math. Grenzgeb',
                     'address' => 'Berlin',
                     'publisher' => 'Springer-Verlag',
                     ]
@@ -1373,8 +1368,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1987',
                     'title' => 'Einstein Manifolds',
                     'author' => 'Besse, A. L.',
-                    'series' => 'Ergeb. Math. Grenzgeb',
-                    'volume' => '10',
+                    'series' => 'Volume 10 of Ergeb. Math. Grenzgeb',
                     'address' => 'Berlin',
                     'publisher' => 'Springer-Verlag',
                     ]
@@ -1386,8 +1380,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1974',
                     'title' => 'Braids, Links, and Mapping Class Groups',
                     'author' => 'Birman, J. S.',
-                    'series' => 'Ann. of Math. Stud',
-                    'volume' => '82',
+                    'series' => 'Volume 82 of Ann. of Math. Stud',
                     'publisher' => 'Princeton Univ. Press',
                     ]
             ],
@@ -1398,8 +1391,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1974',
                     'title' => 'Braids, Links, and Mapping Class Groups',
                     'author' => 'Birman, J. S.',
-                    'series' => 'Ann. of Math. Stud',
-                    'volume' => '82',
+                    'series' => 'Volume 82 of Ann. of Math. Stud',
                     'address' => 'Princeton',
                     'publisher' => 'Princeton Univ. Press',
                     ]
@@ -1411,8 +1403,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1974',
                     'title' => 'Braids, Links, and Mapping Class Groups',
                     'author' => 'Birman, J. S.',
-                    'series' => 'Ann. of Math. Stud',
-                    'volume' => '82',
+                    'series' => 'Volume 82 of Ann. of Math. Stud',
                     'address' => 'Princeton',
                     'publisher' => 'Princeton Univ. Press',
                     ]
@@ -1735,8 +1726,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1990',
                     'title' => 'A Course in Functional Analysis',
                     'author' => 'John B. Conway',
-                    'series' => 'Graduate Texts in Mathematics',
-                    'volume' => '96',
+                    'series' => 'volume 96 in Graduate Texts in Mathematics',
                     'address' => 'New York',
                     'edition' => 'Second',
                     'publisher' => 'Springer-Verlag',
@@ -13175,6 +13165,74 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Droga, cultura y farmacolonialidad: la alteración narcográfica',
                     ],
                     'char_encoding' => 'utf8leave',
+            ],
+            // journal not detected
+			[
+                'source' => 'Latifah, Sri W & Jati, Ahmad W. (2023). The Use of Sharia Fintech on MSMEs Performance / Mediation of Interest in use of Transaction. Jurnal Reviu Akuntansi dan Keuangan. Vol 13. No. 2 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Latifah, Sri W. and Jati, Ahmad W.',
+                    'year' => '2023',
+                    'volume' => '13',
+					'number' => '2',
+                    'title' => 'The Use of Sharia Fintech on MSMEs Performance / Mediation of Interest in use of Transaction',
+					'journal' => 'Jurnal Reviu Akuntansi dan Keuangan.',
+                    ]
+            ],
+			// formatting of names---initials not followed by periods; C. = pages
+			[
+                'source' => 'Гордеев В.П., Красильников А.В., Лагутин В.И., Отменников В.Н. Экспериментальное исследование возможности снижения аэродинамического сопротивления при сверхзвуковых скоростях с использованием плазменной технологии //Изв. РАН. Механика жидкости и газа. – 1996. – №. 2. – С. 177-182.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Гордеев, В. П. and Красильников, А. В. and Лагутин, В. И. and Отменников, В. Н.',
+                    'title' => 'Экспериментальное исследование возможности снижения аэродинамического сопротивления при сверхзвуковых скоростях с использованием плазменной технологии',
+                    'year' => '1996',
+                    'journal' => 'Изв. РАН. Механика жидкости и газа.',
+					'number' => '2',
+                    'pages' => '177-182',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// issue number in brackets rather than parens
+			[
+                'source' => 'Fegan, D., & Wu, F. [2005]. Aflatoxin contamination of crops: a review of preharvest prevention strategies. Journal of Food Protection, 68[5], 1099-1111. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Fegan, D. and Wu, F.',
+                    'year' => '2005',
+                    'title' => 'Aflatoxin contamination of crops: a review of preharvest prevention strategies',
+                    'journal' => 'Journal of Food Protection',
+                    'pages' => '1099-1111',
+                    'volume' => '68',
+					'number' => '5',
+                    ]
+            ],
+			// why do authors not match pattern? [error now corrected?]
+			[
+                'source' => 'Fegan, D., & Wu, F. [2005]. Aflatoxin contamination of crops: a review of preharvest prevention strategies. Journal of Food Protection, 68[5], 1099-1111. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Fegan, D. and Wu, F.',
+                    'year' => '2005',
+                    'title' => 'Aflatoxin contamination of crops: a review of preharvest prevention strategies',
+                    'journal' => 'Journal of Food Protection',
+                    'pages' => '1099-1111',
+                    'volume' => '68',
+					'number' => '5',
+                    ]
+            ],
+			// Misclassified as article despite ISBN (and ISBN not displayed because type is article).
+			[
+                'source' => ' Courbin, Frédéric; Minniti, Dante (2002). Gravitational Lensing: An Astrophysical Tool. Lecture Notes in Physics. Vol. 608. ISBN 978-3-540-44355-1. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'isbn' => '978-3-540-44355-1',
+                    'author' => 'Courbin, Frédéric and Minniti, Dante',
+                    'year' => '2002',
+                    'title' => 'Gravitational Lensing: An Astrophysical Tool',
+                    'series' => 'Lecture Notes in Physics. Vol. 608',
+                ],
+					'char_encoding' => 'utf8leave',
             ],
 
  

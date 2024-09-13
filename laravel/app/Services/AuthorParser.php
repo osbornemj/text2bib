@@ -762,7 +762,7 @@ class AuthorParser
                     $name = $this->spaceOutInitials($word);
                     // If part of name is all uppercase and 3 or more letters long, convert it to ucfirst(mb_strtolower())
                     // For component with 1 or 2 letters, assume it's initials and leave it uc (to be processed by formatAuthor)
-                    if (strlen($name) > 2 && strtoupper($name) == $name && strpos($name, '.') === false) {
+                    if (strlen($name) > 2 && mb_strtoupper($name) == $name && strpos($name, '.') === false) {
                         $nameComponent = ucfirst(mb_strtolower($name));
                         // Simpler version of following code, without check for hyphen, produces strange result ---
                         // the *next* word has a period replaced by a comma
@@ -1217,8 +1217,8 @@ class AuthorParser
         $initialsMaxStringLength = $initials ? 4 : 2; // initials could be 'A' or 'AB' or 'A.'
 
         foreach ($namesRaw as $k => $name) {
-            $lettersOnlyName = preg_replace("/[^A-Za-z]/", '', $name);
-            $initialsStart = (strtoupper($lettersOnlyName) == $lettersOnlyName 
+            $lettersOnlyName = preg_replace("/[^\p{L}]/u", '', $name);
+            $initialsStart = (mb_strtoupper($lettersOnlyName) == $lettersOnlyName 
                     && strlen($lettersOnlyName) <= $initialsMaxStringLength) ? min([$k, $initialsStart]) : count($namesRaw);
             // Ignore $name that is '.' or ',' (a typo)
             if (! in_array($name, ['.', ','])) {
@@ -1238,13 +1238,13 @@ class AuthorParser
         $commaPassed = false;
         //$initialPassed = false;
 
-        $lettersOnlyNameString = preg_replace("/[^A-Za-z]/", '', $nameString);
-        if (strtoupper($lettersOnlyNameString) != $lettersOnlyNameString) {
+        $lettersOnlyNameString = preg_replace("/[^\p{L}]/u", '', $nameString);
+        if (mb_strtoupper($lettersOnlyNameString) != $lettersOnlyNameString) {
             $allUppercase = false;
         }
 
         foreach ($names as $i => $name) {
-            $lettersOnlyName = preg_replace("/[^A-Za-z]/", '', $name);
+            $lettersOnlyName = preg_replace("/[^\p{L}]/u", '', $name);
             if ($i) {
                 $fName .= ' ';
             }

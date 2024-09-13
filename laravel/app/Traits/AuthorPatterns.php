@@ -88,7 +88,7 @@ trait AuthorPatterns
         // "Douglas Hedley, The Iconic Imagination (New York: Bloomsbury, 2016)."
         // because "The Iconic Imagination" gets interpreted as a second author.
         //$commaYear = ',? (?=[(\[`"\'\d])';
-        $commaYear = ',? (?=(([(\]](\d|ed|tran))|[`"\'\d]))';
+        $commaYear = ',? (?=(([(\[](\d|ed|tran))|[`"\'\d]))';
         // Requirement of lowercase after the first word for 4 bare words is to avoid terminating an author string like the following one
         // too early (after Hamilton SA):
         // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T:

@@ -114,7 +114,7 @@ trait Utilities
     var $endForthcomingRegExp = '( |\()(forthcoming|in press|accepted|to appear)\.?\)?$';
     var $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
 
-    var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№ ?|n\.? ?° ?|n\. ?º ?|[Ii]ssues?:? ?|Issue no. ?|Iss: |Heft ';
+    var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№\.? ?|n\.? ?° ?|n\. ?º ?|[Ii]ssues?:? ?|Issue no. ?|Iss: |Heft ';
 
     // page range
     // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
