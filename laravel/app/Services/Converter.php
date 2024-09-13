@@ -3996,29 +3996,21 @@ class Converter
                     '(?P<volumeDesignation>(\(?' . $this->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}|[IVXL]{1,3})\)?))((?P<punc> of| in|,|.|:)? )(?P<seriesAndPubInfo>.*)$',
                     ['volumeDesignation', 'volume', 'punc', 'seriesAndPubInfo']
                 );
-                // $result = $this->findRemoveAndReturn(
-                //     $remainder,
-                //     '(?P<volumeDesignation>(\(?' . $this->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}|[IVXL]{1,3})\)?))((?P<punc> of| in|,|.)? )(.*)$'
-                // );
+
                 if ($result) {
-                    //dump($result, $remainder, substr_count(trim($result['before']), ' '));
                     if (in_array($result['punc'], ['.', ',', ':']) && substr_count(trim($result['before']), ' ') <= 1) {
                         // Volume is volume of book, not part of series
                         // Publisher and possibly address
                         $this->setField($item, 'volume', $result['volume'], 'setField 119');
                         $newRemainder = $result['before'] . ' ' . $result['seriesAndPubInfo'] . ' ' . $result['after'];
-                        //$newRemainder = $remainder;
                     } elseif (substr_count(trim($result['before']), ' ') > 1) {
                         // Words before volume designation are series name.  **Book has no field for volume of
                         // series, so add volume designation to series field.**
                         $this->setField($item, 'series', trim($result['before']) . ' ' . $result['volumeDesignation'], 'setField 119a');
-                        //dump($result['after'], $result['seriesAndPubInfo']);
                         $newRemainder = $result['seriesAndPubInfo'];
                     } else {
                         // Volume is part of series
                         $this->verbose('Volume is part of series: assume format is <series>? <publisherAndAddress>');
-                        //$this->setField($item, 'volume', $result['volume'], 'setField 120');
-                        //$this->verbose(['fieldName' => 'Volume', 'content' => $item->volume]);
                         $seriesAndPublisher = $origRemainder;
                         // Case in which  publisher has been identified
                         if ($publisher) {
