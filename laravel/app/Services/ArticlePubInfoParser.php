@@ -147,8 +147,8 @@ class ArticlePubInfoParser
         $volumeWordLetterRx = '('. $volumeAndCodesRegExp . ')(?P<vol>' . $letterNumber . ')';
         $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRangeWithSlash . ')';
         $pagesRx = '(?P<pageWord>'. $pageWordsRegExp . ')?(?P<pp>' . $letterNumberRange . ')';
-        $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?\(\(?|\* ?\()';
-        $punc2 = '(\)?[ :] ?|\)?\)?, ?| ?: ?)';
+        $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?[(\[]\(?|\* ?\()';
+        $punc2 = '([)\]]?[ :] ?|[)\]]?\)?, ?| ?: ?)';
 
         $dashEquivalents = ['---', '--', ' - ', '- ', ' -', '_', '?'];
 

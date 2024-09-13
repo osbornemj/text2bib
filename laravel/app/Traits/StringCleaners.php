@@ -65,6 +65,7 @@ trait StringCleaners
             "\xE2\x80\x91" => "-",
             "\xE2\x80\x93" => "--",
             "\xE2\x80\x94" => "---",
+            "\xC2\xAD" => "",  // soft hyphen (shown on https://www.utf8-chartable.de/unicode-utf8-table.pl?start=128&number=128)
             // ‘ and ’
             "\xE2\x80\x98" => "`",
             "\xE2\x80\x99" => "'",

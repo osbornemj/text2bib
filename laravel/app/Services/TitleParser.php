@@ -196,9 +196,8 @@ class TitleParser
 
             $initialWords[] = $word;
 
-            //dump('/^(' . $volumeRegExp . ') [0-9]/');
-            //if (preg_match('/^(' . $volumeRegExp . ') [0-9]/', $remainder)) {
-            if (preg_match('/^vol(\.?|ume) [0-9]/', $remainder)) {
+            // volume is next
+            if (preg_match('/^(' . $volumeRegExp . ') [0-9]/', $remainder)) {
                 $this->verbose("Ending title, case 1d");
                 $title = rtrim(implode(' ', $initialWords), ',:;.');
                 break;

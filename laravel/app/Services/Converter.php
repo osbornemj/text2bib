@@ -1873,6 +1873,7 @@ class Converter
                 && ! $containsPublisher
                 && ! $containsCity
                 && ! $endsAddressPublisher
+                && ! $containsIsbn
                 ) {
             $this->verbose("Item type case 6");
             $itemKind = 'article';
@@ -3988,10 +3989,11 @@ class Converter
                 $done = false;
                 $newRemainder = null;
                 $remainder = implode(" ", $remainingWords);
+                $this->verbose('Remainder: ' . $remainder);
                 $origRemainder = $remainder;
                 $result = $this->removeAndReturn(
                     $remainder,
-                    '(?P<volumeDesignation>(\(?' . $this->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}|[IVXL]{1,3})\)?))((?P<punc> of| in|,|.)? )(?P<seriesAndPubInfo>.*)$',
+                    '(?P<volumeDesignation>(\(?' . $this->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}|[IVXL]{1,3})\)?))((?P<punc> of| in|,|.|:)? )(?P<seriesAndPubInfo>.*)$',
                     ['volumeDesignation', 'volume', 'punc', 'seriesAndPubInfo']
                 );
                 // $result = $this->findRemoveAndReturn(
@@ -4000,15 +4002,16 @@ class Converter
                 // );
                 if ($result) {
                     //dump($result, $remainder, substr_count(trim($result['before']), ' '));
-                    if (in_array($result['punc'], ['.', ',']) && substr_count(trim($result['before']), ' ') <= 1) {
+                    if (in_array($result['punc'], ['.', ',', ':']) && substr_count(trim($result['before']), ' ') <= 1) {
                         // Volume is volume of book, not part of series
                         // Publisher and possibly address
                         $this->setField($item, 'volume', $result['volume'], 'setField 119');
-                        $newRemainder = $remainder;
+                        $newRemainder = $result['before'] . ' ' . $result['seriesAndPubInfo'] . ' ' . $result['after'];
+                        //$newRemainder = $remainder;
                     } elseif (substr_count(trim($result['before']), ' ') > 1) {
                         // Words before volume designation are series name.  **Book has no field for volume of
                         // series, so add volume designation to series field.**
-                        $this->setField($item, 'series', trim($result['before']) . ' ' . $result['volumeDesignation']);
+                        $this->setField($item, 'series', trim($result['before']) . ' ' . $result['volumeDesignation'], 'setField 119a');
                         //dump($result['after'], $result['seriesAndPubInfo']);
                         $newRemainder = $result['seriesAndPubInfo'];
                     } else {
@@ -4027,8 +4030,10 @@ class Converter
                                 // before the publisher must be the series
                                 $this->setField($item, 'address', trim($after, ',. '), 'setField 122');
                                 $series = trim($before, '., ');
-                                if ($this->containsFontStyle($series, true, 'italics', $startPos, $length)) {
-                                    $this->setField($item, 'series', rtrim(substr($series, $length), '}'), 'setField 123');
+                                if ($this->containsFontStyle($series, false, 'italics', $startPos, $length)) {
+                                    $series = substr($series, 0, $startPos) . substr($series, $startPos + $length);
+                                    $series = rtrim($series, '}');
+                                    $this->setField($item, 'series', $series, 'setField 123');
                                     $this->verbose('Removed italic formatting from series name');
                                 } else {
                                     $this->setField($item, 'series', $series, 'setField 124');
@@ -4106,8 +4111,10 @@ class Converter
                     }
                 }
 
-                // Volume has been identified, but publisher and possibly address remain
+                // Possibly series, publisher, and address remain
                 if (! $done) {
+                    $this->verbose('[4] Remainder: ' . $remainder);
+                    $this->verbose('$cityString: ' . ($cityString ?: '[none]') . ' . $publisherString: ' . ($publisherString ?: '[none]'));
                     $remainder = $newRemainder ?? implode(" ", $remainingWords);
                     $remainder = trim($remainder, ' .');
 
@@ -4138,11 +4145,18 @@ class Converter
                         $periodPos = strpos($remainderMinusPubInfo, '.');
                         if ($periodPos !== false && strtolower($remainderMinusPubInfo[$periodPos-1]) == $remainderMinusPubInfo[$periodPos-1]) {
                             $beforePeriod = trim(Str::before($remainderMinusPubInfo, '.'));
-                            if (Str::contains($beforePeriod, ['series', 'Series'])) {
-                                $this->setField($item, 'series', $beforePeriod, 'setField 147');
-                                $remainder = trim(Str::remove($beforePeriod, $remainder));
+                            if (preg_match('/([Ss]eries|[Ll]ecture [Nn]otes)/', $beforePeriod)) {
+                                $series = $beforePeriod;
+                                if (preg_match('/^(?P<volume> ?' . $this->volumeWithNumberRegExp . ')(?P<remainder>.*?)$/', Str::after($remainderMinusPubInfo, '.'), $matches)) {
+                                    if (isset($matches['volume'])) {
+                                        $series .= '.' . $matches['volume'];
+                                        $remainder = $matches['remainder'] ?? '';
+                                    }
+                                } else {
+                                    $remainder = trim(Str::remove($beforePeriod, $remainder));
+                                }
+                                $this->setField($item, 'series', $series, 'setField 147');
                             }
-                            //$this->setField($item, 'title', $item->title . $series, 'setField 110');
                         }
 
                         // First use routine to find publisher and address, to catch cases where address

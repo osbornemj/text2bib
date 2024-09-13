@@ -13236,9 +13236,11 @@ class ExampleSeeder extends Seeder
             ],
 
  
-                       
+            
         ];
 
+        $x = '3­--10';
+        
         DB::statement('DELETE FROM examples');
         DB::statement('ALTER TABLE examples AUTO_INCREMENT 1');
         DB::statement('ALTER TABLE example_fields AUTO_INCREMENT 1');
