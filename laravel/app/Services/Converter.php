@@ -175,6 +175,7 @@ class Converter
             '[IiEe][nm]', // English, Spanish, French(?), Portuguese
             '[Dd]ans',    // French
             '[Dd]alam',   // Indonesian
+            'W',          // Polish
         ];
 
         // $this->inRegExp = '([IiEe][nm]| ...)';
@@ -202,6 +203,7 @@ class Converter
             '[Dd]ir\.',     // French
             'რედ\.?',      // Georgian
             '[Aa] cura di', // Italian
+            '[Rr]ed\.',     // Polish
         ];
 
         $editedByWords = [
@@ -1581,9 +1583,7 @@ class Converter
         // OR contains ', ed.' or ', eds.' or ', editor' or ', editors' not preceded by '1st', '2nd', ... OR by '1st.', '2nd.', ...  
         // (Idea is that it contains '<name>, ed.' or ', ed. <name>')
         // Note that 'Ed.' may appear in a journal name.
-        $regExpStart = '/^eds?\.|(?<!';
-        $regExpEnd1 = '|rev\.)[ \(}](eds?\.|editors?|edited by),/i';
-        $regExpEnd2 = '|rev\.), ?[ \(}](eds?\.|editors?|edited by)/i';
+        $regExpStart = '/^[Ee]ds?\.|(?<!';
 
         $regExp11 = $regExp12 = $regExp21 = $regExp22 = $regExpStart;
         foreach ($this->ordinals[$language] as $i => $ordinal) {
@@ -1593,6 +1593,18 @@ class Converter
             $regExp21 .= $add . '\.';
             $regExp22 .= $add . '\.';
         }
+
+//        $edPattern = '[ (}]([Ee]ds?\.|[Ee]ditors?|[Ee]dited by)';
+//dump($edPattern);
+        $edPattern = '[ (}](' . $this->edsNoParensRegExp . '|' . $this->editedByRegExp . ')';
+//        $edPattern = '[ (}]' . $this->edsNoParensRegExp;
+//dump($edPattern);
+        $regExpEnd1 = '|rev\.)' . $edPattern . ',/';
+        $regExpEnd2 = '|rev\.), ?' . $edPattern . '/';
+
+        // $regExpEnd1 = '|rev\.)[ \(}](eds?\.|editors?|edited by),/i';
+        // $regExpEnd2 = '|rev\.), ?[ \(}](eds?\.|editors?|edited by)/i';
+
         $regExp11 .= $regExpEnd1;
         $regExp12 .= $regExpEnd2;
         $regExp21 .= $regExpEnd1;
@@ -3171,9 +3183,43 @@ class Converter
                                     );
                                     $editor = trim($editorConversion['authorstring']);
                                     $this->setField($item, 'editor', $editor, 'setField 78');
-                                    $booktitle = trim($strings[1-$i], ',');
-                                    $this->setField($item, 'booktitle', $booktitle, 'setField 79');
-                                    $remainder = substr($string, 0, -2); // remove ' 1' appended to $string
+                                    $booktitleAndPubInfo = trim($strings[1-$i], ',');
+
+                                    $result = false;
+                                    $result = preg_match('/^(?P<booktitle>[^.]*?)\.(?P<publisherAddress>.*?)$/', $booktitleAndPubInfo, $matches);
+                                    if (! $result) {
+                                        $result = preg_match('/^(?P<booktitle>[^,]*?),(?P<publisherAddress>.*?)$/', $booktitleAndPubInfo, $matches);
+                                    }
+
+                                    if (
+                                        ! isset($item->address) 
+                                        &&
+                                        ! isset($item->publisher)
+                                        && 
+                                        $result
+                                    ) {
+                                        $booktitle = trim($matches['booktitle']);
+                                        $remainder = $this->publisherAddressParser->extractPublisherAndAddress(
+                                            $matches['publisherAddress'],
+                                            $address, 
+                                            $publisher, 
+                                            $cityString, 
+                                            $publisherString, 
+                                            $this->cities, 
+                                            $this->publishers
+                                        );
+                                        $this->setField($item, 'booktitle', $booktitle, 'setField 79a');
+                                        if ($address) {
+                                            $this->setField($item, 'address', $address, 'setField 79b');
+                                        }
+                                        if ($publisher) {
+                                            $this->setField($item, 'publisher', $publisher, 'setField 79c');
+                                        }
+                                    } else {
+                                        $booktitle = $booktitleAndPubInfo;
+                                        $this->setField($item, 'booktitle', $booktitle, 'setField 79d');
+                                        $remainder = substr($string, 0, -2); // remove ' 1' appended to $string
+                                    }
                                     $updateRemainder = false;
                                 }
                             }

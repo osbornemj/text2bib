@@ -13234,13 +13234,45 @@ class ExampleSeeder extends Seeder
                 ],
 					'char_encoding' => 'utf8leave',
             ],
+			// ending page number not detected (because of presence of soft hyphen in page range)
+			[
+                'source' => '\bibitem{ref4}  Yuka Muraoka and Robert J. S. Rowland. 2022. Shadowing Practice  Through Xreading: Does it Help Develop Speaking Abilities of Japanese  EFL Learners? The Journal of Seigakuin University, 34, 2, 33­--51. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Yuka Muraoka and Robert J. S. Rowland',
+                    'title' => 'Shadowing Practice Through Xreading: Does it Help Develop Speaking Abilities of Japanese EFL Learners?',
+                    'journal' => 'The Journal of Seigakuin University',
+                    'year' => '2022',
+                    'volume' => '34',
+                    'number' => '2',
+                    'pages' => '33-51',
+                    ]
+            ],
+			// Polish words
+			[
+                'source' => 'Trepińska, Janina, Leszek Kowanetz. „Wieloletni przebieg średnich miesięcznych wartości temperatury powietrza w Krakowie (1792–1995)”. W: Wahania klimatu w Krakowie (1792–1995), red. J. Trepińska, 99–130. Kraków: Instytut Geografii Uniwersytetu Jagiellońskiego, 1997. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Trepińska, Janina and Leszek Kowanetz',
+                    'title' => 'Wieloletni przebieg średnich miesięcznych wartości temperatury powietrza w Krakowie (1792--1995)',
+                    'year' => '1997',
+                    'pages' => '99-130',
+                    'address' => 'Kraków',
+					'publisher' => 'Instytut Geografii Uniwersytetu Jagiellońskiego',
+                    'booktitle' => 'Wahania klimatu w Krakowie (1792--1995)',
+					'editor' => 'J. Trepińska',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+
+
 
  
             
         ];
 
         $x = '3­--10';
-        
+
         DB::statement('DELETE FROM examples');
         DB::statement('ALTER TABLE examples AUTO_INCREMENT 1');
         DB::statement('ALTER TABLE example_fields AUTO_INCREMENT 1');
