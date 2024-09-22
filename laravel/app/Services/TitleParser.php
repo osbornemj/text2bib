@@ -59,11 +59,13 @@ class TitleParser
         string $inRegExp, 
         string $volumeRegExp, 
         string $volumeAndCodesRegExp, 
+        string $seriesRegExp,
         bool $includeEdition = false, 
         string $language = 'en'
        ): array
     {
         $title = null;
+        $seriesNext = false;
         $originalRemainder = $remainder;
 
         $remainder = str_replace('  ', ' ', $remainder);
@@ -596,9 +598,10 @@ class TitleParser
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
                     // elseif next sentence contains word 'series', terminate title
-                    } elseif (preg_match('/(?<!time) series/i', $stringToNextPeriodOrComma)) {
-                        $this->verbose("Ending title, case 4b (next sentence contains 'series' not preceded by 'time')");
+                    } elseif (preg_match('/' . $seriesRegExp . '/', $stringToNextPeriodOrComma)) {
+                        $this->verbose("Ending title, case 4b (next sentence contains a phrase indicating a 'series')");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
+                        $seriesNext = true;
                         break;
                     } elseif (preg_match('/edited (and translated )?by/i', $remainder)) {
                         $this->verbose("Ending title, case 4c");
@@ -748,6 +751,8 @@ class TitleParser
 
         $result['title'] = $title;
         $result['titleDetails'] = $this->titleDetails;
+        $result['seriesNext'] = $seriesNext;
+        $result['stringToNextPeriodOrComma'] = $stringToNextPeriodOrComma ?? '';
 
         return $result;
     }

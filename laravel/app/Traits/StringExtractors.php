@@ -52,13 +52,12 @@ trait StringExtractors
      * return matches for each string with name in $names, and remove entire match for $regExp from $string.
      * If no match, return false (and do not alter $string).
      */
-    private function removeAndReturn(string &$string, string $regExp, array $names, bool $caseInsensitive = true): false|string|array
+    private function removeAndReturn(string &$string, string $regExp, array $names, string $position = 'first', bool $caseInsensitive = true): false|string|array
     {
-        $matched = preg_match(
-            '%^(?P<before>.*?)' . $regExp . '(?P<after>.*?)$%u' . ($caseInsensitive ? 'i' : ''),
-            $string,
-            $matches,
-        );
+
+        $regExp = '%^(?P<before>.*' . ($position == 'first' ? '?' : '') . ')' . $regExp . '(?P<after>.*?)$%u' . ($caseInsensitive ? 'i' : '');
+
+        $matched = preg_match($regExp, $string, $matches);
 
         if (! $matched) {
             return false;

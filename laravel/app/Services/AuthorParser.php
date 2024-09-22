@@ -1193,6 +1193,8 @@ class AuthorParser
     {
         $this->verbose(['text' => 'formatAuthor: argument ', 'words' => [$nameString]]);
 
+        $nameString = rtrim($nameString, '\\ ');
+
         // $nameStrings that should not be changed
         $exceptions = ['John Paul II'];
 
@@ -1347,9 +1349,9 @@ class AuthorParser
     public function isName(string $word, string $finalPunc = ''): bool
     {
         if (in_array(substr($word, -1), str_split($finalPunc))) {
-            $word = substr($word, 0, -1);
+            $word = mb_substr($word, 0, -1);
         }
-        if (preg_match('/^[a-z{}\\\"\'\-]+$/i', $word) && (ucfirst($word) == $word || strtoupper($word) == $word)) {
+        if (preg_match('/^\p{Lu}[\p{L}{}\\\"\'\-]+$/u', $word)) {
             return true;
         }
 
@@ -1378,22 +1380,39 @@ class AuthorParser
             $result = false;
         } elseif ($this->isInitials($words[0]) && count($words) >= 2) {
             $this->verbose('First word is initials and there are at least 2 words in string');
-            if ($this->isName(rtrim($word1, '.,')) && (ctype_alpha($word1) || count($words) == 2)) {
+            if ($this->isName(rtrim($word1, '.,')) && (preg_match('/^\p{L}+$/u', $word1) || count($words) == 2)) {
                 $this->verbose("isNameString: string is name (case 1): <initial> <name>");
                 $result = true;
             } elseif (
                     $this->isInitials($word1)
                     && count($words) >= 3
                     && $this->isName(rtrim($words[2], '.,'))
-                    && ctype_alpha(rtrim($words[2], '.,'))
             ) {
-                $this->verbose("isNameString: string is name (case 2): <initial> <initial> <name>");
+                $this->verbose("isNameString: string is name (case 2a): <initial> <initial> <name>");
+                $result = true;
+            } elseif (
+                $this->isInitials($word1)
+                && count($words) >= 4
+                && $this->isInitials($words[2])
+                && $this->isName(rtrim($words[3], '.,'))
+            ) {
+                $this->verbose("isNameString: string is name (case 2b): <initial> <initial> <initial> <name>");
+                $result = true;
+            } elseif (
+                $this->isInitials($word1)
+                && count($words) >= 5
+                && $this->isInitials($words[2])
+                && $this->isInitials($words[3])
+                && $this->isName(rtrim($words[4], '.,'))
+            ) {
+                $this->verbose("isNameString: string is name (case 2c): <initial> <initial> <initial> <initial> <name>");
                 $result = true;
             } elseif (
                 in_array($word1, $this->vonNames)
                 && count($words) >= 3
                 && $this->isName(rtrim($words[2], '.,'))
-                && ctype_alpha(rtrim($words[2], '.,'))
+                && preg_match('/^\p{L}+$/u', rtrim($words[2], '.,'))
+                //&& ctype_alpha(rtrim($words[2], '.,'))
             ){
                 $this->verbose("isNameString: string is name (case 3): <initial> <vonName> <name>");
                 $result = true;

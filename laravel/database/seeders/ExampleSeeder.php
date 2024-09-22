@@ -13264,6 +13264,110 @@ class ExampleSeeder extends Seeder
                     ],
 					'char_encoding' => 'utf8leave',
             ],
+			// series
+			[
+                'source' => '\bibitem[Co-I]{Co1} Conway, J.\ B.\ : Functions of one complex   variable. Graduate Texts in Mathematics {\bf 11}. Springer, New York   (1973). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Conway, J. B.',
+                    'title' => 'Functions of one complex variable',
+					'series' => 'Graduate Texts in Mathematics 11',
+                    'year' => '1973',
+                    'publisher' => 'Springer',
+                    'address' => 'New York',
+                    ]
+            ],
+            // series
+			[
+                'source' => '\bibitem[Ch]{Ch} Chen, B.\ : Geometry of submanifolds. Pure and Applied   Mathematics {\bf 22}. Marcel Dekker, New York (1973). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Chen, B.',
+                    'title' => 'Geometry of submanifolds',
+					'series' => 'Pure and Applied Mathematics 22',
+                    'year' => '1973',
+                    'publisher' => 'Marcel Dekker',
+                    'address' => 'New York',
+                    ]
+            ],
+			// series
+			[
+                'source' => '\bibitem[B-F-L-P-P]{BFLPP} Burstall, F.\ , Ferus, D.\ , Leschke, K.\ ,   Pedit, F.\ , Pinkall, U.\ : Conformal geometry of surfaces in   $\mathbb{S}^4$ and   quaternions.  Lecture Notes in Mathematics {\bf 1772}.   Springer, Berlin, New York (2002). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Burstall, F. and Ferus, D. and Leschke, K. and Pedit, F. and Pinkall, U.',
+                    'title' => 'Conformal geometry of surfaces in $\mathbb{S}^4$ and quaternions',
+					'series' => 'Lecture Notes in Mathematics 1772',
+                    'year' => '2002',
+                    'publisher' => 'Springer',
+                    'address' => 'Berlin, New York',
+                    ]
+            ],
+			// series
+			[
+                'source' => '\bibitem[B-Sa]{BSa} B\"uhler, T.\, Salamon, D.\ A.\ :Functional Analysis.  Graduate Studies in Mathematics {\bf 191}, American Mathematical Society,  Providence, Rhode Island (2018). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'B\"uhler, T. and Salamon, D. A.',
+                    'title' => 'Functional Analysis',
+                    'year' => '2018',
+                    'series' => 'Graduate Studies in Mathematics 191',
+                    'publisher' => 'American Mathematical Society',
+					'address' => 'Providence, Rhode Island',
+                    ]
+            ],
+			// series
+			[
+                'source' => '\bibitem[B-B-E-I-M]{BBEIM} Belokos, E.\ D.\ , Bobenko, A.\ I.\ , Enol\'skii   V.\ Z.\ , Its, A.\ R.\ , Matveev, V.\ B.\ : Algebro-geometric approach   to nonlinear integrable equations. Springer Series in Nonlinear   Dynamics, Springer, Berlin (1994). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Belokos, E. D. and Bobenko, A. I. and Enol\'skii, V. Z. and Its, A. R. and Matveev, V. B.',
+                    'title' => 'Algebro-geometric approach to nonlinear integrable equations',
+                    'year' => '1994',
+                    'series' => 'Springer Series in Nonlinear Dynamics',
+                    'publisher' => 'Springer',
+					'address' => 'Berlin',
+                    ]
+            ],
+			// series
+			[
+                'source' => '\bibitem[Au]{Au} Aubin, T.\: Some nonlinear problems in Riemannian  geometry. Springer Monographs in Mathematics. Springer, Berlin,  Heidelberg (1998). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Aubin, T.',
+                    'title' => 'Some nonlinear problems in Riemannian geometry',
+                    'year' => '1998',
+                    'series' => 'Springer Monographs in Mathematics',
+					'publisher' => 'Springer',
+                    'address' => 'Berlin, Heidelberg',
+                    ]
+            ],
+			// series
+			[
+                'source' => '\bibitem[dR]{dR} de Rham, G.\ : Differential manifolds: forms, currents, harmonic forms. Grundlehren der mathematischen Wissenschaften  {\bf 266}. Springer, Berlin Heidelberg (1984). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'de Rham, G.',
+                    'title' => 'Differential manifolds: forms, currents, harmonic forms',
+					'series' => 'Grundlehren der mathematischen Wissenschaften 266',
+                    'year' => '1984',
+                    'publisher' => 'Springer',
+                    'address' => 'Berlin Heidelberg',
+                    ]
+            ],
+			// series
+			[
+                'source' => '\bibitem[Da]{Da} Davies, E.\ B.\ : Heat kernels and spectral theory. Cambridge Tracts in Mathematics {\bf 92}, Cambridge University Press, Cambridge (1989). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Davies, E. B.',
+                    'title' => 'Heat kernels and spectral theory',
+                    'year' => '1989',
+                    'series' => 'Cambridge Tracts in Mathematics 92',
+                    'publisher' => 'Cambridge University Press',
+					'address' => 'Cambridge',
+                    ]
+            ],
 
 
 

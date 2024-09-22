@@ -88,7 +88,7 @@ trait AuthorPatterns
         // "Douglas Hedley, The Iconic Imagination (New York: Bloomsbury, 2016)."
         // because "The Iconic Imagination" gets interpreted as a second author.
         //$commaYear = ',? (?=[(\[`"\'\d])';
-        $commaYear = ',? (?=(([(\[](\d|ed|tran))|[`"\'\d]))';
+        $commaYear = ',? (?=(([(\[](\d|ed|tran|n\.))|[`"\'\d]))';
         // Requirement of lowercase after the first word for 4 bare words is to avoid terminating an author string like the following one
         // too early (after Hamilton SA):
         // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T:
@@ -120,7 +120,6 @@ trait AuthorPatterns
                 'end1' => ', ', 
                 'end2' => ', ' . $notAnd, 
                 'end3' => $periodOrColonOrCommaYear,
-//                'end3' => '(: |\. | (?=[\(\[`"\'\d]))', 
                 'initials' => true
             ],
             // 1. Smith,? (A.|AB), Jones,? (C.|CD), Gonzalez,? (J.|JD)(: |\. | followed by <paren> or <quote> or <digit> or 4 bare words)
@@ -136,7 +135,6 @@ trait AuthorPatterns
                 'name1' => $lastNameRegExp . ' \p{Lu}{1,3}', 
                 'end1' => ', ', 
                 'end2' => ',? ' . $andRegExp . ' ', 
-                //'end3' => '(: |\. |, | (?=[\(\[`"\'\d]))',
                 'end3' => $periodOrColonOrCommaYearOrCommaNotJr,  
                 'initials' => true
             ],
@@ -196,7 +194,6 @@ trait AuthorPatterns
             [
                 'name1' => $initialsLastName, 
                 'end1' => '[,;] ' . $notAnd, 
-                //'end2' => $periodOrColonOrCommaYearOrBareWords, 
                 'end2' => $periodOrColonOrCommaYearOrCommaNotInitialNotAnd, 
                 'end3' => null, 
             ],
@@ -204,7 +201,6 @@ trait AuthorPatterns
             [
                 'name1' => $initialsLastName, 
                 'end1' => '[,;] ' . $notAnd, 
-                //'end2' => $periodOrColonOrCommaYearOrBareWords, 
                 'end2' => $etal, 
                 'end3' => null, 
                 'etal' => true,
@@ -237,7 +233,6 @@ trait AuthorPatterns
                 'name1' => $firstNameInitialsLastName, 
                 'end1' => ', ' . $notAnd, 
                 'end2' => ',? ' . $andRegExp . ' ',
-                //'end3' => '[\.,;] ' . $notJr, 
                 'end3' => $periodOrColonOrCommaYearOrCommaNotJr, 
             ],
             // 15. Smith, Jane( J\.?)?, Susan( K\.?)? Jones,? and Jill( L\.?)? Gonzalez[,.] 
@@ -246,7 +241,6 @@ trait AuthorPatterns
                 'name2' => $firstNameInitialsLastName,
                 'end1' => ', ' . $notAnd, 
                 'end2' => ',? ' . $andRegExp . ' ',
-                //'end3' => '[\.,;]? ' . $notJr,
                 'end3' => $periodOrColonOrCommaYearOrCommaNotJr, 
             ],
             // 16. (Smith, J. A.(, |/))*Jones, A. B.,? <followed by>[\(|\[|`|\'|"|\d]

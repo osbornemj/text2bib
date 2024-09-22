@@ -114,7 +114,8 @@ trait Utilities
     var $endForthcomingRegExp = '( |\()(forthcoming|in press|accepted|to appear)\.?\)?$';
     var $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
 
-    var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№\.? ?|n\.? ?° ?|n\. ?º ?|[Ii]ssues?:? ?|Issue no. ?|Iss: |Heft ';
+    // (°|º) cannot be replaced by [°º].  Don't know why.
+    var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№\.? ?|[Nn]\.? ?(°|º) ?|[Ii]ssues?:? ?|Issue no. ?|Iss: |Heft ';
 
     // page range
     // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
@@ -538,6 +539,22 @@ trait Utilities
         return false;
     }
 
+    private function removeFontStyle(string $string, string $style): string
+    {
+        if ($style == 'italics') {
+            $codes = $this->italicCodes;
+        } elseif ($style == 'bold') {
+            $codes = $this->boldCodes;
+        }
+        foreach ($codes as $code) {
+            $string = str_replace($code, '', $string);
+        }
+
+        $string = str_replace('}', '', $string);
+
+        return $string;
+    }
+
     private function isAddressPublisher(string $string, bool $start = true, bool $finish = true, bool $allowYear = true): bool
     {
         $returner = false;
@@ -606,7 +623,27 @@ trait Utilities
         return $sentences;
     }
 
-    // Does $string start with US State abbreviation, possibly preceded by ', '?
+    /*
+     * Return the substring of $string before all of the characters in $chars
+     */
+    private function stringBefore(string $string, array $chars): string
+    {
+        $pos = strlen($string);
+        foreach ($chars as $char) {
+            $p = strpos($string, $char);
+            if ($p !== false) {
+                $pos = min($pos, $p);
+            }
+        }
+
+        $substring = substr($string, 0, $pos);
+
+        return $substring;
+    }
+
+    /* 
+     * Does $string start with US State abbreviation, possibly preceded by ', '?
+     */
     private function getUsState(string $string): string|bool
     {
         if (preg_match('/^(,? ?[A-Z]\.? ?[A-Z]\.?)[,.: ]/', $string, $matches)) {
