@@ -62,19 +62,19 @@
                 (journal names, based on conversions marked as correct by users and approved by administrator)
             </p>
             <p>
-                <x-link :href="route('startJournalAbbreviations.index')" :active="request()->routeIs('startJournalAbbreviations.index')">
+                <x-link :href="route('journalWordAbbreviations.index')" :active="request()->routeIs('journalWordAbbreviations.index')">
                     Abbreviations used in journal names
                 </x-link>
-                @if ($uncheckedStartJournalAbbreviationCount)
-                    <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedStartJournalAbbreviationCount }}</span>
-                    <x-link :href="route('admin.startJournalAbbreviations.unchecked')" :active="request()->routeIs('admin.startJournalAbbreviations.unchecked')">
+                @if ($uncheckedJournalWordAbbreviationCount)
+                    <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedJournalWordAbbreviationCount }}</span>
+                    <x-link :href="route('admin.journalWordAbbreviations.unchecked')" :active="request()->routeIs('admin.journalWordAbbreviations.unchecked')">
                         unchecked
                     </x-link>
                 @endif
                 &nbsp;
                 &bull;
                 &nbsp;
-                <x-link :href="route('admin.startJournalAbbreviations.populate')" :active="request()->routeIs('admin.startJournalAbbreviations.populate')">
+                <x-link :href="route('admin.journalWordAbbreviations.populate')" :active="request()->routeIs('admin.journalWordAbbreviations.populate')">
                     Add (as unchecked) all abbreviations in converted items
                 </x-link>
             </p>

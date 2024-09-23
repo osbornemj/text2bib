@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Http\Requests\StoreStartJournalAbbreviationRequest;
+use App\Http\Requests\StoreJournalWordAbbreviationRequest;
 use Livewire\Component;
 
 use App\Livewire\Forms\ShowConvertedItemForm;
@@ -17,7 +17,7 @@ use App\Models\Journal;
 use App\Models\Output;
 use App\Models\Publisher;
 use App\Models\RawOutput;
-use App\Models\StartJournalAbbreviation;
+use App\Models\JournalWordAbbreviation;
 use App\Models\User;
 
 use App\Notifications\ErrorReportPosted;
@@ -136,7 +136,7 @@ class ShowConvertedItem extends Component
             }
             if (preg_match('/^(?P<firstWord>[A-Z][a-z]+)\. /', $journalName, $matches)) {
                 if (isset($matches['firstWord'])) {
-                    StartJournalAbbreviation::firstOrCreate(
+                    JournalWordAbbreviation::firstOrCreate(
                         ['word' => $matches['firstWord']],
                         ['output_id' => $output->id]
                     );

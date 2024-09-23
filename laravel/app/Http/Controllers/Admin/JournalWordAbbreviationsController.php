@@ -5,45 +5,45 @@ namespace App\Http\Controllers\Admin;
 use DB;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreStartJournalAbbreviationRequest;
-use App\Http\Requests\UpdateStartJournalAbbreviationRequest;
+use App\Http\Requests\StoreJournalWordAbbreviationRequest;
+use App\Http\Requests\UpdateJournalWordAbbreviationRequest;
 use App\Models\Journal;
 use App\Models\Output;
-use App\Models\StartJournalAbbreviation;
+use App\Models\JournalWordAbbreviation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
-class StartJournalAbbreviationsController extends Controller
+class JournalWordAbbreviationsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(): View
     {
-        $checkedStartJournalAbbreviations = StartJournalAbbreviation::where('checked', 1)
+        $checkedJournalWordAbbreviations = JournalWordAbbreviation::where('checked', 1)
             ->with('output')
             ->orderBy('word')
             ->get();
 
-        $uncheckedStartJournalAbbreviations = StartJournalAbbreviation::where('checked', 0)
+        $uncheckedJournalWordAbbreviations = JournalWordAbbreviation::where('checked', 0)
             ->with('output')
             ->orderBy('word')
             ->get();
 
-        return view('admin.startJournalAbbreviations.index', compact('checkedStartJournalAbbreviations', 'uncheckedStartJournalAbbreviations'));
+        return view('admin.journalWordAbbreviations.index', compact('checkedJournalWordAbbreviations', 'uncheckedJournalWordAbbreviations'));
     }
 
     public function unchecked(): View
     {
-        $uncheckedStartJournalAbbreviations = StartJournalAbbreviation::where('checked', 0)
+        $uncheckedJournalWordAbbreviations = JournalWordAbbreviation::where('checked', 0)
             ->with('output')
             ->orderBy('word')
             ->paginate(50);
 
         $checked = 0;
 
-        return view('admin.startJournalAbbreviations.unchecked', compact('uncheckedStartJournalAbbreviations', 'checked'));
+        return view('admin.journalWordAbbreviations.unchecked', compact('uncheckedJournalWordAbbreviations', 'checked'));
     }
 
     /**
@@ -51,30 +51,30 @@ class StartJournalAbbreviationsController extends Controller
      */
     public function create(): View
     {
-        $startJournalAbbreviation = new StartJournalAbbreviation;
+        $journalWordAbbreviation = new JournalWordAbbreviation;
 
-        return view('admin.startJournalAbbreviations.create')
-                        ->with('startJournalAbbreviation', $startJournalAbbreviation);
+        return view('admin.journalWordAbbreviations.create')
+                        ->with('journalWordAbbreviation', $journalWordAbbreviation);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStartJournalAbbreviationRequest $request)
+    public function store(StoreJournalWordAbbreviationRequest $request)
     {
         $input = $request->except('_token');
         $input['checked'] = 1;
         $input['word'] = rtrim($input['word'], '.');
 
-        StartJournalAbbreviation::firstOrCreate($input);
+        JournalWordAbbreviation::firstOrCreate($input);
 
-        return redirect()->route('startJournalAbbreviations.index');
+        return redirect()->route('journalWordAbbreviations.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(StartJournalAbbreviation $startJournalAbbreviation)
+    public function show(JournalWordAbbreviation $journalWordAbbreviation)
     {
         //
     }
@@ -84,22 +84,22 @@ class StartJournalAbbreviationsController extends Controller
      */
     public function edit(int $id): View
     {
-        $startJournalAbbreviation = StartJournalAbbreviation::find($id);
+        $journalWordAbbreviation = JournalWordAbbreviation::find($id);
 
-        return view('admin.startJournalAbbreviations.edit')
-                        ->with('startJournalAbbreviation', $startJournalAbbreviation);
+        return view('admin.journalWordAbbreviations.edit')
+                        ->with('journalWordAbbreviation', $journalWordAbbreviation);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateStartJournalAbbreviationRequest $request, int $id)
+    public function update(UpdateJournalWordAbbreviationRequest $request, int $id)
     {
-        $startJournalAbbreviation = StartJournalAbbreviation::find($id);
-        $startJournalAbbreviation->word = $request->word;
-        $startJournalAbbreviation->save();
+        $journalWordAbbreviation = JournalWordAbbreviation::find($id);
+        $journalWordAbbreviation->word = $request->word;
+        $journalWordAbbreviation->save();
 
-        return redirect()->route('startJournalAbbreviations.index');
+        return redirect()->route('journalWordAbbreviations.index');
     }
 
     /**
@@ -107,17 +107,17 @@ class StartJournalAbbreviationsController extends Controller
      */
     public function destroy(int $id): RedirectResponse
     {
-        $startJournalAbbreviation = StartJournalAbbreviation::find($id);
-        $startJournalAbbreviation->delete();
+        $journalWordAbbreviation = JournalWordAbbreviation::find($id);
+        $journalWordAbbreviation->delete();
 
-        return redirect()->route('startJournalAbbreviations.index');
+        return redirect()->route('journalWordAbbreviations.index');
     }
 
     public function populate(): RedirectResponse
     {
 //        DB::table('outputs')->orderBy('id')->chunk(100, function (Collection $outputs) {
 
-        $outputs = Output::where('id', '<', 20000)->where('id', '>=', 10000)->get();
+        $outputs = Output::where('id', '<', 30000)->where('id', '>=', 20000)->get();
         foreach ($outputs as $output) {
             $item = $output->item;
             if (isset($item['journal'])) {
@@ -128,7 +128,7 @@ class StartJournalAbbreviationsController extends Controller
                         if (preg_match('/^[A-Z][a-z]*\.$/', $word)) {
                             $abbrev = substr($word, 0, -1);
                             if ($abbrev) {
-                                StartJournalAbbreviation::firstOrCreate(
+                                JournalWordAbbreviation::firstOrCreate(
                                     ['word' => $abbrev],
                                     ['output_id' => $output->id]
                                 );
@@ -139,7 +139,7 @@ class StartJournalAbbreviationsController extends Controller
             }
         }
 
-        return redirect()->route('startJournalAbbreviations.index');
+        return redirect()->route('journalWordAbbreviations.index');
 
     }
 }

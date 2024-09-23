@@ -18,7 +18,7 @@ use App\Http\Controllers\Admin\ItemTypesController;
 use App\Http\Controllers\Admin\JournalsController;
 use App\Http\Controllers\Admin\NamesController;
 use App\Http\Controllers\Admin\PublishersController;
-use App\Http\Controllers\Admin\StartJournalAbbreviationsController;
+use App\Http\Controllers\Admin\JournalWordAbbreviationsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\VonNamesController;
 
@@ -103,7 +103,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         '/admin/vonNames' => VonNamesController::class,
         '/admin/publishers' => PublishersController::class,
         '/admin/cities' => CitiesController::class,
-        '/admin/startJournalAbbreviations' => StartJournalAbbreviationsController::class,
+        '/admin/journalWordAbbreviations' => JournalWordAbbreviationsController::class,
         '/admin/names' => NamesController::class,
         '/admin/excludedWords' => ExcludedWordsController::class,
         '/admin/dictionaryNames' => DictionaryNamesController::class,
@@ -114,7 +114,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/index', 'index')->name('admin.index');
         Route::get('/admin/phpinfo', 'phpinfo')->name('admin.phpinfo');
         Route::get('/admin/addVersion', 'addVersion')->name('admin.addVersion');
-        Route::get('/admin/addExistingStarts', 'addExistingStarts')->name('admin.startJournalAbbreviations.addExistingStarts');
+        Route::get('/admin/addExistingStarts', 'addExistingStarts')->name('admin.journalWordAbbreviations.addExistingStarts');
     });
 
     Route::controller(ErrorReportController::class)->group(function () {
@@ -133,9 +133,9 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/uncheckedJournals', 'unchecked')->name('admin.journals.unchecked');
     });
 
-    Route::controller(StartJournalAbbreviationsController::class)->group(function () {
-        Route::get('/admin/uncheckedStartJournalAbbreviations', 'unchecked')->name('admin.startJournalAbbreviations.unchecked');
-        Route::get('/admin/populateJournalAbbreviations', 'populate')->name('admin.startJournalAbbreviations.populate');
+    Route::controller(JournalWordAbbreviationsController::class)->group(function () {
+        Route::get('/admin/uncheckedJournalWordAbbreviations', 'unchecked')->name('admin.journalWordAbbreviations.unchecked');
+        Route::get('/admin/populateJournalAbbreviations', 'populate')->name('admin.journalWordAbbreviations.populate');
     });
 
     Route::controller(ConversionAdminController::class)->group(function () {

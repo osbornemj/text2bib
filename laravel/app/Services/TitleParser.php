@@ -46,7 +46,7 @@ class TitleParser
         string|null $journal, 
         bool $containsUrlAccessInfo, 
         array $publishers, 
-        array $startJournalAbbreviations, 
+        array $journalWordAbbreviations, 
         array $excludedWords, 
         array $cities, 
         array $dictionaryNames, 
@@ -130,7 +130,7 @@ class TitleParser
             // Last word has to be in the dictionary (proper nouns allowed) and not an excluded word, OR start with a lowercase letter.
             // That excludes cases in which the period ends an abbreviation in a journal name (like "A theory of something, Bull. Amer.").
             if (
-                ! in_array($lastWord, $startJournalAbbreviations)
+                ! in_array($lastWord, $journalWordAbbreviations)
                 && 
                 ! in_array($lastWord, ['no', 'vol', 'pp'])
                 &&
@@ -438,14 +438,14 @@ class TitleParser
                         || (
                             $nextWord 
                             && Str::endsWith($nextWord, '.') 
-                            && in_array(substr($nextWord, 0, -1), $startJournalAbbreviations)
+                            && in_array(substr($nextWord, 0, -1), $journalWordAbbreviations)
                            )
                         || (
                             $nextWord 
                             && $nextButOneWord 
                             && (Str::endsWith($nextWord, range('a', 'z')) || in_array($nextWord, ['IEEE', 'ACM'])) 
                             && Str::endsWith($nextButOneWord, '.') 
-                            && in_array(substr($nextButOneWord, 0, -1), $startJournalAbbreviations)
+                            && in_array(substr($nextButOneWord, 0, -1), $journalWordAbbreviations)
                            )
                         // pages (e.g. within book)
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
@@ -698,7 +698,7 @@ class TitleParser
                         //     break;
                         } elseif (Str::endsWith($word, [','])) {
                             $this->verbose("Not ending title, case 7a (word '" . $word ."')");
-                        } elseif (in_array(rtrim($wordAfterNextCommaOrPeriod, '.'), $startJournalAbbreviations)) {
+                        } elseif (in_array(rtrim($wordAfterNextCommaOrPeriod, '.'), $journalWordAbbreviations)) {
                             // Word after next comma or period is a start journal abbreviation
                             $this->verbose("Not ending title, case 7b");
                         } elseif (

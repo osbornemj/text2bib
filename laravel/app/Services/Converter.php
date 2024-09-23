@@ -11,7 +11,7 @@ use App\Models\ExcludedWord;
 //use App\Models\Journal;
 use App\Models\Name;
 use App\Models\Publisher;
-use App\Models\StartJournalAbbreviation;
+use App\Models\JournalWordAbbreviation;
 
 use App\Traits\AuthorPatterns;
 use App\Traits\MakeScholarTitle;
@@ -72,7 +72,7 @@ class Converter
     var $retrievedFromRegExp1;
     var $retrievedFromRegExp2;
     var $seriesRegExp;
-    var $startJournalAbbreviations;
+    var $journalWordAbbreviations;
     var $startPagesRegExp;
     var $thesisRegExp;
     var $translatedByRegExp;
@@ -129,7 +129,7 @@ class Converter
         $this->journalNames = [];
 
         // Abbreviations used as the first words of journal names (like "J." or "Bull.")
-        $this->startJournalAbbreviations = StartJournalAbbreviation::where('distinctive', 1)
+        $this->journalWordAbbreviations = JournalWordAbbreviation::where('distinctive', 1)
             ->where('checked', 1)
             ->pluck('word')
             ->toArray();
@@ -1367,7 +1367,7 @@ class Converter
                     $journal, 
                     $containsUrlAccessInfo, 
                     $this->publishers, 
-                    $this->startJournalAbbreviations, 
+                    $this->journalWordAbbreviations, 
                     $this->excludedWords, 
                     $this->cities,
                     $this->dictionaryNames,
@@ -2125,7 +2125,7 @@ class Converter
                     // E.g. 'electron', 'soc', 'Am', 'phys'.
                     $journalWords = explode(' ', $journal);
                     $lastJournalWord = array_pop($journalWords);
-                    if (substr($lastJournalWord, -1) == '.' && ! in_array(substr($lastJournalWord, 0, -1), $this->startJournalAbbreviations)) {
+                    if (substr($lastJournalWord, -1) == '.' && ! in_array(substr($lastJournalWord, 0, -1), $this->journalWordAbbreviations)) {
                         //$lastJournalWord = substr($lastJournalWord, 0, -1);
                         $journal = substr($journal, 0, -1);
                     }

@@ -1,19 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl leading-tight">
-            Edit start journal abbreviation
+            Edit journal word abbreviation
             </h2>
     </x-slot>
 
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
-            <form method="POST" action="{{ route('startJournalAbbreviations.update', $startJournalAbbreviation->id) }}">
+            <form method="POST" action="{{ route('journalWordAbbreviations.update', $journalWordAbbreviation->id) }}">
                 @method('PUT')
                 @csrf
 
                 <div>
                     <x-input-label for="word" :value="__('Word')" />
-                    <x-text-input id="word" class="block mt-1" name="word" :value="old('word', $startJournalAbbreviation->word)" required autofocus />
+                    <x-text-input id="word" class="block mt-1" name="word" :value="old('word', $journalWordAbbreviation->word)" required autofocus />
                     <x-input-error :messages="$errors->get('word')" class="mt-2" />
                 </div>
 
@@ -25,7 +25,7 @@
             </form>
 
             <div class="flex items-center mt-4">
-                <x-link href="{{ url('/admin/startJournalAbbreviations') }}">All start journal abbreviations</x-link>
+                <x-link href="{{ url('/admin/journalWordAbbreviations') }}">All journal word abbreviations</x-link>
             </div>
 
         </div>

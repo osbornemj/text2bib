@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl leading-tight">
-            Add start journal abbreviation
+            Add journal word abbreviation
         </h2>
     </x-slot>
 
     <div class="sm:px-0 lg:px-0 space-y-6">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
-            <form method="POST" action="{{ route('startJournalAbbreviations.store') }}">
+            <form method="POST" action="{{ route('journalWordAbbreviations.store') }}">
                 @csrf
 
                 <div>
@@ -23,7 +23,7 @@
                 </div>
 
                 <div class="flex items-center mt-4">
-                    <x-link href="{{ url('/admin/startJournalAbbreviations') }}">All start journal abbreviations</x-link>
+                    <x-link href="{{ url('/admin/journalWordAbbreviations') }}">All journal word abbreviations</x-link>
                 </div>
             </form>
         </div>
