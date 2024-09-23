@@ -24,14 +24,11 @@ class JournalWordAbbreviationsController extends Controller
         $checkedJournalWordAbbreviations = JournalWordAbbreviation::where('checked', 1)
             ->with('output')
             ->orderBy('word')
-            ->get();
+            ->paginate(50);
 
-        $uncheckedJournalWordAbbreviations = JournalWordAbbreviation::where('checked', 0)
-            ->with('output')
-            ->orderBy('word')
-            ->get();
+        $uncheckedJournalWordAbbreviationCount = JournalWordAbbreviation::where('checked', 0)->count();
 
-        return view('admin.journalWordAbbreviations.index', compact('checkedJournalWordAbbreviations', 'uncheckedJournalWordAbbreviations'));
+        return view('admin.journalWordAbbreviations.index', compact('checkedJournalWordAbbreviations', 'uncheckedJournalWordAbbreviationCount'));
     }
 
     public function unchecked(): View

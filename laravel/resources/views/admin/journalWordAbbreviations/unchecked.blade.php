@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="px-4 mb-4 sm:px-4 sm:rounded-lg">
-        A word is distinctive (purple button) if it cannot plausibly occur at the last word in a title, following a comma.
+        A word is distinctive (purple button) if it cannot plausibly occur as the last word in a title, following a comma, or be the last word in a journal title.
     </div>
 
     <div class="px-4 sm:px-4 sm:rounded-lg">
