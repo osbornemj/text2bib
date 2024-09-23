@@ -134,10 +134,11 @@ class ShowConvertedItem extends Component
                 $journal->name = substr($journalName, 0, 255);
                 $journal->save();
             }
-            if (preg_match('/^(?P<firstWord>[A-Z][a-z]+)\. /', $journalName, $matches)) {
-                if (isset($matches['firstWord'])) {
+            if (preg_match_all('/(^| )(?P<word>[A-Z][a-z]+)\./', $journalName, $matches)) {
+                if (isset($matches['word'])) {
+                    foreach ($matches['word'] as $word)
                     JournalWordAbbreviation::firstOrCreate(
-                        ['word' => $matches['firstWord']],
+                        ['word' => $word],
                         ['output_id' => $output->id]
                     );
                 }
