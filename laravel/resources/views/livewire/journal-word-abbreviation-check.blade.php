@@ -1,14 +1,14 @@
 <div>
-    <x-small-button class="ml-1 bg-red-400 dark:bg-red-800" wire:click="delete">
+    <x-small-button class="ml-1 bg-red-400 dark:bg-red-800" wire:click="delete('{{ $type }}')">
         X
     </x-small-button>
 
     @if ($journalWordAbbreviation->checked)
-        <x-small-button class="ml-1 bg-green-600 dark:bg-green-700" wire:click="check(0)">
+        <x-small-button class="ml-1 bg-green-600 dark:bg-green-700" wire:click="check(0, '{{ $type }}')">
             &check;
         </x-small-button>
     @else
-        <x-small-button class="ml-1 bg-slate-300 dark:bg-slate-500" wire:click="check(1)">
+        <x-small-button class="ml-1 bg-slate-300 dark:bg-slate-500" wire:click="check(1, '{{ $type }}')">
             &check;
         </x-small-button>
     @endif
@@ -25,7 +25,7 @@
 
     <x-link href="{{ url('admin/journalWordAbbreviations/' . $journalWordAbbreviation->id . '/edit') }}">{{ $journalWordAbbreviation->word }}</x-link>
 
-    @if ($type == 'unchecked')
+    @if ($type == 'unchecked' && $journalWordAbbreviation->output)
         <span class="ml-2">
             {{ $journalWordAbbreviation->output->source }}
             {{-- $journalWordAbbreviation->output->item['journal'] ?? '' --}}

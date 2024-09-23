@@ -9,12 +9,12 @@ class JournalWordAbbreviationCheck extends Component
     public $journalWordAbbreviation;
     public $type;
 
-    public function check($value)
+    public function check($value, $type)
     {
         $this->journalWordAbbreviation->checked = $value;
         $this->journalWordAbbreviation->save();
 
-        return redirect()->to('/admin/journalWordAbbreviations');
+        return redirect()->to('/admin/' . ($type == 'unchecked' ? 'uncheckedJ' : 'j') . 'ournalWordAbbreviations');
     }
 
     public function distinctive($value)
@@ -23,10 +23,10 @@ class JournalWordAbbreviationCheck extends Component
         $this->journalWordAbbreviation->save();
     }
 
-    public function delete()
+    public function delete($type)
     {
         $this->journalWordAbbreviation->delete();
-        return redirect()->to('/admin/journalWordAbbreviations');
+        return redirect()->to('/admin/' . ($type == 'unchecked' ? 'uncheckedJ' : 'j') . 'ournalWordAbbreviations');
     }
 
 }
