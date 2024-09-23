@@ -19,6 +19,9 @@
         <x-link href="/admin/journalWordAbbreviations/create">Add abbreviation used in journal name</x-link>
         @if ($uncheckedJournalWordAbbreviations->count())
             <h3 class="mt-4 font-semibold text-lg leading-tight">Unchecked</h3>
+            <p>
+                {{ $uncheckedJournalWordAbbreviations->count() }} found
+            </p>
             <ul>
                 @foreach ($uncheckedJournalWordAbbreviations as $journalWordAbbreviation)
                 <li>
@@ -32,6 +35,9 @@
 
         @if ($checkedJournalWordAbbreviations->count())
             <h3 class="mt-4 font-semibold text-lg leading-tight">Checked</h3>
+            <p>
+                {{ $checkedJournalWordAbbreviations->count() }} found
+            </p>
             <ul>
                 @foreach ($checkedJournalWordAbbreviations as $journalWordAbbreviation)
                     <li>

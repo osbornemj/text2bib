@@ -1,6 +1,4 @@
 <div>
-    <x-link href="{{ url('admin/journalWordAbbreviations/' . $journalWordAbbreviation->id . '/edit') }}">{{ $journalWordAbbreviation->word }}</x-link>
-
     <x-small-button class="ml-1 bg-red-400 dark:bg-red-800" wire:click="delete">
         X
     </x-small-button>
@@ -24,6 +22,8 @@
             &nbsp;&nbsp;
         </x-small-button>
     @endif
+
+    <x-link href="{{ url('admin/journalWordAbbreviations/' . $journalWordAbbreviation->id . '/edit') }}">{{ $journalWordAbbreviation->word }}</x-link>
 
     @if ($type == 'unchecked')
         <span class="ml-2">
