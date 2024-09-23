@@ -113,11 +113,11 @@ class StartJournalAbbreviationsController extends Controller
         return redirect()->route('startJournalAbbreviations.index');
     }
 
-    public function populate()
+    public function populate(): RedirectResponse
     {
 //        DB::table('outputs')->orderBy('id')->chunk(100, function (Collection $outputs) {
 
-        $outputs = Output::where('id', '<', 10000)->get();
+        $outputs = Output::where('id', '<', 20000)->where('id', '>=', 10000)->get();
         foreach ($outputs as $output) {
             $item = $output->item;
             if (isset($item['journal'])) {
@@ -125,7 +125,7 @@ class StartJournalAbbreviationsController extends Controller
                 if ($journal) {
                     $journalWords = explode(' ', $journal);
                     foreach ($journalWords as $word) {
-                        if (substr($word, -1) == '.') {
+                        if (preg_match('/^[A-Z][a-z]*\.$/', $word)) {
                             $abbrev = substr($word, 0, -1);
                             if ($abbrev) {
                                 StartJournalAbbreviation::firstOrCreate(
@@ -138,5 +138,8 @@ class StartJournalAbbreviationsController extends Controller
                 }
             }
         }
+
+        return redirect()->route('startJournalAbbreviations.index');
+
     }
 }
