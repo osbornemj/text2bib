@@ -2120,13 +2120,10 @@ class Converter
                     if (Str::startsWith($journal, ['in ', 'In '])) {
                         $journal = substr($journal, 3);
                     }
-                    // Attempt to remove period at end of journal name when it shouldn't be there
-                    // But too many strings used as abbreviations in journal names are in the dictionary
-                    // E.g. 'electron', 'soc', 'Am', 'phys'.
+                    // Remove period at end of journal name when it doesn't terminate a journal word abbreviation
                     $journalWords = explode(' ', $journal);
                     $lastJournalWord = array_pop($journalWords);
                     if (substr($lastJournalWord, -1) == '.' && ! in_array(substr($lastJournalWord, 0, -1), $this->journalWordAbbreviations)) {
-                        //$lastJournalWord = substr($lastJournalWord, 0, -1);
                         $journal = substr($journal, 0, -1);
                     }
                     $journal = trim($journal, '_');

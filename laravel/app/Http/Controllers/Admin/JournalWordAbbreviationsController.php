@@ -117,7 +117,7 @@ class JournalWordAbbreviationsController extends Controller
     {
 //        DB::table('outputs')->orderBy('id')->chunk(100, function (Collection $outputs) {
 
-        $outputs = Output::where('id', '<', 50000)->where('id', '>=', 40000)->get();
+        $outputs = Output::where('id', '<', 60000)->where('id', '>=', 50000)->get();
         foreach ($outputs as $output) {
             $item = $output->item;
             if (isset($item['journal'])) {
