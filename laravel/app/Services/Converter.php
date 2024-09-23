@@ -336,6 +336,7 @@ class Converter
             '[Tt]omes?',   // French
             '[Bb]ände',    // German (plural)
             '[Bb]and',     // German
+            '[Bb]d\.',     // German
         ];
 
         $volumeRegExp = '';
