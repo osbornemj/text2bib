@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStartJournalAbbreviationRequest;
 use App\Http\Requests\UpdateStartJournalAbbreviationRequest;
 use App\Models\Journal;
+use App\Models\Output;
 use App\Models\StartJournalAbbreviation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -107,5 +108,31 @@ class StartJournalAbbreviationsController extends Controller
         $startJournalAbbreviation->delete();
 
         return redirect()->route('startJournalAbbreviations.index');
+    }
+
+    public function populate()
+    {
+        $outputs = Output::all();
+
+        foreach ($outputs as $output) {
+            $item = $output->item;
+            if (isset($item['journal'])) {
+                $journal = $item['journal'];
+                if ($journal) {
+                    $journalWords = explode(' ', $journal);
+                    foreach ($journalWords as $word) {
+                        if (strlen($word) > 1 && substr($word, -1) == '.') {
+                            $abbrev = substr($word, 0, -1);
+                            if ($abbrev) {
+                                StartJournalAbbreviation::firstOrCreate(
+                                    ['word' => $abbrev],
+                                    ['output_id' => $output->id]
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -791,7 +791,6 @@ class Converter
         // In case doi is repeated, as in \href{https://doi.org/<doi>}{<doi>} (in which case second {...} will remain)
         $remainder = str_replace('{\tt ' . $doi . '}', '', $remainder);
         $remainder = str_replace('{' . $doi . '}', '', $remainder);
-        // $remainder = str_replace($doi, '', $remainder);
 
         if ($urlDate) {
             $this->setField($item, 'urldate', $urlDate, 'setField 2');
@@ -814,7 +813,7 @@ class Converter
         foreach ($pmCodePatterns as $pmCodePattern) {
             if (preg_match('/^(?P<before>.*)(?P<pmcode>' . $pmCodePattern . ')(?P<after>.*)$/i', $remainder, $matches)) {
                 $this->addToField($item, 'note', $matches['pmcode'], 'addToField 1a');
-                $remainder = $matches['before'] . $matches['after'];
+                $remainder = $matches['before'] . '' . $matches['after'];
                 $remainder = trim($remainder, ' .;');
             }
         }
@@ -881,6 +880,8 @@ class Converter
             '%' . $accessedRegExp1 . '\.? ' . $urlRegExp . '$%i',
             // accessed <date> [no url]
             '%' . $accessedRegExp1 . '\.?$%i',
+            // \href{<url>}{<note>}
+            '%' . $urlRegExp . '{(?P<note>.*)}\.?$%i',
             // <url> <note>
             '%(url: ?)?' . $urlRegExp . '(?P<note>.*)$%i',
         ];
@@ -933,6 +934,8 @@ class Converter
             }
             if (! empty($siteName)) {
                 $this->addToField($item, 'note', trim(trim($retrievedFrom . $siteName, ':,; ') . $note, '{}'), 'addToField 2');
+            } elseif ($note) {
+                $this->addToField($item, 'note', $note, 'addToField 2a');
             }
         } else {
             $this->verbose("No url found.");
@@ -2120,12 +2123,12 @@ class Converter
                     // Attempt to remove period at end of journal name when it shouldn't be there
                     // But too many strings used as abbreviations in journal names are in the dictionary
                     // E.g. 'electron', 'soc', 'Am', 'phys'.
-                    // $journalWords = explode(' ', $journal);
-                    // $lastJournalWord = array_pop($journalWords);
-                    // if (substr($lastJournalWord, -1) == '.' && $this->inDict(substr($lastJournalWord, 0, -1))) {
-                    //     $lastJournalWord = substr($lastJournalWord, 0, -1);
-                    //     $journal = substr($journal, 0, -1);
-                    // }
+                    $journalWords = explode(' ', $journal);
+                    $lastJournalWord = array_pop($journalWords);
+                    if (substr($lastJournalWord, -1) == '.' && ! in_array(substr($lastJournalWord, 0, -1), $this->startJournalAbbreviations)) {
+                        //$lastJournalWord = substr($lastJournalWord, 0, -1);
+                        $journal = substr($journal, 0, -1);
+                    }
                     $journal = trim($journal, '_');
                     $this->setField($item, 'journal', trim($journal, '"*,;:{}- '), 'setField 38');
                 } elseif (! $journalNameMissingButHasVolume) {
@@ -2180,6 +2183,7 @@ class Converter
                             $pagesReported = true;
                         }
 
+                        $remainder = rtrim($remainder, '"');
                         $this->verbose("[p1] Remainder: " . $remainder);
 
                         if ($remainder) {

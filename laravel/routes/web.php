@@ -135,6 +135,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::controller(StartJournalAbbreviationsController::class)->group(function () {
         Route::get('/admin/uncheckedStartJournalAbbreviations', 'unchecked')->name('admin.startJournalAbbreviations.unchecked');
+        Route::get('/admin/populateJournalAbbreviations', 'populate')->name('admin.startJournalAbbreviations.populate');
     });
 
     Route::controller(ConversionAdminController::class)->group(function () {

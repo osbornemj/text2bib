@@ -32,7 +32,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Hillisch, A. and Pineda, L. F. and Hilgenfeld, R.',
                     'title' => 'Utility of homology models in the drug discovery process',
-                    'journal' => 'Drug Discov Today.',
+                    'journal' => 'Drug Discov Today',
                     'year' => '2004',
                     'volume' => '9',
                     'pages' => '659-669'
@@ -783,7 +783,7 @@ class ExampleSeeder extends Seeder
                 ]
             ],
             [
-                'source' => '\\bibitem{geant3} J. Allison et al., \\textit{Recent developments in Geant4}, Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment, vol. 835, pp. 186–225, 2016. https://www.sciencedirect.com/science/article/pii/S0168900216306957 [Cited on page 111.',
+                'source' => '\\bibitem{geant3} J. Allison et al., \\textit{Recent developments in Geant4}, Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment, vol. 835, pp. 186–225, 2016. https://www.sciencedirect.com/science/article/pii/S0168900216306957 [Cited on page 111].',
                 'type' => 'article',
                 'bibtex' => [
                     'author' => 'J. Allison and others',
@@ -793,6 +793,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2016',
                     'pages' => '186-225',
                     'url' => 'https://www.sciencedirect.com/science/article/pii/S0168900216306957',
+                    'note' => '[Cited on page 111].',
                 ]
             ],
             [
@@ -3108,7 +3109,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Alcolea, M. P. and Jones, P. H.',
                     'title' => 'Cell competition: winning out by losing notch',
-                    'journal' => 'Cell Cycle.',
+                    'journal' => 'Cell Cycle',
                     'year' => '2015',
                     'volume' => '14',
                     'pages' => '9-17',
@@ -3675,7 +3676,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Georgiades, J. and Zielinski, T. and Cicholska, A. and others',
                     'title' => 'Research on the oncolytic effect of APC viruses in cancer of the cervix uteri; preliminary report',
                     'year' => '1959',
-                    'journal' => 'Biul Inst Med Morsk Gdansk.',
+                    'journal' => 'Biul Inst Med Morsk Gdansk',
                     'pages' => '49-57',
                     'volume' => '10',
                     'note' => 'PMID: 13827367',
@@ -4149,7 +4150,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Peduzzi, P. and Concato, J. and Kemper, E. and Holford, T. R. and Feinstein, A. R.',
                     'year' => '1996',
                     'title' => 'A simulation study of the number of events per variable in logistic regression analysis',
-                    'journal' => 'Journal of Clinical Epidemiology.',
+                    'journal' => 'Journal of Clinical Epidemiology',
                     'pages' => '12',
                     'month' => 'December',
                     'volume' => '49',
@@ -4684,7 +4685,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Anak Kemarau, R. and Eboy, O. V.',
                     'title' => 'Statistical Modeling of Impacts El Niño Southern Oscillations (ENSO) on Land Surface Temperature in Small Medium Size City: Case Study Kuching Sarawak',
                     'year' => '2022',
-                    'journal' => 'Journal of Sustainable Natural Resources.',
+                    'journal' => 'Journal of Sustainable Natural Resources',
                     'volume' => '3',
                     'number' => '1',
                 ],
@@ -4709,7 +4710,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Dikbaş, F.',
                     'year' => '2017',
                     'title' => 'A novel two-dimensional correlation coefficient for assessing associations in time series data',
-                    'journal' => 'International Journal of Climatology.',
+                    'journal' => 'International Journal of Climatology',
                     'volume' => '37',
                 ],
                 'char_encoding' => 'utf8leave',
@@ -4722,7 +4723,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'França, F. M. and Ferreira, J. and Vaz-de-Mello, F. Z. and Maia, L. F. and Berenguer, E. and Ferraz Palmeira, A. and Fadini, R. and Louzada, J. and Braga, R. and Hugo Oliveira, V. and Barlow, J.',
                     'title' => 'El Niño impacts on human-modified tropical forests: Consequences for dung beetle diversity and associated ecological processes',
                     'year' => '2020',
-                    'journal' => 'Biotropica.',
+                    'journal' => 'Biotropica',
                     'volume' => '52',
                     'number' => '2',
                 ],
@@ -5429,7 +5430,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Hooda, Shalini and Jood, Sudesh',
                     'year' => '2017',
                     'title' => 'Effect of soaking and germination on nutrient and antinutrient contents of fenugreek (Trigonella foenum graecum L.)',
-                    'journal' => 'Journal of Food Biochemistry.',
+                    'journal' => 'Journal of Food Biochemistry',
                     'pages' => '165-176',
                     'volume' => '27',
                     'doi' => '10.1111/j.1745-4514.2003.tb00274.x',
@@ -5472,7 +5473,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2024',
                     'month' => 'May',
                     'date' => '2024-05-28',
-                    'journal' => 'Neurology.',
+                    'journal' => 'Neurology',
                     'volume' => '102',
                     'number' => '10',
                     'pages' => 'e209387',
@@ -6532,7 +6533,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Azhar Nnzba and Ghazali Plb and Mamat, M. B. and Abdullah, Y. B. and Mahmud, S. B. and Lambak, S. B. and others',
                     'title' => 'Acceptance of Integrated Modification Model of Auto Takaful Insurance in Malaysia',
-					'journal' => 'Far East Journal of Mathematical Sciences (FJMS).',
+					'journal' => 'Far East Journal of Mathematical Sciences (FJMS)',
                     'year' => '2017',
                     'month' => 'May',
                     'date' => '2017-05-01',
@@ -6549,7 +6550,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Bouzakis, K. D. and Bouzakis, E. and Kombogiannis, S. and Makrimallakis, S. and Skordaris, G. and Michailidis, N. and Charalampous, P. and Paraskevopoulou, R. and M\'Saoubi, R. and Aurich, J. C. and Barthelmä, F.',
                     'year' => '2014',
                     'title' => 'Effect of cutting edge preparation of coated tools on their performance in milling various materials',
-                    'journal' => 'CIRP Journal of Manufacturing Science and Technology.',
+                    'journal' => 'CIRP Journal of Manufacturing Science and Technology',
                     'pages' => '264-73',
                     'volume' => '7',
                     'number' => '3',
@@ -6566,7 +6567,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Tien, D. H. and Duy, T. N. and Thoa, P. T. T.',
                     'year' => '2023',
                     'title' => 'Applying GPR-FGRA hybrid algorithm for prediction and optimization of eco-friendly magnetorheological finishing Ti--6Al--4V alloy',
-                    'journal' => 'International Journal on Interactive Design and Manufacturing.',
+                    'journal' => 'International Journal on Interactive Design and Manufacturing',
 					'date' => '2023-04-01',
 					'month' => 'April',
                     'pages' => '729-45',
@@ -6584,7 +6585,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2016',
                     'month' => 'August',
 					'volume' => '16',
-                    'journal' => 'Journal of Research in Special Educational Needs.',
+                    'journal' => 'Journal of Research in Special Educational Needs',
                     'pages' => '701-7',
                     ]
             ],
@@ -6598,7 +6599,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2021',
                     'month' => 'October',
 					'date' => '2021-10-08',
-                    'journal' => 'Applied Sciences.',
+                    'journal' => 'Applied Sciences',
                     'pages' => '9322',
                     'volume' => '11',
 					'number' => '19',
@@ -6614,7 +6615,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2022',
                     'month' => 'January',
                     'date' => '2022-01-27',
-                    'journal' => 'Mathematics.',
+                    'journal' => 'Mathematics',
                     'volume' => '10',
                     'number' => '3',
                     'pages' => '397',
@@ -6630,7 +6631,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2020',
                     'month' => 'February',
                     'date' => '2020-02-25',
-                    'journal' => 'Human Resource Management Journal.',
+                    'journal' => 'Human Resource Management Journal',
                     'volume' => '31',
                     'number' => '1',
                     'pages' => '120-42',
@@ -6680,7 +6681,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'The Role of Index For Assessment In Business',
                     'year' => '2022',
                     'month' => 'September',
-                    'journal' => 'The Journal of Management Theory and Practice (JMTP).',
+                    'journal' => 'The Journal of Management Theory and Practice (JMTP)',
                     'pages' => '84-9',
                     'volume' => '3',
                     'number' => '2',
@@ -7443,7 +7444,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Tham, Y. C. and Li, X. and Wong, T. Y. and Quigley, H. A. and Aung, T. and Cheng, C. Y.',
                     'title' => 'Global prevalence of glaucoma and projections of glaucoma burden through 2040: A systematic review and meta-analysis',
-                    'journal' => 'Ophthalmology.',
+                    'journal' => 'Ophthalmology',
                     'year' => '2014',
                     'volume' => '121',
                     'number' => '11',
@@ -7458,7 +7459,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Jonas, J. B. and Aung, T. and Bourne, R. R. and Bron, A. M. and Ritch, R. and Panda-Jonas, S.',
                     'title' => 'Glaucoma',
-                    'journal' => 'Lancet.',
+                    'journal' => 'Lancet',
                     'year' => '2017',
                     'volume' => '390',
                     'number' => '10108',
@@ -7554,7 +7555,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Narayan, S. and Ramamurthy, A.',
                     'title' => 'Health and Safety Aspects of Beryllium Operations',
-					'journal' => 'Mineral Processing and Extractive Metallurgy Review.',
+					'journal' => 'Mineral Processing and Extractive Metallurgy Review',
                     'year' => '1995',
                     'month' => 'January',
                     'volume' => '14',
@@ -7583,7 +7584,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Beltr\\\'an, E. T. M. and P\\\'erez, M. Q. and S\\\'anchez, P. M. S. and Bernal, S. L. and Bovet, G. and P\\\'erez, M. G. and P\\\'erez, G. M. and Celdr\\\'an, A. H.',
                     'title' => 'Decentralized federated learning: Fundamentals, state of the art, frameworks, trends, and challenges',
-					'journal' => 'IEEE Communications Surveys \& Tutorials.',
+					'journal' => 'IEEE Communications Surveys \& Tutorials',
                     'year' => '2023',
                     'month' => 'September',
                     'volume' => '25',
@@ -7632,7 +7633,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Does plyometric training improve strength performance? A meta-analysis',
                     'year' => '2010',
                     'month' => 'September',
-                    'journal' => 'J Sci Med Sport.',
+                    'journal' => 'J Sci Med Sport',
                     'volume' => '13',
                     'number' => '5',
                     'pages' => '513-22',
@@ -8040,7 +8041,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Quality improvement for patients with hip fracture: experience from a multi-site audit',
                     'year' => '2002',
                     'month' => 'September',
-                    'journal' => 'Qual Saf Health Care.',
+                    'journal' => 'Qual Saf Health Care',
                     'volume' => '11',
                     'number' => '3',
                     'pages' => '239-45',
@@ -8356,7 +8357,7 @@ class ExampleSeeder extends Seeder
                     'doi' => '10.1109/10.846676',
                     'author' => 'D. J. France and R. G. Shiavi and S. Silverman and M. Silverman and M. Wilkes',
                     'title' => 'Acoustical properties of speech as indicators of depression and suicidal risk',
-					'journal' => 'IEEE Transactions on Biomedical Engineering.',
+					'journal' => 'IEEE Transactions on Biomedical Engineering',
                     'year' => '2000',
                     'volume' => '47',
                     'pages' => '829-837',
@@ -8489,7 +8490,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Chengning Wang and Dan Feng and Wei Tong and Yu Hua and Jingning Liu and Bing Wu and Wei Zhao and Linghao Song and Yang Zhang and Jie Xu and Xueliang Wei and Yiran Chen',
                     'title' => 'Improving Multilevel Writes on Vertical 3-D Cross-Point Resistive Memory',
-					'journal' => 'IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems.',
+					'journal' => 'IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems',
                     'year' => '2021',
                     'month' => 'April',
                     'pages' => '762-775',
@@ -10250,7 +10251,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Saraim, U. and Voruganti, S.',
                     'year' => '2022',
                     'title' => 'Heart disease prediction using data mining',
-                    'journal' => 'International Journal of Creative research Thoughts.',
+                    'journal' => 'International Journal of Creative research Thoughts',
                     'pages' => '886-895',
                     'volume' => '10',
                     'number' => '5',
@@ -10349,7 +10350,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Smith, M. P. and Loe, R. H.',
                     'title' => 'Sclerosing cholangitis: Review of recent case reports and associated diseases and four new cases',
                     'year' => '1965',
-                    'journal' => 'The American Journal of Surgery.',
+                    'journal' => 'The American Journal of Surgery',
                     'volume' => '110',
                     'number' => '2',
                     'pages' => '239-246',
@@ -12605,7 +12606,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2014',
                     'month' => 'July',
                     'date' => '2014-07-15',
-                    'journal' => 'Bioinformatics.',
+                    'journal' => 'Bioinformatics',
                     'volume' => '30',
                     'number' => '14',
                     'pages' => '2068-9',
@@ -12835,7 +12836,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'A. M. Bernstein and B. Titgemeier and K. Kirkpatrick and others',
                     'title' => 'Major Cereal Grain Fibres and Psyllium about Cardiovascular Health',
                     'year' => '2013',
-                    'journal' => 'Nutrients.',
+                    'journal' => 'Nutrients',
                     'volume' => '5',
                     'pages' => '1471-1487',
                     ]
@@ -13176,7 +13177,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '13',
 					'number' => '2',
                     'title' => 'The Use of Sharia Fintech on MSMEs Performance / Mediation of Interest in use of Transaction',
-					'journal' => 'Jurnal Reviu Akuntansi dan Keuangan.',
+					'journal' => 'Jurnal Reviu Akuntansi dan Keuangan',
                     ]
             ],
 			// formatting of names---initials not followed by periods; C. = pages
@@ -13368,6 +13369,44 @@ class ExampleSeeder extends Seeder
 					'address' => 'Cambridge',
                     ]
             ],
+			// \href not interpreted correctly
+			[
+                'source' => '\bibitem{Schwarz19} Schwarz, A. (2019). How augmented reality will change how you shop. \href{https://hbr.org/2019/12/how-augmented-reality-will-change-how-you-shop}{Harvard Business Review}. ',
+                'type' => 'online',
+                'bibtex' => [
+                    'url' => 'https://hbr.org/2019/12/how-augmented-reality-will-change-how-you-shop',
+                    'author' => 'Schwarz, A.',
+                    'year' => '2019',
+                    'title' => 'How augmented reality will change how you shop',
+                    'note' => 'Harvard Business Review',
+                    ]
+            ],
+			// trim " from volume
+			[
+                'source' => '\bibitem{zhengjzhang20} Zheng, J., Zhang, W., & Luo, M. (2020). Alibaba’s New Retail Strategy: Revolutionizing the Grocery Industry. \textit{Journal of Business Research}, 118, 490-501."  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Zheng, J. and Zhang, W. and Luo, M.',
+                    'year' => '2020',
+                    'title' => 'Alibaba\'s New Retail Strategy: Revolutionizing the Grocery Industry',
+                    'journal' => 'Journal of Business Research',
+                    'pages' => '490-501',
+                    'volume' => '118',
+                    ]
+            ],
+            // remove period at end of journal name
+            [
+                'source' => '7.	Bunge RP, Puckett WR, Hiester ED. Observations on the pathology of several types of human spinal cord injury, with emphasis on the astrocyte response to penetrating injuries. Advances in neurology. 1997;72:305-15. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bunge, R. P. and Puckett, W. R. and Hiester, E. D.',
+                    'title' => 'Observations on the pathology of several types of human spinal cord injury, with emphasis on the astrocyte response to penetrating injuries',
+                    'year' => '1997',
+                    'journal' => 'Advances in neurology',
+                    'volume' => '72',
+                    'pages' => '305-15',
+                    ]
+            ],            
 
 
 
