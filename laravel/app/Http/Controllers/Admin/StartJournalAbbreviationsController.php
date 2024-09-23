@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use DB;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStartJournalAbbreviationRequest;
 use App\Http\Requests\UpdateStartJournalAbbreviationRequest;
@@ -9,6 +11,7 @@ use App\Models\Journal;
 use App\Models\Output;
 use App\Models\StartJournalAbbreviation;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class StartJournalAbbreviationsController extends Controller
@@ -112,27 +115,27 @@ class StartJournalAbbreviationsController extends Controller
 
     public function populate()
     {
-        $outputs = Output::all();
-
-        foreach ($outputs as $output) {
-            $item = $output->item;
-            if (isset($item['journal'])) {
-                $journal = $item['journal'];
-                if ($journal) {
-                    $journalWords = explode(' ', $journal);
-                    foreach ($journalWords as $word) {
-                        if (strlen($word) > 1 && substr($word, -1) == '.') {
-                            $abbrev = substr($word, 0, -1);
-                            if ($abbrev) {
-                                StartJournalAbbreviation::firstOrCreate(
-                                    ['word' => $abbrev],
-                                    ['output_id' => $output->id]
-                                );
+        DB::table('outputs')->chunkById(100, function (Collection $outputs) {
+            foreach ($outputs as $output) {
+                $item = $output->item;
+                if (isset($item['journal'])) {
+                    $journal = $item['journal'];
+                    if ($journal) {
+                        $journalWords = explode(' ', $journal);
+                        foreach ($journalWords as $word) {
+                            if (strlen($word) > 1 && substr($word, -1) == '.') {
+                                $abbrev = substr($word, 0, -1);
+                                if ($abbrev) {
+                                    StartJournalAbbreviation::firstOrCreate(
+                                        ['word' => $abbrev],
+                                        ['output_id' => $output->id]
+                                    );
+                                }
                             }
                         }
                     }
                 }
             }
-        }
+        });
     }
 }
