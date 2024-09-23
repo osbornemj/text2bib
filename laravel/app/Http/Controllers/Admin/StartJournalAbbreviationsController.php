@@ -115,7 +115,7 @@ class StartJournalAbbreviationsController extends Controller
 
     public function populate()
     {
-        DB::table('outputs')->chunkById(100, function (Collection $outputs) {
+        DB::table('outputs')->orderBy('id')->chunk(100, function (Collection $outputs) {
             foreach ($outputs as $output) {
                 $item = $output->item;
                 if (isset($item['journal'])) {
