@@ -2121,12 +2121,41 @@ class Converter
                     if (Str::startsWith($journal, ['in ', 'In '])) {
                         $journal = substr($journal, 3);
                     }
-                    // Remove period at end of journal name when it doesn't terminate a journal word abbreviation
-                    $journalWords = explode(' ', $journal);
-                    $lastJournalWord = array_pop($journalWords);
-                    if (substr($lastJournalWord, -1) == '.' && ! in_array(substr($lastJournalWord, 0, -1), $this->journalWordAbbreviations)) {
-                        $journal = substr($journal, 0, -1);
+
+                    // If $journal ends in a period:
+                    // Remove period if 
+                    // it terminates a word that is not a journal word abbreviation
+                    // OR
+                    // if the journal name excluding the last word contains at least one journal word abbreviation and none of the journal
+                    // word abbreviations end in a period
+                    // Journal of Public Economics. => remove period
+                    // Journal of Public Econ. => do not remove period
+                    // J Pub Econ. => remove period
+                    // J Pub. Econ. => do not remove period
+                    // J. Pub. Econ. => do not remove period
+                    if (substr($journal, -1) == '.') {
+                        $journalWords = explode(' ', $journal);
+                        $lastJournalWord = array_pop($journalWords);
+                        // Is any word before the last one an abbreviation?
+                        $journalContainsInteriorAbbreviation = false;
+                        $journalInteriorAbbreviationHasPeriod = false;
+                        foreach ($journalWords as $word) {
+                            if (in_array(rtrim($word, '.'), $this->journalWordAbbreviations)) {
+                                $journalContainsInteriorAbbreviation = true;
+                                if (substr($word, -1) == '.') {
+                                    $journalInteriorAbbreviationHasPeriod = true;
+                                }
+                            }
+                        }
+                        if (
+                            ! in_array(substr($lastJournalWord, 0, -1), $this->journalWordAbbreviations)
+                            ||
+                            ($journalContainsInteriorAbbreviation && ! $journalInteriorAbbreviationHasPeriod)
+                            ) {
+                            $journal = substr($journal, 0, -1);
+                        }
                     }
+
                     $journal = trim($journal, '_');
                     $this->setField($item, 'journal', trim($journal, '"*,;:{}- '), 'setField 38');
                 } elseif (! $journalNameMissingButHasVolume) {
