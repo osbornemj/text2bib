@@ -110,11 +110,13 @@ class JournalWordAbbreviationsController extends Controller
         return redirect()->route('journalWordAbbreviations.index');
     }
 
+    /**
+     * One-time method to add journal word abbreviations, using data from a given
+     * range of output ids
+     */
     public function populate(): RedirectResponse
     {
-//        DB::table('outputs')->orderBy('id')->chunk(100, function (Collection $outputs) {
-
-        $outputs = Output::where('id', '<', 180000)->where('id', '>=', 170000)->get();
+        $outputs = Output::where('id', '<', 190000)->where('id', '>=', 180000)->get();
         foreach ($outputs as $output) {
             $item = $output->item;
             if (isset($item['journal'])) {
