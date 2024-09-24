@@ -116,7 +116,7 @@ class JournalWordAbbreviationsController extends Controller
      */
     public function populate(): RedirectResponse
     {
-        $outputs = Output::where('id', '<', 220000)->where('id', '>=', 210000)->get();
+        $outputs = Output::where('id', '<', 230000)->where('id', '>=', 220000)->get();
         foreach ($outputs as $output) {
             $item = $output->item;
             if (isset($item['journal'])) {
