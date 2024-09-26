@@ -293,7 +293,7 @@ class TitleParser
                 $journalPubInfoNext = preg_match('/^' . $this->yearRegExp . '(,|;| ) ?(' . $volumeAndCodesRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?([0-9, \-p\.():]*$|\([0-9]{2,4}\))/', $remainder);
 
                 if ($journalPubInfoNext) {
-                    $this->verbose("Ending title, case 2a (journal pub info next, with no journal name");
+                    $this->verbose("Ending title, case 2a (journal pub info next, with no journal name)");
                     $title = rtrim(implode(' ', $initialWords), ',:;.');
                     $isArticle = true;
                     break;
@@ -349,7 +349,7 @@ class TitleParser
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, |: | )([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pageRegExp . '\.? ?$/u', $remainder) 
                             // journal name followed by year and publication info, allowing issue number and page
                             // numbers to be preceded by letters and issue number to have / or - in it.
-                            || preg_match('/^\p{Lu}[\p{L} &()\-]+[,.]? ' . $this->yearRegExp . ',? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder)
+                            || preg_match('/^\p{Lu}[\p{L} &()\-]+[,.]? (' . $monthsRegExp[$language] . ')? ?' . $this->yearRegExp . '[,;]? ?(' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?(supp )?[A-Z]?[0-9\/\-]{0,4}\)?[:,]? ?' . $pagesRegExp . '\.? ?$/u', $remainder)
                             // year followed by journal name and publication info, allowing issue number and page
                             // numbers to be preceded by letters and issue number to have / or - in it.
                             // Note that this case allows a single page or a page range.

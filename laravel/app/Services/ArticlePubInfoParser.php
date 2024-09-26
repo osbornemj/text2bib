@@ -33,6 +33,7 @@ class ArticlePubInfoParser
     public function getJournal(string &$remainder, object &$item, bool $italicStart, bool $pubInfoStartsWithForthcoming, bool $pubInfoEndsWithForthcoming, string $language, string $startPagesRegExp, string $volumeRegExp): array
     {
         $this->pubInfoDetails = [];
+        $retainFinalPeriod = false;
 
         if ($italicStart) {
             // (string) on next line to stop VSCode complaining
@@ -45,6 +46,7 @@ class ArticlePubInfoParser
                 $remainder = $before . $after;
                 return [
                     'journal' => $italicText,
+                    'retainFinalPeriod' => $retainFinalPeriod,
                     'pub_info_details' => [],
                 ];
             }
@@ -92,7 +94,12 @@ class ArticlePubInfoParser
                 {
                     $this->verbose('Ending journal name.  Next word: ' . $word);
                     $this->verbose('[getJournal] Remainder: ' . $remainder);
-                    $journal = rtrim(implode(' ', $initialWords), ', ');
+                    $journal = implode(' ', $initialWords);
+                    
+                    // If journal name ends with '.,', final period should definitely be retained
+                    $retainFinalPeriod = substr($journal, -2) == '.,';
+
+                    $journal = rtrim($journal, ', ');
                     $remainder = ltrim($remainder, ',.');
                     break;
                 }
@@ -104,6 +111,7 @@ class ArticlePubInfoParser
 
         return [
             'journal' => $journal,
+            'retainFinalPeriod' => $retainFinalPeriod,
             'pub_info_details' => $this->pubInfoDetails,
         ];
     }

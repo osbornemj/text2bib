@@ -131,55 +131,60 @@
         --}}
     </div>
 
-    <div style="display:{{ $displayState }};" class="dark:bg-slate-600 bg-slate-300 p-4 mt-4" id="reportForm{{ $outputId }}">
-        <form method="POST" wire:submit="submit()" id="form{{ $outputId }}">
-            @csrf
-            <div class="mb-2">
-                @php
-                    $selected[$itemTypeId] = 1;                
-                @endphp
-                <x-input-label for="itemTypeId" value="Item type"/>
-                <x-select-input id="itemTypeId" name="itemTypeId" class="block mt-1 w-full" :options="$itemTypeOptions" :selected="$selected" wire:model.change="itemTypeId" />
-            </div>
+    {{-- Following line stopped working around 2024.9.23.  Replaced with next two lines. --}}
+    {{--<div style="display:{{ $displayState }};" class="dark:bg-slate-600 bg-slate-300 p-4 mt-4" id="reportForm{{ $outputId }}">--}}
 
-            @foreach ($fields as $name)
-                @php
-                    $modelName = 'form.' . $name;
-                    $value = $convertedItem['item']->$name ?? null;
-                @endphp
-                <div>
-                    <x-input-label :for="$name" :value="$name" />
-                    <x-text-input :id="$name" class="block mt-1 w-full" type="text" :name="$name" :value="$value" :wire:model="$modelName"/>
+    @if ($displayState == "block")
+        <div class="dark:bg-slate-600 bg-slate-300 p-4 mt-4" id="reportForm{{ $outputId }}">
+            <form method="POST" wire:submit="submit()" id="form{{ $outputId }}">
+                @csrf
+                <div class="mb-2">
+                    @php
+                        $selected[$itemTypeId] = 1;                
+                    @endphp
+                    <x-input-label for="itemTypeId" value="Item type"/>
+                    <x-select-input id="itemTypeId" name="itemTypeId" class="block mt-1 w-full" :options="$itemTypeOptions" :selected="$selected" wire:model.change="itemTypeId" />
                 </div>
-            @endforeach
 
-            @if ($correctionsEnabled)
-                <div>
-                    <x-checkbox-input id="postReport" class="peer" type="checkbox" value="1" name="postReport" wire:model="form.postReport" />
-                    <span class="text-sm font-medium ml-1 text-gray-700 dark:text-gray-300">Report conversion error?</span>
-                    <div class="hidden peer-checked:block">
-                        <x-input-label for="comment" value="Comment on error (optional)" />
-                        <x-textarea-input rows="2" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="form.comment"/>
+                @foreach ($fields as $name)
+                    @php
+                        $modelName = 'form.' . $name;
+                        $value = $convertedItem['item']->$name ?? null;
+                    @endphp
+                    <div>
+                        <x-input-label :for="$name" :value="$name" />
+                        <x-text-input :id="$name" class="block mt-1 w-full" type="text" :name="$name" :value="$value" :wire:model="$modelName"/>
                     </div>
-                </div>
-            @endif
+                @endforeach
 
-            @if ($status == 'noChange')
-                <div class="mt-2">
-                    <span class="text-red-500">You have made no changes</span>
-                </div>
-            @endif
+                @if ($correctionsEnabled)
+                    <div>
+                        <x-checkbox-input id="postReport" class="peer" type="checkbox" value="1" name="postReport" wire:model="form.postReport" />
+                        <span class="text-sm font-medium ml-1 text-gray-700 dark:text-gray-300">Report conversion error?</span>
+                        <div class="hidden peer-checked:block">
+                            <x-input-label for="comment" value="Comment on error (optional)" />
+                            <x-textarea-input rows="2" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="form.comment"/>
+                        </div>
+                    </div>
+                @endif
 
-            <x-primary-button class="ml-0 mt-3">
-                {{ __('Submit correction') }}
-            </x-primary-button>
+                @if ($status == 'noChange')
+                    <div class="mt-2">
+                        <span class="text-red-500">You have made no changes</span>
+                    </div>
+                @endif
 
-            <x-secondary-button class="ml-0 mt-3">
-                <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="hideForm"> @if(!$status) Cancel @else Hide form @endif </a>
-            </x-secondary-button>
+                <x-primary-button class="ml-0 mt-3">
+                    {{ __('Submit correction') }}
+                </x-primary-button>
 
-        </form>                                            
-    </div>
+                <x-secondary-button class="ml-0 mt-3">
+                    <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="hideForm"> @if(!$status) Cancel @else Hide form @endif </a>
+                </x-secondary-button>
+
+            </form>                                            
+        </div>
+    @endif
 </div>
 
 

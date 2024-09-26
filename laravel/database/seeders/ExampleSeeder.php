@@ -3097,7 +3097,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Dunaway, S. and Rothaus, A. and Zhang, Y. and Luisa Kadekaro, A. and Andl, T. and Andl, C. D.',
                     'title' => 'Divide and conquer: two stem cell populations in squamous epithelia, reserves and the active duty forces',
-                    'journal' => 'Int J Oral Sci.',
+                    'journal' => 'Int J Oral Sci',
                     'year' => '2019',
                     'volume' => '11',
                     'pages' => '26',
@@ -3122,7 +3122,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Andreatta, M. and Carmona, S. J.',
                     'title' => 'UCell: Robust and scalable single-cell gene signature scoring',
                     'year' => '2021',
-                    'journal' => 'Comput Struct Biotechnol J.',
+                    'journal' => 'Comput Struct Biotechnol J',
                     'volume' => '19',
                     'pages' => '3796-3798',
                     ]
@@ -3158,7 +3158,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Stavros V. Konstantinides and Guy Meyer and Cecilia Becattini and others',
                     'title' => '2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism developed in collaboration with the European Respiratory Society',
                     'year' => '2020',
-                    'journal' => 'Eur Heart J.',
+                    'journal' => 'Eur Heart J',
                     'volume' => '41',
                     'number' => '4',
                     'pages' => '543-603',
@@ -3726,7 +3726,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Fisch, C.',
                     'title' => 'William Withering: an account of foxglove and some of its medical uses 1785--1985',
                     'year' => '1985',
-                    'journal' => 'J Am Coll Cardiol.',
+                    'journal' => 'J Am Coll Cardiol',
                     'volume' => '5',
                     'number' => '5',
                     'pages' => '1A-2A',
@@ -4753,7 +4753,7 @@ class ExampleSeeder extends Seeder
                     'month' => 'October',
                     'date' => '2014-10-21',
                     'pages' => '554-61',
-                    'journal' => 'Ann Intern Med.',
+                    'journal' => 'Ann Intern Med',
                     'volume' => '161',
                     'number' => '8',
                     ]
@@ -5830,7 +5830,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '10',
                     'pages' => '347-353',
                     'title' => 'Mastocytosis and insect venom allergy',
-                    'journal' => 'Curr Opin Allergy Clin Immunol.',
+                    'journal' => 'Curr Opin Allergy Clin Immunol',
                     ]
             ],
             // Authors ended early
@@ -6649,7 +6649,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Genetic disruption of the oncogenic HMGA2-PLAG1-IGF2 pathway causes fetal growth restriction',
                     'year' => '2018',
                     'month' => 'February',
-                    'journal' => 'Genet Med.',
+                    'journal' => 'Genet Med',
                     'pages' => '250-258',
                     'volume' => '20',
                     'number' => '2',
@@ -6666,7 +6666,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Neonatal Silver-Russell syndrome with maternal uniparental heterodisomy, trisomy 7 mosaicism, and dysplasia of the cerebellum',
                     'year' => '2014',
                     'month' => 'August',
-                    'journal' => 'Am J Clin Pathol.',
+                    'journal' => 'Am J Clin Pathol',
                     'volume' => '142',
                     'number' => '2',
                     'pages' => '248-53',
@@ -6760,7 +6760,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Thomas, J. E. and Ekanem, A. M. and George, N. J. and Akpan, A. E.',
                     'title' => 'Ionospheric perturbations: A case study of 2007 five major earthquakes using DEMETER data',
                     'year' => '2023',
-                    'journal' => 'Acta Geophys.',
+                    'journal' => 'Acta Geophys',
                     'volume' => '71',
                     'pages' => '1607-1618',
                     ]
@@ -7617,7 +7617,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2016',
 					'date' => '2016-12-01',
                     'month' => 'December',
-                    'journal' => 'J Hum Kinet.',
+                    'journal' => 'J Hum Kinet',
                     'pages' => '231-247',
                     'volume' => '53',
                     ],
@@ -8846,7 +8846,7 @@ class ExampleSeeder extends Seeder
 					'number' => '8',
 					'pages' => '894-899',
                     'title' => 'The Association Between Posterior-Inferior Tibial Slope and Anterior Cruciate Ligament Insufficiency',
-					'journal' => 'Arthrosc - J Arthrosc Relat Surg.',
+					'journal' => 'Arthrosc - J Arthrosc Relat Surg',
                     ]
             ],
 			// need to detect "Chapter N in ..."
@@ -8971,7 +8971,7 @@ class ExampleSeeder extends Seeder
                     'doi' => '10.1038/nrdp.2017.30',
                     'author' => 'Pitts, N. B. and Zero, D. T. and Marsh, P. D. and Ekstrand, K. and Weintraub, J. A. and Ramos-Gomez, F. and others',
                     'title' => 'Dental caries',
-                    'journal' => 'Nat Rev Dis Prim.',
+                    'journal' => 'Nat Rev Dis Prim',
                     'year' => '2017',
                     ]
             ],
@@ -10070,7 +10070,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Kamran Montazeri and Parviz Kashefi and Azim Honarmand and Mohammadreza Safavi and Anahita Hirmanpour',
                     'title' => 'Attenuation of the pressor response to direct laryngoscopy and tracheal intubation: Oral Clonidine vs. Oral Gabapentin premedication',
-					'journal' => 'J Res Med Sci.',
+					'journal' => 'J Res Med Sci',
                     'year' => '2011',
                     'month' => 'March',
 					'number' => 'supp 11',
@@ -10449,7 +10449,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Bernacchia, R. and Preti, R. and Vinci, G.',
                     'title' => 'Chemical Composition and Health Benefits of Flaxseed',
                     'year' => '2014',
-                    'journal' => 'Austin J Nutri Food Sci.',
+                    'journal' => 'Austin J Nutri Food Sci',
                     'pages' => '1045',
                     'volume' => '2',
                     'number' => '8',
@@ -10583,7 +10583,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Cullen, G. and Kroshinsky, D. and Cheifetz, A. S. and Korzenik, J. R.',
                     'title' => 'Psoriasis associated with anti-tumour necrosis factor therapy in inflammatory bowel disease: A new series and a review of 120 cases from the literature',
-                    'journal' => 'Aliment Pharmacol Ther.',
+                    'journal' => 'Aliment Pharmacol Ther',
                     'year' => '2011',
                     'volume' => '34',
                     'pages' => '1318-1327',
@@ -10653,7 +10653,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Nguyen, A. T. M. and Holland, A. J. A.',
                     'title' => 'Balanitis xerotica obliterans: An update for clinicians',
                     'year' => '2020',
-                    'journal' => 'Eur J Pediatr.',
+                    'journal' => 'Eur J Pediatr',
                     'volume' => '179',
                     'pages' => '9-16',
                     ]
@@ -10935,7 +10935,7 @@ class ExampleSeeder extends Seeder
                     'doi' => '10.1080/15374416.2016.1138407',
                     'author' => 'Almirall, D. and DiStefano, C. and Chang, Y. C. and Shire, S. and Kaiser, A. and Lu, X. and Nahum-Shani, I. and Landa, R. and Mathy, P. and Kasari, C.',
                     'title' => 'Longitudinal Effects of Adaptive Interventions With a Speech-Generating Device in Minimally Verbal Children With ASD',
-					'journal' => 'J Clin Child Adolesc Psychol.',
+					'journal' => 'J Clin Child Adolesc Psychol',
                     'year' => '2016',
                     'month' => 'July-August',
                     'volume' => '45',
@@ -11455,7 +11455,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Wang, X.-L. and Wang, D.-Q. and Jiao, F.-C. and Ding, K.-M. and Ji, Y.-B. and Lu, L.',
                     'year' => '2020',
                     'title' => 'Diurnal rhythm disruptions induced by chronic unpredictable stress relate to depression-like behaviors in rats',
-                    'journal' => 'Pharmacol Biochem Behav.',
+                    'journal' => 'Pharmacol Biochem Behav',
                     'volume' => '194',
                     ]
             ],
@@ -11615,7 +11615,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Soran, H. and Hama, S. and Yadav, R. and Durrington, P. N.',
                     'title' => 'HDL functionality',
-                    'journal' => 'Curr Opin Lipidol.',
+                    'journal' => 'Curr Opin Lipidol',
                     'year' => '2012',
                     'volume' => '23',
                     'number' => '4',
@@ -11630,7 +11630,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Grover, R. W.',
 					'title' => 'Transient acantholytic dermatosis',
-                    'journal' => 'Arch Dermatol.',
+                    'journal' => 'Arch Dermatol',
                     'year' => '1970',
                     'volume' => '101',
                     'pages' => '426-434',
@@ -12571,7 +12571,7 @@ class ExampleSeeder extends Seeder
                     'doi' => '10.1073/pnas.2115644119',
                     'author' => 'Stephan, T. and Burgess, S. M. and Cheng, H. and Danko, C. G. and Gill, C. A. and Jarvis, E. D. and Koepfli, K. P. and Koltes, J. E. and Lyons, E. and Ronald, P. and Ryder, O. A. and Schriml, L. M. and Soltis, P. and VandeWoude, S. and Zhou, H. and Ostrander, E. A. and Karlsson, E. K.',
                     'title' => 'Darwinian genomics and diversity in the tree of life',
-                    'journal' => 'Proc Natl Acad Sci U S A.',
+                    'journal' => 'Proc Natl Acad Sci U S A',
                     'year' => '2022',
                     'month' => 'January',
                     'date' => '2022-01-25',
@@ -12848,7 +12848,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'P. Raj and N. Ames and S. Joseph Thandapilly and others',
                     'title' => 'The effects of oat ingredients on blood pressure in spontaneously hypertensive rats',
-                    'journal' => 'J Food Biochem.',
+                    'journal' => 'J Food Biochem',
                     'year' => '2020',
                     'volume' => '26',
                     'pages' => 'e13402',
@@ -13407,6 +13407,20 @@ class ExampleSeeder extends Seeder
                     'pages' => '305-15',
                     ]
             ],            
+			// https included in volume
+			[
+                'source' => 'Gatenby, R. A. & Gillies, R. J. A microenvironmental model of carcinogenesis. Nat Rev Cancer 8, 56-61 (2008). https://doi.org:10.1038/nrc2255 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1038/nrc2255',
+                    'author' => 'Gatenby, R. A. and Gillies, R. J.',
+                    'title' => 'A microenvironmental model of carcinogenesis',
+                    'year' => '2008',
+                    'journal' => 'Nat Rev Cancer',
+                    'pages' => '56-61',
+                    'volume' => '8',
+                    ]
+            ],
 
 
 

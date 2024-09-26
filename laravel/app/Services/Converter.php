@@ -748,7 +748,7 @@ class Converter
         if (empty($doi)) {
             $doi = $this->extractLabeledContent(
                 $remainder,
-                ' [\[\)]?doi:? | [\[\(]?doi: ?|;doi:|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://doi\.org/ ?(?=10)|doi\.org',
+                ' [\[\)]?doi:? | [\[\(]?doi: ?|;doi:|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://doi\.org[/:] ?(?=10)|doi\.org',
                 '[^ ]+'
             );
         }
@@ -2042,6 +2042,8 @@ class Converter
 
             case 'article':
                 $journalNameMissingButHasVolume = false;
+                $retainFinalPeriod = false;
+
                 // Get journal
                 $remainder = ltrim($remainder, '.,; ');
                 // If there are any commas not preceded by digits and not followed by digits or spaces, add spaces after them
@@ -2110,6 +2112,7 @@ class Converter
                         );
                         $this->detailLines = array_merge($this->detailLines, $journalResult['pub_info_details']);
                         $journal = rtrim($journalResult['journal'], ' ,(');
+                        $retainFinalPeriod = $journalResult['retainFinalPeriod'];
                     }
                 }
 
@@ -2148,14 +2151,17 @@ class Converter
                             }
                         }
                         if (
-                            ! in_array(substr($lastJournalWord, 0, -1), $this->journalWordAbbreviations)
-                            ||
-                            ($journalContainsInteriorAbbreviation && ! $journalInteriorAbbreviationHasPeriod)
-                            ) {
+                            ! $retainFinalPeriod
+                            &&
+                            (
+                                ! in_array(substr($lastJournalWord, 0, -1), $this->journalWordAbbreviations)
+                                ||
+                                ($journalContainsInteriorAbbreviation && ! $journalInteriorAbbreviationHasPeriod)
+                            )
+                        ) {
                             $journal = substr($journal, 0, -1);
                         }
                     }
-
                     $journal = trim($journal, '_');
                     $this->setField($item, 'journal', trim($journal, '"*,;:{}- '), 'setField 38');
                 } elseif (! $journalNameMissingButHasVolume) {
