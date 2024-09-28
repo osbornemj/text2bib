@@ -59,7 +59,7 @@ trait Months
             9 => 'septiembre', 
             10 => 'octubre', 
             11 => 'noviembre', 
-            12 => 'deciembre',
+            12 => 'diciembre',
         ],
         'pt' => [
             1 => 'janeiro', 

@@ -13421,6 +13421,77 @@ class ExampleSeeder extends Seeder
                     'volume' => '8',
                     ]
             ],
+			// 'transl. by' for 'translated by'
+			[
+                'source' => 'Schmemann, Alexander. 1975. Introduction to Liturgical Theology. 2nd edition. Transl. by Asheleigh E. Moorhouse. Crestwood, NY: St. Vladimir’s Seminary Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Schmemann, Alexander',
+                    'year' => '1975',
+                    'edition' => '2nd',
+                    'title' => 'Introduction to Liturgical Theology',
+                    'publisher' => 'St. Vladimir\'s Seminary Press',
+                    'address' => 'Crestwood, NY',
+					'note' => 'Transl. by Asheleigh E. Moorhouse.',
+                    ]
+            ],
+			// Remove | from journal
+			[
+                'source' => ' [10] Omosehinmi, D.E.,  Arogunjo, A.M (2016). Geostatistical investigation and ambient radiation mapping of Akure north and south local government areas of Ondo state, Nigeria. IJSDR | Volume 1, Issue 12. ISSN: 2455-2631. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'ISSN: 2455-2631',
+                    'author' => 'Omosehinmi, D. E. and Arogunjo, A. M.',
+                    'year' => '2016',
+                    'title' => 'Geostatistical investigation and ambient radiation mapping of Akure north and south local government areas of Ondo state, Nigeria',
+                    'journal' => 'IJSDR',
+                    'volume' => '1',
+                    'number' => '12',
+                    ]
+            ],
+			// month not isolated
+			[
+                'source' => 'Bollen, J., Mao, H. and Zeng, X. 2011. Twitter mood predicts the stock market. Journal of Computational Science. 2, 1 (Mar. 2011), 1–8. DOI:https://doi.org/10.1016/j.jocs.2010.12.007. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bollen, J. and Mao, H. and Zeng, X.',
+                    'title' => 'Twitter mood predicts the stock market',
+                    'journal' => 'Journal of Computational Science',
+                    'year' => '2011',
+                    'volume' => '2',
+                    'number' => '1 (Mar. 2011)',
+                    'pages' => '1-8',
+                    'doi' => '10.1016/j.jocs.2010.12.007',
+                    ]
+            ],
+			// word "Dissertation" not removed
+			[
+                'source' => 'Ademosu, A. (2022). The impact of the financial system and its channels on SMEs\' access to financing: A Nigerian perspective. Dissertation. Georgia State University. doi:https://orcid.org/0000-0001-7326-0725  ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'doi' => 'https://orcid.org/0000-0001-7326-0725',
+                    'author' => 'Ademosu, A.',
+                    'year' => '2022',
+                    'title' => 'The impact of the financial system and its channels on SMEs\' access to financing: A Nigerian perspective',
+                    'school' => 'Georgia State University',
+                    ]
+            ],
+			// Date not picked up
+			[
+                'source' => 'Aragon, Louis. 24 de diciembre, 2014. “No hay amor feliz”. Trianarts (blog). https://trianarts.com/mi-recuerdo-a-louis-aragon-no-hay-amor-feliz/#sthash.Qvc7TcTZ.VuARGjgc.dpbs ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'Aragon, Louis',
+                    'title' => 'No hay amor feliz',
+                    'note' => 'Trianarts (blog)',
+                    'year' => '2014',
+					'month' => 'diciembre',
+                    'date' => '2014-12-24',
+                    'url' => 'https://trianarts.com/mi-recuerdo-a-louis-aragon-no-hay-amor-feliz/#sthash.Qvc7TcTZ.VuARGjgc.dpbs',
+                    'urldate' => '24 de diciembre, 2014',
+                ],
+                'language' => 'es',
+            ],
 
 
 

@@ -32,6 +32,7 @@ class Converter
     var $cities;
     var $detailLines;
     var $dictionaryNames;
+    var $distinctiveJournalWordAbbreviations;
     var $editedByRegExp;
     var $editionWords;
     var $editorStartRegExp;
@@ -129,10 +130,10 @@ class Converter
         $this->journalNames = [];
 
         // Abbreviations used as the first words of journal names (like "J." or "Bull.")
-        $this->journalWordAbbreviations = JournalWordAbbreviation::where('distinctive', 1)
-            ->where('checked', 1)
-            ->pluck('word')
-            ->toArray();
+        $journalWordAbbreviations = JournalWordAbbreviation::where('checked', 1);
+
+        $this->distinctiveJournalWordAbbreviations = $journalWordAbbreviations->where('distinctive', 1)->pluck('word')->toArray();
+        $this->journalWordAbbreviations = $journalWordAbbreviations->pluck('word')->toArray();
 
         $this->cities = City::where('distinctive', 1)
             ->where('checked', 1)
@@ -245,6 +246,7 @@ class Converter
 
         $translatedByWords = [
             '[Tt]ranslat(ed|ion) by',
+            '[Tt]ransl\. by',
             '[Tt]r\.',
             '[Tt]raducción de',   // Spanish
             '[Tt]raducido por',   // Spanish
@@ -403,6 +405,7 @@ class Converter
             'M\. ?S\.',
             '[Mm]estrado',
             '[Mm]aestría',
+            '[Ll]icenciatura',
             'Yayınlanmamış Yüksek [Ll]isans',
             'Yüksek [Ll]isans',
             'Masterproef',
@@ -414,7 +417,6 @@ class Converter
         }
 
         $this->masterRegExp = $masterRegExp;
-        //$this->masterRegExp = '[Mm]aster(\'?s)?( Degree)?,?|M\.? ?A\.?|M\.? ?Sc\.?|M\. ?S\.|[Mm]estrado|[Mm]aestría|Yayınlanmamış Yüksek [Ll]isans|Yüksek [Ll]isans|Masterproef';
         
         $phdWords = [
             'Ph[Dd]',
@@ -441,6 +443,7 @@ class Converter
             '[Dd]isertación [Dd]octoral',     // Spanish
             '[Tt]esis de grado',              // Spanish
             '[Tt]esis de [Mm]aestría',        // Spanish
+            '[Dd]isertación de [Ll]icenciatura', // Spanish
             '[Tt]ese de [Dd]outorado',        // Portuguese
             '[Tt]ese \([Dd]outorado\)',       // Portuguese
             '[Dd]issertação de [Mm]estrado',  // Portuguese
@@ -1368,7 +1371,7 @@ class Converter
                     $journal, 
                     $containsUrlAccessInfo, 
                     $this->publishers, 
-                    $this->journalWordAbbreviations, 
+                    $this->distinctiveJournalWordAbbreviations, 
                     $this->excludedWords, 
                     $this->cities,
                     $this->dictionaryNames,
@@ -2163,7 +2166,7 @@ class Converter
                         }
                     }
                     $journal = trim($journal, '_');
-                    $this->setField($item, 'journal', trim($journal, '"*,;:{}- '), 'setField 38');
+                    $this->setField($item, 'journal', trim($journal, '"*,;:{}-| '), 'setField 38');
                 } elseif (! $journalNameMissingButHasVolume) {
                     $warnings[] = "Item seems to be article, but journal name not found.  Setting type to unpublished.";
                     $itemKind = 'unpublished';  // but continue processing as if journal
@@ -4435,7 +4438,8 @@ class Converter
                 } else {
                     if (preg_match('/\(' . $this->fullThesisRegExp . '\)/u', $remainder)) {
                         $remainder = $this->findAndRemove($remainder, ',? ?\(' . $this->fullThesisRegExp . '\)');
-                    } elseif (preg_match('/^Thesis[.,]? (?P<remainder>.*)$/', $remainder, $matches)) {
+                    //} elseif (preg_match('/^(Thesis|Dissertation)[.,]? (?P<remainder>.*)$/', $remainder, $matches)) {
+                    } elseif (preg_match('/' . $this->thesisRegExp . ' (?P<remainder>.*)$/', $remainder, $matches)) {
                         $remainder = $matches['remainder'] ?? '';
                     } else {
                         $remainder = preg_replace('/([Uu]npublished|[Yy]ayınlanmamış) /', '', $remainder);

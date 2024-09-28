@@ -85,7 +85,7 @@ class Dates
                 ||                
                 // (day month year) or (month year) (or without parens or with brackets)
                 // The optional "de" between day and month and between month and year is for Portuguese
-                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2}\.?)? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
+                preg_match('/^ ?[\(\[]?(?P<date>(?P<day>[0-9]{1,2}\.?)? ?(de )?(?P<month>' . $months . ')(,| de)? ?(?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
                 ||
                 // (day monthNumber year) or (monthNumber year) (or without parens or with brackets)
                 // The optional "de" between day and month and between month and year is for Portuguese
