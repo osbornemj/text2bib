@@ -13492,14 +13492,39 @@ class ExampleSeeder extends Seeder
                 ],
                 'language' => 'es',
             ],
+			// thesis misidentified as PhD
+			[
+                'source' => 'Mudarra Montoya, Arquímedes. 2016. El sujeto poético en Ande de Alejandro Peralta y la figura del poeta-intelectual del Grupo Orkopata. Tesis de maestría, Universidad Nacional Mayor de San Marcos. Cybertesis. ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+                    'author' => 'Mudarra Montoya, Arquímedes',
+                    'title' => 'El sujeto poético en Ande de Alejandro Peralta y la figura del poeta-intelectual del Grupo Orkopata',
+                    'year' => '2016',
+                    'school' => 'Universidad Nacional Mayor de San Marcos. Cybertesis',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// nested quotes
+			 [
+                'source' => 'Leal, Francisco. 2015. ““Quise entonces fumar”. El opio en César Vallejo y Pablo Neruda: rutas asiáticas de experimentación”. Aisthesis (58): 59-80. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Leal, Francisco',
+                    'title' => '``Quise entonces fumar\'\'. El opio en César Vallejo y Pablo Neruda: rutas asiáticas de experimentación',
+                    'journal' => 'Aisthesis',
+                    'year' => '2015',
+                    'volume' => '58',
+                    'pages' => '59-80',
+                ],
+                'char_encoding' => 'utf8leave',
+                ],
+
 
 
 
  
             
         ];
-
-        $x = '3­--10';
 
         DB::statement('DELETE FROM examples');
         DB::statement('ALTER TABLE examples AUTO_INCREMENT 1');

@@ -254,12 +254,12 @@ trait Utilities
         $style = 'none';
         $end = false;
 
-        /* 
-        * Rather than using the following loop, could use regular expressions.  However, it seems that these expressions
-        * would be complex because of the need to exclude escaped quotes and the various other exceptions.
-        * I find the loop easier to understand and maintain.
-        * NOTE: cleanText replaces French guillemets and other quotation marks with `` and ''.
-        */
+        /**
+         * Rather than using the following loop, could use regular expressions.  However, it seems that these expressions
+         * would be complex because of the need to exclude escaped quotes and the various other exceptions.
+         * I find the loop easier to understand and maintain.
+         * NOTE: cleanText replaces French guillemets and other quotation marks with `` and ''.
+         */
         if (! $italicsOnly) {
             $skip = 0;
             $begin = '';
@@ -311,7 +311,7 @@ trait Utilities
                     if (($i == 0 || $chars[$i-1] != '\\') && isset($chars[$i+1]) && $chars[$i+1] == "'") {
                         if (isset($chars[$i+2]) && $chars[$i+2] == "'") {
                             // '''
-                            if ($begin == "''") {
+                            if ($begin == "''" || $begin == "``") {
                                 $quotedText .= $char;
                                 $end = true;
                                 $skip = 2;
@@ -327,8 +327,15 @@ trait Utilities
                                 $level += 2;
                             }
                         } elseif ($begin == "``" || $begin == "''" || $begin == '"') {
-                            $end = true;
-                            $skip = 1;
+                            $level--;
+                            if ($level == 0) {
+                                $end = true;
+                                $skip = 1;
+                            } else {
+                                $quotedText .= $char;
+                                $quotedText .= $chars[$i+1];
+                                $skip = 1;
+                            }
                         } elseif ($begin) {
                             $quotedText .= $char . $chars[$i+1];
                             $skip = 1;
