@@ -69,6 +69,7 @@ class ConvertFile extends Component
         $defaults = [
             'use' => '',
             'other_use' => '',
+            'bst' => '',
             'item_separator' => 'line',
             'language' => 'en',
             'label_style' => 'short',
@@ -88,7 +89,7 @@ class ConvertFile extends Component
         $this->useOptions = [
             'latex' => 'In a LaTeX document, using a traditional BibTeX style file (your document specifies a \bibliographystyle)',
             'biblatex' => 'In a LaTeX document, using biblatex (your document says \usepackage{biblatex} in the preamble)',
-            'zotero-word' => 'To import references into Zotero, to use in Microsoft Word or Libre Office',
+            'zotero-word' => 'To import references into Zotero',
             'mendeley' => 'To import references into Mendeley',
             'refworks' => 'To import references into RefWorks',
             'endnote' => 'To import references into EndNote',

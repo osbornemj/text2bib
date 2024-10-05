@@ -78,7 +78,7 @@ class AuthorParser
      * @param string $type: 'authors' or 'editors'
      * @return array, with author string and warnings
      */
-    public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
+    public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, string $translatorRegExp, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
     {
         $this->authorDetails = [];
 
@@ -103,7 +103,7 @@ class AuthorParser
         // Check for some common patterns //
         ////////////////////////////////////
 
-        $result = $this->checkAuthorPatterns($remainder, $year, $month, $day, $date, $isEditor, $isTranslator, $language);
+        $result = $this->checkAuthorPatterns($remainder, $year, $month, $day, $date, $isEditor, $isTranslator, $translatorRegExp, $language);
 
         if ($result) {
             return [
@@ -151,7 +151,7 @@ class AuthorParser
     /**
      * Determine whether $remainder matches any of the patterns in the AuthorPatterns trait.
      */
-    public function checkAuthorPatterns(string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, string $language): array|null
+    public function checkAuthorPatterns(string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, string $translatorRegExp, string $language): array|null
     {
         $authorRegExps = $this->authorPatterns();
         $authorstring = '';
@@ -223,7 +223,7 @@ class AuthorParser
 
             if (preg_match('%^(?P<firstWord>[^ ]+) (?P<remains>.*)$%', $remainder, $matches)) {
                 $isEditor = $this->isEd($matches['firstWord']);
-                $isTranslator = preg_match('/^[(\[]?trans\.?[)\]]?[,.]?/', $matches['firstWord']);
+                $isTranslator = preg_match('/^[(\[]?' . $translatorRegExp . '[)\]]?[,.]?/', $matches['firstWord']);
                 if ($isEditor || $isTranslator) {
                     $remainder = $matches['remains'];
                     if ($year = $this->dates->getDate($remainder, $remains, $month, $day, $date, true, true, true, $language)) {

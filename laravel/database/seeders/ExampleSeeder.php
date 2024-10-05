@@ -13518,6 +13518,19 @@ class ExampleSeeder extends Seeder
                 ],
                 'char_encoding' => 'utf8leave',
                 ],
+                // trad. for translators
+                [
+                    'source' => 'Kowan, Tadeusz. 1997. El signo y el teatro. Ma del C. Bobes y J. Maestro (trad.). Madrid: Arco/Libros ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'author' => 'Kowan, Tadeusz',
+                        'title' => 'El signo y el teatro',
+                        'year' => '1997',
+                        'address' => 'Madrid',
+                        'publisher' => 'Arco/Libros',
+                        'note' => 'Ma del C. Bobes y J. Maestro (trad.).'
+                        ]
+                ],
 
 
 

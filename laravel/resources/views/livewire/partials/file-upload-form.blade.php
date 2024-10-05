@@ -64,15 +64,23 @@
         @foreach ($useOptions as $key => $option)
             <x-radio-input wire:model="uploadForm.use" value="{{ $key }}" class="peer/{{ $key }}" /> 
             <x-value-label for="{{ $key }}" class="peer-checked/{{ $key }}:text-blue-600 ml-1" :value="$option" />
+            @if ($key == 'latex')
+                <div class="hidden peer-checked/latex:block ml-6 -mb-6">
+                    Enter the name of the BibTeX style file you will use (the argument of \bibliographystyle):
+                    <br/>
+                    <x-text-input class="w-48mt-1" wire:model="uploadForm.bst" maxlength="255" />
+                    <x-input-error :messages="$errors->get('uploadForm.bst')" class="mt-0 mb-1" />
+                </div>
+            @endif
             <br/>
-        @endforeach
+            @endforeach
 
         <x-input-error :messages="$errors->get('uploadForm.use')" class="mt-2" />
-            
+
         <div class="hidden peer-checked/other:block">
             <x-text-input class="w-full" wire:model="uploadForm.other_use" maxlength="255" />
         </div>
-
+    
         <x-input-error :messages="$errors->get('uploadForm.other_use')" class="mt-2" />
     </div>
 

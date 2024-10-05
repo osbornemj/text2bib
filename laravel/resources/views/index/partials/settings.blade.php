@@ -26,5 +26,8 @@ line endings = {{ $conversion->line_endings }}
     {{ $conversion->other_use }}
   @else
     {{ $conversion->use }}
+    @if ($conversion->use == 'latex' && $conversion->bst)
+        ({{ $conversion->bst }})
+    @endif
   @endif
 @endif

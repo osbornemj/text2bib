@@ -77,6 +77,7 @@ class Converter
     var $startPagesRegExp;
     var $thesisRegExp;
     var $translatedByRegExp;
+    var $translatorRegExp;
     var $volumeRegExp;
     var $volumeAndCodesRegExp;
     var $volumeNumberPagesRegExp;
@@ -243,6 +244,19 @@ class Converter
         $this->editedByRegExp .= '(' . $editedByRx . ')';
 
         $this->editorStartRegExp = '/^[(\[]?(' . $editedByRx . '|' . $edsRx1 . ')/u';
+
+        $translatorWords = [
+            '[Tt]ranslators?',
+            '[Tt]rans\.',
+            '[Tt]rad\.',
+        ];
+
+        $translatorRx = '';
+        foreach ($translatorWords as $i => $translatorWord) {
+            $translatorRx .= ($i ? '|' : '') . $translatorWord;
+        }
+
+        $this->translatorRegExp .= '(' . $translatorRx . ')';
 
         $translatedByWords = [
             '[Tt]ranslat(ed|ion) by',
@@ -1183,6 +1197,7 @@ class Converter
                 $date, 
                 $isEditor, 
                 $isTranslator, 
+                $this->translatorRegExp,
                 $this->cities, 
                 $this->dictionaryNames, 
                 true, 
@@ -1246,7 +1261,7 @@ class Converter
             $isEditor = true;
         }
 
-        if (preg_match('/^\(trans\.?\)[.,;]? (?P<remainder>.*)$/', $remainder, $matches)) {
+        if (preg_match('/^\((trans|trad)\.?\)[.,;]? (?P<remainder>.*)$/', $remainder, $matches)) {
             $isTranslator = true;
             $remainder = $matches['remainder'] ?? '';
         }
@@ -2544,6 +2559,7 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 false, 
@@ -2613,6 +2629,7 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2647,6 +2664,7 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 false, 
@@ -2679,6 +2697,7 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2894,6 +2913,7 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2922,6 +2942,7 @@ class Converter
                                     $date, 
                                     $isEditor, 
                                     $isTranslator, 
+                                    $this->translatorRegExp,
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     true, 
@@ -2963,6 +2984,7 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2991,6 +3013,7 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -3010,6 +3033,7 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -3134,6 +3158,7 @@ class Converter
                                         $date, 
                                         $isEditor, 
                                         $isTranslator, 
+                                        $this->translatorRegExp,
                                         $this->cities, 
                                         $this->dictionaryNames, 
                                         determineEnd: false, 
@@ -3205,6 +3230,7 @@ class Converter
                                 $trash5, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -3235,6 +3261,7 @@ class Converter
                                     $date,
                                     $isEditor,
                                     $isTranslator,
+                                    $this->translatorRegExp,
                                     $language
                                 );
                                 if ($authorResult) {
@@ -3247,6 +3274,7 @@ class Converter
                                         $trash5, 
                                         $isEditor, 
                                         $isTranslator, 
+                                        $this->translatorRegExp,
                                         $this->cities, 
                                         $this->dictionaryNames, 
                                         true, 
@@ -3367,6 +3395,7 @@ class Converter
                                     $date, 
                                     $isEditor, 
                                     $isTranslator, 
+                                    $this->translatorRegExp,
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     $determineEnd ?? true, 
@@ -3464,6 +3493,7 @@ class Converter
                                             $date, 
                                             $isEditor, 
                                             $isTranslator, 
+                                            $this->translatorRegExp,
                                             $this->cities, 
                                             $this->dictionaryNames, 
                                             false, 
@@ -3557,6 +3587,7 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 false, 
@@ -3612,6 +3643,7 @@ class Converter
                                     $date, 
                                     $isEditor, 
                                     $isTranslator, 
+                                    $this->translatorRegExp,
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     true, 
@@ -3632,6 +3664,7 @@ class Converter
                                     $date, 
                                     $isEditor, 
                                     $isTranslator, 
+                                    $this->translatorRegExp,
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     true, 
@@ -3662,6 +3695,7 @@ class Converter
                             $day, 
                             $date, 
                             $isEditor, 
+                            $this->translatorRegExp,
                             $isTranslator, 
                             $this->cities, 
                             $this->dictionaryNames, 
@@ -3689,6 +3723,7 @@ class Converter
                             $date, 
                             $isEditor, 
                             $isTranslator, 
+                            $this->translatorRegExp,
                             $this->cities, 
                             $this->dictionaryNames, 
                             true, 
@@ -3721,6 +3756,7 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
+                                $this->translatorRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -3749,6 +3785,7 @@ class Converter
                             $date, 
                             $isEditor, 
                             $isTranslator, 
+                            $this->translatorRegExp,
                             $this->cities, 
                             $this->dictionaryNames, 
                             true, 
@@ -4642,6 +4679,7 @@ class Converter
                     $date,
                     $isEditor,
                     $isTranslator,
+                    $this->translatorRegExp,
                     $language
                 );
 

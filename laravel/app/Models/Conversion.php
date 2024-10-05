@@ -19,6 +19,7 @@ class Conversion extends Model
     protected $attributes = [
         'use' => '',
         'other_use' => '',
+        'bst' => '',
         'item_separator' => 'line',
         'language' => 'en',
         'label_style' => 'short',
