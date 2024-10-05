@@ -76,11 +76,14 @@
                         @endif
                         @if ($conversion->use)
                             &nbsp;&bull;&nbsp;
-                            use:
-                            @if ($conversion->other_use)
-                                {{ $conversion->other_use}}
-                            @else
-                                {{ $conversion->use }}
+                            use: 
+                            {{ $conversion->use }}
+                            @if ($conversion->use == 'latex')
+                                @if ($conversion->bst)
+                                    ({{ $conversion->bst }})
+                                @endif
+                            @elseif ($conversion->use == 'other')
+                                ({{ $conversion->other_use }})
                             @endif
                         @endif
                         @if ($conversion->examined_at)
