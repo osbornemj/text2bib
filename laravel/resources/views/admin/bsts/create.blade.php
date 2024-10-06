@@ -17,23 +17,42 @@
                 </div>
 
                 <div>
-                    <x-input-label for="available" :value="__('File available for checking?')" class="mt-4 mb-1" />
+                    <x-input-label for="type" :value="__('Type')" class="mt-4 mb-1" />
+                
+                    <x-radio-input name="type" value="author-date" class="peer/typeAuthorDate" checked/> 
+                    <x-value-label for="type" class="peer-checked/type:text-blue-600 ml-1" :value="__('author-date')" />
+            
+                    <x-radio-input name="type" value="numeric" class="peer/typeNumeric ml-4" />
+                    <x-value-label for="type" class="peer-checked/type:text-blue-600 ml-1" :value="__('numeric')" />
+
+                    <x-radio-input name="type" value="other" class="peer/typeOther ml-4" />
+                    <x-value-label for="type" class="peer-checked/type:text-blue-600 ml-1" :value="__('other')" />
+                </div>
+            
+                <div>
+                    <x-input-label for="style_required" :value="__('LaTeX style required (e.g. natbib)')" class="mt-4 mb-1" />
+                    <x-text-input id="style_required" class="block mt-1" name="style_required" :value="old('style_required')" />
+                    <x-input-error :messages="$errors->get('style_required')" class="mt-2" />
+                </div>
+
+                <div>
+                    <x-input-label for="ctan" :value="__('Available on CTAN??')" class="mt-4 mb-1" />
+                
+                    <x-radio-input name="ctan" value="1" class="peer/ctanTrue" checked/> 
+                    <x-value-label for="ctan" class="peer-checked/ctan:text-blue-600 ml-1" :value="__('Yes')" />
+            
+                    <x-radio-input name="ctan" value="0" class="peer/ctanFalse ml-4" />
+                    <x-value-label for="ctan" class="peer-checked/ctan:text-blue-600 ml-1" :value="__('No')" />
+                </div>
+            
+                <div>
+                    <x-input-label for="available" :value="__('Available for checking?')" class="mt-4 mb-1" />
                 
                     <x-radio-input name="available" value="1" class="peer/availableTrue" checked/> 
                     <x-value-label for="available" class="peer-checked/available:text-blue-600 ml-1" :value="__('Yes')" />
             
                     <x-radio-input name="available" value="0" class="peer/availableFalse ml-4" />
                     <x-value-label for="available" class="peer-checked/available:text-blue-600 ml-1" :value="__('No')" />
-                </div>
-            
-                <div>
-                    <x-input-label for="natbib" :value="__('Requires natbib style file?')" class="mt-4 mb-1" />
-                
-                    <x-radio-input name="natbib" value="1" class="peer/natbibTrue" /> 
-                    <x-value-label for="natbib" class="peer-checked/natbib:text-blue-600 ml-1" :value="__('Yes')" />
-            
-                    <x-radio-input name="natbib" value="0" class="peer/natbibFalse ml-4" checked />
-                    <x-value-label for="natbib" class="peer-checked/natbib:text-blue-600 ml-1" :value="__('No')" />
                 </div>
             
                 <div>

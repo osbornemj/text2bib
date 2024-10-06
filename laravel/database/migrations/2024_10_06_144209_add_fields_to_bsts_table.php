@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('bsts', function (Blueprint $table) {
-            $table->boolean('available')->default(true)->after('note');
-            $table->boolean('checked')->default(false)->after('available');
+            $table->string('type')->nullable()->after('name');
+            $table->string('style_required')->nullable()->after('type');
+            $table->boolean('ctan')->default(false)->after('style_required');
+            $table->dropColumn('natbib');
         });
     }
 
@@ -23,7 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('bsts', function (Blueprint $table) {
-            $table->dropColumn(['available', 'checked']);
+            $table->dropColumn(['type', 'style_required', 'ctan']);            
+            $table->boolean('natbib')->default(false)->after('name');
         });
     }
 };

@@ -68,13 +68,19 @@ class ConvertFile extends Component
     {
         $userSettings = UserSetting::where('user_id', Auth::id())->first();
 
-        $bst = Bst::find($userSettings->bst_id);
-        $bstName = $bst ? $bst->name : '';
+        if ($userSettings->bst_id) {
+            $bst = Bst::find($userSettings->bst_id);
+            $bstId = $bst->id;
+            $bstName = $bst ? $bst->name : '';
+        } else {
+            $bstId = null;
+            $bstName = '';
+        }
 
         $defaults = [
             'use' => '',
             'other_use' => '',
-            'bst_id' => $bst->id,
+            'bst_id' => $bstId,
             'item_separator' => 'line',
             'language' => 'en',
             'label_style' => 'short',
@@ -163,6 +169,13 @@ class ConvertFile extends Component
         }
 
         unset($settingValues['bstName']);
+
+        if ($settingValues['use'] != 'other') {
+            $settingValues['other_use'] = '';
+        }
+        if ($settingValues['use'] != 'latex') {
+            $settingValues['bst_id'] = null;
+        }
 
         if ($this->uploadForm->save_settings) {
             $userSetting = UserSetting::firstOrNew( 

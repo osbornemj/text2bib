@@ -2,11 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/**
- * Is it possible to have different colors for dark and light modes?
- */
 code {
-    color:rgb(139, 129, 73);
+    color:rgb(187, 168, 61);
+}
+
+@media (prefers-color-scheme: dark) {
+    code {
+        color:rgb(145, 140, 79);
+    }
 }
 
 /*!

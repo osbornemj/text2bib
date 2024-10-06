@@ -30,7 +30,7 @@ line endings = {{ $conversion->line_endings }}
         (<code>{{ $conversion->bst->name }}</code>)
         @if ($conversion->bst->checked && $conversion->bst->available)
             <p>
-              According to our data, the <code>{{ $conversion->bst->name }}</code> BibTeX style
+              According to my data, the <code>{{ $conversion->bst->name }}</code> BibTeX style
             </p>
               <x-list>
                 <li class="ml-6">
@@ -92,16 +92,16 @@ line endings = {{ $conversion->line_endings }}
                 </li>
               </x-list>
               <p>
-                Content relating to unsupported fields is included in the <code>notes</code> field.
+                Content relating to unsupported fields is written to the <code>note</code> field.
               </p>
         @else
         <p>
           @if ($conversion->bst->available)
-            We have not yet examined the <code>{{ $conversion->bst->name }}</code> BibTeX style.  We will do so as time permits.
+            I have not yet examined the <code>{{ $conversion->bst->name }}</code> BibTeX style.  I will do so as time permits.
           @else
-            We have been unable to find the <code>{{ $conversion->bst->name }}</code> BibTeX style.  
+            I have been unable to find the <code>{{ $conversion->bst->name }}</code> BibTeX style.  
           @endif
-          The conversion algorithm assumes that, like most, but not all, styles, it does not support the <code>doi</code>, <code>url</code>, <code>urldate</code>, or <code>translator</code> fields or the <code>@online</code> item type, requires underscores in <code>doi</code>s to be escaped, and treats the <code>address</code> field for an <code>inproceedings</code> item as the city of publication.
+          The conversion algorithm has assumed that, like most styles, it does not support the <code>doi</code>, <code>url</code>, <code>urldate</code>, or <code>translator</code> fields or the <code>@online</code> item type, requires underscores in <code>doi</code>s to be escaped, and treats the <code>address</code> field for an <code>inproceedings</code> item as the city of publication.
         </p>
         @endif
     @endif

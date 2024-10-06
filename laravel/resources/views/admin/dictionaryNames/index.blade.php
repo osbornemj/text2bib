@@ -19,7 +19,7 @@
                         @method('DELETE')
                         @csrf
                             <x-link href="{{ url('admin/dictionaryNames/' . $dictionaryName->id . '/edit') }}">{{ $dictionaryName->word }}</x-link>
-                            <x-small-submit-button class="ml-2">
+                            <x-small-submit-button class="ml-2 bg-red-400 dark:bg-red-800">
                                 {{ 'X' }}
                             </x-small-submit-button>
                     </form>

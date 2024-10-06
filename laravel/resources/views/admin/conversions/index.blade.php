@@ -80,7 +80,7 @@
                             {{ $conversion->use }}
                             @if ($conversion->use == 'latex')
                                 @if ($conversion->bst)
-                                    ({{ $conversion->bst }})
+                                    (<code>{{ $conversion->bst->name }}</code>)
                                 @endif
                             @elseif ($conversion->use == 'other')
                                 ({{ $conversion->other_use }})

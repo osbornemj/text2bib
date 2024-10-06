@@ -18,7 +18,7 @@
                 Examples
             </h3>
             <p>
-                The database table <code>examples</code> contains the source and correct <code>BibTeX</code> code for a large number of references.
+                The database table <code>examples</code> contains the source and correct BibTeX code for a large number of references.
             </p>
             <p>
                 <x-link :href="route('examples.index')" :active="request()->routeIs('examples.index')">
