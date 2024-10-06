@@ -17,7 +17,7 @@ class ConvertFileForm extends Form
     public $use;
 
     #[Rule('required_if:use,latex', message: 'Please enter the name of the BibTeX style file you will use')]    
-    public $bst;
+    public $bstName;
 
     #[Rule('required_if:use,other', message: 'Please describe how you will use the BibTeX file')]    
     public $other_use;

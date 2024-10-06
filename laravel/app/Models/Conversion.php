@@ -19,7 +19,6 @@ class Conversion extends Model
     protected $attributes = [
         'use' => '',
         'other_use' => '',
-        'bst' => '',
         'item_separator' => 'line',
         'language' => 'en',
         'label_style' => 'short',
@@ -39,6 +38,11 @@ class Conversion extends Model
     public function userFile(): belongsTo
     {
         return $this->belongsTo(UserFile::class);
+    }
+
+    public function bst(): belongsTo
+    {
+        return $this->belongsTo(Bst::class);
     }
 
     public function outputs(): HasMany

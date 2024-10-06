@@ -44,6 +44,12 @@
                 Information in database tables used by conversion algorithm
             </h3>
             <p>
+                <x-link :href="route('bsts.index')" :active="request()->routeIs('bsts.index')">
+                    BibTeX style files
+                </x-link>
+                (information about the features of the styles relevant to the algorithm)
+            </p>
+            <p>
                 <x-link :href="route('itemTypes.index')" :active="request()->routeIs('itemTypes.index')">
                     Types and fields
                 </x-link>

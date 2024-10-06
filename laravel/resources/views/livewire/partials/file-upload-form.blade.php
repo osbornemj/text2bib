@@ -68,7 +68,7 @@
                 <div class="hidden peer-checked/latex:block ml-6 -mb-6">
                     Enter the name of the BibTeX style file you will use (the argument of \bibliographystyle):
                     <br/>
-                    <x-text-input class="w-48mt-1" wire:model="uploadForm.bst" maxlength="255" />
+                    <x-text-input type="text" class="w-48 mt-1" wire:model="uploadForm.bstName" maxlength="255" />
                     <x-input-error :messages="$errors->get('uploadForm.bst')" class="mt-0 mb-1" />
                 </div>
             @endif

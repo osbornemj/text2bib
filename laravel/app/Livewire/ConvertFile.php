@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Str;
 
+use App\Models\Bst;
 use App\Models\Conversion;
 use App\Models\ItemType;
 use App\Models\Output;
@@ -56,6 +57,7 @@ class ConvertFile extends Component
     public $notUtf8;
     public $convertedEncodingCount;
     public $useOptions;
+    public $bstName;
 
     public function boot()
     {
@@ -66,10 +68,13 @@ class ConvertFile extends Component
     {
         $userSettings = UserSetting::where('user_id', Auth::id())->first();
 
+        $bst = Bst::find($userSettings->bst_id);
+        $bstName = $bst ? $bst->name : '';
+
         $defaults = [
             'use' => '',
             'other_use' => '',
-            'bst' => '',
+            'bst_id' => $bst->id,
             'item_separator' => 'line',
             'language' => 'en',
             'label_style' => 'short',
@@ -85,6 +90,7 @@ class ConvertFile extends Component
         foreach ($defaults as $setting => $default) {
             $this->uploadForm->$setting = $userSettings ? $userSettings->$setting : $default;
         }
+        $this->uploadForm->bstName = $bstName;
 
         $this->useOptions = [
             'latex' => 'In a LaTeX document, using a traditional BibTeX style file (your document specifies a \bibliographystyle)',
@@ -147,6 +153,16 @@ class ConvertFile extends Component
 
         // Get settings and save them if requested
         $settingValues = $this->uploadForm->except('file');
+
+        if ($settingValues['bstName']) {
+            $bst = Bst::firstOrCreate([
+                'name' => $settingValues['bstName']
+            ]);
+
+            $settingValues['bst_id'] = $bst->id;
+        }
+
+        unset($settingValues['bstName']);
 
         if ($this->uploadForm->save_settings) {
             $userSetting = UserSetting::firstOrNew( 
@@ -331,7 +347,7 @@ class ConvertFile extends Component
 
             $this->conversionExists = true;
             $this->conversion = $conversion;
-            
+
             $this->convertedItems = $convertedItems;
             $this->includeSource = $conversion->include_source;
             $this->reportType = $conversion->report_type;

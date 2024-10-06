@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatisticsController;
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\BstsController;
 use App\Http\Controllers\Admin\CitiesController;
 use App\Http\Controllers\Admin\ConversionAdminController;
 use App\Http\Controllers\Admin\DictionaryNamesController;
@@ -97,6 +98,7 @@ Route::middleware(['auth', 'verified', 'noRequiredResponses'])->group(function (
 
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::resources([
+        '/admin/bsts' => BstsController::class,
         '/admin/itemTypes' => ItemTypesController::class,
         '/admin/itemFields' => ItemFieldsController::class,
         '/admin/examples' => ExamplesController::class,
@@ -119,6 +121,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::controller(ErrorReportController::class)->group(function () {
         Route::get('/convertErrorSource/{id}', 'convertSource')->name('convertErrorSource');
+    });
+
+    Route::controller(BstsController::class)->group(function () {
+        Route::get('/admin/uncheckedBsts', 'unchecked')->name('admin.bsts.unchecked');
     });
 
     Route::controller(CitiesController::class)->group(function () {
