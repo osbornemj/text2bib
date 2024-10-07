@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-
+use App\Models\Bst;
 use App\Models\City;
 use App\Models\Journal;
 use App\Models\Publisher;
@@ -16,6 +16,7 @@ class AdminController extends Controller
 {
     public function index(): View
     {
+        $uncheckedBstCount = Bst::where('checked', 0)->count();
         $uncheckedJournalCount = Journal::where('checked', 0)->count();
         $uncheckedPublisherCount = Publisher::where('checked', 0)->count();
         $uncheckedCityCount = City::where('checked', 0)->count();
@@ -23,7 +24,7 @@ class AdminController extends Controller
 
         $latestVersion = Version::latest()->first()->created_at;
 
-        return view('admin.index', compact('uncheckedJournalCount', 'uncheckedPublisherCount', 'uncheckedCityCount', 'uncheckedJournalWordAbbreviationCount', 'latestVersion'));
+        return view('admin.index', compact('uncheckedBstCount', 'uncheckedJournalCount', 'uncheckedPublisherCount', 'uncheckedCityCount', 'uncheckedJournalWordAbbreviationCount', 'latestVersion'));
     }
 
     public function addVersion()

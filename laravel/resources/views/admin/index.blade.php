@@ -47,6 +47,12 @@
                 <x-link :href="route('bsts.index')" :active="request()->routeIs('bsts.index')">
                     BibTeX style files
                 </x-link>
+                @if ($uncheckedBstCount)
+                    <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedBstCount }}</span>
+                    <x-link :href="route('admin.bsts.unchecked')" :active="request()->routeIs('admin.bsts.unchecked')">
+                        unchecked
+                    </x-link>
+                @endif
                 (information about the features of the styles relevant to the algorithm)
             </p>
             <p>

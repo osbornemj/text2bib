@@ -36,7 +36,7 @@
                 </div>
 
                 <div>
-                    <x-input-label for="ctan" :value="__('Available on CTAN??')" class="mt-4 mb-1" />
+                    <x-input-label for="ctan" :value="__('Available on CTAN?')" class="mt-4 mb-1" />
                 
                     <x-radio-input name="ctan" value="1" class="peer/ctanTrue" checked/> 
                     <x-value-label for="ctan" class="peer-checked/ctan:text-blue-600 ml-1" :value="__('Yes')" />
@@ -85,6 +85,36 @@
                     <x-value-label for="urldate" class="peer-checked/urldate:text-blue-600 ml-1"  :value="__('No')" />
                 </div>
             
+                <div>
+                    <x-input-label for="eid" :value="__('Supports eid field?')" class="mt-4 mb-1" />
+                
+                    <x-radio-input name="eid" value="1" class="peer/eidTrue" /> 
+                    <x-value-label for="eid" class="peer-checked/eid:text-blue-600 ml-1" :value="__('Yes')" />
+            
+                    <x-radio-input name="eid" value="0" class="peer/eidFalse ml-4" checked />
+                    <x-value-label for="eid" class="peer-checked/eid:text-blue-600 ml-1"  :value="__('No')" />
+                </div>
+            
+                <div>
+                    <x-input-label for="isbn" :value="__('Supports isbn field?')" class="mt-4 mb-1" />
+                
+                    <x-radio-input name="isbn" value="1" class="peer/isbnTrue" /> 
+                    <x-value-label for="isbn" class="peer-checked/isbn:text-blue-600 ml-1" :value="__('Yes')" />
+            
+                    <x-radio-input name="isbn" value="0" class="peer/isbnFalse ml-4" checked />
+                    <x-value-label for="isbn" class="peer-checked/isbn:text-blue-600 ml-1"  :value="__('No')" />
+                </div>
+
+                <div>
+                    <x-input-label for="issn" :value="__('Supports issn field?')" class="mt-4 mb-1" />
+                
+                    <x-radio-input name="issn" value="1" class="peer/issnTrue" /> 
+                    <x-value-label for="issn" class="peer-checked/issn:text-blue-600 ml-1" :value="__('Yes')" />
+            
+                    <x-radio-input name="issn" value="0" class="peer/issnFalse ml-4" checked />
+                    <x-value-label for="issn" class="peer-checked/issn:text-blue-600 ml-1"  :value="__('No')" />
+                </div>
+          
                 <div>
                     <x-input-label for="doi_escape_underscore" :value="__('Requires underscores in dois to be escaped?')" class="mt-4 mb-1" />
                 
