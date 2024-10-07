@@ -1010,7 +1010,7 @@ class Converter
                 }
                 $issn = trim($issn, '(., ');
                 if ($use != 'latex' || ($bst && $bst->issn)) {
-                    $this->setField($item, 'issn', trim(Str::after($issn, 'ISSN')), 'setField 17a');
+                    $this->setField($item, 'issn', trim(Str::after($issn, 'ISSN'), ': '), 'setField 17a');
                 } else {
                     $this->addToField($item, 'note', $issn, 'addToField 2a');
                 }
@@ -4658,7 +4658,7 @@ class Converter
         }
 
         if (isset($item->title)) {
-            if (in_array($use, ['latex'])) {
+            if (in_array($use, ['latex', 'biblatex'])) {
                 $item->title = $this->requireUc($item->title);
             }
             $scholarTitle = $this->makeScholarTitle($item->title);

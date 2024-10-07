@@ -3869,13 +3869,13 @@ class ExampleSeeder extends Seeder
                     ]
             ],
             [
-                'source' => ' \bibitem{daily17} J. Daily, J. Peterson, Predictive Maintenance: How Big Data Analysis Can Improve Maintenance. In: Richter, K., Walther, J. (eds) Supply Chain Integration Challenges in Commercial Aerospace. Springer, Cham. 2017 doi:/10.1007/978-3-319-46155-7\_18 ',
+                'source' => ' \bibitem{daily17} J. Daily, J. Peterson, Predictive Maintenance: How Big Data Analysis Can Improve Maintenance. In: Richter, K., Walther, J. (eds) Supply Chain Integration Challenges in Commercial Aerospace. Springer, Cham. 2017 doi:/10.1007/978-3-319-46155-7_18 ',
                 'type' => 'incollection',
                 'bibtex' => [
                     'author' => 'J. Daily and J. Peterson',
                     'title' => 'Predictive Maintenance: How Big Data Analysis Can Improve Maintenance',
                     'year' => '2017',
-                    'doi' => '10.1007/978-3-319-46155-7\_18',
+                    'doi' => '10.1007/978-3-319-46155-7_18',
                     'editor' => 'Richter, K. and Walther, J.',
                     'address' => 'Cham',
                     'publisher' => 'Springer',
@@ -3918,10 +3918,10 @@ class ExampleSeeder extends Seeder
                     ]
             ],
             [
-                'source' => '\bibitem[Garlan and Shaw 1993]{GARLAN_SHAW:1993}Garlan, D. \& Shaw, M.: ``An Introduction to Software Architecture\'\'; {\em Advances In Software Engineering And Knowledge Engineering}. pp. 1-39 (1993), doi: 10.1142/9789812798039\_0001 ',
+                'source' => '\bibitem[Garlan and Shaw 1993]{GARLAN_SHAW:1993}Garlan, D. \& Shaw, M.: ``An Introduction to Software Architecture\'\'; {\em Advances In Software Engineering And Knowledge Engineering}. pp. 1-39 (1993), doi: 10.1142/9789812798039_0001 ',
                 'type' => 'article',
                 'bibtex' => [
-                    'doi' => '10.1142/9789812798039\_0001',
+                    'doi' => '10.1142/9789812798039_0001',
                     'author' => 'Garlan, D. and Shaw, M.',
                     'title' => 'An Introduction to Software Architecture',
                     'year' => '1993',
@@ -3930,10 +3930,10 @@ class ExampleSeeder extends Seeder
                     ]
             ],
             [
-                'source' => '\bibitem[Hasselbring 2018]{HASSELBRING:2018}Hasselbring, W.: ``Software Architecture: Past, Present, Future\'\'; {\em The Essence Of Software Engineering}. pp. 169-184 (2018), doi: 10.1007/978-3-319-73897-0\_10 ',
+                'source' => '\bibitem[Hasselbring 2018]{HASSELBRING:2018}Hasselbring, W.: ``Software Architecture: Past, Present, Future\'\'; {\em The Essence Of Software Engineering}. pp. 169-184 (2018), doi: 10.1007/978-3-319-73897-0_10 ',
                 'type' => 'article',
                 'bibtex' => [
-                    'doi' => '10.1007/978-3-319-73897-0\_10',
+                    'doi' => '10.1007/978-3-319-73897-0_10',
                     'author' => 'Hasselbring, W.',
                     'title' => 'Software Architecture: Past, Present, Future',
                     'year' => '2018',
@@ -3952,7 +3952,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '4',
                     'number' => '4',
                     'pages' => '7-24',
-                    'doi' => '10.1300/J154v04n04\_02',
+                    'doi' => '10.1300/J154v04n04_02',
                     ]
             ],
             [
@@ -6254,7 +6254,7 @@ class ExampleSeeder extends Seeder
                 'source' => '[6]	S. Firdous, G. A. Wagai, and K. Sharma, "A survey on diabetes risk prediction using machine learning approaches," J. Family Med. Prim. Care, vol. 11, no. 11, pp. 6929–6934, Nov. 2022. doi: 10.4103/jfmpc.jfmpc_502_22. [Online]. Available: https://doi.org/10.4103/jfmpc.jfmpc_502_22. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'doi' => '10.4103/jfmpc.jfmpc\_502\_22',
+                    'doi' => '10.4103/jfmpc.jfmpc_502_22',
                     'url' => 'https://doi.org/10.4103/jfmpc.jfmpc_502_22',
                     'author' => 'S. Firdous and G. A. Wagai and K. Sharma',
                     'title' => 'A survey on diabetes risk prediction using machine learning approaches',
@@ -9337,7 +9337,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Byrge, L., & Kennedy, D. P. (2019). High-accuracy individual identification using a "thin slice" of the functional connectome. *Network Neuroscience*, *3*(2), 363--383. https://doi.org/10.1162/netn_a_00068 ',
                 'type' => 'article',
                 'bibtex' => [
-                    'doi' => '10.1162/netn\_a\_00068',
+                    'doi' => '10.1162/netn_a_00068',
                     'author' => 'Byrge, L. and Kennedy, D. P.',
                     'year' => '2019',
                     'title' => 'High-accuracy individual identification using a ``thin slice\'\' of the functional connectome',
@@ -9539,7 +9539,7 @@ class ExampleSeeder extends Seeder
                 'source' => '(37)	Sweet, T. J.; Licatalosi, D. D. 3? END Formation and Regulation of Eukaryotic MRNAs. Methods in Molecular Biology 2014, 1125, 3Ð12. https://doi.org/10.1007/978-1-62703-971-0_1/COVER. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'doi' => '10.1007/978-1-62703-971-0\_1/COVER',
+                    'doi' => '10.1007/978-1-62703-971-0_1/COVER',
                     'author' => 'Sweet, T. J. and Licatalosi, D. D.',
                     'title' => '3? END Formation and Regulation of Eukaryotic MRNAs',
                     'year' => '2014',
@@ -10239,7 +10239,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2022',
                     'volume' => '167',
                     'pages' => '112741',
-                    'note' => 'ISSN 1364-0321',
+                    'issn' => '1364-0321',
                     'doi' => '10.1016/j.rser.2022.112741',
                     ]
             ],
@@ -10255,7 +10255,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '886-895',
                     'volume' => '10',
                     'number' => '5',
-                    'note' => 'ISSN 2320-2882'
+                    'issn' => '2320-2882'
                     ]
             ],
             // ISSN
@@ -10267,7 +10267,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2013',
                     'title' => 'Justifying Fiduciary Duties',
                     'journal' => 'McGill Law Journal / Revue de droit de McGill',
-                    'note' => 'ISSN 0024-9041 (print)1920-6356 (digital)',
+                    'issn' => '0024-9041 (print)1920-6356 (digital)',
                     ]
             ],
             // ISSN
@@ -10283,7 +10283,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '156-159',
                     'volume' => '121',
                     'number' => '2',
-                    'note' => 'ISSN 0165-1765',
+                    'issn' => '0165-1765',
                     ]
             ],
             // ISSN
@@ -10298,7 +10298,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '599-614',
                     'volume' => '34',
                     'number' => '4',
-                    'note' => 'ISSN 0094-114X'
+                    'issn' => '0094-114X'
                     ]
             ],
             // ISSN
@@ -10313,7 +10313,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '36',
                     'number' => '5',
                     'pages' => '1022-1038',
-                    'note' => 'ISSN: 0309-1317'
+                    'issn' => '0309-1317'
                     ]
             ],
 			// need to replace nonstandard space with regular space
@@ -10453,7 +10453,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '1045',
                     'volume' => '2',
                     'number' => '8',
-                    'note' => 'ISSN: 2381-8980',
+                    'issn' => '2381-8980',
                     ]
             ],
 			// {\em should not be put in note
@@ -11413,13 +11413,13 @@ class ExampleSeeder extends Seeder
             ],
 			// organization name not detected correctly
 			 [
-                'source' => 'Bundesministerium für Verkehr und Digitale Infrastruktur (2019), MiD - Mobilität in Deutschland. Available at: https://nachhaltige-mobilitaet.region-stuttgart.de/wp-content/uploads/2020/04/infas\_Pr\%C3\%A4sentation\_Mobilit\%C3\%A4tskongress-2019.pdf ',
+                'source' => 'Bundesministerium für Verkehr und Digitale Infrastruktur (2019), MiD - Mobilität in Deutschland. Available at: https://nachhaltige-mobilitaet.region-stuttgart.de/wp-content/uploads/2020/04/infas_Pr\%C3\%A4sentation_Mobilit\%C3\%A4tskongress-2019.pdf ',
                 'type' => 'unpublished',
                 'bibtex' => [
                     'author' => 'Bundesministerium für Verkehr und Digitale Infrastruktur',
                     'title' => 'MiD - Mobilität in Deutschland',
                     'year' => '2019',
-                    'url' => 'https://nachhaltige-mobilitaet.region-stuttgart.de/wp-content/uploads/2020/04/infas\_Pr\%C3\%A4sentation\_Mobilit\%C3\%A4tskongress-2019.pdf',
+                    'url' => 'https://nachhaltige-mobilitaet.region-stuttgart.de/wp-content/uploads/2020/04/infas_Pr\%C3\%A4sentation_Mobilit\%C3\%A4tskongress-2019.pdf',
                     ],
 					'char_encoding' => 'utf8leave',
             ],
@@ -12449,7 +12449,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Grimes, D. I. F. (2008). An Ensemble Approach to Uncertainty Estimation for Satellite-Based Rainfall Estimates. In S. Sorooshian, K.-L. Hsu, E. Coppola, B. Tomassetti, M. Verdecchia, & G. Visconti (Eds.), Hydrological Modelling and the Water Cycle: Coupling the Atmospheric and Hydrological Models (pp. 145–162). Springer. https://doi.org/10.1007/978-3-540-77843-1_7. ',
                 'type' => 'incollection',
                 'bibtex' => [
-                    'doi' => '10.1007/978-3-540-77843-1\_7',
+                    'doi' => '10.1007/978-3-540-77843-1_7',
                     'author' => 'Grimes, D. I. F.',
                     'year' => '2008',
                     'title' => 'An Ensemble Approach to Uncertainty Estimation for Satellite-Based Rainfall Estimates',
@@ -13440,7 +13440,7 @@ class ExampleSeeder extends Seeder
                 'source' => ' [10] Omosehinmi, D.E.,  Arogunjo, A.M (2016). Geostatistical investigation and ambient radiation mapping of Akure north and south local government areas of Ondo state, Nigeria. IJSDR | Volume 1, Issue 12. ISSN: 2455-2631. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'note' => 'ISSN: 2455-2631',
+                    'issn' => '2455-2631',
                     'author' => 'Omosehinmi, D. E. and Arogunjo, A. M.',
                     'year' => '2016',
                     'title' => 'Geostatistical investigation and ambient radiation mapping of Akure north and south local government areas of Ondo state, Nigeria',
@@ -13549,7 +13549,7 @@ class ExampleSeeder extends Seeder
                 'type' => $example['type'],
                 'language' => $example['language'] ?? 'en',
                 'char_encoding' => $example['char_encoding'] ?? 'utf8',
-                'use' => $example['use'] ?? 'latex',
+                'use' => $example['use'] ?? 'biblatex',
             ]);
             foreach ($example['bibtex'] as $key => $value) {
                 ExampleField::create([

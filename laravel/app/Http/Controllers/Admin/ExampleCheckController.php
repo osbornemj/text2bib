@@ -20,7 +20,7 @@ class ExampleCheckController extends Controller
         $this->converter = new Converter;
     }
 
-    public function runExampleCheck(Request $request, string $reportType = 'brief', string $language = 'en', string $detailsIfCorrect = 'hide', int $id = null, string $charEncoding = 'utf8', string $use = 'latex'): View
+    public function runExampleCheck(Request $request, string $reportType = 'brief', string $language = 'en', string $detailsIfCorrect = 'hide', int $id = null, string $charEncoding = 'utf8', string $use = 'biblatex'): View
     {
         $conversion = new Conversion;
         $conversion->char_encoding = $request->char_encoding ?: $charEncoding;
