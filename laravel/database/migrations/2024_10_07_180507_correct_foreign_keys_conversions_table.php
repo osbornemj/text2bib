@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::table('conversions', function (Blueprint $table) {
 //            $table->dropForeign(['bst_id']);
-            $table->foreignId('bst_id')->nullable()->after('other_use')->references('id')->on('bsts')->nullOnDelete()->cascadeOnUpdate();
+//            $table->foreignId('bst_id')->nullable()->after('other_use')->references('id')->on('bsts')->nullOnDelete()->cascadeOnUpdate();
         });
 
         Schema::table('user_settings', function (Blueprint $table) {
-            $table->dropForeign(['bst_id']);
-//            $table->foreignId('bst_id')->nullable()->after('other_use')->references('id')->on('bsts')->nullOnDelete()->cascadeOnUpdate();
+//            $table->dropForeign(['bst_id']);
+            $table->foreignId('bst_id')->nullable()->after('other_use')->references('id')->on('bsts')->nullOnDelete()->cascadeOnUpdate();
         });
         //
     }
