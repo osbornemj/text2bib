@@ -68,7 +68,7 @@ class ConvertFile extends Component
     {
         $userSettings = UserSetting::where('user_id', Auth::id())->first();
 
-        if ($userSettings->bst_id) {
+        if ($userSettings && $userSettings->bst_id) {
             $bst = Bst::find($userSettings->bst_id);
             $bstId = $bst->id;
             $bstName = $bst ? $bst->name : '';

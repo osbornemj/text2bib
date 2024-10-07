@@ -1568,7 +1568,7 @@ class Converter
         /////////////////////////////////////////////////
         // Put "Translated by ..." in note.            //
         // (Not extracted earlier, because the string  //
-        // "translated by" may appear in the title.)  //
+        // "translated by" may appear in the title.)   //
         /////////////////////////////////////////////////
 
         $containsTranslator = false;
