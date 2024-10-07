@@ -589,6 +589,7 @@ class Converter
         $language = $language ?: $conversion->language;
         $charEncoding = $charEncoding ?: $conversion->char_encoding;
         $use = $use ?: $conversion->use;
+        $bst = $conversion->bst;
 
         $phrases = $this->phrases[$language];
 
@@ -802,7 +803,8 @@ class Converter
         $doi = rtrim($doi, ']');
         $doi = ltrim($doi, '/:');
 
-        if (in_array($use, ['latex'])) {
+        // escape underscores for latex bst that requires it
+        if ($use == 'latex' && $bst && (! $bst->doi || $bst->doi_escape_underscore)) {
             $doi = preg_replace('/([^\\\])_/', '$1\_', $doi);
         }
 
@@ -811,11 +813,19 @@ class Converter
         $remainder = str_replace('{' . $doi . '}', '', $remainder);
 
         if ($urlDate) {
-            $this->setField($item, 'urldate', $urlDate, 'setField 2');
+            if ($use != 'latex' || ($bst && $bst->urldate)) {
+                $this->setField($item, 'urldate', $urlDate, 'setField 2');
+            } else {
+                $this->addToField($item, 'note', 'Retrieved ' . $urlDate . '.', 'addToField 2a');
+            }
         }
 
         if ($doi) {
-            $this->setField($item, 'doi', $doi, 'setField 3');
+            if ($use != 'latex' || ($bst && $bst->doi)) {
+                $this->setField($item, 'doi', $doi, 'setField 3');
+            } else {
+                $this->addToField($item, 'note', 'doi:' . $doi . '.', 'addToField 2b');
+            }
             $hasDoi = true;
         } else {
             $this->verbose("No doi found.");
@@ -937,13 +947,21 @@ class Converter
 
         // Write access date even if there is no URL.  (Presumably "accessed ..." means it is in fact an online item.)
         if (! empty($accessDate)) {
-            $this->setField($item, 'urldate', rtrim($accessDate, '.,]) '), 'setField 14');
+            if ($use != 'latex' || ($bst && $bst->urldate)) {
+                $this->setField($item, 'urldate', rtrim($accessDate, '.,]) '), 'setField 14');
+            } else {
+                $this->addToField($item, 'note', 'Retrieved ' . rtrim($accessDate, '.,]) ') . '.', 'addToField 2c');
+            }
             $containsUrlAccessInfo = true;
         }
 
         if (! empty($url)) {
             $url = trim($url, '{)}],. ');
-            $this->setField($item, 'url', $url, 'setField 15');
+            if ($use != 'latex' || ($bst && $bst->urldate)) {
+                $this->setField($item, 'url', $url, 'setField 15');
+            } else {
+                $this->addToField($item, 'note', $url, 'addToField 2e');
+            }
             if (Str::endsWith($url, ['.pdf'])) {
                 $urlHasPdf = true;
             }
@@ -967,12 +985,17 @@ class Converter
         $match = $this->extractLabeledContent($remainder, ' \(?' . $this->isbnLabelRegExp, $this->isbnNumberRegExp . '\)?');
         if ($match) {
             $containsIsbn = true;
-            $this->setField($item, 'isbn', trim(str_replace(' ', '', $match), '()'), 'setField 17');
+            $isbn = trim(str_replace(' ', '', $match), '()');
+            if ($use != 'latex' || ($bst && $bst->isbn)) {
+                $this->setField($item, 'isbn', $isbn, 'setField 17');
+            } else {
+                $this->addToField($item, 'note', 'ISBN: ' . $isbn, 'addToField 2f');
+            }
         }
         
-        ///////////////////////////////
-        // Put ISSN, if any, in note //
-        ///////////////////////////////
+        /////////////////////
+        // Get ISSN if any //
+        /////////////////////
 
         $containsIssn = false;
 
@@ -985,7 +1008,12 @@ class Converter
                 } else {
                     $issn = $matches[0];
                 }
-                $this->addToField($item, 'note', trim($issn, '(., '), 'addToField 2a');
+                $issn = trim($issn, '(., ');
+                if ($use != 'latex' || ($bst && $bst->issn)) {
+                    $this->setField($item, 'issn', trim(Str::after($issn, 'ISSN')), 'setField 17a');
+                } else {
+                    $this->addToField($item, 'note', $issn, 'addToField 2a');
+                }
                 $remainder = str_replace($matches[0], '', $remainder);
                 $containsIssn = true;
                 break;
@@ -1525,7 +1553,11 @@ class Converter
             }
 
             if (isset($item->url) && ! isset($item->urldate) && $day) {
-                $this->setField($item, 'urldate', $date, 'setField 37');
+                if ($use != 'latex' || ($bst && $bst->urldate)) {
+                    $this->setField($item, 'urldate', $date, 'setField 37');
+                } else {
+                    $this->addToField($item, 'note', 'Retrieved ' . $date . '.', 'addToField 2d');
+                }
             }
         }
 
@@ -2331,7 +2363,11 @@ class Converter
                 }
 
                 if (empty($item->urldate) && $itemYear && $itemMonth && $itemDay && $itemDate) {
-                    $this->setField($item, 'urldate', rtrim($itemDate, '., '), 'setField 43');
+                    if ($use != 'latex' || ($bst && $bst->urldate)) {
+                        $this->setField($item, 'urldate', rtrim($itemDate, '., '), 'setField 43');
+                    } else {
+                        $this->addToField($item, 'note', 'Retrieved ' . rtrim($itemDate, '., ') . '.', 'addToField 2e');
+                    }
                 }
 
                 $result = $this->dates->getDate($remainder, $remains, $month, $day, $date, true, true, false, $language);
