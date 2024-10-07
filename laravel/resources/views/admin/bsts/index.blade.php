@@ -18,10 +18,10 @@
             <ul>
                 @foreach ($bsts as $bst)
                 <li>
-                    <form method="POST" action="{{ route('bsts.destroy', $bst->id) }}">
+                    <form method="POST" action="{{ route('bsts.destroy', $bst->id) }}" onsubmit="return confirm('Do you really want to delete this file?');">
                         @method('DELETE')
                         @csrf
-                        <a href="{{ url('admin/bsts/' . $bst->id . '/edit') }}" onclick="return confirm('Are you sure you want to delete this file?')" >{{ $bst->name }}</a>
+                        <x-link href="{{ url('admin/bsts/' . $bst->id . '/edit') }}">{{ $bst->name }}</x-link>
                         <x-small-submit-button class="ml-2 bg-red-400 dark:bg-red-800">
                             {{ 'X' }}
                         </x-small-submit-button>
