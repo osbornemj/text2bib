@@ -12,12 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('conversions', function (Blueprint $table) {
-//            $table->dropForeign(['bst_id']);
-//            $table->foreignId('bst_id')->nullable()->after('other_use')->references('id')->on('bsts')->nullOnDelete()->cascadeOnUpdate();
-        });
-
-        Schema::table('user_settings', function (Blueprint $table) {
-//            $table->dropForeign(['bst_id']);
+            $table->dropForeign(['bst_id']);
+            $table->dropColumn(['bst_id']);
             $table->foreignId('bst_id')->nullable()->after('other_use')->references('id')->on('bsts')->nullOnDelete()->cascadeOnUpdate();
         });
     }
