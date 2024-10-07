@@ -21,10 +21,10 @@
                     <form method="POST" action="{{ route('bsts.destroy', $bst->id) }}">
                         @method('DELETE')
                         @csrf
-                            <x-link href="{{ url('admin/bsts/' . $bst->id . '/edit') }}">{{ $bst->name }}</x-link>
-                            <x-small-submit-button class="ml-2 bg-red-400 dark:bg-red-800">
-                                {{ 'X' }}
-                            </x-small-submit-button>
+                        <a href="{{ url('admin/bsts/' . $bst->id . '/edit') }}" onclick="return confirm('Are you sure you want to delete this file?')" >{{ $bst->name }}</a>
+                        <x-small-submit-button class="ml-2 bg-red-400 dark:bg-red-800">
+                            {{ 'X' }}
+                        </x-small-submit-button>
                     </form>
                 </li>
                 @endforeach

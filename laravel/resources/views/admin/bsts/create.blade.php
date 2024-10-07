@@ -17,22 +17,8 @@
                 </div>
 
                 <div>
-                    <x-input-label for="type" :value="__('Type')" class="mt-4 mb-1" />
-                
-                    <x-radio-input name="type" value="author-date" class="peer/typeAuthorDate" checked/> 
-                    <x-value-label for="type" class="peer-checked/type:text-blue-600 ml-1" :value="__('author-date')" />
-            
-                    <x-radio-input name="type" value="numeric" class="peer/typeNumeric ml-4" />
-                    <x-value-label for="type" class="peer-checked/type:text-blue-600 ml-1" :value="__('numeric')" />
-
-                    <x-radio-input name="type" value="other" class="peer/typeOther ml-4" />
-                    <x-value-label for="type" class="peer-checked/type:text-blue-600 ml-1" :value="__('other')" />
-                </div>
-            
-                <div>
-                    <x-input-label for="style_required" :value="__('LaTeX style required (e.g. natbib)')" class="mt-4 mb-1" />
-                    <x-text-input id="style_required" class="block mt-1" name="style_required" :value="old('style_required')" />
-                    <x-input-error :messages="$errors->get('style_required')" class="mt-2" />
+                    <x-input-label for="file_url" :value="__('URL of file')"  class="mt-4 mb-1"/>
+                    <x-text-input id="file_url" class="block mt-1 w-full" name="file_url" :value="old('file_url')" />
                 </div>
 
                 <div>
@@ -56,6 +42,25 @@
                 </div>
             
                 <div>
+                    <x-input-label for="type" :value="__('Type')" class="mt-4 mb-1" />
+                
+                    <x-radio-input name="type" value="author-date" class="peer/typeAuthorDate" checked/> 
+                    <x-value-label for="type" class="peer-checked/type:text-blue-600 ml-1" :value="__('author-date')" />
+            
+                    <x-radio-input name="type" value="numeric" class="peer/typeNumeric ml-4" />
+                    <x-value-label for="type" class="peer-checked/type:text-blue-600 ml-1" :value="__('numeric')" />
+
+                    <x-radio-input name="type" value="other" class="peer/typeOther ml-4" />
+                    <x-value-label for="type" class="peer-checked/type:text-blue-600 ml-1" :value="__('other')" />
+                </div>
+            
+                <div>
+                    <x-input-label for="style_required" :value="__('LaTeX style required (e.g. natbib)')" class="mt-4 mb-1" />
+                    <x-text-input id="style_required" class="block mt-1" name="style_required" :value="old('style_required')" />
+                    <x-input-error :messages="$errors->get('style_required')" class="mt-2" />
+                </div>
+
+                <div>
                     <x-input-label for="doi" :value="__('Supports doi field?')" class="mt-4 mb-1" />
                 
                     <x-radio-input name="doi" value="1" class="peer/doiTrue" /> 
@@ -63,6 +68,16 @@
             
                     <x-radio-input name="doi" value="0" class="peer/doiFalse ml-4" checked  />
                     <x-value-label for="doi" class="peer-checked/doi:text-blue-600 ml-1" :value="__('No')" />
+                </div>
+            
+                <div>
+                    <x-input-label for="doi_escape_underscore" :value="__('Requires underscores in dois to be escaped? (Irrelevant if doi field not supported.)')" class="mt-4 mb-1" />
+                
+                    <x-radio-input name="doi_escape_underscore" value="1" class="peer/doi_escape_underscoreTrue"  checked /> 
+                    <x-value-label for="doi_escape_underscore" class="peer-checked/doi_escape_underscore:text-blue-600 ml-1" :value="__('Yes')" />
+            
+                    <x-radio-input name="doi_escape_underscore" value="0" class="peer/doi_escape_underscoreFalse ml-4" />
+                    <x-value-label for="doi_escape_underscore" class="peer-checked/doi_escape_underscore:text-blue-600 ml-1" :value="__('No')" />
                 </div>
             
                 <div>
@@ -116,13 +131,13 @@
                 </div>
           
                 <div>
-                    <x-input-label for="doi_escape_underscore" :value="__('Requires underscores in dois to be escaped?')" class="mt-4 mb-1" />
+                    <x-input-label for="translator" :value="__('Supports translator field?')" class="mt-4 mb-1" />
                 
-                    <x-radio-input name="doi_escape_underscore" value="1" class="peer/doi_escape_underscoreTrue"  checked /> 
-                    <x-value-label for="doi_escape_underscore" class="peer-checked/doi_escape_underscore:text-blue-600 ml-1" :value="__('Yes')" />
+                    <x-radio-input name="translator" value="1" class="peer/translatorTrue" /> 
+                    <x-value-label for="translator" class="peer-checked/translator:text-blue-600 ml-1" :value="__('Yes')" />
             
-                    <x-radio-input name="doi_escape_underscore" value="0" class="peer/doi_escape_underscoreFalse ml-4" />
-                    <x-value-label for="doi_escape_underscore" class="peer-checked/doi_escape_underscore:text-blue-600 ml-1" :value="__('No')" />
+                    <x-radio-input name="translator" value="0" class="peer/translatorFalse ml-4" checked />
+                    <x-value-label for="translator" class="peer-checked/translator:text-blue-600 ml-1" :value="__('No')" />
                 </div>
             
                 <div>
@@ -133,16 +148,6 @@
             
                     <x-radio-input name="proc_address_conf_location" value="0" class="peer/proc_address_conf_locationFalse ml-4" checked />
                     <x-value-label for="proc_address_conf_location" class="peer-checked/proc_address_conf_location:text-blue-600 ml-1" :value="__('No')" />
-                </div>
-            
-                <div>
-                    <x-input-label for="translator" :value="__('Supports translator field?')" class="mt-4 mb-1" />
-                
-                    <x-radio-input name="translator" value="1" class="peer/translatorTrue" /> 
-                    <x-value-label for="translator" class="peer-checked/translator:text-blue-600 ml-1" :value="__('Yes')" />
-            
-                    <x-radio-input name="translator" value="0" class="peer/translatorFalse ml-4" checked />
-                    <x-value-label for="translator" class="peer-checked/translator:text-blue-600 ml-1" :value="__('No')" />
                 </div>
             
                 <div>
