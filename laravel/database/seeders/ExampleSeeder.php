@@ -3386,7 +3386,6 @@ class ExampleSeeder extends Seeder
                     'pages' => '89-110',
                     'volume' => '28',
                 ],
-                'use' => 'latex',
             ],
             [
                 'source' => 'Baade, A., Peng, P., and Harwath, D. Mae-ast: Masked autoencoding audio spectrogram transformer. arXiv, abs/2203.16691, 2022. ',

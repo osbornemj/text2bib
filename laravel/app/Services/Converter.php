@@ -957,7 +957,7 @@ class Converter
 
         if (! empty($url)) {
             $url = trim($url, '{)}],. ');
-            if ($use != 'latex' || ($bst && $bst->urldate)) {
+            if ($use != 'latex' || ($bst && $bst->url)) {
                 $this->setField($item, 'url', $url, 'setField 15');
             } else {
                 $this->addToField($item, 'note', $url, 'addToField 2e');

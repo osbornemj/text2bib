@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\BstFileController;
 use App\Http\Controllers\StatisticsController;
 
 use App\Http\Controllers\Admin\AdminController;
@@ -48,6 +49,10 @@ Route::controller(StatisticsController::class)->group(function () {
     Route::get('/statistics', 'index')->name('statistics');
 });
 
+Route::controller(BstFileController::class)->group(function () {
+    Route::get('/bsts', 'index')->name('bsts.index');
+});
+
 Route::middleware('auth', 'noRequiredResponses')->group(function () {
     Route::controller(ProfileController::class)->group(function () {
         Route::get('/profile', 'edit')->name('profile.edit');
@@ -55,7 +60,6 @@ Route::middleware('auth', 'noRequiredResponses')->group(function () {
         Route::delete('/profile', 'destroy')->name('profile.destroy');
     });
 });
-
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(ErrorReportController::class)->group(function () {
