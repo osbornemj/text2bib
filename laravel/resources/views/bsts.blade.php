@@ -63,7 +63,9 @@
                                 <div class="mb-2">
                                     @include('index.partials.bstProperties')
                                 </div>
-                                <img src="/images/{{ $bst->name }}-sample.png" class="w-full md:w-4/5">
+                                @if ($bst->available && $bst->checked)
+                                    <img src="/images/{{ $bst->name }}-sample.png" class="w-full md:w-4/5">
+                                @endif
                             </div>
                         </div>
                     </li>
