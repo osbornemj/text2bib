@@ -58,6 +58,30 @@ line endings = {{ $conversion->line_endings }}
                   the <code>urldate</code> field
                 </li>
                 <li class="ml-6">
+                  @if ($conversion->bst->eid) 
+                    supports
+                  @else
+                    does not support
+                  @endif
+                  the <code>eid</code> field
+                </li>
+                <li class="ml-6">
+                  @if ($conversion->bst->isbn) 
+                    supports
+                  @else
+                    does not support
+                  @endif
+                  the <code>isbn</code> field
+                </li>
+                <li class="ml-6">
+                  @if ($conversion->bst->issn) 
+                    supports
+                  @else
+                    does not support
+                  @endif
+                  the <code>issn</code> field
+                </li>
+                <li class="ml-6">
                   @if ($conversion->bst->translator) 
                     supports
                   @else

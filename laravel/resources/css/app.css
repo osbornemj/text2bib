@@ -6,9 +6,25 @@ code {
     color:rgb(187, 168, 61);
 }
 
+span.positive {
+    background-color: #b1f3b1;
+}
+
+span.negative {
+    background-color: #f8cacc;
+}
+
 @media (prefers-color-scheme: dark) {
     code {
         color:rgb(145, 140, 79);
+    }
+
+    span.positive {
+        background-color: #508d50;
+    }
+    
+    span.negative {
+        background-color: #da5f61;
     }
 }
 

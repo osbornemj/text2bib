@@ -12,29 +12,34 @@
 
                 <!-- Navigation Links -->
                 @auth
-                    <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
+                    <div class="hidden space-x-6 sm:-my-px sm:ml-4 sm:flex">
                         <x-nav-link :href="route('convertFile')" :active="request()->routeIs('convertFile')">
                             {{ __('Convert') }}
                         </x-nav-link>
                     </div>
-                    <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
+                    <div class="hidden space-x-6 sm:-my-px sm:ml-4 sm:flex">
                         <x-nav-link :href="route('errorReports')" :active="request()->routeIs('errorReports')">
                             {{ __('Error reports') }}
                         </x-nav-link>
                     </div>
-                    <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
+                    <div class="hidden space-x-6 sm:-my-px sm:ml-4 sm:flex">
                         <x-nav-link :href="route('comments')" :active="request()->routeIs('comments')">
                             {{ __('Comments') }}
                         </x-nav-link>
                     </div>
                 @endauth
 
-                <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
+                <div class="hidden space-x-6 sm:-my-px sm:ml-4 sm:flex">
                     <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
                         {{ __('About') }}
                     </x-nav-link>
                 </div>
-                <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
+                <div class="hidden space-x-6 sm:-my-px sm:ml-4 sm:flex">
+                    <x-nav-link :href="route('bsts')" :active="request()->routeIs('bsts')">
+                        {{ __('bst files') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-6 sm:-my-px sm:ml-4 sm:flex">
                     <x-nav-link :href="route('statistics')" :active="request()->routeIs('statistics')">
                         {{ __('Statistics') }}
                     </x-nav-link>
@@ -42,7 +47,7 @@
                 
                 @auth
                     @if (Auth::user()->is_admin)
-                    <div class="hidden space-x-8 sm:-my-px sm:ml-6 sm:flex">
+                    <div class="hidden space-x-6 sm:-my-px sm:ml-4 sm:flex">
                         <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
                             {{ __('Admin') }}
                         </x-nav-link>
@@ -140,6 +145,10 @@
 
                 <x-responsive-nav-link :href="route('about')">
                     {{ __('About') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('bsts')">
+                    {{ __('bst files') }}
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('statistics')">
