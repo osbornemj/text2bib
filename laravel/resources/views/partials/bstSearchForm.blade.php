@@ -18,7 +18,7 @@
 
     <div>
         <div class="flex">
-            <x-small-submit-button class="my-2 py-1 bg-blue-700 dark:bg-blue-200">
+            <x-small-submit-button class="my-2 py-1 bg-sky-700 dark:bg-sky-300">
                 {{ __('Find') }}
             </x-small-submit-button>
         </div>
