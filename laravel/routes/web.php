@@ -51,6 +51,7 @@ Route::controller(StatisticsController::class)->group(function () {
 
 Route::controller(BstFileController::class)->group(function () {
     Route::get('/bsts', 'index')->name('bsts');
+    Route::get('/searchBsts', 'index')->name('bsts.search');
 });
 
 Route::middleware('auth', 'noRequiredResponses')->group(function () {

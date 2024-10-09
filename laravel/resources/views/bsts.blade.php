@@ -48,33 +48,42 @@
 
     <div class="mx-4 mt-4">
         <h2 class="font-semibold text-lg leading-tight">bst files</h2>
-        {{ $bsts->total()}} found
-        <p class="mb-2">
-            Click on the name of a file to see properties of the style (<span class="positive">field</span> = supported, <span class="negative">field</span> = unsupported) and the sample document generated using that style.
-        </p>
-        <div class="sm:rounded-lg">
-            @if ($bsts->count())
-                <ul>
-                    @foreach ($bsts as $bst)
-                    <li>
-                        <div x-data="{ open: false }">
-                            <x-button-link x-on:click="open = ! open">{{ $bst->name }}</x-button-link>
-                            <div x-show="open" class="mb-2">
-                                <div class="mb-0">
-                                    @include('index.partials.bstProperties')
-                                </div>
-                                @if ($bst->available && $bst->checked)
-                                    <img src="/images/{{ $bst->name }}-sample.png" class="w-full md:w-4/5">
-                                @endif
-                            </div>
-                        </div>
-                    </li>
-                    @endforeach
-                </ul>
-            @endif
-
-            {{ $bsts->links() }}
+        <div class="border p-2 m-1">
+            <p>
+                @include('partials.bstSearchForm')
+            </p>
         </div>
+        <p>
+            {{ $bsts->total()}} found
+        </p>
+        @if ($bsts->total())
+            <p class="mt-2 mb-1">
+                Click on the name of a file to see properties of the style (<span class="positive">field</span> = supported, <span class="negative">field</span> = unsupported) and the sample document generated using that style.
+            </p>
+            <div class="sm:rounded-lg">
+                @if ($bsts->count())
+                    <ul>
+                        @foreach ($bsts as $bst)
+                        <li>
+                            <div x-data="{ open: false }">
+                                <x-button-link x-on:click="open = ! open">{{ $bst->name }}</x-button-link>
+                                <div x-show="open" class="mb-2">
+                                    <div class="mb-0">
+                                        @include('index.partials.bstProperties')
+                                    </div>
+                                    @if ($bst->available && $bst->checked)
+                                        <img src="/images/{{ $bst->name }}-sample.png" class="w-full md:w-4/5">
+                                    @endif
+                                </div>
+                            </div>
+                        </li>
+                        @endforeach
+                    </ul>
+                @endif
+
+                {{ $bsts->links() }}
+            </div>
+        @endif
     </div>
 
 </x-app-layout>
