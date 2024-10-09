@@ -6,13 +6,9 @@
   @endif
 </p>
   <p class="mt-0">
-    <span @if ($bst->doi) class="positive" @else class="negative" @endif>doi</span>,
-    <span @if ($bst->url) class="positive" @else class="negative" @endif>url</span>,
-    <span @if ($bst->urldate) class="positive" @else class="negative" @endif>urldate</span>,
-    <span @if ($bst->translator) class="positive" @else class="negative" @endif>translator</span>,
-    <span @if ($bst->eid) class="positive" @else class="negative" @endif>eid</span>,
-    <span @if ($bst->isbn) class="positive" @else class="negative" @endif>isbn</span>,
-    <span @if ($bst->issn) class="positive" @else class="negative" @endif>issn</span>.
+    @foreach ($fields as $field)
+      <span @if ($bst->$field) class="positive" @else class="negative" @endif>{{ $field }}</span>,
+    @endforeach
   </p>
   <p class="ml-0">
     @if ($bst->online) 

@@ -10,7 +10,7 @@
     </div>
 
     <div>
-        Fields supported:
+        Fields: standard fields and
         @foreach ($fields as $field)
             <x-checkbox-input id="{{ $field}}" name="{{ $field }}" value="1" class="ml-2" :checked="isset($input[$field])"/> {{ $field}}
         @endforeach
