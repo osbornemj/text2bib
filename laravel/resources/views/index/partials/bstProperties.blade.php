@@ -1,4 +1,10 @@
 @if ($bst->checked && $bst->available)
+<p class="mb-1">
+  Type: {{ $bst->type}}
+  @if ($bst->style_required)
+    (requires {{$bst->style_required}} LaTeX style)
+  @endif
+</p>
   <p class="mt-0">
     <span @if ($bst->doi) class="positive" @else class="negative" @endif>doi</span>,
     <span @if ($bst->url) class="positive" @else class="negative" @endif>url</span>,

@@ -59,8 +59,8 @@
                     <li>
                         <div x-data="{ open: false }">
                             <x-button-link x-on:click="open = ! open">{{ $bst->name }}</x-button-link>
-                            <div x-show="open" class="my-2">
-                                <div class="mb-2">
+                            <div x-show="open" class="mb-2">
+                                <div class="mb-0">
                                     @include('index.partials.bstProperties')
                                 </div>
                                 @if ($bst->available && $bst->checked)
