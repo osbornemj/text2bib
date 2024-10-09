@@ -48,7 +48,7 @@
 
     <div class="mx-4 mt-4">
         <h2 class="font-semibold text-lg leading-tight">bst files</h2>
-        <div class="border p-2 m-1 mt-2">
+        <div class="border-2 border-slate-500 cark:border-slate-100 p-2 m-1 mt-2">
             <p>
                 @include('partials.bstSearchForm')
             </p>
