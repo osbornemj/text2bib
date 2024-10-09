@@ -1576,16 +1576,44 @@ class Converter
         // (For an incollection, editors would be not be signified in this way.)
         // Case of "Trans." is handled later, after item type is determined, because "Trans." is an abbreviation used in journal names.
         // (?<=[.,] )
-        $result = $this->findRemoveAndReturn($remainder, '([Ee]dited and [Tt]ranslated by|(^| )[Tt]r\.) .*?\p{Ll}(\),?|\.| \()', false);
+        $result = preg_match('/^(?P<before>.*)(?P<editedAndTranslatedBy>[Ee]dited and [Tt]ranslated by) (?P<translator>.*?\p{Ll})(\),?|\.| \()(?P<after>.*)$/', $remainder, $matches);
         if (! $result) {
-            $result = $this->findRemoveAndReturn($remainder, '(^| |\()' . $this->translatedByRegExp . ' .*?\p{Ll}(\),?|\.| \()', false);
+            $result = preg_match('/^(?P<before>.*?)(^| |\()(?P<translatedBy>(and )?' . $this->translatedByRegExp . ') (?P<translator>.*?\p{Ll})(\),?|\.| \()(?P<after>.*)$/', $remainder, $matches);
         }
-        if ($result) {
-            $this->addToField($item, 'note', trim(ucfirst(trim($result[0], '( ')), ')(, '), 'addToField 18');
-            $before = Str::replaceEnd(' and', '', $result['before']);
-            $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . $result['after'];
+        if ($result && isset($matches['translator'])) {
+            $translator = $matches['translator'];
+            if (Str::endsWith($translator, 'et al')) {
+                $translator .= '.';
+            }
+            $setEditor = isset($matches['editedAndTranslatedBy']);
+            $translatedBy = $setEditor ? $matches['editedAndTranslatedBy'] : $matches['translatedBy'];
+            if ($use != 'latex' || ($bst && $bst->translator)) {
+                $this->setField($item, 'translator', $translator, 'setField 36a');
+                if ($setEditor) {
+                    $this->addToField($item, 'note', 'Edited by ' . $translator, 'addToField 18');
+                }
+            } else {
+                $this->addToField($item, 'note', $translatedBy . ' ' . $translator, 'addToField 18');
+            }
+            $before = $matches['before'] ?? '';
+            $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . ($matches['after'] ?? '');
             $containsTranslator = true;
         }
+
+        // $result = $this->findRemoveAndReturn($remainder, '([Ee]dited and [Tt]ranslated by|(^| )[Tt]r\.) .*?\p{Ll}(\),?|\.| \()', false);
+        // if (! $result) {
+        //     $result = $this->findRemoveAndReturn($remainder, '(^| |\()' . $this->translatedByRegExp . ' .*?\p{Ll}(\),?|\.| \()', false);
+        // }
+        // if ($result) {
+        //     if ($use != 'latex' || ($bst && $bst->translator)) {
+        //         $this->setField($item, 'translator', trim(ucfirst(trim($result[0], '( ')), ')(, '), 'setField 36a');
+        //     } else {
+        //         $this->addToField($item, 'note', trim(ucfirst(trim($result[0], '( ')), ')(, '), 'addToField 18');
+        //     }
+        //     $before = Str::replaceEnd(' and', '', $result['before']);
+        //     $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . $result['after'];
+        //     $containsTranslator = true;
+        // }
 
         ///////////////////////////////////////////////////////////////////////////////
         // To determine type of item, first record some features of publication info //
@@ -2462,11 +2490,24 @@ class Converter
                 }
 
                 // If remainder starts with "Trans.", remove it and put it in note field.
-                if (preg_match('/^(?P<note>([Tt]rans\.|[Tt]ranslated by) .*?[a-z]\.)(?P<remainder>.*)$/', $remainder, $matches)) {
-                    if (isset($matches['note'])) {
-                        $this->addToField($item, 'note', $matches['note'], 'addToField 19');
+                if (preg_match('/^(?P<note>(?P<translatedBy>[Tt]rans\.|[Tt]ranslated by) (?P<translator>.*?[a-z])\.)(?P<remainder>.*)$/', $remainder, $matches)) {
+                    if (isset($matches['note']) && isset($matches['translator'])) {
+                        $translator = $matches['translator'];
+                        if (Str::endsWith($translator, 'et al')) {
+                            $translator .= '.';
+                        }
+                        if ($use != 'latex' || ($bst && $bst->translator)) {
+                            $this->setField($item, 'translator', $translator, 'setField 48a');
+                        } else {
+                            $this->addToField($item, 'note', $translatedBy . ' ' . $translator, 'addToField 18');
+                        }
                         $remainder = $matches['remainder'] ?? '';
                     }
+
+                    // if (isset($matches['note'])) {
+                    //     $this->addToField($item, 'note', $matches['note'], 'addToField 19');
+                    //     $remainder = $matches['remainder'] ?? '';
+                    // }
                 }
 
                 if ($itemKind == 'inproceedings') {
@@ -2741,10 +2782,16 @@ class Converter
                                 $language
                             );
                             if ($result) {
-                                $this->addToField($item, 'note', $matches['trans'] . trim($result['authorstring']), 'setField 55h');
+                                if ($use != 'latex' || ($bst && $bst->translator)) {
+                                    $this->setField($item, 'translator', trim($result['authorstring']), 'setField 48a');
+                                } else {
+                                    $this->addToField($item, 'note', $matches['trans'] . trim($result['authorstring']), 'addToField 55');
+                                }
+        
                                 if (isset($matches['booktitle'])) {
                                     $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 55i');
                                 }
+
                                 // Note: allow comma in address string
                                 if (preg_match('/(?P<address>' . $addressRegExp . '): ?(?P<publisher>' . $publisherRegExp . ')\.?$/u', $remainder, $matchesAddressPublisher)) {
                                     if (isset($matchesAddressPublisher['address'])) {
