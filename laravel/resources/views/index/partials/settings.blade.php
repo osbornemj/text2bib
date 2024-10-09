@@ -123,7 +123,7 @@ line endings = {{ $conversion->line_endings }}
           @if ($conversion->bst->available)
             I have not yet examined the <code>{{ $conversion->bst->name }}</code> BibTeX style.  I will do so as time permits.
           @else
-            I have been unable to find the <code>{{ $conversion->bst->name }}</code> BibTeX style.  
+            I have been unable to locate the <code>{{ $conversion->bst->name }}</code> BibTeX style on a public website.  
           @endif
           The conversion algorithm has assumed that, like most styles, it does not support the <code>doi</code>, <code>url</code>, <code>urldate</code>, or <code>translator</code> fields or the <code>@online</code> item type, requires underscores in <code>doi</code>s to be escaped, and treats the <code>address</code> field for an <code>inproceedings</code> item as the city of publication.
         </p>

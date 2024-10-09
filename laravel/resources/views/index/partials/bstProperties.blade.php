@@ -1,5 +1,5 @@
 @if ($bst->checked && $bst->available)
-  <p>
+  <p class="mt-0">
     <span @if ($bst->doi) class="positive" @else class="negative" @endif>doi</span>,
     <span @if ($bst->url) class="positive" @else class="negative" @endif>url</span>,
     <span @if ($bst->urldate) class="positive" @else class="negative" @endif>urldate</span>,
@@ -34,6 +34,11 @@
         city of publication of the proceedings.
       @endif
   </p>
+  @if ($bst->file_url)
+    <p>
+      Available at <x-link href="{{ $bst->file_url }}" target="_blank">{{ $bst->file_url}}</x-link>
+    </p>
+  @endif
 @else
 <p>
   @if ($bst->available)
