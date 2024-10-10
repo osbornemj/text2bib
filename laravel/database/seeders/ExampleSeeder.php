@@ -13538,7 +13538,20 @@ class ExampleSeeder extends Seeder
                         'note' => 'Ma del C. Bobes y J. Maestro (trad.).'
                         ]
                 ],
-
+                [
+                    'source' => 'Bauer N., V. Bosetti, M. Hamdi-Cherif, A. Kitous, D. McCollum, A. Méjean, S. Rao, H. Turton, L. Paroussos, S. Ashina, K. Calvin, K. Wada, and D. van Vuuren (2014a). CO2 emission mitigation and fossil fuel markets: Dynamic and international aspects of climate policies. Technological Forecasting and Social Change. In Press. doi: 10.1016/j.techfore.2013.09.009, ISSN: 0040-1625.',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'author' => 'Bauer, N. and V. Bosetti and M. Hamdi-Cherif and A. Kitous and D. McCollum and A. Méjean and S. Rao and H. Turton and L. Paroussos and S. Ashina and K. Calvin and K. Wada and D. van Vuuren',
+                        'title' => 'CO2 emission mitigation and fossil fuel markets: Dynamic and international aspects of climate policies',
+                        'year' => '2014',
+                        'journal' => 'Technological Forecasting and Social Change',
+                        'doi' => '10.1016/j.techfore.2013.09.009',
+                        'issn' => '0040-1625',
+                        'note' => 'In Press',                    
+                    ],
+                    'char_encoding' => 'utf8leave',
+                ],
 
 
 

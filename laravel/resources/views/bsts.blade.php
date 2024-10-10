@@ -36,7 +36,7 @@
                 <x-button-link x-on:click="open = ! open">bib file used in sample document</x-button-link>
                 <div x-show="open" class="mx-4">
                     <p>
-                        The <code>\marginpar</code> code in each note produces the text in the right margin of the sample document indicating the type of each item.  It would not, of course, be included in a real bib file.
+                        The <code>\marginpar</code> code in the <code>title</code> field for each entry produces the text in the right margin of the sample document indicating the type of each item.  It would not, of course, be included in a real bib file.
                     </p>
                     <p class="mt-2">
                         <img src="/images/test.bib.png" class="w-full md:w-4/5">

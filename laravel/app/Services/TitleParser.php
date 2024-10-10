@@ -333,18 +333,19 @@ class TitleParser
                         (
                             // e.g. SIAM J. ... (Don't generalize too much, because 'J.' can be an editor's initial.)
                             preg_match('/^(SIAM (J\.|Journal)|IEEE Transactions|ACM Transactions)/', $remainder)
-                            // journal name, pub info?
-                            || preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?,? [0-9, \-p\.]*$/', $remainder)
+                            // 1- or 2-word journal name followed by numbers, 'p', '.', ' ', and '-' (pub info)
+                            || preg_match('/^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?,? [0-9, \-p\.]*$/u', $remainder)
                             || in_array('Journal', $wordsToNextPeriodOrComma)
                             || preg_match('/^(Revue|Jurnal) /', $remainder)
                             // journal name, pub info ('}' after volume # for \textbf{ (in $volumeAndCodesRegExp))
                             // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
                             // The following pattern allows too much latitude --- e.g. "The MIT Press. 2015." matches it.
                             // || preg_match('/^[A-Z][A-Za-z &]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
+                            // journal name, forthcoming/in press/... 
+                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]?(' . $this->endForthcomingRegExp . ')/u', $remainder) 
                             // journal name, volume (year?) issue? page
                             // Note: permits no space or punctuation between volume number and page number
-                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder) 
-                            // similar, but requires some punctuation or space between volume and page numbers, but allows a single
+                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder)                             // similar, but requires some punctuation or space between volume and page numbers, but allows a single
                             // page --- does not require a page range.
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, |: | )([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pageRegExp . '\.? ?$/u', $remainder) 
                             // journal name followed by year and publication info, allowing issue number and page

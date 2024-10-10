@@ -28,23 +28,25 @@
       underscores in <code>doi</code>s to be escaped.
     </p>
   @endif
-  <p class="ml-0">
-    Interprets the <code>address</code> field for an <code>inproceedings</code> item as the 
-      @if ($bst->proc_address_conf_location) 
-        location of the conference.
-      @else
-        city of publication of the proceedings.
-      @endif
-  </p>
-  @if ($bst->file_url)
-    <p>
-      Available at <x-link href="{{ $bst->file_url }}" target="_blank">{{ $bst->file_url}}</x-link>
+  <div class="mb-2">
+    <p class="ml-0">
+      Interprets the <code>address</code> field for an <code>inproceedings</code> item as the 
+        @if ($bst->proc_address_conf_location) 
+          location of the conference.
+        @else
+          city of publication of the proceedings.
+        @endif
     </p>
-  @endif
+    @if ($bst->file_url)
+      <p>
+        Available at <x-link href="{{ $bst->file_url }}" target="_blank">{{ $bst->file_url}}</x-link>
+      </p>
+    @endif
+  </div>
 @else
 <p>
   @if ($bst->available)
-    I have not yet examined the <code>{{ $bst->name }}</code> BibTeX style.  I will do so as time permits.
+    I have not yet examined the <code>{{ $bst->name }}</code> style.  I will do so as time permits.
   @else
     I have been unable to find the <code>{{ $bst->name }}</code> BibTeX style.  
   @endif

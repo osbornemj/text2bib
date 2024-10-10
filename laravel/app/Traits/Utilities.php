@@ -110,8 +110,8 @@ trait Utilities
 
     var $yearRegExp = '(18|19|20)[0-9]{2}';
 
-    var $forthcomingRegExp = 'forthcoming( at| in)?|in press|accepted( at)?|to appear in';
-    var $endForthcomingRegExp = '( |\()(forthcoming|in press|accepted|to appear)\.?\)?$';
+    var $forthcomingRegExp = '[Ff]orthcoming( at| in)?|[Ii]n [Pp]ress|[Aa]ccepted( at)?|[Tt]o [Aa]ppear [Ii]n';
+    var $endForthcomingRegExp = '( |\()([Ff]orthcoming|[Ii]n [Pp]ress|[Aa]ccepted|[Tt]o [Aa]ppear)\.?\)?$';
     var $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
 
     // (°|º) cannot be replaced by [°º].  Don't know why.

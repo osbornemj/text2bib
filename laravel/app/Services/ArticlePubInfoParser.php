@@ -59,9 +59,9 @@ class ArticlePubInfoParser
             $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
             $journal = $result ? $this->getQuotedOrItalic($result['content'], true, false, $before, $after, $style) : null;
             if (! $journal) {
-                $journal = $result['content'];
+                $journal = $result ? $result['content'] : '';
             }
-            $label = $result['label'];
+            $label = $result ? $result['label'] : '';
             if (Str::startsWith($label, ['Forthcoming', 'forthcoming', 'Accepted', 'accepted', 'To appear', 'to appear'])) {
                 $label = Str::replaceEnd(' in', '', $label);
                 $label = Str::replaceEnd(' at', '', $label);
