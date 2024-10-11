@@ -63,6 +63,8 @@ class ConversionAdminController extends Controller
 
         $conversion = Conversion::find($conversionId);
 
+        $bstFields = ['doi', 'eid', 'isbn', 'issn', 'translator', 'url', 'urldate'];
+
         return view('admin.conversions.show',
             compact(
                 'outputs', 
@@ -70,7 +72,8 @@ class ConversionAdminController extends Controller
                 'page', 
                 'authorPatternCount', 
                 'authorPatternPercent', 
-                'outputCount'
+                'outputCount',
+                'bstFields'
             )
         );
     }
