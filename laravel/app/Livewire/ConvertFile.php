@@ -58,6 +58,7 @@ class ConvertFile extends Component
     public $convertedEncodingCount;
     public $useOptions;
     public $bstName;
+    public $bstFields;
 
     public function boot()
     {
@@ -77,6 +78,8 @@ class ConvertFile extends Component
             $bstName = '';
         }
 
+        $this->bstFields = ['doi', 'eid', 'isbn', 'issn', 'translator', 'url', 'urldate'];
+ 
         $defaults = [
             'use' => '',
             'other_use' => '',

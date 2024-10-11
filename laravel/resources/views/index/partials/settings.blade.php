@@ -27,98 +27,34 @@ line endings = {{ $conversion->line_endings }}
   @else
     {{ $conversion->use }}
     @if ($conversion->use == 'latex' && $conversion->bst_id)
-        (<code>{{ $conversion->bst->name }}</code>)
-        @if ($conversion->bst->checked && $conversion->bst->available)
-            <p>
-              According to my data, the <code>{{ $conversion->bst->name }}</code> BibTeX style
-            </p>
-              <x-list>
-                <li class="ml-6">
-                  @if ($conversion->bst->doi) 
-                    supports
-                  @else
-                    does not support
-                  @endif
-                  the <code>doi</code> field
-                </li>
-                <li class="ml-6">
-                  @if ($conversion->bst->url) 
-                    supports
-                  @else
-                    does not support
-                  @endif
-                  the <code>url</code> field
-                </li>
-                <li class="ml-6">
-                  @if ($conversion->bst->urldate) 
-                    supports
-                  @else
-                    does not support
-                  @endif
-                  the <code>urldate</code> field
-                </li>
-                <li class="ml-6">
-                  @if ($conversion->bst->eid) 
-                    supports
-                  @else
-                    does not support
-                  @endif
-                  the <code>eid</code> field
-                </li>
-                <li class="ml-6">
-                  @if ($conversion->bst->isbn) 
-                    supports
-                  @else
-                    does not support
-                  @endif
-                  the <code>isbn</code> field
-                </li>
-                <li class="ml-6">
-                  @if ($conversion->bst->issn) 
-                    supports
-                  @else
-                    does not support
-                  @endif
-                  the <code>issn</code> field
-                </li>
-                <li class="ml-6">
-                  @if ($conversion->bst->translator) 
-                    supports
-                  @else
-                    does not support
-                  @endif
-                  the <code>translator</code> field
-                </li>
-                <li class="ml-6">
-                  @if ($conversion->bst->online) 
-                    supports
-                  @else
-                    does not support
-                  @endif
-                  the <code>@online</code> item type
-                </li>
-                @if ($conversion->bst->doi)
-                  <li class="ml-6">
-                    @if ($conversion->bst->doi_escape_underscore) 
-                      requires
-                    @else
-                      does not require
-                    @endif
-                    underscores in <code>doi</code>s to be escaped
-                  </li>
-                @endif
-                <li class="ml-6">
-                  @if ($conversion->bst->proc_address_conf_location) 
-                    interprets the <code>address</code> field for an <code>inproceedings</code> item as the location of the conference.
-                  @else
-                    interprets the <code>address</code> field for an <code>inproceedings</code> item as the city of publication of the proceedings.
-                  @endif
-                </li>
-              </x-list>
-              <p>
-                Content relating to unsupported fields is written to the <code>note</code> field.
-              </p>
-        @else
+      (<code>{{ $conversion->bst->name }}</code>)
+      @if ($conversion->bst->checked && $conversion->bst->available)
+        <p>
+          According to my data, the <code>{{ $conversion->bst->name }}</code> BibTeX style has the following support for nonstandard fields (<span class="positive">field</span> = supported, <span class="negative">field</span> = unsupported):
+          @foreach ($bstFields as $field)
+            <span @if ($conversion->bst->$field) class="positive" @else class="negative" @endif>{{ $field }}</span>@if ($loop->last).@endif
+          @endforeach
+          The conversion algorithm writes content relating to unsupported fields to the <code>note</code> field.
+          The style
+          @if ($conversion->bst->online) 
+            supports
+          @else
+            does not support
+          @endif
+          the <code>@online</code> item type,
+          @if ($conversion->bst->doi_escape_underscore) 
+            requires
+          @else
+            does not require
+          @endif
+          underscores in <code>doi</code>s to be escaped, and
+          @if ($conversion->bst->proc_address_conf_location) 
+            interprets the <code>address</code> field for an <code>inproceedings</code> item as the location of the conference.
+          @else
+            interprets the <code>address</code> field for an <code>inproceedings</code> item as the city of publication of the proceedings.
+          @endif
+        </p>
+      @else
         <p>
           @if ($conversion->bst->available)
             I have not yet examined the <code>{{ $conversion->bst->name }}</code> BibTeX style.  I will do so as time permits.
@@ -127,7 +63,7 @@ line endings = {{ $conversion->line_endings }}
           @endif
           The conversion algorithm has assumed that, like most styles, it does not support the <code>doi</code>, <code>url</code>, <code>urldate</code>, or <code>translator</code> fields or the <code>@online</code> item type, requires underscores in <code>doi</code>s to be escaped, and treats the <code>address</code> field for an <code>inproceedings</code> item as the city of publication.
         </p>
-        @endif
+      @endif
     @endif
   @endif
 @endif

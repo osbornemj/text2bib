@@ -418,6 +418,7 @@ class Converter
             'M\.? ?A\.?',
             'M\.? ?Sc\.?',
             'M\. ?S\.',
+            'MBA',
             '[Mm]estrado',
             '[Mm]aestría',
             '[Ll]icenciatura',
