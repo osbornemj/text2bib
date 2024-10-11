@@ -83,12 +83,14 @@
                         unchecked
                     </x-link>
                 @endif
+                {{--
                 &nbsp;
                 &bull;
                 &nbsp;
                 <x-link :href="route('admin.journalWordAbbreviations.populate')" :active="request()->routeIs('admin.journalWordAbbreviations.populate')">
                     Add (as unchecked) all abbreviations in converted items
                 </x-link>
+                --}}
             </p>
             <p>
                 <x-link :href="route('vonNames.index')" :active="request()->routeIs('vonNames.index')">
