@@ -55,7 +55,7 @@
 @endif
 
 @if ($bst->note)
-<p>
+<p class="mb-2">
   {{ $bst->note }}
 </p>
 @endif
