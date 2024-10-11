@@ -249,6 +249,7 @@ class Converter
             '[Tt]ranslators?',
             '[Tt]rans\.',
             '[Tt]rad\.',
+            '[Tt]r\.',
         ];
 
         $translatorRx = '';
@@ -1431,6 +1432,8 @@ class Converter
                     $this->volumeRegExp,
                     $this->volumeAndCodesRegExp,
                     $this->seriesRegExp,
+                    $this->translatorRegExp,
+                    $this->translatedByRegExp,
                     false, 
                     $language
                 );
@@ -1457,6 +1460,17 @@ class Converter
                 }
                 if ($volume) {
                     $this->setField($item, 'volume', $volume, 'setField 31');
+                }
+                if ($result['translator']) {
+                    if ($use != 'latex' || ($bst && $bst->translator)) {
+                        $translator = rtrim($result['translator'], ', ');
+                        if (! Str::endsWith($translator, 'et al.')) {
+                            $translator = rtrim($result['translator'], '., ');
+                        }
+                        $this->setField($item, 'translator', $translator, 'setField 31a');
+                    } else {
+                        $this->addToField($item, 'note', 'Translated by ' . $result['translator'], 'addToField 4a');
+                    }
                 }
                 if ($note) {
                     $note = ltrim($note, ' (');

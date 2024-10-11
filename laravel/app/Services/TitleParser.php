@@ -60,11 +60,13 @@ class TitleParser
         string $volumeRegExp, 
         string $volumeAndCodesRegExp, 
         string $seriesRegExp,
+        string $translatorRegExp,
+        string $translatedByRegExp,
         bool $includeEdition = false, 
         string $language = 'en'
        ): array
     {
-        $title = null;
+        $title = $translator = null;
         $seriesNext = false;
         $originalRemainder = $remainder;
 
@@ -100,6 +102,7 @@ class TitleParser
 
             $result['title'] = $title;
             $result['titleDetails'] = $this->titleDetails;
+            $result['translator'] = $translator;
     
             return $result;
         }
@@ -115,6 +118,7 @@ class TitleParser
 
                 $result['title'] = $title;
                 $result['titleDetails'] = $this->titleDetails;
+                $result['translator'] = $translator;
         
                 return $result;
             }
@@ -146,6 +150,7 @@ class TitleParser
 
                 $result['title'] = $title;
                 $result['titleDetails'] = $this->titleDetails;
+                $result['translator'] = $translator;
         
                 return $result;
             }
@@ -386,38 +391,45 @@ class TitleParser
                     $translatorNext = false;
                     // "(Jane Smith, trans.)" or "(Volume 2, Jane Smith, trans.)"
                     if (in_array($nextWord[0], ['('])) {
-                        $translatorNext = preg_match('/^\((?P<string>[^)]+[Tt]rans\.)\)(?P<remainder>.*)/', $remainder, $matches);
+                        $translatorNext = preg_match('/^\((?P<string>(?P<translator>[^)]+)' . $translatorRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
                         if (isset($matches['string'])) {
-                            if (preg_match('/^(' . $volumeRegExp . ')(?P<volume>[\dIVXL]+)[, ](?P<translator>.*)$/', $matches['string'], $volumeMatches)) {
+                            if (preg_match('/^(' . $volumeRegExp . ')(?P<volume>[\dIVXL]+)[, ](?P<translator>.*?)' . $translatorRegExp . '$/', $matches['string'], $volumeMatches)) {
                                 if (isset($volumeMatches['volume'])) {
                                     $volume = $volumeMatches['volume'];
                                 }
                                 if (isset($volumeMatches['translator'])) {
-                                    $note = ($note ? $note . '. ' : '') . $volumeMatches['translator'];
+                                    $translator = trim($volumeMatches['translator']);
                                 }
                             } else {
-                                $note = ($note ? $note . '. ' : '') . $matches['string'];
+                                $translator = $matches['translator'];
                             }
                             $upcomingBookVolume = false;
                             $remainder = trim($matches['remainder'], '. ');
                             $remainingWords = explode(' ', $remainder);
                         }
-                    } elseif (in_array($nextWord,  ['Translated', 'Translation']) && $nextButOneWord == 'by') {
+                    } elseif (preg_match('/^' . $translatedByRegExp . '$/', $nextWord . ' ' . $nextButOneWord)) {
                         // Extraction of translators' names handled separately.
                         $translatorNext = true;
-                    } elseif (in_array($nextWord, ['trans.', 'tr.'])) {
+                    } elseif (preg_match('/^' . $translatorRegExp . '$/', $nextWord)) {
                         // "trans. John Smith."
                         // Here trans must start with lowercase, because journal name might start with Trans. and period
                         // cannnot be preceded by uppercase letter (which would be initial of translator)
-                        if (preg_match('/^tr(ans)?\. (?P<translator>[^.]+(?<!\p{Lu})\.)(?P<remainder>.*)/u', $remainder, $matches)) {
+                        if (preg_match('/^' . $translatorRegExp . ' (?P<translator>[^.]+(?<!\p{Lu})\.)(?P<remainder>.*)/u', $remainder, $matches)) {
                             $translatorNext = true;
-                            $note = ($note ? $note . '. ' : '') . 'Translated by ' . $matches['translator'];
+                            $translator = $matches['translator'];
                             $remainder = $matches['remainder'];
                         } elseif (preg_match('/^tr(ans)?\. (?P<translator>[^,]+), (?P<remainder>.{5,})/', $remainder, $matches)) {
                             $translatorNext = true;
-                            $note = ($note ? $note . '. ' : '') . 'Translated by ' . $matches['translator'];
+                            $translator = $matches['translator'];
                             $remainder = $matches['remainder'];
                         }
+                    } elseif (preg_match('/((?!^[^(]*\p{Ll}\..*)^(?P<translator>[\p{L}. ]*))\(' . $translatorRegExp . '\)(?P<remainder>.*)$/u', $remainder, $matches)) {
+                        // Jessica J. Smith (trans.), ...
+                        // string up to first ( does not contain lowercase letter followed by period and string matches letters, spaces,
+                        // and periods followed by '(Trans.)' or similar then any characters
+                        $translatorNext = true;
+                        $translator = $matches['translator'];
+                        $remainder = $matches['remainder'] ?? '';
                     }
 
                     if (
@@ -754,6 +766,7 @@ class TitleParser
         $result['titleDetails'] = $this->titleDetails;
         $result['seriesNext'] = $seriesNext;
         $result['stringToNextPeriodOrComma'] = $stringToNextPeriodOrComma ?? '';
+        $result['translator'] = $translator;
 
         return $result;
     }

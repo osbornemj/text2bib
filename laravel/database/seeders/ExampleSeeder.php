@@ -7774,7 +7774,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Koselleck, Reinhart',
                     'title' => 'The Practice of Conceptual History: Timing History, Spacing Concepts',
                     'year' => '2002',
-                    'note' => 'Trans. Todd Samuel Presner et al.',
+                    'translator' => 'Todd Samuel Presner et al.',
                     'address' => 'Stanford',
                     'publisher' => 'Stanford University Press',
                     ]
@@ -8139,7 +8139,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Tempo e narrativa',
                     'year' => '1997',
                     'volume' => 'III',
-                    'note' => 'R. L. Ferreira trans.',
+                    'translator' => 'R. L. Ferreira',
                     'publisher' => 'Papirus',
                     ],
                     'char_encoding' => 'utf8leave',
@@ -8152,7 +8152,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Ricoeur, P.',
                     'title' => 'O si-mesmo como outro',
                     'year' => '2014',
-                    'note' => 'I. C. Benedetti trans.',
+                    'translator' => 'I. C. Benedetti',
                     'address' => 'São Paulo',
                     'publisher' => 'Martins Fontes',
                     ],
@@ -8166,7 +8166,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Ricœur, P.',
                     'title' => 'Percorsi del riconoscimento: Tre Studi',
                     'year' => '2005',
-                    'note' => 'F. Polidori, Trans.',
+                    'translator' => 'F. Polidori',
                     'publisher' => 'Raffaello Cortina',
                     ],
                     'char_encoding' => 'utf8leave',
@@ -9574,7 +9574,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Urbach, Ephraim E.',
                     'title' => 'The Sages: Their Concepts and Beliefs',
                     'year' => '1979',
-                    'note' => 'Translated by Israel Abrahams.',
+                    'translator' => 'Israel Abrahams',
                     'address' => 'Jerusalem',
                     'publisher' => 'Magnes',
                     ]
@@ -11674,7 +11674,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Cabasilas, Nicholas',
                     'title' => 'A Commentary on the Divine Liturgy',
                     'year' => '1998',
-                    'note' => 'Translated by J. M. Hussey and P. A. McNulty',
+                    'translator' => 'J. M. Hussey and P. A. McNulty',
                     'address' => 'Crestwood, New York',
                     'publisher' => 'SVS',
                     ]
@@ -11687,7 +11687,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Evdokimov, Paul',
                     'title' => 'The Art of the Icon: A Theology of Beauty',
                     'year' => '1990',
-                    'note' => 'Translated by Fr Steven Bigham',
+                    'translator' => 'Fr Steven Bigham',
                     'address' => 'Redondo Beach',
                     'publisher' => 'Oakwood',
                     ]
@@ -11700,7 +11700,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Dostoevsky, F. M.',
                     'title' => 'The Possessed',
                     'year' => '1914',
-                    'note' => 'Translated by Constance Garnet',
+                    'translator' => 'Constance Garnet',
                     'address' => 'London',
                     'publisher' => 'Heinemann',
                     ]
@@ -13005,7 +13005,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Eliade, Mircea',
                     'title' => 'Rites and Symbols of Initiation (Birth and Rebirth)',
                     'year' => '1958',
-                    'note' => 'Translated by Willard R. Trask',
+                    'translator' => 'Willard R. Trask',
                     'address' => 'London',
                     'publisher' => 'Harvill Press',
                     ]
@@ -13535,7 +13535,7 @@ class ExampleSeeder extends Seeder
                         'year' => '1997',
                         'address' => 'Madrid',
                         'publisher' => 'Arco/Libros',
-                        'note' => 'Ma del C. Bobes y J. Maestro (trad.).'
+                        'translator' => 'Ma del C. Bobes y J. Maestro'
                         ]
                 ],
                 [
