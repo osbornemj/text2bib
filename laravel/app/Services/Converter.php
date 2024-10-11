@@ -1216,6 +1216,9 @@ class Converter
             if (isset($words[0])) {
                 $words[0] = ltrim($words[0], '_-');
             }
+            // if (substr($rawEntry, 0, 7) == 'Roebuck') {
+            //     dd($words, $remainder, $isEditor, $isTranslator, $this->translatorRegExp, $language);
+            // }
             $authorConversion = $this->authorParser->convertToAuthors(
                 $words, 
                 $remainder, 
@@ -3778,8 +3781,8 @@ class Converter
                             $day, 
                             $date, 
                             $isEditor, 
-                            $this->translatorRegExp,
                             $isTranslator, 
+                            $this->translatorRegExp,
                             $this->cities, 
                             $this->dictionaryNames, 
                             false, 

@@ -54,7 +54,6 @@ class ExampleCheckController extends Controller
 
         $authorPatternCounts = [];
         foreach ($examples as $example) {
-
             $bibtexFields = $example->bibtexFields();
 
             $correctType = $correctContent = true;
