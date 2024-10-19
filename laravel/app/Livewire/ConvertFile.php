@@ -265,6 +265,11 @@ class ConvertFile extends Component
             // Create array of entries
             $entries = explode($entrySeparator, $filestring);
 
+
+            if (count($entries) > 5) {
+                $conversion->update(['report_type' => 'standard']);
+            }
+
             // Remove empty entries and entries that are "\n"; last condition eliminates stray lines with short text
             // (has to exclude ones with strlen == 1 to clean up BOM)
             $entries = array_filter($entries, fn($value) => ! empty($value) && $value != "\n" && strlen($value) > 10);
