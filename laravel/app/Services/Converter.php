@@ -207,6 +207,7 @@ class Converter
             'რედ\.?',      // Georgian
             '[Aa] cura di', // Italian
             '[Rr]ed\.',     // Polish
+            '[Dd]ü\.',         // Turkish
         ];
 
         $editedByWords = [
@@ -250,6 +251,7 @@ class Converter
             '[Tt]rans\.',
             '[Tt]rad\.',
             '[Tt]r\.',
+            'Çev\.',      // Turkish
         ];
 
         $translatorRx = '';
@@ -309,8 +311,8 @@ class Converter
             '[Ss]s?\. ?',     // Turkish, Polish, German
             '[Ss]tr\. ?',     // Czech
             'стр\. ?',        // Russian
-            'გვ\. ?',         // Georgian
             'С\. ?',          // Russian
+            'გვ\. ?',         // Georgian
         ];
 
         $startPagesRegExp = '/(?P<pageWord>';
@@ -354,6 +356,7 @@ class Converter
             '[Bb]ände',    // German (plural)
             '[Bb]and',     // German
             '[Bb]d\.',     // German
+            'Т\.',         // Russian
         ];
 
         $volumeRegExp = '';

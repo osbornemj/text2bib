@@ -67,6 +67,7 @@ class TitleParser
        ): array
     {
         $title = $translator = null;
+        $this->titleDetails = [];
         $seriesNext = false;
         $originalRemainder = $remainder;
 
