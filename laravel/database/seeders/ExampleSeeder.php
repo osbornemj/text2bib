@@ -13552,6 +13552,21 @@ class ExampleSeeder extends Seeder
                     ],
                     'char_encoding' => 'utf8leave',
                 ],
+                // author with 4 initials
+                [
+                    'source' => 'Davies, A. B., Tambling, C. J., Marneweck, D. G., Ranc, N., Druce, D. J., Cromsigt, J. P. G. M., le Roux, E., & Asner, G. P. (2021). Spatial heterogeneity facilitates carnivore coexistence. Ecology, 102(5), e03319. https://doi.org/10.1002/ecy.3319 ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'author' => 'Davies, A. B. and Tambling, C. J. and Marneweck, D. G. and Ranc, N. and Druce, D. J. and Cromsigt, J. P. G. M. and le Roux, E. and Asner, G. P.',
+                        'title' => 'Spatial heterogeneity facilitates carnivore coexistence',
+                        'journal' => 'Ecology',
+                        'year' => '2021',
+                        'volume' => '102',
+                        'number' => '5',
+                        'pages' => 'e03319',
+                        'doi' => '10.1002/ecy.3319',
+                        ]
+                ],
 
 
 

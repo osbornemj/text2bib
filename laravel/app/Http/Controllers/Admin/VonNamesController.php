@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreVonNameRequest;
 use App\Http\Requests\UpdateVonNameRequest;
 
+use Illuminate\Support\Facades\DB;
+
 use App\Models\VonName;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -42,7 +44,15 @@ class VonNamesController extends Controller
     {
         $input = $request->except('_token');
 
-        VonName::firstOrCreate($input);
+        // Case sensitive
+        $vonName = VonName::where(DB::raw('BINARY `name`'), $input['name'])->first();
+
+        if ( ! $vonName ) {
+            VonName::create($input);
+        }
+
+        // Case insensitive
+        //VonName::firstOrCreate($input);
 
         return redirect()->route('vonNames.index');
     }

@@ -68,7 +68,7 @@ trait AuthorPatterns
         $initialPeriodRegExp = '(\p{Lu}\.|\p{Lu}\.-\p{Lu}\.)';
 
         // Spaces between initials are added before an item is processed, so "A.B." doesn't need to be matched
-        $initialsLastName = '(' . $initialRegExp . ' ){1,3}' . $lastNameRegExp;
+        $initialsLastName = '(' . $initialRegExp . ' ){1,4}' . $lastNameRegExp;
         $lastNameInitials = $lastNameRegExp . ',?( ' . $initialRegExp . '){1,4}';
         $lastNameInitialsPeriod = $lastNameRegExp . ',?( ' . $initialPeriodRegExp . '){1,4}';
         $firstNameInitialsLastName = $otherNameRegExp . ' (' . $initialRegExp . ' )?' . $lastNameRegExp;
