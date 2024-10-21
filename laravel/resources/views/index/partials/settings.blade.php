@@ -42,12 +42,15 @@ line endings = {{ $conversion->line_endings }}
             does not support
           @endif
           the <code>@online</code> item type,
-          @if ($conversion->bst->doi_escape_underscore) 
-            requires
-          @else
-            does not require
-          @endif
-          underscores in <code>doi</code>s to be escaped, and
+          @if ($conversion->bst->doi)
+            @if ($conversion->bst->doi_escape_underscore) 
+              requires
+            @else
+              does not require
+            @endif
+            underscores in <code>doi</code>s to be escaped,
+          @endif  
+          and
           @if ($conversion->bst->proc_address_conf_location) 
             interprets the <code>address</code> field for an <code>inproceedings</code> item as the location of the conference.
           @else
