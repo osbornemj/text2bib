@@ -1322,7 +1322,12 @@ class Converter
             if (Str::endsWith($authorstring, '-.')) {
                 $authorstring = rtrim($authorstring, '.');
             }
-            $this->setField($item, 'author', rtrim($authorstring, ',\\'), 'setField 23d');
+            $authorstring = rtrim($authorstring, ',\\');
+            // If author is organization, name contains a space, and use is either latex or biblatex, put author in braces
+            if ($authorIsOrganization && strpos($authorstring, ' ') !== false && in_array($use, ['latex', 'biblatex'])) {
+                $authorstring = '{' . $authorstring . '}';
+            }
+            $this->setField($item, 'author', $authorstring, 'setField 23d');
         }
 
         $hasSecondaryDate = false;
@@ -1962,7 +1967,7 @@ class Converter
                     ! Str::contains($item->url, ['journal']) &&
                     // if remainder has address: publisher format, item is book unless author is organization
                     (! $startsAddressPublisher || $authorIsOrganization) &&
-                    (! $allWordsInitialCaps || (isset($item->author) && $item->author == $remainder)) &&
+                    (! $allWordsInitialCaps || (isset($item->author) && trim($item->author, '{}') == $remainder)) &&
                     ! $isArticle
                 )
             )
@@ -4653,7 +4658,7 @@ class Converter
                     && (! $titleEndsInPeriod || ! $allWordsInitialCaps) 
                     && ! $remainderEndsInColon
                     && $titleStyle != 'quoted'
-                    && (! isset($item->author) || $item->author != $remainder)
+                    && (! isset($item->author) || trim($item->author, '{}') != $remainder)
                    ) {
                     // If remainder is all letters and spaces, assume it is part of title,
                     // which must have been ended prematurely.

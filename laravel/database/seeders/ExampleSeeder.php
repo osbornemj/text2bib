@@ -3545,7 +3545,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Center for Disease Control and Prevention. History of Ebola Disease Outbreaks. Cases and Outbreaks of Ebola Disease by Year. Estados Unidos: CDC, 2023. Disponível em: https://www.cdc.gov/vhf/ebola/history/chronology.html?CDC_AA_refVal=https',
                 'type' => 'online',
                 'bibtex' => [
-                    'author' => 'Center for Disease Control and Prevention',
+                    'author' => '{Center for Disease Control and Prevention}',
                     'title' => 'History of Ebola Disease Outbreaks. Cases and Outbreaks of Ebola Disease by Year',
                     'year' => '2023',
                     'url' => 'https://www.cdc.gov/vhf/ebola/history/chronology.html?CDC_AA_refVal=https',
@@ -3571,7 +3571,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Center for Disease Control and Prevention. Marburg (Marburg Virus Disease). Estados Unidos: CDC, 2023. Disponível em: https://www.cdc.gov/vhf/marburg/index.html. Acesso em: 15 mar. 2023. ',
                 'type' => 'online',
                 'bibtex' => [
-                    'author' => 'Center for Disease Control and Prevention',
+                    'author' => '{Center for Disease Control and Prevention}',
                     'title' => 'Marburg (Marburg Virus Disease)',
                     'year' => '2023',
                     'url' => 'https://www.cdc.gov/vhf/marburg/index.html',
@@ -4020,7 +4020,7 @@ class ExampleSeeder extends Seeder
                 'source' => ' Nachman of Breslov. 1995. Likutey Moharan. Translated by Ozer Bergman and Moshe Mykoff. Jerusalem/New York: Breslov Research Institue. ',
                 'type' => 'book',
                 'bibtex' => [
-                    'author' => 'Nachman of Breslov',
+                    'author' => '{Nachman of Breslov}',
                     'title' => 'Likutey Moharan',
                     'year' => '1995',
                     'translator' => 'Ozer Bergman and Moshe Mykoff',
@@ -5457,7 +5457,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'PubChem Compound Summary for CID 62648, Ammonium Persulfate',
                     'url' => 'https://pubchem.ncbi.nlm.nih.gov/compound/Ammonium-Persulfate',
                     'urldate' => 'May 10, 2024',
-                    'author' => 'National Center for Biotechnology Information',
+                    'author' => '{National Center for Biotechnology Information}',
                     'year' => '2024',
                     ]
             ], 
@@ -7852,7 +7852,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Centers for Disease Control and Prevention. (2023, December 14). CDC respiratory virus updates. Centers for Disease Control and Prevention. https://www.cdc.gov/respiratory-viruses/whats-new/index.html ',
                 'type' => 'online',
                 'bibtex' => [
-                    'author' => 'Centers for Disease Control and Prevention',
+                    'author' => '{Centers for Disease Control and Prevention}',
                     'title' => 'CDC respiratory virus updates',
                     'note' => 'Centers for Disease Control and Prevention',
                     'year' => '2023',
@@ -11411,7 +11411,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Official Statistics of Sweden (2022), Transport Analysis – Road traffic injuries. Available at: https://www.trafa.se/en/road-traffic/road-traffic-injuries/ ',
                 'type' => 'online',
                 'bibtex' => [
-                    'author' => 'Official Statistics of Sweden',
+                    'author' => '{Official Statistics of Sweden}',
                     'title' => 'Transport Analysis -- Road traffic injuries',
                     'year' => '2022',
                     'url' => 'https://www.trafa.se/en/road-traffic/road-traffic-injuries/',
@@ -11422,7 +11422,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Bundesministerium für Verkehr und Digitale Infrastruktur (2019), MiD - Mobilität in Deutschland. Available at: https://nachhaltige-mobilitaet.region-stuttgart.de/wp-content/uploads/2020/04/infas_Pr\%C3\%A4sentation_Mobilit\%C3\%A4tskongress-2019.pdf ',
                 'type' => 'unpublished',
                 'bibtex' => [
-                    'author' => 'Bundesministerium für Verkehr und Digitale Infrastruktur',
+                    'author' => '{Bundesministerium für Verkehr und Digitale Infrastruktur}',
                     'title' => 'MiD - Mobilität in Deutschland',
                     'year' => '2019',
                     'url' => 'https://nachhaltige-mobilitaet.region-stuttgart.de/wp-content/uploads/2020/04/infas_Pr\%C3\%A4sentation_Mobilit\%C3\%A4tskongress-2019.pdf',
@@ -11434,7 +11434,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Port Network Authority of the Eastern Adriatic Sea (2019), Action Plan for a Sustainable and Low Carbon - Port of Trieste. Available at: https://supair.adrioninterreg.eu/wp-content/uploads/2020/02/DT1.3.1-Action-Plan-for-a-sustainable-and-low-carbon-Port-of-Trieste-with-ANNEX.pdf ',
                 'type' => 'unpublished',
                 'bibtex' => [
-                    'author' => 'Port Network Authority of the Eastern Adriatic Sea',
+                    'author' => '{Port Network Authority of the Eastern Adriatic Sea}',
                     'title' => 'Action Plan for a Sustainable and Low Carbon - Port of Trieste',
                     'year' => '2019',
                     'url' => 'https://supair.adrioninterreg.eu/wp-content/uploads/2020/02/DT1.3.1-Action-Plan-for-a-sustainable-and-low-carbon-Port-of-Trieste-with-ANNEX.pdf',
@@ -11445,7 +11445,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Transport for London (2021), Casualties in Greater London during 2020. Available at: https://content.tfl.gov.uk/casualties-in-greater-london-2020.pdf ',
                 'type' => 'unpublished',
                 'bibtex' => [
-                    'author' => 'Transport for London',
+                    'author' => '{Transport for London}',
                     'title' => 'Casualties in Greater London during 2020',
                     'year' => '2021',
                     'url' => 'https://content.tfl.gov.uk/casualties-in-greater-london-2020.pdf',
@@ -11710,7 +11710,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Animal and Plant Health Agency, (2022) Avian Influenza in Wild Birds, available online at: https://www.gov.uk/government/publications/avian-influenza-in-wild-birds [Date accessed: 7th March 2022] ',
                 'type' => 'online',
                 'bibtex' => [
-                    'author' => 'Animal and Plant Health Agency',
+                    'author' => '{Animal and Plant Health Agency}',
                     'title' => 'Avian Influenza in Wild Birds',
                     'year' => '2022',
                     'url' => 'https://www.gov.uk/government/publications/avian-influenza-in-wild-birds',
@@ -11801,7 +11801,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Ministry of Environment (MoE). 2021. Cambodia: Long-Term Strategy for Carbon Neutrality (LTS4CN). Phnom Penh: MoE',
                 'type' => 'book',
                 'bibtex' => [
-                    'author' => 'Ministry of Environment (MoE)',
+                    'author' => '{Ministry of Environment (MoE)}',
                     'title' => 'Cambodia: Long-Term Strategy for Carbon Neutrality (LTS4CN)',
                     'year' => '2021',
                     'address' => 'Phnom Penh',
@@ -11813,7 +11813,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'United Nations Development Programme (UNDP). 2019. Cambodia: Derisking Renewable Energy Investment. New York: UNDP. ',
                 'type' => 'book',
                 'bibtex' => [
-                    'author' => 'United Nations Development Programme (UNDP)',
+                    'author' => '{United Nations Development Programme (UNDP)}',
                     'title' => 'Cambodia: Derisking Renewable Energy Investment',
                     'year' => '2019',
                     'address' => 'New York',
@@ -12740,7 +12740,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Fisheries Statistical Report of Bangladesh. Fisheries Resources Survey System. 2020. Department of Fisheries, Bangladesh. 81 pp.  ',
                 'type' => 'book',
                 'bibtex' => [
-                    'author' => 'Fisheries Statistical Report of Bangladesh',
+                    'author' => '{Fisheries Statistical Report of Bangladesh}',
                     'title' => 'Fisheries Resources Survey System',
                     'year' => '2020',
                     'publisher' => 'Department of Fisheries',
