@@ -41,14 +41,17 @@ line endings = {{ $conversion->line_endings }}
           @else
             does not support
           @endif
-          the <code>@online</code> item type,
+          the <code>@online</code> item
           @if ($conversion->bst->doi)
+            type,
             @if ($conversion->bst->doi_escape_underscore) 
               requires
             @else
               does not require
             @endif
             underscores in <code>doi</code>s to be escaped,
+          @else
+            type
           @endif  
           and
           @if ($conversion->bst->proc_address_conf_location) 
