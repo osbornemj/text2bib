@@ -285,7 +285,8 @@ class ConvertFile extends Component
                 if ($conversion->language == 'my') {
                     $encodings[$i] = 'UTF-8';
                 } else {
-                    $encodings[$i] = mb_detect_encoding($entry, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+                    $encodings[$i] = $this->mb_detect_encoding_in_order($entry, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+                    //$encodings[$i] = 'UTF-8';
                     if (in_array($encodings[$i], ['ISO-8859-1', 'Windows-1252'])) {
                         $entries[$i] = mb_convert_encoding($entry, 'UTF-8', $encodings[$i]);
                         $this->convertedEncodingCount++;
@@ -375,6 +376,19 @@ class ConvertFile extends Component
             $this->itemTypes = $itemTypes;
             $this->itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
         }
+    }
+
+    /**
+     * See comment by mta59066 at gmail dot com on https://www.php.net/manual/en/function.mb-detect-encoding.php
+     */
+    public function mb_detect_encoding_in_order(string $string, array $encodings): string|false
+    {
+        foreach($encodings as $enc) {
+            if (mb_check_encoding($string, $enc)) {
+                return $enc;
+            }
+        }
+        return false;
     }
 
     public function getCrossrefItemFromDoi(string $doi, string $use): object

@@ -204,10 +204,11 @@ class Converter
             'Hrsgg\.',      // German
             'Hg\.',         // German
             '[Dd]ir\.',     // French
+            '[Éé]ds?\.',    // French
             'რედ\.?',      // Georgian
             '[Aa] cura di', // Italian
             '[Rr]ed\.',     // Polish
-            '[Dd]ü\.',         // Turkish
+            '[Dd]ü\.',      // Turkish
         ];
 
         $editedByWords = [
