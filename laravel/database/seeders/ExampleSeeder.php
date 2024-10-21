@@ -13567,6 +13567,36 @@ class ExampleSeeder extends Seeder
                         'doi' => '10.1002/ecy.3319',
                         ]
                 ],
+                // Last name in braces
+                [
+                    'source' => '\bibitem{Hamdani} F. E. Hamdani, M. Masmoudi, A. {Al Hanbali}, F. Bouyahia and A. A. Ouahman,  ``Diagnostic and modelling of elderly flow in a French healthcare institution,\'\' {\it Comput Ind Eng}., vol. 112, pp. 675--689, OCt. 2017.  ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'author' => 'F. E. Hamdani and M. Masmoudi and A. {Al Hanbali} and F. Bouyahia and A. A. Ouahman',
+                        'title' => 'Diagnostic and modelling of elderly flow in a French healthcare institution',
+                        'journal' => 'Comput Ind Eng',
+                        'year' => '2017',
+                        'month' => 'October',
+                        'volume' => '112',
+                        'pages' => '675-689',
+                        ]
+                ],
+                // test of utf-8
+                [
+                    'source' => 'de Callataÿ, Godefroid, "The Ṣābiʾans of Ṣāʿid al-Andalusī", Studia graeco-arabica, 7 (2017), 291-306.',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'author' => 'de Callataÿ, Godefroid',
+                        'title' => 'The Ṣābiʾans of Ṣāʿid al-Andalusī',
+                        'journal' => 'Studia graeco-arabica',
+                        'year' => '2017',
+                        'volume' => '7',
+                        'pages' => '291-306',
+                        
+                    ],
+                    'char_encoding' => 'utf8leave',
+                ]
+                
 
 
 

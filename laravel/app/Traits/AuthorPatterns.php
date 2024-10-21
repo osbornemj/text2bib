@@ -59,9 +59,11 @@ trait AuthorPatterns
         //$lastNameRegExp = '(' . $vonNameRegExp . ' )?\p{Lu}[\p{L}\-\']+';
         // Following allows double-barelled last name with space; doesn't produce any errors in Examples, and seems OK
         // as long as none of the patterns end with simply a space.
-        $lastNameRegExp = '(' . $vonNameRegExp . ' )?(' . $vonNameRegExp . ' )?\p{Lu}[\p{L}\-\']+( \p{Lu}[\p{L}\-\']+)?';
+        // Last names can be enclosed in braces (e.g. in a \bibitem so that a name with a double-barelled last name is formatted correctly).
+        $nameSegment = '\p{Lu}[\p{L}\-\']+';
+        $lastNameRegExp = '{?(' . $vonNameRegExp . ' )?(' . $vonNameRegExp . ' )?' . $nameSegment . '( ' . $nameSegment . ')?}?';
         // Other name (string before first space) has to start with uppercase letter and include at least one lowercase letter
-        $otherNameRegExp = '(?=[^ ]*\p{Ll})\p{Lu}[\p{L}\-\']+';
+        $otherNameRegExp = '(?=[^ ]*\p{Ll})' . $nameSegment;
         // Uppercase name
         $ucNameRegExp = '\p{Lu}+( \p{Lu}+)?';
         $initialRegExp = '(\p{Lu}\.?|\p{Lu}\.?-\p{Lu}\.?)';

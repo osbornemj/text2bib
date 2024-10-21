@@ -286,7 +286,6 @@ class ConvertFile extends Component
                     $encodings[$i] = 'UTF-8';
                 } else {
                     $encodings[$i] = $this->mb_detect_encoding_in_order($entry, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
-                    //$encodings[$i] = 'UTF-8';
                     if (in_array($encodings[$i], ['ISO-8859-1', 'Windows-1252'])) {
                         $entries[$i] = mb_convert_encoding($entry, 'UTF-8', $encodings[$i]);
                         $this->convertedEncodingCount++;
