@@ -13737,8 +13737,19 @@ class ExampleSeeder extends Seeder
                         'volume' => '9',
                         'number' => '8',
                         ]
-                ],	
-
+                ],
+                // translator field should not include "by"
+                [
+                    'source' => 'Aristoteles. (2021). The Art of Rhetoric by Aristotle: Retorika Aristoteles; Trans. by Andre Hardjana. Abhiseka Dipantara. ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'author' => 'Aristoteles',
+                        'year' => '2021',
+                        'translator' => 'Andre Hardjana',
+                        'title' => 'The Art of Rhetoric by Aristotle: Retorika Aristoteles',
+                        'publisher' => 'Abhiseka Dipantara',
+                        ]
+                ],
     
 
 

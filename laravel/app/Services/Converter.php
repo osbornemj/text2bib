@@ -249,7 +249,7 @@ class Converter
 
         $translatorWords = [
             '[Tt]ranslators?',
-            '[Tt]rans\.',
+            '[Tt]rans\.(?! by)',
             '[Tt]rad\.',
             '[Tt]r\.(?! by)',
             'Çev\.',      // Turkish
@@ -264,7 +264,7 @@ class Converter
 
         $translatedByWords = [
             '[Tt]ranslat(ed|ion) by',
-            '[Tt]ransl\. by',
+            '[Tt]ransl?\. by',
             '[Tt]r\.(?! by)',
             '[Tt]r\.? by',
             '[Tt]raducción de',   // Spanish
@@ -1501,7 +1501,7 @@ class Converter
                     $title = $beforePeriod;
                     // Series string may contain volume number, in boldface
                     $series = $this->removeFontStyle($afterPeriod, 'bold');
-                    $this->setField($item, 'series', trim($series), 'setField 31a');
+                    $this->setField($item, 'series', trim($series), 'setField 31b');
                 }
             }
 
@@ -3420,7 +3420,7 @@ class Converter
                                         }
                                     } else {
                                         $booktitle = $booktitleAndPubInfo;
-                                        $this->setField($item, 'booktitle', rtrim($booktitle, '.'), 'setField 79d');
+                                        $this->setField($item, 'booktitle', rtrim(trim($booktitle), '.'), 'setField 79d');
                                         $remainder = substr($string, 0, -2); // remove ' 1' appended to $string
                                     }
                                     $updateRemainder = false;
