@@ -7239,7 +7239,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2021',
                     'journal' => 'Adv. Math.',
                     'volume' => '391',
-                    'note' => '110 pp. Paper No. 107945',
+                    'note' => 'Paper No. 107945. 110 pp.',
                     ]
             ],
    			// problem with von name
@@ -12187,7 +12187,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1832',
                     'title' => 'Expedition scientifique de Moree. Section des sciences physiques zoologie. Deuxieme section---des animaux articules [Vol. 3, part 1]',
                     'publisher' => 'F. G. Levrault',
-					'note' => '400 pp.',
+					'pagetotal' => '400 pp.',
                     'address' => 'Paris',
                     ]
             ],
@@ -12201,7 +12201,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Catalogue of {I}ndian insects. Part 27---Isoptera',
                     'publisher' => 'Government of India Press',
                     'address' => 'Delhi',
-					'note' => '[4] + 94 pp.'
+					'pagetotal' => '[4] + 94 pp.'
                     ]
             ],
 			// address and publisher not detected
@@ -12745,7 +12745,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2020',
                     'publisher' => 'Department of Fisheries',
                     'address' => 'Bangladesh',
-                    'note' => '81 pp.',
+                    'pagetotal' => '81 pp.',
                     ]
             ],
 			// word "symposium" used for proceedings

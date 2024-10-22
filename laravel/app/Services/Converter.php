@@ -1347,13 +1347,9 @@ class Converter
 
         $remainder = trim($remainder);
 
-        $hasPageCount = false;
+        $pageCount = null;
         if (preg_match('/^(?P<remainder>.*?)(,? (?P<pageCount>[0-9ivx +\[\]]+(pp|pgs)\.?))?$/', $remainder, $matches)) {
-            if (isset($matches['pageCount'])) {
-                $this->addToField($item, 'note', $matches['pageCount']);
-                $this->verbose('Adding page count to note field');
-                $hasPageCount = true;
-            }
+            $pageCount = $matches['pageCount'] ?? null;
             $remainder = $matches['remainder'] ?? '';
         }
 
@@ -4668,6 +4664,16 @@ class Converter
                 $this->addToField($item, 'note', $remainder, 'addToField 17');
             } else {
                 $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
+            }
+        }
+
+        if ($pageCount) {
+            if ($use == 'latex' || ! in_array($itemKind, ['book', 'phdthesis', 'mastersthesis'])) {
+                $this->addToField($item, 'note', $pageCount, 'addToField 21');
+                $this->verbose('Adding page count to note field');
+            } else {
+                // Later moved to note field if item type is not book or phdthesis or mastersthesis
+                $this->setField($item, 'pagetotal', $pageCount, 'setField 25a');
             }
         }
 
