@@ -13654,6 +13654,19 @@ class ExampleSeeder extends Seeder
                         'pages' => '843-850.e5',
                         ]
                 ],
+                // "Yu" used as middle initial
+                [
+                    'source' => ' {B.~P.~Zhilkin, N.~S.~Zaikov, A.~Yu.~Kiselnikov, and P.~Yu.~Khudyakov, } ``Specific Features of Changes in the Thermal Structure of Gas Impact Jets," Izv. Ross. Akad. Nauk, Mekh. Zhidk. Gaza, No.~2, 104--111 (2013). ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'author' => 'B. P. Zhilkin and N. S. Zaikov and A. Yu. Kiselnikov and P. Yu. Khudyakov',
+                        'title' => 'Specific Features of Changes in the Thermal Structure of Gas Impact Jets',
+                        'journal' => 'Izv. Ross. Akad. Nauk, Mekh. Zhidk. Gaza',
+                        'year' => '2013',
+                        'number' => '2',
+                        'pages' => '104-111',
+                        ]
+                ],
 
 
                 
