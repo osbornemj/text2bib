@@ -100,6 +100,9 @@ class Dates
                 ||
                 // (month day, year) (or without parens or with brackets)
                 preg_match('/^ ?[\(\[]?(?P<date>(?P<month>' . $months . ') (?P<day>[0-9]{1,2}), (?P<year>(' . $centuries . ')[0-9]{2}))[\)\]]?/i', $string, $matches1)
+                ||
+                // <month>-<month> <year>
+                preg_match('/[ \(](?P<date>(?P<month>(' . $months . ')-(' . $months . '))(?P<year>(' . $centuries . ')[0-9]{2}))/iJ', $string, $matches2, PREG_OFFSET_CAPTURE)
                 ) {
                 $year = $matches1['year'] ?? null;
                 $month = $matches1['month'] ?? null;
@@ -324,7 +327,7 @@ class Dates
             $fullMonth2 = null;
         }
 
-        $months = $fullMonth1 . ($fullMonth2 ? '-' . $fullMonth2 : '');
+        $months = $fullMonth1 . ($fullMonth2 ? '--' . $fullMonth2 : '');
 
         return ['months' => $months, 'month1number' => $month1number, 'month2number' => $month2number];
     }

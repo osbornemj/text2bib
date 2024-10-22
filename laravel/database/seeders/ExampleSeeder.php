@@ -1829,7 +1829,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'article',
                 'bibtex' => [
                     'year' => '1991',
-                    'month' => 'March-April',
+                    'month' => 'March--April',
                     'pages' => '416-424',
                     'title' => 'Robust eigenspace assignment using singular value sensitivies',
                     'author' => 'S. Garg',
@@ -10062,7 +10062,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Maharjan, S. K.',
                     'title' => 'Propranolol is effective in decreasing stress response due to airway manipulation and CO2 pneumoperitoneum in patients undergoing laparoscopic cholecystectomy',
                     'year' => '2005',
-                    'month' => 'April-June',
+                    'month' => 'April--June',
                     'journal' => 'Kathmandu University Medical Journal.',
                     'volume' => '3',
                     'number' => '2',
@@ -10943,7 +10943,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Longitudinal Effects of Adaptive Interventions With a Speech-Generating Device in Minimally Verbal Children With ASD',
 					'journal' => 'J Clin Child Adolesc Psychol',
                     'year' => '2016',
-                    'month' => 'July-August',
+                    'month' => 'July--August',
                     'volume' => '45',
 					'number' => '4',
 					'pages' => '442-56',
@@ -13595,7 +13595,22 @@ class ExampleSeeder extends Seeder
                         
                     ],
                     'char_encoding' => 'utf8leave',
-                ]
+                ],
+                // month range
+                [
+                    'source' => '\bibitem{Marin2021} J. S. Mar{\\\'{\i}}n, F. J. F. Mart{\\\'{\i}}nez, C. F. Such, J. M. S. Ripoll, D. O. Beltr{\\\'{a}}n, M. C. C. Munuera, J. F. M. L{\\\'{o}}pez and J. C. M. Campos,  ``Risk factors for high length of hospital stay and in-hospital mortality in hip fractures in the elderly,\'\' {\it Rev Esp Cir Ortop Traumatol (English Ed)}., vol. 65, no. 5, pp. 322--330, Sep.-Oct. 2021. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'author' => 'J. S. Mar{\\\'{\i}}n and F. J. F. Mart{\\\'{\i}}nez and C. F. Such and J. M. S. Ripoll and D. O. Beltr{\\\'{a}}n and M. C. C. Munuera and J. F. M. L{\\\'{o}}pez and J. C. M. Campos',
+                        'title' => 'Risk factors for high length of hospital stay and in-hospital mortality in hip fractures in the elderly',
+                        'journal' => 'Rev Esp Cir Ortop Traumatol (English Ed)',
+                        'year' => '2021',
+                        'month' => 'September--October',
+                        'volume' => '65',
+                        'number' => '5',
+                        'pages' => '322-330',
+                        ]
+                ],
                 
 
 

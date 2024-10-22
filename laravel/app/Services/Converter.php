@@ -2327,7 +2327,7 @@ class Converter
                         if ($remainder) {
                             // Get month, if any
                             $months = $this->monthsRegExp[$language];
-                            $regExp = '/(\(?(' . $months . '\)?)([-\/](' . $months . ')\)?)?)/iJ';
+                            $regExp = '/(\(?(?P<month1>' . $months . '\)?)([-\/](?P<month2>' . $months . ')\)?)?)/iJ';
                             preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
 
                             if (! empty($matches[0][0][0])) {
