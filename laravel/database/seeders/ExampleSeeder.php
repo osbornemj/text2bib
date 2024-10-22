@@ -13667,6 +13667,22 @@ class ExampleSeeder extends Seeder
                         'pages' => '104-111',
                         ]
                 ],
+    			// no space before doi:
+                [
+                    'source' => 'Salowe R, Salinas J, Farbman NH, et al. Primary Open-Angle Glaucoma in Individuals of African Descent: A Review of Risk Factors. J Clin Exp Ophthalmol. Aug 2015;6(4)doi:10.4172/2155-9570.1000450 ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'author' => 'Salowe, R. and Salinas, J. and Farbman, N. H. and others',
+                        'title' => 'Primary Open-Angle Glaucoma in Individuals of African Descent: A Review of Risk Factors',
+                        'journal' => 'J Clin Exp Ophthalmol',
+                        'year' => '2015',
+                        'month' => 'August',
+                        'volume' => '6',
+                        'number' => '4',
+                        'doi' => '10.4172/2155-9570.1000450',
+                        ]
+                ],
+    
 
 
                 

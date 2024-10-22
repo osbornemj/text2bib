@@ -771,9 +771,11 @@ class Converter
         // \\\url{)?https?://doi\.org/ ?
         // is designed to deal with an erroneous space.
         if (empty($doi)) {
+            //preg_match('/(?P<precedingChar>.)doi:/', $remainder, $matches);
+            //$precedingChar = $matches['precedingChar'] ?? null;
             $doi = $this->extractLabeledContent(
                 $remainder,
-                ' [\[\)]?doi:? | [\[\(]?doi: ?|;doi:|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://doi\.org[/:] ?(?=10)|doi\.org',
+                ' [\[)]?doi:? | [\[(]?doi: ?|doi:|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://doi\.org[/:] ?(?=10)|doi\.org',
                 '[^ ]+'
             );
         }
