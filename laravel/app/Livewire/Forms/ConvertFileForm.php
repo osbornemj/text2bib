@@ -17,6 +17,7 @@ class ConvertFileForm extends Form
     public $use;
 
     #[Rule('required_if:use,latex', message: 'Please enter the name of the BibTeX style file you will use')]    
+    #[Rule('regex:/^[a-z0-9\-]+$/i', message: 'The name you have entered is not a valid name for a style file.  Enter the argument of the \bibliographystyle command in your document.')]    
     public $bstName;
 
     #[Rule('required_if:use,other', message: 'Please describe how you will use the BibTeX file')]    
