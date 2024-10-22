@@ -364,7 +364,22 @@ trait Utilities
                         }
                     // ' not preceded by space and not followed by ' or letter or \ [example: "\'\i"]
                     // (so followed by a space or punctuation)
-                    } elseif (! isset($chars[$i+1]) || ($chars[$i+1] != "'" && ! preg_match('/^[\p{L}\\\]$/u', $chars[$i+1]))) {
+                    } elseif (
+                            ! isset($chars[$i+1]) 
+                            ||
+                            (
+                                $chars[$i+1] != "'" 
+                                &&
+                                ! preg_match('/^[\p{L}\\\]$/u', $chars[$i+1])
+                                &&
+                                (
+                                    ! isset($chars[$i+2])
+                                    ||
+                                    // e.g. "[elephant]s' s[ize]"
+                                    ! preg_match('/^s\' \p{Ll}$/u', $chars[$i-1] . $chars[$i] . $chars[$i+1] . $chars[$i+2])
+                                )
+                            )
+                        ) {
                         if ($begin == "'" || $begin == "`") {
                             $level--;
                             $end = $level ? false : true;

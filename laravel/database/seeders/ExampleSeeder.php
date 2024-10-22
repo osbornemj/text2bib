@@ -13708,6 +13708,36 @@ class ExampleSeeder extends Seeder
                         'publisher' => 'Harvard University Press',
                         ]
                 ],
+                // doi and journal not isolated
+                [
+                    'source' => 'Mackley M, Chad L. Equity implications of patient-initiated recontact and follow-up in clinical genetics. Eur J Hum Genet. May 2023;31(5):495-496.doi:10.1038/s41431-023-01341-9. Epub 2023 Mar 23. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'note' => 'Epub 2023 Mar 23.',
+                        'author' => 'Mackley, M. and Chad, L.',
+                        'title' => 'Equity implications of patient-initiated recontact and follow-up in clinical genetics',
+                        'journal' => 'Eur J Hum Genet',
+                        'year' => '2023',
+                        'month' => 'May',
+                        'volume' => '31',
+                        'number' => '5',
+                        'pages' => '495-496',
+                        'doi' => '10.1038/s41431-023-01341-9',
+                        ]
+                ],			
+                // Why are quotes around title retained?
+                [
+                    'source' => 'Gao, X. and Ren, Y. (2023) \'The impact of digital finance on SMEs\' financialization: Evidence from thirty million Chinese enterprise registrations\', Heliyon, 9(8). ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'author' => 'Gao, X. and Ren, Y.',
+                        'year' => '2023',
+                        'title' => 'The impact of digital finance on SMEs\' financialization: Evidence from thirty million Chinese enterprise registrations',
+                        'journal' => 'Heliyon',
+                        'volume' => '9',
+                        'number' => '8',
+                        ]
+                ],	
 
     
 
