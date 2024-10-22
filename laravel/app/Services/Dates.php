@@ -64,7 +64,7 @@ class Dates
             $year = trim($matches0['year'], '[]()');
             return $year;
         // (2020) [1830] OR 2020 [1830]
-        } elseif (preg_match('/^(?P<year>\(?(' . $centuries . ')[0-9]{2}\)? [\[\(](' . $centuries . ')[0-9]{2}[\]\)])(?P<remains>.*)$/i', $remains, $matches0)) {
+        } elseif (preg_match('/^(?P<year>\(?[\[(]?(' . $centuries . ')[0-9]{2}\)?[\])]? [\[(]?(' . $centuries . ')[0-9]{2}[\])]?)(?P<remains>.*)$/i', $remains, $matches0)) {
             $remains = trim($matches0['remains'], ') ');
             if ($matches0['year'][0] == '(') {
                 $year = substr($matches0['year'], 1);

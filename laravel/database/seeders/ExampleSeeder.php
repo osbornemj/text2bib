@@ -4048,7 +4048,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Strauss, Leo',
                     'title' => 'Leo Strauss on Maimonides: The Complete Writings',
                     'year' => '2013',
-                    'note' => 'Edited by Kenneth Green Hart.',
+                    'editor' => 'Kenneth Green Hart',
                     'address' => 'Chicago',
                     'publisher' => 'University of Chicago Press',
                     ]
@@ -12130,7 +12130,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Tillich, Paul',
                     'title' => 'On Art and Architecture',
                     'year' => '1987',
-                    'note' => 'Edited by Jane Dillenberger and John Dillenberger.',
+                    'editor' => 'Jane Dillenberger and John Dillenberger',
                     'address' => 'New York',
                     'publisher' => 'Crossroad',
                     ]
@@ -12324,7 +12324,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'John Paul II',
                     'title' => 'The Whole Truth about Man: John Paul II to University Faculties and Students',
                     'year' => '1981',
-                    'note' => 'Edited by James V. Schall.',
+                    'editor' => 'James V. Schall',
                     'address' => 'Boston',
                     'publisher' => 'St. Paul Editions',
                     ]
@@ -12991,7 +12991,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Al-Burh{\=a}npūr{\=\i}, Muḥammad ibn Faḍl All{\=a}h',
                     'title' => 'The Gift addressed to the Spirit of the Prophet (al-Tuḥfa al-mursala il{\=a} rūḥ al-nab{\=\i})',
                     'year' => '1965',
-                    'note' => 'Edited by A. H. Johns',
+                    'editor' => 'A. H. Johns',
                     'translator' => 'A. H. Johns',
                     'address' => 'Canberra',
                     'publisher' => 'Australian National University',
@@ -13611,6 +13611,36 @@ class ExampleSeeder extends Seeder
                         'pages' => '322-330',
                         ]
                 ],
+       			// "tr by"
+                [
+                    'source' => 'Author, A. ([1923] 1968) The Principles of Turkism, (tr. by R. Devereux) Leiden: E.J. Brill.  ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'author' => 'Author, A.',
+                        'year' => '[1923] 1968',
+                        'title' => 'The Principles of Turkism',
+                        'translator' => 'R. Devereux',
+                        'publisher' => 'E. J. Brill',
+                        'address' => 'Leiden',
+                        ]
+                ],
+       			// "trans. and ed. by"
+                [
+                    'source' => 'Ziya Gökalp (1959) Turkish Nationalism and Western Civilization: Selected Essays of Ziya Gökalp, (trans. and ed. by Niyazi Berkes), London: George Allen and Unwin.  ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'author' => 'Ziya Gökalp',
+                        'year' => '1959',
+                        'title' => 'Turkish Nationalism and Western Civilization: Selected Essays of Ziya Gökalp',
+                        'translator' => 'Niyazi Berkes',
+                        'publisher' => 'George Allen and Unwin',
+                        'address' => 'London',
+                        'editor' => 'Niyazi Berkes',
+                    ],
+                    'char_encoding' => 'utf8leave',
+                ],
+
+
                 
 
 

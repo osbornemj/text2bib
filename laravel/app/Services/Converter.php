@@ -251,7 +251,7 @@ class Converter
             '[Tt]ranslators?',
             '[Tt]rans\.',
             '[Tt]rad\.',
-            '[Tt]r\.',
+            '[Tt]r\.(?! by)',
             'Çev\.',      // Turkish
         ];
 
@@ -265,7 +265,8 @@ class Converter
         $translatedByWords = [
             '[Tt]ranslat(ed|ion) by',
             '[Tt]ransl\. by',
-            '[Tt]r\.',
+            '[Tt]r\.(?! by)',
+            '[Tt]r\.? by',
             '[Tt]raducción de',   // Spanish
             '[Tt]raducido por',   // Spanish
             'Übersetzt von',      // German
@@ -1222,9 +1223,6 @@ class Converter
             if (isset($words[0])) {
                 $words[0] = ltrim($words[0], '_-');
             }
-            // if (substr($rawEntry, 0, 7) == 'Roebuck') {
-            //     dd($words, $remainder, $isEditor, $isTranslator, $this->translatorRegExp, $language);
-            // }
             $authorConversion = $this->authorParser->convertToAuthors(
                 $words, 
                 $remainder, 
@@ -1333,8 +1331,12 @@ class Converter
 
         $hasSecondaryDate = false;
         if ($year) {
+            // If $year ends with ) and contains no (, remove ) at end.
+            if (Str::endsWith($year, ')') && strpos($year, '(') === false) {
+                $year = substr($year, 0, -1);
+            }
             $this->setField($item, 'year', $year, 'setField 25');
-            if (preg_match('/[\(\[]?[0-9]{4}[\)\]]? \[[0-9]{4}\]/', $year)) {
+            if (preg_match('/[(\[]?[0-9]{4}[)\]]? \[[0-9]{4}\]/', $year)) {
                 $hasSecondaryDate = true;
             }
         }
@@ -1592,18 +1594,19 @@ class Converter
 
         $remainder = ltrim($newRemainder, ' ');
 
-        /////////////////////////////////////////////////
-        // Put "Translated by ..." in note.            //
-        // (Not extracted earlier, because the string  //
-        // "translated by" may appear in the title.)   //
-        /////////////////////////////////////////////////
+        ///////////////////////////////////////////////////
+        // Put "Translated by ..." in note or translator //
+        // name in translator field.                     //
+        // (Not extracted earlier, because the string    //
+        // "translated by" may appear in the title.)     //
+        ///////////////////////////////////////////////////
 
         $containsTranslator = false;
         // Editors and translators, or just translators: string up to first period preceded by a lowercase letter.
         // (For an incollection, editors would be not be signified in this way.)
         // Case of "Trans." is handled later, after item type is determined, because "Trans." is an abbreviation used in journal names.
         // (?<=[.,] )
-        $result = preg_match('/^(?P<before>.*)(?P<editedAndTranslatedBy>[Ee]dited and [Tt]ranslated by) (?P<translator>.*?\p{Ll})(\),?|\.| \()(?P<after>.*)$/', $remainder, $matches);
+        $result = preg_match('/^(?P<before>.*)(?P<editedAndTranslatedBy>([Ee]d(ited|\.) and [Tt]rans(lated|\.)|[Tt]rans(lated|\.) and [Ee]d(ited|\.)) by) (?P<translator>.*?\p{Ll})(\),?|\.| \()(?P<after>.*)$/', $remainder, $matches);
         if (! $result) {
             $result = preg_match('/^(?P<before>.*?)(^| |\()(?P<translatedBy>(and )?' . $this->translatedByRegExp . ') (?P<translator>.*?\p{Ll})(\),?|\.| \()(?P<after>.*)$/', $remainder, $matches);
         }
@@ -1614,33 +1617,26 @@ class Converter
             }
             $setEditor = isset($matches['editedAndTranslatedBy']);
             $translatedBy = $setEditor ? $matches['editedAndTranslatedBy'] : $matches['translatedBy'];
+
             if ($use != 'latex' || ($bst && $bst->translator)) {
                 $this->setField($item, 'translator', $translator, 'setField 36a');
-                if ($setEditor) {
-                    $this->addToField($item, 'note', 'Edited by ' . $translator, 'addToField 18');
-                }
             } else {
-                $this->addToField($item, 'note', $translatedBy . ' ' . $translator, 'addToField 18');
+                $this->addToField($item, 'note', $translatedBy . ' ' . $translator, 'addToField 18b');
             }
+
+            if ($setEditor) {
+                if ($use == 'latex') {
+                    $this->addToField($item, 'note', 'Edited by ' . $translator, 'addToField 18');
+                    $notices[] = "BibTeX allows an author OR an editor for a book, but not both, so note about editor added.  (BibLaTeX allows both.)";
+                } else {
+                    $this->setField($item, 'editor', $translator, 'setField 18a');
+                }
+            }
+
             $before = $matches['before'] ?? '';
             $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . ($matches['after'] ?? '');
             $containsTranslator = true;
         }
-
-        // $result = $this->findRemoveAndReturn($remainder, '([Ee]dited and [Tt]ranslated by|(^| )[Tt]r\.) .*?\p{Ll}(\),?|\.| \()', false);
-        // if (! $result) {
-        //     $result = $this->findRemoveAndReturn($remainder, '(^| |\()' . $this->translatedByRegExp . ' .*?\p{Ll}(\),?|\.| \()', false);
-        // }
-        // if ($result) {
-        //     if ($use != 'latex' || ($bst && $bst->translator)) {
-        //         $this->setField($item, 'translator', trim(ucfirst(trim($result[0], '( ')), ')(, '), 'setField 36a');
-        //     } else {
-        //         $this->addToField($item, 'note', trim(ucfirst(trim($result[0], '( ')), ')(, '), 'addToField 18');
-        //     }
-        //     $before = Str::replaceEnd(' and', '', $result['before']);
-        //     $remainder = $before . (! Str::endsWith($before, ['.', '. ']) ? '. ' : '') . $result['after'];
-        //     $containsTranslator = true;
-        // }
 
         ///////////////////////////////////////////////////////////////////////////////
         // To determine type of item, first record some features of publication info //
@@ -4188,10 +4184,11 @@ class Converter
                         // Change item type to book
                         $itemKind = 'book';
                         $this->verbose(['fieldName' => 'Item type', 'content' => 'changed to ' . $itemKind]);
-                        $this->verbose('Both author and editor set, so editor moved to note field.');
-                        if (! empty($item->author) && ! empty($item->editor)) {
+                        $this->verbose('Both author and editor set, so for bibtex editor moved to note field.');
+                        if ($use == 'latex' && ! empty($item->author) && ! empty($item->editor)) {
                             $this->addToField($item, 'note', 'Edited by ' . $item->editor . '.');
                             unset($item->editor);
+                            $notices[] = "BibTeX allows an author OR an editor for a book, but not both, so note about editor added.  (BibLaTeX allows both.)";
                         }
                         unset($warnings[array_search('Pages not found.', $warnings)]);
                     }
