@@ -66,7 +66,7 @@ trait AuthorPatterns
         $otherNameRegExp = '(?=[^ ]*\p{Ll})' . $nameSegment;
         // Uppercase name
         $ucNameRegExp = '\p{Lu}+( \p{Lu}+)?';
-        $abbreviationsUsedAsInitials = '(Ch|Yu)';
+        $abbreviationsUsedAsInitials = '(Ch|Wm|Yu)';
         $initialRegExp = '((\p{Lu}|' . $abbreviationsUsedAsInitials . ')\.?|\p{Lu}\.?-\p{Lu}\.?)';
         $initialPeriodRegExp = '((\p{Lu}|' . $abbreviationsUsedAsInitials . ')\.|\p{Lu}\.-\p{Lu}\.)';
 

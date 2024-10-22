@@ -565,6 +565,8 @@ class TitleParser
                             ($word == 'A.' && $nextWord == 'D.')
                             || 
                             ($word == 'B.' && $nextWord == 'C.')
+                            ||
+                            in_array($word, ['vs.'])
                             || 
                             preg_match('/^(Part )?(I|II|III|[1-9])[:.] /', $remainder)
                         )
@@ -725,7 +727,7 @@ class TitleParser
                             isset($remainderFollowingNextPeriod) 
                             && strlen($stringToNextPeriod) > 5 
                             && preg_match('/[a-z][.,]$/', $stringToNextPeriod) 
-                            && ! Str::endsWith($stringToNextPeriod, 'Univ.') 
+                            && ! Str::endsWith($stringToNextPeriod, ['Univ.']) 
                             //&& preg_match('/^[\p{L}., ]+: [\p{L}&\- ]+$/u', trim($remainderFollowingNextPeriod, '. '))
                             //&& preg_match('/^' . $this->addressPublisherRegExp . '$/u', trim($remainderFollowingNextPeriod, '. '))
                             && $this->isAddressPublisher(trim($remainderFollowingNextPeriod, '. '), allowYear: false)

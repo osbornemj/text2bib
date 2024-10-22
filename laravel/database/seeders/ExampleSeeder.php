@@ -13682,6 +13682,33 @@ class ExampleSeeder extends Seeder
                         'doi' => '10.4172/2155-9570.1000450',
                         ]
                 ],
+                // Russian for volume
+                [
+                    'source' => 'Пронина Н. А. Литература о детях с особыми образовательными потребностями как источник формирования толерантности // Бюллетень науки и  практики. 2018. Т. 4. № 1. С. 391-395. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'author' => 'Пронина, Н. А.',
+                        'title' => 'Литература о детях с особыми образовательными потребностями как источник формирования толерантности',
+                        'year' => '2018',
+                        'journal' => 'Бюллетень науки и практики',
+                        'pages' => '391-395',
+                        'volume' => '4',
+                        'number' => '1',
+                    ],
+                    'char_encoding' => 'utf8leave',
+                ],
+                // Register 'vs.' as abbreviation?
+                [
+                    'source' => 'Graham, J. D., & Wiener, J. B. (1995). Risk vs. Risk: Tradeoffs in Protecting Health and the Environment. Harvard University Press. ',
+                    'type' => 'book',
+                    'bibtex' => [
+                        'author' => 'Graham, J. D. and Wiener, J. B.',
+                        'title' => 'Risk vs. Risk: Tradeoffs in Protecting Health and the Environment',
+                        'year' => '1995',
+                        'publisher' => 'Harvard University Press',
+                        ]
+                ],
+
     
 
 
