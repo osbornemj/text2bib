@@ -13639,6 +13639,21 @@ class ExampleSeeder extends Seeder
                     ],
                     'char_encoding' => 'utf8leave',
                 ],
+                // page number format
+                [
+                    'source' => '\bibitem{Welberry}   H. J. Welberry, H. Brodaty, B. Hsu, S. Barbieri and L. R. Jorm,  ``Impact of Prior Home Care on Length of Stay in Residential Care for Australians With Dementia,\'\' {\it J Am Med Dir Assoc}., vol. 21, no. 6, pp. 843--850.e5, Jun. 2020. ',
+                    'type' => 'article',
+                    'bibtex' => [
+                        'author' => 'H. J. Welberry and H. Brodaty and B. Hsu and S. Barbieri and L. R. Jorm',
+                        'title' => 'Impact of Prior Home Care on Length of Stay in Residential Care for Australians With Dementia',
+                        'journal' => 'J Am Med Dir Assoc',
+                        'year' => '2020',
+                        'month' => 'June',
+                        'volume' => '21',
+                        'number' => '6',
+                        'pages' => '843-850.e5',
+                        ]
+                ],
 
 
                 
