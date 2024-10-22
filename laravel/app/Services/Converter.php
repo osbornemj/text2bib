@@ -4668,12 +4668,11 @@ class Converter
         }
 
         if ($pageCount) {
-            if ($use == 'latex' || ! in_array($itemKind, ['book', 'phdthesis', 'mastersthesis'])) {
-                $this->addToField($item, 'note', $pageCount, 'addToField 21');
-                $this->verbose('Adding page count to note field');
-            } else {
-                // Later moved to note field if item type is not book or phdthesis or mastersthesis
+            if ($use == 'biblatex' && in_array($itemKind, ['book', 'phdthesis', 'mastersthesis'])) {
                 $this->setField($item, 'pagetotal', $pageCount, 'setField 25a');
+            } else {
+                $this->addToField($item, 'note', $pageCount, 'addToField 21');
+                $this->verbose('Adding page count to note field.');
             }
         }
 
