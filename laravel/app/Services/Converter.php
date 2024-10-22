@@ -3279,7 +3279,6 @@ class Converter
 
                             if (! $resultFound) {
                                 $nameStringResult = $this->authorParser->isNameString($remainder, $language);
-                                //dd($nameStringResult, $remainder);
                                 if ($nameStringResult['result']) {
                                     // <editors> (eds) <booktitle> <publicationInfo>
                                     $this->detailLines = array_merge($this->detailLines, $nameStringResult['details']);
@@ -3986,8 +3985,8 @@ class Converter
                                 $this->setField($item, 'publisher', trim($matches['publisher'], ',. '), 'setField 94a');
                             }
                             $remainder = '';
-                        } elseif (substr_count($remainder, '.') == 1 && substr($remainder, strpos($remainder, '.') - 2, 3) != 'St.') {
-                            // if remainder contains a single period, not ending "St.", take that as end of booktitle
+                        } elseif (substr_count($remainder, '.') == 1 && ! in_array(substr($remainder, strpos($remainder, '.') - 2, 3), ['Jr.', 'Sr.', 'St.'])) {
+                            // if remainder contains a single period, not ending "St." etc, take that as end of booktitle
                             $this->verbose("Remainder contains single period, so take that as end of booktitle");
                             $periodPos = strpos($remainder, '.');
                             $booktitle = trim(substr($remainder, 0, $periodPos), ' .,');
@@ -4044,7 +4043,7 @@ class Converter
                             } elseif (preg_match('/^(?P<booktitle>.*) (?P<address>[^ ]*): (?P<publisher>[^:.,]*)$/', $remainder, $matches)) {
                                 $booktitle = $matches['booktitle'];
                                 $this->setField($item, 'booktitle', trim($booktitle, ',. '), 'setField 106a');
-                                $this->setField($item, 'address', $matches['address'], 'setField 106b');
+                                $this->setField($item, 'address', trim($matches['address'], '()'), 'setField 106b');
                                 $this->setField($item, 'publisher', $matches['publisher'], 'setField 106c');
                                 $this->verbose('booktitle case 14c');
                                 $remainder = '';

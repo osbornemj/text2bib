@@ -13512,244 +13512,260 @@ class ExampleSeeder extends Seeder
                 'char_encoding' => 'utf8leave',
             ],
 			// nested quotes
-			 [
-                'source' => 'Leal, Francisco. 2015. ““Quise entonces fumar”. El opio en César Vallejo y Pablo Neruda: rutas asiáticas de experimentación”. Aisthesis (58): 59-80. ',
+    		[
+            'source' => 'Leal, Francisco. 2015. ““Quise entonces fumar”. El opio en César Vallejo y Pablo Neruda: rutas asiáticas de experimentación”. Aisthesis (58): 59-80. ',
+            'type' => 'article',
+            'bibtex' => [
+                'author' => 'Leal, Francisco',
+                'title' => '``Quise entonces fumar\'\'. El opio en César Vallejo y Pablo Neruda: rutas asiáticas de experimentación',
+                'journal' => 'Aisthesis',
+                'year' => '2015',
+                'volume' => '58',
+                'pages' => '59-80',
+            ],
+            'char_encoding' => 'utf8leave',
+            ],
+            // trad. for translators
+            [
+                'source' => 'Kowan, Tadeusz. 1997. El signo y el teatro. Ma del C. Bobes y J. Maestro (trad.). Madrid: Arco/Libros ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Kowan, Tadeusz',
+                    'title' => 'El signo y el teatro',
+                    'year' => '1997',
+                    'address' => 'Madrid',
+                    'publisher' => 'Arco/Libros',
+                    'translator' => 'Ma del C. Bobes y J. Maestro'
+                    ]
+            ],
+            [
+                'source' => 'Bauer N., V. Bosetti, M. Hamdi-Cherif, A. Kitous, D. McCollum, A. Méjean, S. Rao, H. Turton, L. Paroussos, S. Ashina, K. Calvin, K. Wada, and D. van Vuuren (2014a). CO2 emission mitigation and fossil fuel markets: Dynamic and international aspects of climate policies. Technological Forecasting and Social Change. In Press. doi: 10.1016/j.techfore.2013.09.009, ISSN: 0040-1625.',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => 'Leal, Francisco',
-                    'title' => '``Quise entonces fumar\'\'. El opio en César Vallejo y Pablo Neruda: rutas asiáticas de experimentación',
-                    'journal' => 'Aisthesis',
-                    'year' => '2015',
-                    'volume' => '58',
-                    'pages' => '59-80',
+                    'author' => 'Bauer, N. and V. Bosetti and M. Hamdi-Cherif and A. Kitous and D. McCollum and A. Méjean and S. Rao and H. Turton and L. Paroussos and S. Ashina and K. Calvin and K. Wada and D. van Vuuren',
+                    'title' => 'CO2 emission mitigation and fossil fuel markets: Dynamic and international aspects of climate policies',
+                    'year' => '2014',
+                    'journal' => 'Technological Forecasting and Social Change',
+                    'doi' => '10.1016/j.techfore.2013.09.009',
+                    'issn' => '0040-1625',
+                    'note' => 'In Press',                    
                 ],
                 'char_encoding' => 'utf8leave',
+            ],
+            // author with 4 initials
+            [
+                'source' => 'Davies, A. B., Tambling, C. J., Marneweck, D. G., Ranc, N., Druce, D. J., Cromsigt, J. P. G. M., le Roux, E., & Asner, G. P. (2021). Spatial heterogeneity facilitates carnivore coexistence. Ecology, 102(5), e03319. https://doi.org/10.1002/ecy.3319 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Davies, A. B. and Tambling, C. J. and Marneweck, D. G. and Ranc, N. and Druce, D. J. and Cromsigt, J. P. G. M. and le Roux, E. and Asner, G. P.',
+                    'title' => 'Spatial heterogeneity facilitates carnivore coexistence',
+                    'journal' => 'Ecology',
+                    'year' => '2021',
+                    'volume' => '102',
+                    'number' => '5',
+                    'pages' => 'e03319',
+                    'doi' => '10.1002/ecy.3319',
+                    ]
+            ],
+            // Last name in braces
+            [
+                'source' => '\bibitem{Hamdani} F. E. Hamdani, M. Masmoudi, A. {Al Hanbali}, F. Bouyahia and A. A. Ouahman,  ``Diagnostic and modelling of elderly flow in a French healthcare institution,\'\' {\it Comput Ind Eng}., vol. 112, pp. 675--689, OCt. 2017.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'F. E. Hamdani and M. Masmoudi and A. {Al Hanbali} and F. Bouyahia and A. A. Ouahman',
+                    'title' => 'Diagnostic and modelling of elderly flow in a French healthcare institution',
+                    'journal' => 'Comput Ind Eng',
+                    'year' => '2017',
+                    'month' => 'October',
+                    'volume' => '112',
+                    'pages' => '675-689',
+                    ]
+            ],
+            // test of utf-8
+            [
+                'source' => 'de Callataÿ, Godefroid, "The Ṣābiʾans of Ṣāʿid al-Andalusī", Studia graeco-arabica, 7 (2017), 291-306.',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'de Callataÿ, Godefroid',
+                    'title' => 'The Ṣābiʾans of Ṣāʿid al-Andalusī',
+                    'journal' => 'Studia graeco-arabica',
+                    'year' => '2017',
+                    'volume' => '7',
+                    'pages' => '291-306',
+                    
                 ],
-                // trad. for translators
-                [
-                    'source' => 'Kowan, Tadeusz. 1997. El signo y el teatro. Ma del C. Bobes y J. Maestro (trad.). Madrid: Arco/Libros ',
-                    'type' => 'book',
-                    'bibtex' => [
-                        'author' => 'Kowan, Tadeusz',
-                        'title' => 'El signo y el teatro',
-                        'year' => '1997',
-                        'address' => 'Madrid',
-                        'publisher' => 'Arco/Libros',
-                        'translator' => 'Ma del C. Bobes y J. Maestro'
-                        ]
+                'char_encoding' => 'utf8leave',
+            ],
+            // month range
+            [
+                'source' => '\bibitem{Marin2021} J. S. Mar{\\\'{\i}}n, F. J. F. Mart{\\\'{\i}}nez, C. F. Such, J. M. S. Ripoll, D. O. Beltr{\\\'{a}}n, M. C. C. Munuera, J. F. M. L{\\\'{o}}pez and J. C. M. Campos,  ``Risk factors for high length of hospital stay and in-hospital mortality in hip fractures in the elderly,\'\' {\it Rev Esp Cir Ortop Traumatol (English Ed)}., vol. 65, no. 5, pp. 322--330, Sep.-Oct. 2021. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'J. S. Mar{\\\'{\i}}n and F. J. F. Mart{\\\'{\i}}nez and C. F. Such and J. M. S. Ripoll and D. O. Beltr{\\\'{a}}n and M. C. C. Munuera and J. F. M. L{\\\'{o}}pez and J. C. M. Campos',
+                    'title' => 'Risk factors for high length of hospital stay and in-hospital mortality in hip fractures in the elderly',
+                    'journal' => 'Rev Esp Cir Ortop Traumatol (English Ed)',
+                    'year' => '2021',
+                    'month' => 'September--October',
+                    'volume' => '65',
+                    'number' => '5',
+                    'pages' => '322-330',
+                    ]
+            ],
+            // "tr by"
+            [
+                'source' => 'Author, A. ([1923] 1968) The Principles of Turkism, (tr. by R. Devereux) Leiden: E.J. Brill.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Author, A.',
+                    'year' => '[1923] 1968',
+                    'title' => 'The Principles of Turkism',
+                    'translator' => 'R. Devereux',
+                    'publisher' => 'E. J. Brill',
+                    'address' => 'Leiden',
+                    ]
+            ],
+            // "trans. and ed. by"
+            [
+                'source' => 'Ziya Gökalp (1959) Turkish Nationalism and Western Civilization: Selected Essays of Ziya Gökalp, (trans. and ed. by Niyazi Berkes), London: George Allen and Unwin.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ziya Gökalp',
+                    'year' => '1959',
+                    'title' => 'Turkish Nationalism and Western Civilization: Selected Essays of Ziya Gökalp',
+                    'translator' => 'Niyazi Berkes',
+                    'publisher' => 'George Allen and Unwin',
+                    'address' => 'London',
+                    'editor' => 'Niyazi Berkes',
                 ],
-                [
-                    'source' => 'Bauer N., V. Bosetti, M. Hamdi-Cherif, A. Kitous, D. McCollum, A. Méjean, S. Rao, H. Turton, L. Paroussos, S. Ashina, K. Calvin, K. Wada, and D. van Vuuren (2014a). CO2 emission mitigation and fossil fuel markets: Dynamic and international aspects of climate policies. Technological Forecasting and Social Change. In Press. doi: 10.1016/j.techfore.2013.09.009, ISSN: 0040-1625.',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'author' => 'Bauer, N. and V. Bosetti and M. Hamdi-Cherif and A. Kitous and D. McCollum and A. Méjean and S. Rao and H. Turton and L. Paroussos and S. Ashina and K. Calvin and K. Wada and D. van Vuuren',
-                        'title' => 'CO2 emission mitigation and fossil fuel markets: Dynamic and international aspects of climate policies',
-                        'year' => '2014',
-                        'journal' => 'Technological Forecasting and Social Change',
-                        'doi' => '10.1016/j.techfore.2013.09.009',
-                        'issn' => '0040-1625',
-                        'note' => 'In Press',                    
+                'char_encoding' => 'utf8leave',
+            ],
+            // page number format
+            [
+                'source' => '\bibitem{Welberry}   H. J. Welberry, H. Brodaty, B. Hsu, S. Barbieri and L. R. Jorm,  ``Impact of Prior Home Care on Length of Stay in Residential Care for Australians With Dementia,\'\' {\it J Am Med Dir Assoc}., vol. 21, no. 6, pp. 843--850.e5, Jun. 2020. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'H. J. Welberry and H. Brodaty and B. Hsu and S. Barbieri and L. R. Jorm',
+                    'title' => 'Impact of Prior Home Care on Length of Stay in Residential Care for Australians With Dementia',
+                    'journal' => 'J Am Med Dir Assoc',
+                    'year' => '2020',
+                    'month' => 'June',
+                    'volume' => '21',
+                    'number' => '6',
+                    'pages' => '843-850.e5',
+                    ]
+            ],
+            // "Yu" used as middle initial
+            [
+                'source' => ' {B.~P.~Zhilkin, N.~S.~Zaikov, A.~Yu.~Kiselnikov, and P.~Yu.~Khudyakov, } ``Specific Features of Changes in the Thermal Structure of Gas Impact Jets," Izv. Ross. Akad. Nauk, Mekh. Zhidk. Gaza, No.~2, 104--111 (2013). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'B. P. Zhilkin and N. S. Zaikov and A. Yu. Kiselnikov and P. Yu. Khudyakov',
+                    'title' => 'Specific Features of Changes in the Thermal Structure of Gas Impact Jets',
+                    'journal' => 'Izv. Ross. Akad. Nauk, Mekh. Zhidk. Gaza',
+                    'year' => '2013',
+                    'number' => '2',
+                    'pages' => '104-111',
+                    ]
+            ],
+            // no space before doi:
+            [
+                'source' => 'Salowe R, Salinas J, Farbman NH, et al. Primary Open-Angle Glaucoma in Individuals of African Descent: A Review of Risk Factors. J Clin Exp Ophthalmol. Aug 2015;6(4)doi:10.4172/2155-9570.1000450 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Salowe, R. and Salinas, J. and Farbman, N. H. and others',
+                    'title' => 'Primary Open-Angle Glaucoma in Individuals of African Descent: A Review of Risk Factors',
+                    'journal' => 'J Clin Exp Ophthalmol',
+                    'year' => '2015',
+                    'month' => 'August',
+                    'volume' => '6',
+                    'number' => '4',
+                    'doi' => '10.4172/2155-9570.1000450',
+                    ]
+            ],
+            // Russian for volume
+            [
+                'source' => 'Пронина Н. А. Литература о детях с особыми образовательными потребностями как источник формирования толерантности // Бюллетень науки и  практики. 2018. Т. 4. № 1. С. 391-395. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Пронина, Н. А.',
+                    'title' => 'Литература о детях с особыми образовательными потребностями как источник формирования толерантности',
+                    'year' => '2018',
+                    'journal' => 'Бюллетень науки и практики',
+                    'pages' => '391-395',
+                    'volume' => '4',
+                    'number' => '1',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+            // Register 'vs.' as abbreviation?
+            [
+                'source' => 'Graham, J. D., & Wiener, J. B. (1995). Risk vs. Risk: Tradeoffs in Protecting Health and the Environment. Harvard University Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Graham, J. D. and Wiener, J. B.',
+                    'title' => 'Risk vs. Risk: Tradeoffs in Protecting Health and the Environment',
+                    'year' => '1995',
+                    'publisher' => 'Harvard University Press',
+                    ]
+            ],
+            // doi and journal not isolated
+            [
+                'source' => 'Mackley M, Chad L. Equity implications of patient-initiated recontact and follow-up in clinical genetics. Eur J Hum Genet. May 2023;31(5):495-496.doi:10.1038/s41431-023-01341-9. Epub 2023 Mar 23. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'Epub 2023 Mar 23.',
+                    'author' => 'Mackley, M. and Chad, L.',
+                    'title' => 'Equity implications of patient-initiated recontact and follow-up in clinical genetics',
+                    'journal' => 'Eur J Hum Genet',
+                    'year' => '2023',
+                    'month' => 'May',
+                    'volume' => '31',
+                    'number' => '5',
+                    'pages' => '495-496',
+                    'doi' => '10.1038/s41431-023-01341-9',
+                    ]
+            ],			
+            // Why are quotes around title retained?
+            [
+                'source' => 'Gao, X. and Ren, Y. (2023) \'The impact of digital finance on SMEs\' financialization: Evidence from thirty million Chinese enterprise registrations\', Heliyon, 9(8). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Gao, X. and Ren, Y.',
+                    'year' => '2023',
+                    'title' => 'The impact of digital finance on SMEs\' financialization: Evidence from thirty million Chinese enterprise registrations',
+                    'journal' => 'Heliyon',
+                    'volume' => '9',
+                    'number' => '8',
+                    ]
+            ],
+            // translator field should not include "by"
+            [
+                'source' => 'Aristoteles. (2021). The Art of Rhetoric by Aristotle: Retorika Aristoteles; Trans. by Andre Hardjana. Abhiseka Dipantara. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Aristoteles',
+                    'year' => '2021',
+                    'translator' => 'Andre Hardjana',
+                    'title' => 'The Art of Rhetoric by Aristotle: Retorika Aristoteles',
+                    'publisher' => 'Abhiseka Dipantara',
+                    ]
+            ],
+            // booktitle and editors reversed
+            [
+                'source' => 'Lange, Christian, "A Sufi’s Paradise and Hell: ʿAzīz-i Nasafī’s Epistle on the Otherworld", in Alireza Korangy and Daniel J. Shefﬁeld (eds), No Tapping Around Philology - A Festschrift in Honor of Wheeler McIntosh Thackston Jr.’s 70th Birthday (Wiesbaden: Harrassowitz 2014),193-214. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Lange, Christian',
+                    'title' => 'A Sufi\'s Paradise and Hell: ʿAzīz-i Nasafī\'s Epistle on the Otherworld',
+                    'year' => '2014',
+                    'pages' => '193-214',
+                    'editor' => 'Alireza Korangy and Daniel J. Sheffield',
+                    'booktitle' => 'No Tapping Around Philology - A Festschrift in Honor of Wheeler McIntosh Thackston Jr.\'s 70th Birthday',
+                    'publisher' => 'Harrassowitz',
+                    'address' => 'Wiesbaden',
                     ],
                     'char_encoding' => 'utf8leave',
-                ],
-                // author with 4 initials
-                [
-                    'source' => 'Davies, A. B., Tambling, C. J., Marneweck, D. G., Ranc, N., Druce, D. J., Cromsigt, J. P. G. M., le Roux, E., & Asner, G. P. (2021). Spatial heterogeneity facilitates carnivore coexistence. Ecology, 102(5), e03319. https://doi.org/10.1002/ecy.3319 ',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'author' => 'Davies, A. B. and Tambling, C. J. and Marneweck, D. G. and Ranc, N. and Druce, D. J. and Cromsigt, J. P. G. M. and le Roux, E. and Asner, G. P.',
-                        'title' => 'Spatial heterogeneity facilitates carnivore coexistence',
-                        'journal' => 'Ecology',
-                        'year' => '2021',
-                        'volume' => '102',
-                        'number' => '5',
-                        'pages' => 'e03319',
-                        'doi' => '10.1002/ecy.3319',
-                        ]
-                ],
-                // Last name in braces
-                [
-                    'source' => '\bibitem{Hamdani} F. E. Hamdani, M. Masmoudi, A. {Al Hanbali}, F. Bouyahia and A. A. Ouahman,  ``Diagnostic and modelling of elderly flow in a French healthcare institution,\'\' {\it Comput Ind Eng}., vol. 112, pp. 675--689, OCt. 2017.  ',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'author' => 'F. E. Hamdani and M. Masmoudi and A. {Al Hanbali} and F. Bouyahia and A. A. Ouahman',
-                        'title' => 'Diagnostic and modelling of elderly flow in a French healthcare institution',
-                        'journal' => 'Comput Ind Eng',
-                        'year' => '2017',
-                        'month' => 'October',
-                        'volume' => '112',
-                        'pages' => '675-689',
-                        ]
-                ],
-                // test of utf-8
-                [
-                    'source' => 'de Callataÿ, Godefroid, "The Ṣābiʾans of Ṣāʿid al-Andalusī", Studia graeco-arabica, 7 (2017), 291-306.',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'author' => 'de Callataÿ, Godefroid',
-                        'title' => 'The Ṣābiʾans of Ṣāʿid al-Andalusī',
-                        'journal' => 'Studia graeco-arabica',
-                        'year' => '2017',
-                        'volume' => '7',
-                        'pages' => '291-306',
-                        
-                    ],
-                    'char_encoding' => 'utf8leave',
-                ],
-                // month range
-                [
-                    'source' => '\bibitem{Marin2021} J. S. Mar{\\\'{\i}}n, F. J. F. Mart{\\\'{\i}}nez, C. F. Such, J. M. S. Ripoll, D. O. Beltr{\\\'{a}}n, M. C. C. Munuera, J. F. M. L{\\\'{o}}pez and J. C. M. Campos,  ``Risk factors for high length of hospital stay and in-hospital mortality in hip fractures in the elderly,\'\' {\it Rev Esp Cir Ortop Traumatol (English Ed)}., vol. 65, no. 5, pp. 322--330, Sep.-Oct. 2021. ',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'author' => 'J. S. Mar{\\\'{\i}}n and F. J. F. Mart{\\\'{\i}}nez and C. F. Such and J. M. S. Ripoll and D. O. Beltr{\\\'{a}}n and M. C. C. Munuera and J. F. M. L{\\\'{o}}pez and J. C. M. Campos',
-                        'title' => 'Risk factors for high length of hospital stay and in-hospital mortality in hip fractures in the elderly',
-                        'journal' => 'Rev Esp Cir Ortop Traumatol (English Ed)',
-                        'year' => '2021',
-                        'month' => 'September--October',
-                        'volume' => '65',
-                        'number' => '5',
-                        'pages' => '322-330',
-                        ]
-                ],
-       			// "tr by"
-                [
-                    'source' => 'Author, A. ([1923] 1968) The Principles of Turkism, (tr. by R. Devereux) Leiden: E.J. Brill.  ',
-                    'type' => 'book',
-                    'bibtex' => [
-                        'author' => 'Author, A.',
-                        'year' => '[1923] 1968',
-                        'title' => 'The Principles of Turkism',
-                        'translator' => 'R. Devereux',
-                        'publisher' => 'E. J. Brill',
-                        'address' => 'Leiden',
-                        ]
-                ],
-       			// "trans. and ed. by"
-                [
-                    'source' => 'Ziya Gökalp (1959) Turkish Nationalism and Western Civilization: Selected Essays of Ziya Gökalp, (trans. and ed. by Niyazi Berkes), London: George Allen and Unwin.  ',
-                    'type' => 'book',
-                    'bibtex' => [
-                        'author' => 'Ziya Gökalp',
-                        'year' => '1959',
-                        'title' => 'Turkish Nationalism and Western Civilization: Selected Essays of Ziya Gökalp',
-                        'translator' => 'Niyazi Berkes',
-                        'publisher' => 'George Allen and Unwin',
-                        'address' => 'London',
-                        'editor' => 'Niyazi Berkes',
-                    ],
-                    'char_encoding' => 'utf8leave',
-                ],
-                // page number format
-                [
-                    'source' => '\bibitem{Welberry}   H. J. Welberry, H. Brodaty, B. Hsu, S. Barbieri and L. R. Jorm,  ``Impact of Prior Home Care on Length of Stay in Residential Care for Australians With Dementia,\'\' {\it J Am Med Dir Assoc}., vol. 21, no. 6, pp. 843--850.e5, Jun. 2020. ',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'author' => 'H. J. Welberry and H. Brodaty and B. Hsu and S. Barbieri and L. R. Jorm',
-                        'title' => 'Impact of Prior Home Care on Length of Stay in Residential Care for Australians With Dementia',
-                        'journal' => 'J Am Med Dir Assoc',
-                        'year' => '2020',
-                        'month' => 'June',
-                        'volume' => '21',
-                        'number' => '6',
-                        'pages' => '843-850.e5',
-                        ]
-                ],
-                // "Yu" used as middle initial
-                [
-                    'source' => ' {B.~P.~Zhilkin, N.~S.~Zaikov, A.~Yu.~Kiselnikov, and P.~Yu.~Khudyakov, } ``Specific Features of Changes in the Thermal Structure of Gas Impact Jets," Izv. Ross. Akad. Nauk, Mekh. Zhidk. Gaza, No.~2, 104--111 (2013). ',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'author' => 'B. P. Zhilkin and N. S. Zaikov and A. Yu. Kiselnikov and P. Yu. Khudyakov',
-                        'title' => 'Specific Features of Changes in the Thermal Structure of Gas Impact Jets',
-                        'journal' => 'Izv. Ross. Akad. Nauk, Mekh. Zhidk. Gaza',
-                        'year' => '2013',
-                        'number' => '2',
-                        'pages' => '104-111',
-                        ]
-                ],
-    			// no space before doi:
-                [
-                    'source' => 'Salowe R, Salinas J, Farbman NH, et al. Primary Open-Angle Glaucoma in Individuals of African Descent: A Review of Risk Factors. J Clin Exp Ophthalmol. Aug 2015;6(4)doi:10.4172/2155-9570.1000450 ',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'author' => 'Salowe, R. and Salinas, J. and Farbman, N. H. and others',
-                        'title' => 'Primary Open-Angle Glaucoma in Individuals of African Descent: A Review of Risk Factors',
-                        'journal' => 'J Clin Exp Ophthalmol',
-                        'year' => '2015',
-                        'month' => 'August',
-                        'volume' => '6',
-                        'number' => '4',
-                        'doi' => '10.4172/2155-9570.1000450',
-                        ]
-                ],
-                // Russian for volume
-                [
-                    'source' => 'Пронина Н. А. Литература о детях с особыми образовательными потребностями как источник формирования толерантности // Бюллетень науки и  практики. 2018. Т. 4. № 1. С. 391-395. ',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'author' => 'Пронина, Н. А.',
-                        'title' => 'Литература о детях с особыми образовательными потребностями как источник формирования толерантности',
-                        'year' => '2018',
-                        'journal' => 'Бюллетень науки и практики',
-                        'pages' => '391-395',
-                        'volume' => '4',
-                        'number' => '1',
-                    ],
-                    'char_encoding' => 'utf8leave',
-                ],
-                // Register 'vs.' as abbreviation?
-                [
-                    'source' => 'Graham, J. D., & Wiener, J. B. (1995). Risk vs. Risk: Tradeoffs in Protecting Health and the Environment. Harvard University Press. ',
-                    'type' => 'book',
-                    'bibtex' => [
-                        'author' => 'Graham, J. D. and Wiener, J. B.',
-                        'title' => 'Risk vs. Risk: Tradeoffs in Protecting Health and the Environment',
-                        'year' => '1995',
-                        'publisher' => 'Harvard University Press',
-                        ]
-                ],
-                // doi and journal not isolated
-                [
-                    'source' => 'Mackley M, Chad L. Equity implications of patient-initiated recontact and follow-up in clinical genetics. Eur J Hum Genet. May 2023;31(5):495-496.doi:10.1038/s41431-023-01341-9. Epub 2023 Mar 23. ',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'note' => 'Epub 2023 Mar 23.',
-                        'author' => 'Mackley, M. and Chad, L.',
-                        'title' => 'Equity implications of patient-initiated recontact and follow-up in clinical genetics',
-                        'journal' => 'Eur J Hum Genet',
-                        'year' => '2023',
-                        'month' => 'May',
-                        'volume' => '31',
-                        'number' => '5',
-                        'pages' => '495-496',
-                        'doi' => '10.1038/s41431-023-01341-9',
-                        ]
-                ],			
-                // Why are quotes around title retained?
-                [
-                    'source' => 'Gao, X. and Ren, Y. (2023) \'The impact of digital finance on SMEs\' financialization: Evidence from thirty million Chinese enterprise registrations\', Heliyon, 9(8). ',
-                    'type' => 'article',
-                    'bibtex' => [
-                        'author' => 'Gao, X. and Ren, Y.',
-                        'year' => '2023',
-                        'title' => 'The impact of digital finance on SMEs\' financialization: Evidence from thirty million Chinese enterprise registrations',
-                        'journal' => 'Heliyon',
-                        'volume' => '9',
-                        'number' => '8',
-                        ]
-                ],
-                // translator field should not include "by"
-                [
-                    'source' => 'Aristoteles. (2021). The Art of Rhetoric by Aristotle: Retorika Aristoteles; Trans. by Andre Hardjana. Abhiseka Dipantara. ',
-                    'type' => 'book',
-                    'bibtex' => [
-                        'author' => 'Aristoteles',
-                        'year' => '2021',
-                        'translator' => 'Andre Hardjana',
-                        'title' => 'The Art of Rhetoric by Aristotle: Retorika Aristoteles',
-                        'publisher' => 'Abhiseka Dipantara',
-                        ]
-                ],
+            ],
     
 
 

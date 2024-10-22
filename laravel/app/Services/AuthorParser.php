@@ -1375,7 +1375,8 @@ class AuthorParser
         $words = explode(' ', $string);
         $word1 = count($words) > 1 ? rtrim($words[1], ',.;') : null;
         
-        if (preg_match('/^(\p{L}+ ){4,}\p{L}+[.,]/', $string)) {
+        if (preg_match('/^(\p{L}+ ){4,}\p{L}+[.,]/', $string) && ! in_array('and', array_slice($words, 0, 4))) {
+            // 5 words without any punctuation or the word "and"
             $this->verbose("isNameString: string is not name (case 0)");
             $result = false;
         } elseif ($this->isInitials($words[0]) && count($words) >= 2) {
