@@ -1442,6 +1442,7 @@ class Converter
                     $this->volumeRegExp,
                     $this->volumeAndCodesRegExp,
                     $this->seriesRegExp,
+                    $this->edsNoParensRegExp,
                     $this->translatorRegExp,
                     $this->translatedByRegExp,
                     false, 
@@ -1471,15 +1472,26 @@ class Converter
                 if ($volume) {
                     $this->setField($item, 'volume', $volume, 'setField 31');
                 }
-                if ($result['translator']) {
-                    if ($use != 'latex' || ($bst && $bst->translator)) {
-                        $translator = rtrim($result['translator'], ', ');
-                        if (! Str::endsWith($translator, 'et al.')) {
-                            $translator = rtrim($result['translator'], '., ');
+                if ($result['editor']) {
+                    if ($use != 'latex') {
+                        $editor = rtrim($result['editor'], ', ');
+                        if (! Str::endsWith($editor, 'et al.')) {
+                            $editor = rtrim($result['editor'], '., ');
                         }
+                        $this->setField($item, 'editor', $editor, 'setField 31a');
+                    } else {
+                        $this->addToField($item, 'note', 'Edited by ' . $result['editor'], 'addToField 4a');
+                    }
+                }
+                if ($result['translator']) {
+                    $translator = trim($result['translator'], ',& ');
+                    if (! Str::endsWith($translator, 'et al.')) {
+                        $translator = trim($result['translator'], '.,& ');
+                    }
+                    if ($use != 'latex' || ($bst && $bst->translator)) {
                         $this->setField($item, 'translator', $translator, 'setField 31a');
                     } else {
-                        $this->addToField($item, 'note', 'Translated by ' . $result['translator'], 'addToField 4a');
+                        $this->addToField($item, 'note', 'Translated by ' . $translator, 'addToField 4a');
                     }
                 }
                 if ($note) {

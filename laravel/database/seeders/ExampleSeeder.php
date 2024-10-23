@@ -13766,6 +13766,61 @@ class ExampleSeeder extends Seeder
                     ],
                     'char_encoding' => 'utf8leave',
             ],
+			// Translator in Turkish
+			[
+                'source' => 'Kant, I. (2022). Politik Yazılar. (A. Gelmez, Çev.) Dipnot Yayınları. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Kant, I.',
+                    'title' => 'Politik Yazılar',
+                    'year' => '2022',
+                    'publisher' => 'Dipnot Yayınları',
+					'translator' => 'A. Gelmez',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// Translators in Turkish
+			[
+                'source' => 'Warburton, N. (2017). Felsefeye Giriş. (K. Cankoçak, & M. A. Arslan, Çev.) Alfa Basım Yayım Dağıtım. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Warburton, N.',
+                    'title' => 'Felsefeye Giriş',
+                    'year' => '2017',
+                    'publisher' => 'Alfa Basım Yayım Dağıtım',
+					'translator' => 'K. Cankoçak, & M. A. Arslan',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// Editor and translator, Turkish
+			[
+                'source' => ' Adorno, T. W. (2012). Ahlak Felsefesinin Sorunları. (T. Schröder, Dü., & T. Birkan, Çev.) Metis Yayınları. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Adorno, T. W.',
+                    'title' => 'Ahlak Felsefesinin Sorunları',
+                    'year' => '2012',
+                    'editor' => 'T. Schröder',
+                    'translator' => 'T. Birkan',
+                    'publisher' => 'Metis Yayınları',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// volume and number not detected
+			[
+                'source' => 'Halim Sabit (1914a) "Örf-Ma\'ruf -1" Islam Mecmuasi, vol. I, no. 10, Istanbul.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Halim Sabit',
+                    'year' => '1914',
+                    'title' => 'Örf-Ma\'ruf -1',
+                    'journal' => 'Islam Mecmuasi',
+                    'volume' => 'I',
+					'number' => '10',
+					'note' => 'Istanbul',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
     
 
 

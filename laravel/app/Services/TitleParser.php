@@ -60,13 +60,14 @@ class TitleParser
         string $volumeRegExp, 
         string $volumeAndCodesRegExp, 
         string $seriesRegExp,
+        string $edsRegExp,
         string $translatorRegExp,
         string $translatedByRegExp,
         bool $includeEdition = false, 
         string $language = 'en'
        ): array
     {
-        $title = $translator = null;
+        $title = $editor = $translator = null;
         $this->titleDetails = [];
         $seriesNext = false;
         $originalRemainder = $remainder;
@@ -103,6 +104,7 @@ class TitleParser
 
             $result['title'] = $title;
             $result['titleDetails'] = $this->titleDetails;
+            $result['editor'] = $editor;
             $result['translator'] = $translator;
     
             return $result;
@@ -119,6 +121,7 @@ class TitleParser
 
                 $result['title'] = $title;
                 $result['titleDetails'] = $this->titleDetails;
+                $result['editor'] = $editor;
                 $result['translator'] = $translator;
         
                 return $result;
@@ -151,6 +154,7 @@ class TitleParser
 
                 $result['title'] = $title;
                 $result['titleDetails'] = $this->titleDetails;
+                $result['editor'] = $editor;
                 $result['translator'] = $translator;
         
                 return $result;
@@ -392,7 +396,13 @@ class TitleParser
                     $translatorNext = false;
                     // "(Jane Smith, trans.)" or "(Volume 2, Jane Smith, trans.)"
                     if (in_array($nextWord[0], ['('])) {
-                        $translatorNext = preg_match('/^\((?P<string>(?P<translator>[^)]+)' . $translatorRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
+                        $translatorNext = preg_match('/^\((?P<string>(?P<editor>[^)]+) ' . $edsRegExp . '(?P<translator>[^)]+)' . $translatorRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
+                        if (! $translatorNext) {
+                            $translatorNext = preg_match('/^\((?P<string>(?P<translator>[^)]+) ' . $translatorRegExp . '(?P<editor>[^)]+)' . $edsRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
+                        }
+                        if (! $translatorNext) {
+                            $translatorNext = preg_match('/^\((?P<string>(?P<translator>[^)]+) ' . $translatorRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
+                        }
                         if (isset($matches['string'])) {
                             if (preg_match('/^(' . $volumeRegExp . ')(?P<volume>[\dIVXL]+)[, ](?P<translator>.*?)' . $translatorRegExp . '$/', $matches['string'], $volumeMatches)) {
                                 if (isset($volumeMatches['volume'])) {
@@ -402,7 +412,8 @@ class TitleParser
                                     $translator = trim($volumeMatches['translator']);
                                 }
                             } else {
-                                $translator = $matches['translator'];
+                                $editor = $matches['editor'] ?? '';
+                                $translator = $matches['translator'] ?? '';
                             }
                             $upcomingBookVolume = false;
                             $remainder = trim($matches['remainder'], '. ');
@@ -769,6 +780,7 @@ class TitleParser
         $result['titleDetails'] = $this->titleDetails;
         $result['seriesNext'] = $seriesNext;
         $result['stringToNextPeriodOrComma'] = $stringToNextPeriodOrComma ?? '';
+        $result['editor'] = $editor;
         $result['translator'] = $translator;
 
         return $result;
