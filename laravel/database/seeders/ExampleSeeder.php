@@ -13830,6 +13830,20 @@ class ExampleSeeder extends Seeder
                     ],
 					'char_encoding' => 'utf8leave',
             ],
+			// Glazner included in journal name
+			[
+                'source' => 'Axen, G. J., & Wernicke, B. P. (1991). Comment on “Tertiary extension and contraction of lower-plate rocks in the central Mojave Metamorphic Core Complex, southern California” by John M. Bartley, John M. Fletcher, and Allen F. Glazner. Tectonics, 10(5), 1084-1086. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Axen, G. J. and Wernicke, B. P.',
+                    'year' => '1991',
+                    'title' => 'Comment on ``Tertiary extension and contraction of lower-plate rocks in the central Mojave Metamorphic Core Complex, southern California\'\' by John M. Bartley, John M. Fletcher, and Allen F. Glazner',
+                    'journal' => 'Tectonics',
+                    'volume' => '10',
+                    'number' => '5',
+                    'pages' => '1084-1086',
+                    ]
+            ],
     
 
 

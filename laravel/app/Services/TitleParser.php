@@ -54,6 +54,7 @@ class TitleParser
         string $pageRegExp, 
         string $startPagesRegExp, 
         string $fullThesisRegExp, 
+        string $thesisRegExp, 
         string $edsOptionalParensRegExp, 
         array $monthsRegExp,
         string $inRegExp, 
@@ -135,6 +136,9 @@ class TitleParser
         // including journal name and volume, number, and page info may be included.)
         if (preg_match('/^(?P<title>.*? (?P<lastWord>(\p{L}+|' . $this->yearRegExp . ')))\. (?P<remainder>[^\p{Ll}][\p{L}\.,\\\' ]{5,30} [0-9;():\-.,\. ]{9,})$/', $remainder, $matches)) {
             $lastWord = $matches['lastWord'];
+            $title = $matches['title'];
+            $remainder = $matches['remainder'];
+            $firstRemainderWord = explode(' ', $remainder)[0];
             // Last word has to be in the dictionary (proper nouns allowed) and not an excluded word, OR start with a lowercase letter.
             // That excludes cases in which the period ends an abbreviation in a journal name (like "A theory of something, Bull. Amer.").
             if (
@@ -147,9 +151,13 @@ class TitleParser
                     ||
                     mb_strtolower($lastWord[0]) == $lastWord[0]
                 )
+                &&
+                (
+                    substr($firstRemainderWord, -1) != '.'
+                    ||
+                    in_array($lastWord, $journalWordAbbreviations)
+                )
                ) {
-                $title = $matches['title'];
-                $remainder = $matches['remainder'];
                 $this->verbose('Taking title to be string preceding period.');
 
                 $result['title'] = $title;
@@ -512,8 +520,8 @@ class TitleParser
                         // (<city> in db
                         || Str::startsWith(ltrim($remainder, '('), $cities)
                         // Thesis
-                        || preg_match('/^[\(\[\-]? ?' . $fullThesisRegExp . '/i', $remainder)
-                        || preg_match('/^[\(\[\-]? ?Thesis[.,] /', $remainder)
+                        || preg_match('/^[(\[\-]? ?' . $fullThesisRegExp . '/', $remainder)
+                        || preg_match('/^[(\[\-]? ?' . $thesisRegExp . '/', $remainder)
                         ) {
                         $this->verbose("Ending title, case 2 (word '" . $word . "')");
                         $title = rtrim(implode(' ', $initialWords), ',:;.');
@@ -736,18 +744,30 @@ class TitleParser
                             $this->verbose("Not ending title, case 7c (word '" . $word ."'): <address>: <publisher> follow next comma or period");
                         } elseif (
                             isset($remainderFollowingNextPeriod) 
-                            && strlen($stringToNextPeriod) > 5 
-                            && preg_match('/[a-z][.,]$/', $stringToNextPeriod) 
-                            && ! Str::endsWith($stringToNextPeriod, ['Univ.']) 
+                            &&
+                            strlen($stringToNextPeriod) > 5 
+                            &&
+                            preg_match('/[a-z][.,]$/', $stringToNextPeriod) 
+                            &&
+                            ! Str::endsWith($stringToNextPeriod, ['Univ.']) 
                             //&& preg_match('/^[\p{L}., ]+: [\p{L}&\- ]+$/u', trim($remainderFollowingNextPeriod, '. '))
                             //&& preg_match('/^' . $this->addressPublisherRegExp . '$/u', trim($remainderFollowingNextPeriod, '. '))
-                            && $this->isAddressPublisher(trim($remainderFollowingNextPeriod, '. '), allowYear: false)
+                            &&
+                            $this->isAddressPublisher(trim($remainderFollowingNextPeriod, '. '), allowYear: false)
                             ) {
                             // <address>: <publisher> follows string to next period: If string to next period
                             // (note: comma not allowed, because comma may appear in address --- New York, NY)
                             // has at least 6 characters and a lowercase letter preceded the punctuation,
                             // allow spaces and periods (and any utf8 letter) in the <address> 
                             $this->verbose("Not ending title, case 7d (word '" . $word ."'): <address>: <publisher> follow next comma or period");
+                        } elseif (
+                            substr($nextWord, -1) == '.' 
+                            && 
+                            ! in_array($nextWord, $journalWordAbbreviations) 
+                            &&
+                            ! in_array($nextButOneWord[0], range(0,9))
+                            ) {
+                            $this->verbose("Not ending title, case 7e (next word, '" . $nextWord . "', ends in period and is not a journal word abbreviation, and following word does not start with a digit)");
                         } else {
                             // otherwise assume the punctuation ends the title.
                             $this->verbose("Ending title, case 6b (word '" . $word ."')");

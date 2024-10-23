@@ -1438,6 +1438,7 @@ class Converter
                     $this->pageRegExp, 
                     $this->startPagesRegExp, 
                     $this->fullThesisRegExp,
+                    $this->thesisRegExp,
                     $this->edsOptionalParensRegExp,
                     $this->monthsRegExp,
                     $this->inRegExp,
