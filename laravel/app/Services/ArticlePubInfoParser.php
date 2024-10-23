@@ -126,7 +126,7 @@ class ArticlePubInfoParser
         $this->pubInfoDetails = [];
 
         $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
-        $result = false;
+        $result = $containsNumberDesignation = false;
 
         $months = $this->monthsRegExp[$language];
 
@@ -188,8 +188,8 @@ class ArticlePubInfoParser
             $result = true;
         // e.g. Volume A6, No. 3 
         } elseif (preg_match('/^' . $volumeWordLetterRx . $punc1 . $numberWordRx . '$/J', $remainder, $matches)) {
-            $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 6');
-            $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 7');
+            $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 6a');
+            $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 7a');
             $remainder = '';
             $result = true;
         // e.g. Volume A6, 41-75$
@@ -231,6 +231,7 @@ class ArticlePubInfoParser
         return [
             'result' => $result,
             'pub_info_details' => $this->pubInfoDetails,
+            'containsNumberDesignation' => $containsNumberDesignation,
         ];
     }
 
@@ -309,7 +310,7 @@ class ArticlePubInfoParser
                     $remainder = trim(str_replace($matches[0], '', $remainder));
                     // Does a number follow the volume?
                     // The /? allows a format 125/6 for volume/number
-                    preg_match('%^\(?(?P<numberDesignation>' . $this->numberRegExp . ')?[ /]?(?P<number>([0-9]{1,20}[a-zA-Z]*)(-[1-9][0-9]{0,6})?)\)?%', $remainder, $matches);
+                    preg_match('%^\(?(?P<numberDesignation>' . $this->numberRegExp . ')?[ /]?(?P<number>([0-9]{1,20}[a-zA-Z]*)([-\/][1-9][0-9]{0,6})?)\)?%', $remainder, $matches);
                     if (isset($matches['number'])) {
                         $number = $matches['number'];
                         $this->setField($item, 'number', $number, 'getVolumeAndNumberForArticle 18');
@@ -321,7 +322,7 @@ class ArticlePubInfoParser
                     $take = $drop = 0;
                 } else {
                     // A letter or sequence of letters is permitted after an issue number
-                    $numberOfMatches = preg_match('%(' . $volumeAndCodesRegExp . '|[^0-9]|^)(?P<volume>[1-9][0-9]{0,3})(?P<punc1> ?, |\(| | \(|\.|:|;|/)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)([/-][1-9][0-9]{0,6})?)\)?%', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                    $numberOfMatches = preg_match('%(' . $volumeAndCodesRegExp . '|[^0-9]|^)(?P<volume>([1-9][0-9]{0,3}|[IVXL]{1,3}))(?P<punc1> ?, |\(| | \(|\.|:|;|/)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)([/-][1-9][0-9]{0,6})?)\)?%', $remainder, $matches, PREG_OFFSET_CAPTURE);
                     $numberInParens = isset($matches['punc1']) && in_array($matches['punc1'][0], ['(', ' (']);
 
                     if ($numberOfMatches) {
@@ -345,6 +346,7 @@ class ArticlePubInfoParser
                         $volume = $this->extractLabeledContent($remainder, $volumeAndCodesRegExp, '[1-9][0-9]{0,3}');
                         if ($volume) {
                             $this->verbose('[p2c]');
+                            $remainder = trim($remainder, '*');
                             $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 7');
                             $take = $drop = 0;
                         } elseif (preg_match('/^article (id )?.*$/i', $remainder)) {

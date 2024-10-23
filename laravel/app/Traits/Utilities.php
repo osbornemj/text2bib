@@ -115,7 +115,8 @@ trait Utilities
     var $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in';
 
     // (°|º) cannot be replaced by [°º].  Don't know why.
-    var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№\.? ?|[Nn]\.? ?(°|º) ?|[Ii]ssues?:? ?|Issue no. ?|Iss: |Heft ';
+    // Note that "Issues" cannot be followed by "in" --- because "issues in" could be part of journal name
+    var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№\.? ?|[Nn]\.? ?(°|º) ?|[Ii]ssues?:? ?(?! in)|Issue no. ?|Iss: |Heft ';
 
     // page range
     // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")

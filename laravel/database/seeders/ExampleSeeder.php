@@ -2057,6 +2057,7 @@ class ExampleSeeder extends Seeder
                     'number' => '1',
                     'volume' => '109',
                     'journal' => 'Proceedings of the National Academy of Sciences of the United States of America',
+                    'note' => 'Q12001',
                     ]
             ],
             [
@@ -3346,6 +3347,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '674-680',
                     'volume' => '27',
                     'doi' => '10.1590/S1984-46702010000500002',
+                    'note' => '(Curitiba)',
                     ]
             ],
             [
@@ -3786,6 +3788,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '13',
                     'number' => '1',
                     'pages' => '17-24',
+                    'note' => 'Beijing Genomics Institute',
                     ]
             ],
             [
@@ -5144,6 +5147,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '136',
                     'pages' => '715-718',
                     'doi' => '10.1016/j.biortech',
+                    'note' => '2013.02.085',
                     ]
             ],
             // words "Masters thesis" included in school field
@@ -7126,7 +7130,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Lei Tian, Qiang Cao, Hong Jiang, Dan Feng, Changsheng Xie, and Qin Xin. Online Availability Upgrades for Parity-based RAIDs through Supplementary Parity Augmentations. ACM Transactions on Storage, Vol. 6, No. 4, Article 17, May 2011, Pages: 17:1-17:23 ',
                 'type' => 'article',
                 'bibtex' => [
-                    'note' => 'Article 17',
+                    'note' => 'Article 17. Pages: 17 :23',
                     'author' => 'Lei Tian and Qiang Cao and Hong Jiang and Dan Feng and Changsheng Xie and Qin Xin',
                     'title' => 'Online Availability Upgrades for Parity-based RAIDs through Supplementary Parity Augmentations',
 					'journal' => 'ACM Transactions on Storage',
@@ -7214,6 +7218,7 @@ class ExampleSeeder extends Seeder
                     'volume' => '123',
                     'number' => '1',
                     'pages' => '21-66',
+                    'note' => 'IF: 2.5 (Q1)',
                     ]
             ],
 			// authors includes first word of title
@@ -7877,6 +7882,7 @@ class ExampleSeeder extends Seeder
                     'eprint' => '1704.07339v3',
                     'author' => 'M. Huerta-Leal and H. Novales-S\\\'anchez and J. J. Toscano',
                     'year' => '2020',
+                    'note' => '[hep-ph]',
                     ]
             ],
 			// Example with period within title
@@ -8037,7 +8043,7 @@ class ExampleSeeder extends Seeder
             ],
             // use of Ð in page range
 			[
-                'source' => '7.	Freeman C, Todd C, Camilleri-Ferrant... C, Laxton C, Murrell P, Palmer C, et al. Quality improvement for patients with hip fracture: experience from a multi-site audit. Qual Saf Health Care. 2002 Sep;11(3):239Ð45.Ê ',
+                'source' => '7.	Freeman C, Todd C, Camilleri-Ferrant... C, Laxton C, Murrell P, Palmer C, et al. Quality improvement for patients with hip fracture: experience from a multi-site audit. Qual Saf Health Care. 2002 Sep;11(3):239Ð45.',
                 'type' => 'article',
                 'bibtex' => [
                     'author' => 'Freeman, C. and Todd, C. andCamilleri-Ferrant and others C. Laxton, C. and Murrell, P. and Palmer, C. and others',
@@ -8114,6 +8120,8 @@ class ExampleSeeder extends Seeder
                     'address' => 'Bergamo',
                     'publisher' => 'Junior',
                     'isbn' => '9788884349538',
+                    'pagetotal' => '160 pp.',
+                    'note' => '€ 24.00',
                     ],
                     'char_encoding' => 'utf8leave',
             ],
@@ -9962,6 +9970,7 @@ class ExampleSeeder extends Seeder
                     'edition' => '1536',
                     'address' => 'Grand Rapids',
                     'publisher' => 'Eerdmans',
+                    'note' => '1986',
                     ]
             ],
 			// year follows publisher, which means address: publisher not detected
@@ -10805,7 +10814,7 @@ class ExampleSeeder extends Seeder
                     'journal' => 'American Journal of Mathematics',
                     'year' => '1942',
                     'volume' => '64',
-                    'number' => '1',
+                    'number' => '1/4',
                     'pages' => '299-312',
                     'doi' => '10.2307/2371684',
                     ]
@@ -12564,7 +12573,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Citti, C. and others',
                     'year' => '2018',
                     'title' => 'Horizontal gene transfers in Mycoplasmas (Mollicutes)',
-                    'journal' => 'Current',
+                    'journal' => 'Current Issues in Molecular Biology',
                     'pages' => '3-22',
                     ]
             ],

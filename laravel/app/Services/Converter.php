@@ -518,7 +518,7 @@ class Converter
         // Used in: "*Retrieved from* (site)? <url> accessed <date>"
         // and "*Retrieved from* (site)? <url> <date>?"
         $this->retrievedFromRegExp1 = [
-            'en' => '(Retrieved from:? |Available( online)?( at)?:? )',
+            'en' => '(Retrieved from:? |Available( online)? ?(at|from)?:? )',
             'cz' => '(Dostupné z:? |načteno z:? )',
             'fr' => '(Récupéré sur |Disponible( (à l\'adresse|sur))?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
@@ -775,14 +775,14 @@ class Converter
             //$precedingChar = $matches['precedingChar'] ?? null;
             $doi = $this->extractLabeledContent(
                 $remainder,
-                ' [\[)]?doi:? | [\[(]?doi: ?|doi:|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(Available (from|at):? )?(\\\href\{|\\\url{)?https?://doi\.org[/:] ?(?=10)|doi\.org',
+                ' [\[)]?doi:? | [\[(]?doi: ?|doi:|(' . $retrievedFromRegExp1 . ')?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(' . $retrievedFromRegExp1 . ')?(\\\href\{|\\\url{)?https?://doi\.org[/:] ?(?=10)|doi\.org',
                 '[^ ]+'
             );
         }
 
         // Every doi starts with '10.'.  URL may be something like https://doi-something.univ.edu.
         if (empty($doi)) {
-            preg_match('%https?://[a-zA-Z\-\.]*/(?P<doi>10\.[^ ]+)%', $remainder, $matches);
+            preg_match('%(' . $retrievedFromRegExp1 . ')?https?://[a-zA-Z\-\.]*/(?P<doi>10\.[^ ]+)%', $remainder, $matches);
             if (isset($matches['doi'])) {
                 $doi = $matches['doi'];
                 $remainder = str_replace($matches[0], '', $remainder);
@@ -1350,9 +1350,11 @@ class Converter
         $remainder = trim($remainder);
 
         $pageCount = null;
-        if (preg_match('/^(?P<remainder>.*?)(,? (?P<pageCount>[0-9ivx +\[\]]+(pp|pgs)\.?))?$/', $remainder, $matches)) {
+        // pp cannot be followed by digit, because string could be "vol 10 pp. 20-30".  (Period after (pp?pgs) has to be optional, but 
+        // then need it also in the (?! expression.)
+        if (preg_match('/^(?P<before>.*?)(,? (?P<pageCount>[0-9ivx +\[\]]+(pp|pgs)\.?(?!\.? [1-9])))(?P<after>.*?)$/', $remainder, $matches)) {
             $pageCount = $matches['pageCount'] ?? null;
-            $remainder = $matches['remainder'] ?? '';
+            $remainder = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
         }
 
         $remainder = trim($remainder, '.},;/ ');
@@ -2154,6 +2156,7 @@ class Converter
             case 'article':
                 $journalNameMissingButHasVolume = false;
                 $retainFinalPeriod = false;
+                $containsNumberDesignation = false;
 
                 // Get journal
                 $remainder = ltrim($remainder, '.,; ');
@@ -2204,6 +2207,8 @@ class Converter
                     );
 
                     $this->detailLines = array_merge($this->detailLines, $result['pub_info_details']);
+
+                    $containsNumberDesignation = $result['containsNumberDesignation'];
 
                     if ($result['result'] || preg_match('/^' . $this->volumeWithNumberRegExp . '/', $remainder)) {
                         $journalNameMissingButHasVolume = true;
@@ -2321,6 +2326,8 @@ class Converter
                         );
 
                         $this->detailLines = array_merge($this->detailLines, $result['pub_info_details']);
+
+                        $containsNumberDesignation = $result['containsNumberDesignation'];
 
                         $pagesReported = false;
                         if (! empty($item->pages)) {
@@ -4674,9 +4681,18 @@ class Converter
                     $this->addToField($item, 'note', $remainder, 'addToField 15');
                 }
             } elseif (preg_match('/^Paper no\. [0-9]+\.?$/i', $remainder)) {
-                $this->addToField($item, 'note', $remainder, 'addToField 17');
-            } else {
+                $this->addToField($item, 'note', $remainder, 'addToField 17a');
+            } elseif (
+                preg_match('/^[0-9]{1,3}$/', $remainder) 
+                ||
+                in_array($remainder, ['Vol', 'No'])
+                ||
+                (isset($item->year) && $remainder == $item->year)
+                ) {
+                // 1--3 digit numbers are ignored (4-digit number could be year)
                 $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
+            } else {
+                $this->addToField($item, 'note', $remainder, 'addToField 17b');
             }
         }
 
