@@ -82,7 +82,7 @@ class ArticlePubInfoParser
                 if ($key === count($words) - 1 // last word in remainder
                     || (isset($words[$key+1]) && Str::contains($words[$key+1], range('1', '9'))) // next word contains a digit
                     || (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}:?$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
-                    || preg_match('/^(' . $this->monthsRegExp[$language] . ')( [0-9]{1,2})?[.,;]/', $remainder) // <month> or <month day> next
+                    || preg_match('/^(' . $this->monthsRegExp[$language] . ')( [0-9]{1,2})?[\-.,;]/', $remainder) // <month> or <month day> next
                     || preg_match('/^(' . $this->numberRegExp . ') /', $remainder) // followed by number info
                     || preg_match('/^(\(?(' . $volumeRegExp . ')) /', $remainder) // followed by volume info
                     || preg_match($startPagesRegExp, ltrim($remainder, '( ')) // followed by pages info

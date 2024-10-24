@@ -14,6 +14,7 @@ use App\Models\VonName;
 class AuthorParser
 {
     var $andWords;
+    var $andWordsRegExp;
     var $aspell;
     var $authorDetails;
     var $nameSuffixes;
@@ -51,6 +52,13 @@ class AuthorParser
             'y',   // Spanish
             'и',   // Russian
         ];
+
+        $andWordsRx = '';
+        foreach ($this->andWords as $i => $andWord) {
+            $andWordsRx .= ($i ? '|' : '') . $andWord;
+        }
+    
+        $this->andWordsRegExp = '(' . $andWordsRx . ')';
     }
 
     // Overrides method in Utilities trait
@@ -78,7 +86,7 @@ class AuthorParser
      * @param string $type: 'authors' or 'editors'
      * @return array, with author string and warnings
      */
-    public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, string $translatorRegExp, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
+    public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, string $translatorRegExp, string $edsNoParensRegExp, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
     {
         $this->authorDetails = [];
 
@@ -103,7 +111,7 @@ class AuthorParser
         // Check for some common patterns //
         ////////////////////////////////////
 
-        $result = $this->checkAuthorPatterns($remainder, $year, $month, $day, $date, $isEditor, $isTranslator, $translatorRegExp, $language);
+        $result = $this->checkAuthorPatterns($remainder, $year, $month, $day, $date, $isEditor, $isTranslator, $translatorRegExp, $edsNoParensRegExp, $language);
 
         if ($result) {
             return [
@@ -151,7 +159,7 @@ class AuthorParser
     /**
      * Determine whether $remainder matches any of the patterns in the AuthorPatterns trait.
      */
-    public function checkAuthorPatterns(string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, string $translatorRegExp, string $language): array|null
+    public function checkAuthorPatterns(string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, string $translatorRegExp, string $edsNoParensRegExp, string $language): array|null
     {
         $authorRegExps = $this->authorPatterns();
         $authorstring = '';
@@ -212,7 +220,8 @@ class AuthorParser
         
         if ($authorstring) {
             $year = $this->dates->getDate(trim($remainder), $remainder, $month, $day, $date, true, true, true, $language);
-            if (preg_match('/^[(\[](tr(ans)?\. and ed\.|ed\. and tr(ans)?\.)[)\]]\.? (?P<remains>.*)$/', $remainder, $matches)) {
+            //if (preg_match('/^[(\[](tr(ans)?\. and ed\.|ed\. and tr(ans)?\.)[)\]]\.? (?P<remains>.*)$/', $remainder, $matches)) {
+            if (preg_match('%^[(\[](' . $translatorRegExp . ' ' . $this->andWordsRegExp . ' ' . $edsNoParensRegExp . '|' . $edsNoParensRegExp . ' ' . $this->andWordsRegExp . ' ' . $translatorRegExp . ')[)\]]\.? (?P<remains>.*)$%', $remainder, $matches)) {
                 $isEditor = true;
                 $isTranslator = true;
                 $remainder = $matches['remains'];

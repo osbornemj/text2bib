@@ -68,7 +68,24 @@ trait StringExtractors
         foreach ($names as $name) {
             $result[$name] = $matches[$name] ?? '';
         }
-        $string = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
+
+        $before = $result['before'];
+        $after = $result['after'];
+
+        if (isset($after[0])) {
+            if (substr($before, -1) == ',' && $after[0] == '.') {
+                $before = rtrim($before, ', ');
+                $string = $before . '. ' . $after;
+            } elseif (substr($before, -1) == '.' && $after[0] == ',') {
+                $after = ltrim($after, ', ');
+                $string = $before . ' ' . $after;
+            } else {
+                $string = $before . ' ' . $after;
+            }
+        } else {
+            $string = $before . ' ' . $after;
+        }
+
         $string = $this->regularizeSpaces(trim($string));
 
         return $result;

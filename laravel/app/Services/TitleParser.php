@@ -56,6 +56,7 @@ class TitleParser
         string $fullThesisRegExp, 
         string $thesisRegExp, 
         string $edsOptionalParensRegExp, 
+        string $editedByRegExp, 
         array $monthsRegExp,
         string $inRegExp, 
         string $volumeRegExp, 
@@ -134,7 +135,7 @@ class TitleParser
         // a space and then not a lowercase letter.
         // (Allow year at end of title, but no other pattern with digits, otherwise whole string,
         // including journal name and volume, number, and page info may be included.)
-        if (preg_match('/^(?P<title>.*? (?P<lastWord>(\p{L}+|' . $this->yearRegExp . ')))\. (?P<remainder>[^\p{Ll}][\p{L}\.,\\\' ]{5,30} [0-9;():\-.,\. ]{9,})$/', $remainder, $matches)) {
+        if (preg_match('/^(?P<title>.*? (?P<lastWord>(\p{L}+|' . $this->yearRegExp . ')))\. (?P<remainder>[^\p{Ll}][\p{L}\.,\\\' ]{5,30} [0-9;():\-.,\. ]{9,})$/u', $remainder, $matches)) {
             $lastWord = $matches['lastWord'];
             $title = $matches['title'];
             $remainder = $matches['remainder'];
@@ -358,12 +359,13 @@ class TitleParser
                             // journal name, pub info ('}' after volume # for \textbf{ (in $volumeAndCodesRegExp))
                             // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
                             // The following pattern allows too much latitude --- e.g. "The MIT Press. 2015." matches it.
-                            // || preg_match('/^[A-Z][A-Za-z &]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
+                            // || preg_match('/^\p{Lu}[A-Za-z &]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
                             // journal name, forthcoming/in press/... 
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]?(' . $this->endForthcomingRegExp . ')/u', $remainder) 
                             // journal name, volume (year?) issue? page
                             // Note: permits no space or punctuation between volume number and page number
-                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder)                             // similar, but requires some punctuation or space between volume and page numbers, but allows a single
+                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder)
+                            // similar, but requires some punctuation or space between volume and page numbers, but allows a single
                             // page --- does not require a page range.
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, |: | )([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pageRegExp . '\.? ?$/u', $remainder) 
                             // journal name followed by year and publication info, allowing issue number and page
@@ -393,7 +395,7 @@ class TitleParser
 
                     // $word ends in period && then there are letters and spaces, and then a page range in parens
                     // (so string before page range is booktitle?)
-                    if (Str::endsWith($word, ['.']) && preg_match('/^[A-Z][A-Za-z ]+,? ?\(?(' . $pagesRegExp . ')/', $remainder)) { 
+                    if (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L} ]+,? ?\(?(' . $pagesRegExp . ')/u', $remainder)) { 
                         $upcomingPageRange = true;
                     }
 
@@ -470,15 +472,21 @@ class TitleParser
                         || preg_match('/^\(?(' . $volumeRegExp . ') /', $remainder)
                         || (
                             $nextWord 
-                            && Str::endsWith($nextWord, '.') 
-                            && in_array(substr($nextWord, 0, -1), $journalWordAbbreviations)
+                            &&
+                            Str::endsWith($nextWord, '.') 
+                            &&
+                            in_array(substr($nextWord, 0, -1), $journalWordAbbreviations)
                            )
                         || (
                             $nextWord 
-                            && $nextButOneWord 
-                            && (Str::endsWith($nextWord, range('a', 'z')) || in_array($nextWord, ['IEEE', 'ACM'])) 
-                            && Str::endsWith($nextButOneWord, '.') 
-                            && in_array(substr($nextButOneWord, 0, -1), $journalWordAbbreviations)
+                            &&
+                            $nextButOneWord 
+                            &&
+                            (Str::endsWith($nextWord, range('a', 'z')) || in_array($nextWord, ['IEEE', 'ACM'])) 
+                            &&
+                            Str::endsWith($nextButOneWord, '.') 
+                            &&
+                            in_array(substr($nextButOneWord, 0, -1), $journalWordAbbreviations)
                            )
                         // pages (e.g. within book)
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
@@ -486,23 +494,27 @@ class TitleParser
                         || preg_match('/^' . $this->yearRegExp . '(\.|$)/', $remainder)
                         // editor next
                         || preg_match('/^' . $edsOptionalParensRegExp . ' /', $remainder)
+                        || preg_match('/^' . $editedByRegExp . ' /', $remainder)
                         // address [no spaces]: publisher in db
                         || (
-                            preg_match('/^[A-Z][a-z]+: (?P<publisher>[A-Za-z ]*),/', $remainder, $matches) 
-                            && in_array(trim($matches['publisher']), $publishers)
+                            preg_match('/^\p{Lu}\p{L}+: (?P<publisher>[\p{L} ]*),/u', $remainder, $matches) 
+                            &&
+                            in_array(trim($matches['publisher']), $publishers)
                            )
                         // address [city in db]: publisher
                         || (
-                            preg_match('/^(?P<city>[A-Z][a-z]+): /', $remainder, $matches) 
-                            && in_array(trim($matches['city']), $cities)
+                            preg_match('/^(?P<city>\p{Lu}\p{Ll}+): /u', $remainder, $matches) 
+                            &&
+                            in_array(trim($matches['city']), $cities)
                            )
                         // one- or two-word publisher, address [city in db], <year>?
                         || (
-                            preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?, (?P<city>[A-Za-z, ]+)(, ' . $this->yearRegExp . ')?$/', $remainder, $matches) 
-                            && in_array(trim($matches['city']), $cities)
+                            preg_match('/^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?, (?P<city>[\p{L}, ]+)(, ' . $this->yearRegExp . ')?$/u', $remainder, $matches) 
+                            &&
+                            in_array(trim($matches['city']), $cities)
                            )
                         // one- or two-word publisher, city (up to 2 words), US State, <year>?
-                        || preg_match('/^[A-Z][a-z]+( [A-Z][a-z]+)?, (?P<city>[A-Z][a-z]+( [A-Z][a-z]+)?, [A-Z]{2})(, ' . $this->yearRegExp . ')?$/', $remainder, $matches) 
+                        || preg_match('/^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?, (?P<city>\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?, \p{Lu}{2})(, ' . $this->yearRegExp . ')?$/u', $remainder, $matches) 
                         // [,.] <address>: <publisher>(, <year>)?$ OR (<address>: <publisher>(, <year>)?)
                         // Note that ',' is allowed in address and
                         // '.' and '&' are allowed in publisher.  May need to put a limit on length of publisher part?
@@ -671,9 +683,9 @@ class TitleParser
                     // wait for the italics (journal name?)
                     } elseif ($this->containsFontStyle($remainder, false, 'italics', $startPos, $length)) {
                         $this->verbose("Not ending title, case 4 (italics is coming up)");
-                    // else if word ends with comma and remainder doesn't start with "[a-z]+ journal "
+                    // else if word ends with comma and remainder doesn't start with "\p{Ll}+ journal "
                     // and volume info is coming up, wait for it
-                    } elseif (Str::endsWith($word, [',']) && preg_match('/^[a-z]+ journal/i', $remainder)) {
+                    } elseif (Str::endsWith($word, [',']) && preg_match('/^\p{L}+ journal/iu', $remainder)) {
                         $this->verbose("Ending title, case 5a (word: \"" . $word . "\"; journal info is next)");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
@@ -727,7 +739,7 @@ class TitleParser
                             break;
                         // Next case was intended for title followed by authors (as in <booktitle> <editors>) ---
                         // but that case is now handled separately
-                        // } elseif (Str::endsWith($word, [',']) && preg_match('/[A-Z][a-z]+, [A-Z]\. /', $remainder)) {
+                        // } elseif (Str::endsWith($word, [',']) && preg_match('/\p{Lu}\p{Ll}+, \p{Lu}\. /u', $remainder)) {
                         //     $this->verbose("Ending title, case 6a (word '" . $word ."')");
                         //     $title = rtrim(implode(' ', $initialWords), '.,');
                         //     break;
@@ -738,7 +750,7 @@ class TitleParser
                             $this->verbose("Not ending title, case 7b");
                         } elseif (
                             isset($remainderFollowingNextPeriodOrComma) 
-                            && preg_match('/^[A-Z][a-z]+: [A-Z][a-z]+$/', trim($remainderFollowingNextPeriodOrComma, '. '))
+                            && preg_match('/^\p{Lu}\p{Ll}+: \p{Lu}\p{Ll}+$/u', trim($remainderFollowingNextPeriodOrComma, '. '))
                             ) {
                             // one-word address: one-word publisher follow next period.  (Could intervening sentence be series in this case?)
                             $this->verbose("Not ending title, case 7c (word '" . $word ."'): <address>: <publisher> follow next comma or period");
@@ -747,7 +759,7 @@ class TitleParser
                             &&
                             strlen($stringToNextPeriod) > 5 
                             &&
-                            preg_match('/[a-z][.,]$/', $stringToNextPeriod) 
+                            preg_match('/\p{Ll}[.,]$/u', $stringToNextPeriod) 
                             &&
                             ! Str::endsWith($stringToNextPeriod, ['Univ.']) 
                             //&& preg_match('/^[\p{L}., ]+: [\p{L}&\- ]+$/u', trim($remainderFollowingNextPeriod, '. '))

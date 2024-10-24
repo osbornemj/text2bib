@@ -12741,7 +12741,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'On Indoor Position with Wireless LANs',
                     'year' => '2002',
                     'pages' => '720-724',
-                    'booktitle' => '13th IEEE International Symposium on Personal, Indoor and Mobile Radio Communications PIMRC 2002, Lisbon, Portugal, Vol. 2',
+                    'booktitle' => '13th IEEE International Symposium on Personal, Indoor and Mobile Radio Communications PIMRC 2002, Lisbon, Portugal',
+                    'volume' => '2',
                     ]
             ],
 			// author (organization) truncated
@@ -12961,7 +12962,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'M. Zanna and E. Higgins and C. Herman',
                     'address' => 'Hillsdale, NJ',
                     'publisher' => 'Erlbaum',
-                    'booktitle' => 'Consistency in Social Behavior: the Ontario Symposium, Vol. 2',
+                    'booktitle' => 'Consistency in Social Behavior: the Ontario Symposium',
+                    'volume' => '2',
                     ]
             ],
 
@@ -13842,6 +13844,66 @@ class ExampleSeeder extends Seeder
                     'volume' => '10',
                     'number' => '5',
                     'pages' => '1084-1086',
+                    ]
+            ],
+			// 'Jan' included in journal name
+			[
+                'source' => 'Jennette JC, Falk RJ, Bacon PA, et al. 2012 revised International Chapel Hill Consensus Conference Nomenclature of Vasculitides. Arthritis Rheum. Jan 2013;65(1):1-11. doi:10.1002/art.37715 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Jennette, J. C. and Falk, R. J. and Bacon, P. A. and others',
+                    'title' => '2012 revised International Chapel Hill Consensus Conference Nomenclature of Vasculitides',
+                    'journal' => 'Arthritis Rheum.',
+                    'year' => '2013',
+                    'month' => 'January',
+                    'volume' => '65',
+                    'number' => '1',
+                    'pages' => '1-11',
+                    'doi' => '10.1002/art.37715',
+                    ]
+            ],
+			// month range included in journal name
+			[
+                'source' => 'Albright R, Brensilver J, Cortell S. Proteinuria in congestive heart failure. Am J Nephrol. Sep-Oct 1983;3(5):272-5. doi:10.1159/000166727 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1159/000166727',
+                    'author' => 'Albright, R. and Brensilver, J. and Cortell, S.',
+                    'title' => 'Proteinuria in congestive heart failure',
+                    'year' => '1983',
+                    'journal' => 'Am J Nephrol',
+					'month' => 'September--October',
+                    'volume' => '3',
+                    'number' => '5',
+                    'pages' => '272-5',
+                    ]
+            ],
+			// editor, publisher missed			
+			[
+                'source' => 'Vallejo, César. 2023. César Vallejo. Correspondencia, editado por C. Fernández y V. Gianuzzi. Lima: Universidad César Vallejo. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Vallejo, César',
+                    'title' => 'César Vallejo. Correspondencia',
+                    'year' => '2023',
+                    'address' => 'Lima',
+                    'publisher' => 'Universidad César Vallejo',
+					'editor' => 'C. Fernández and V. Gianuzzi',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// title ended early
+			[
+                'source' => 'Jorgensen, A., Brandslund, I., Ellervik, C., Henriksen, T., Weimann, A., Andersen, P. K., & Poulsen, H. E. (2023). Specific prediction of mortality by oxidative stress‐induced damage to RNA vs. DNA in humans. Aging Cell, 22(6), e13839.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Jorgensen, A. and Brandslund, I. and Ellervik, C. and Henriksen, T. and Weimann, A. and Andersen, P. K. and Poulsen, H. E.',
+                    'year' => '2023',
+                    'title' => 'Specific prediction of mortality by oxidative stress-induced damage to RNA vs. DNA in humans',
+                    'journal' => 'Aging Cell',
+                    'volume' => '22',
+                    'number' => '6',
+                    'pages' => 'e13839',
                     ]
             ],
     
