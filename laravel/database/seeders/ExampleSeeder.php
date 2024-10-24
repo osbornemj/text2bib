@@ -14002,6 +14002,21 @@ class ExampleSeeder extends Seeder
                     'volume' => '13',
                     ]
             ],           
+			// why doesn't it match author pattern 30?
+			[
+                'source' => 'Ferro, M. C. T. Participación social en la construcción de la política nacional para la población en situación de calle en Brasil: alcances y límites. In: Congreso de la Asociación de Estudios Latinoamericanos (Lasa), 29., 2010, Toronto. Anais… ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Ferro, M. C. T.',
+                    'title' => 'Participación social en la construcción de la política nacional para la población en situación de calle en Brasil: alcances y límites',
+                    'year' => '2010',
+                    'publisher' => '29',
+                    'address' => 'Toronto. Anais…',
+                    'booktitle' => 'Congreso de la Asociación de Estudios Latinoamericanos (Lasa)',
+                    ],
+					'char_encoding' => 'utf8leave',
+					'language' => 'pt',
+            ],
  
             
         ];

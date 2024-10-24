@@ -94,9 +94,12 @@ trait AuthorPatterns
         $commaYear = ',? (?=(([(\[](\d|ed|tran|n\.))|[`"\'\d]))';
         // Requirement of lowercase after the first word for 4 bare words is to avoid terminating an author string like the following one
         // too early (after Hamilton SA):
-        // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T:
-        //$commaYearOrBareWords = '(' . $commaYear . '|,? (?=(\p{Lu}[\p{L}\-]*( [\p{Ll}\-]+){3})))';
-        $commaYearOrBareWords = '(' . $commaYear . '|, (?=(\p{Lu}[\p{L}\-]*(( [\p{Ll}\-]+){3}|( [\p{L}\-]+){6}))))';
+        // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T
+        // Comma followed by word starting with uc followed by at least 3 all-lowercase words or at least 6 words, without any punctuation
+        $words1 = '(?=(\p{Lu}[\p{L}\-]*(( [\p{Ll}\-]+){3}|( [\p{L}\-]+){6})))';
+        // Space followed by word starting with uc followed by at least 6 words, without any punctuation
+        $words2 = '(?=(\p{Lu}[\p{L}\-]*(( [\p{L}\-]+){6})))';
+        $commaYearOrBareWords = '(' . $commaYear . '|, ' . $words1 . '| ' . $words2 . ')';
         $colon = ': (?!\p{Ll})';
         $colonOrCommaYear = '(' . $colon . '|' . $commaYear . ')';
         $colonOrCommaYearOrBareWords = '(' . $colon . '|' . $commaYearOrBareWords . ')';

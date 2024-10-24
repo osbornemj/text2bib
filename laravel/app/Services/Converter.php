@@ -3471,24 +3471,7 @@ class Converter
                                     $language
                                 );
                                 if ($authorResult) {
-                                    $editorConversion = $this->authorParser->convertToAuthors(
-                                        explode(' ', $authorResult['authorstring']), 
-                                        $remainder, 
-                                        $trash2, 
-                                        $trash3, 
-                                        $trash4, 
-                                        $trash5, 
-                                        $isEditor, 
-                                        $isTranslator, 
-                                        $this->translatorRegExp,
-                                        $this->edsNoParensRegExp,
-                                        $this->cities, 
-                                        $this->dictionaryNames, 
-                                        true, 
-                                        'editors', 
-                                        $language
-                                    );
-                                    $editor = trim($editorConversion['authorstring']);
+                                    $editor = $authorResult['authorstring'];
                                     $this->setField($item, 'editor', $editor, 'setField 78');
                                     $booktitleAndPubInfo = trim($strings[1-$i], ',');
 
