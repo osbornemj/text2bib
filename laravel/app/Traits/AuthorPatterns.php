@@ -378,7 +378,6 @@ trait AuthorPatterns
             // 30. Smith J. A.(colon or comma year)
             [
                 'name1' => $lastNameInitials, 
-                //'end1' => $colonOrCommaYear, 
                 'end1' => $colonOrCommaYearOrBareWords, 
                 'end2' => null, 
                 'end3' => null, 

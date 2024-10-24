@@ -135,7 +135,11 @@ class TitleParser
         // a space and then not a lowercase letter.
         // (Allow year at end of title, but no other pattern with digits, otherwise whole string,
         // including journal name and volume, number, and page info may be included.)
-        if (preg_match('/^(?P<title>.*? (?P<lastWord>(\p{L}+|' . $this->yearRegExp . ')))\. (?P<remainder>[^\p{Ll}][\p{L}\.,\\\' ]{5,30} [0-9;():\-.,\. ]{9,})$/u', $remainder, $matches)) {
+        if (
+            preg_match('/^(?P<title>[^\.]*? (?P<lastWord>(\p{L}+|' . $this->yearRegExp . ')))\. (?P<remainder>[^\p{Ll}][\p{L}\.,\\\' ]{5,30} [0-9;():\-,\. ]{9,})$/u', $remainder, $matches)
+            ||
+            preg_match('/^(?P<title>[^\.]*? (?P<lastWord>(\p{L}+|' . $this->yearRegExp . ')))\. (?P<remainder>[^\p{Ll}][\p{L}, ]{5,60} [0-9;():\-,\. ]{9,})$/u', $remainder, $matches)
+            ) {
             $lastWord = $matches['lastWord'];
             $title = $matches['title'];
             $remainder = $matches['remainder'];
@@ -787,7 +791,17 @@ class TitleParser
                             break;
                         }
                     }
-                } 
+                } elseif (Str::endsWith($word, [':'])) {
+                    // Journal name (spaces and letters), volume-number-page info
+                    if (preg_match('/^\p{Lu}[\p{L} ]{4,30}, (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, |: | )([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pageRegExp . '\.? ?$/u', $remainder)) {
+                        $upcomingJournalAndPubInfo = true;
+                        $isArticle = true;
+                        $this->verbose('Followed by journal name and publication info, so classified as article');
+                        $this->verbose("Ending title, case 7 (word '" . $word ."')");
+                        $title = rtrim(implode(' ', $initialWords), '.,');
+                        break;
+                }
+                }
             }
         }
 

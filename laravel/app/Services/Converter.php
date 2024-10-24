@@ -1623,7 +1623,6 @@ class Converter
                 $this->setField($item, 'year', $year, 'setField 33');
             } else {
                 $this->setField($item, 'year', '', 'setField 34');
-                $warnings[] = "No year found.";
             }
 
             if (isset($month)) {
@@ -2297,20 +2296,24 @@ class Converter
                     // J Pub Econ. => remove period
                     // J Pub. Econ. => do not remove period
                     // J. Pub. Econ. => do not remove period
-                    if (substr($journal, -1) == '.') {
-                        $journalWords = explode(' ', $journal);
-                        $lastJournalWord = array_pop($journalWords);
-                        // Is any word before the last one an abbreviation?
-                        $journalContainsInteriorAbbreviation = false;
-                        $journalInteriorAbbreviationHasPeriod = false;
-                        foreach ($journalWords as $word) {
-                            if (in_array(rtrim($word, '.'), $this->journalWordAbbreviations)) {
-                                $journalContainsInteriorAbbreviation = true;
-                                if (substr($word, -1) == '.') {
-                                    $journalInteriorAbbreviationHasPeriod = true;
-                                }
+                    // and
+                    // if $journal does not end in period but contains abbrevation that ends in period,
+                    // add period
+                    $journalWords = explode(' ', $journal);
+                    $lastJournalWord = array_pop($journalWords);
+                    // Is any word before the last one an abbreviation?
+                    $journalContainsInteriorAbbreviation = false;
+                    $journalInteriorAbbreviationHasPeriod = false;
+                    foreach ($journalWords as $word) {
+                        if (in_array(rtrim($word, '.'), $this->journalWordAbbreviations)) {
+                            $journalContainsInteriorAbbreviation = true;
+                            if (substr($word, -1) == '.') {
+                                $journalInteriorAbbreviationHasPeriod = true;
                             }
                         }
+                    }
+
+                    if (substr($journal, -1) == '.') {
                         if (
                             ! $retainFinalPeriod
                             &&
@@ -2322,7 +2325,20 @@ class Converter
                         ) {
                             $journal = substr($journal, 0, -1);
                         }
+                    } else {
+                        if (
+                            $journalContainsInteriorAbbreviation
+                            &&
+                            $journalInteriorAbbreviationHasPeriod
+                            &&
+                            $lastJournalWord != 'A'
+                            &&
+                            in_array($lastJournalWord, $this->journalWordAbbreviations)
+                           ) {
+                            $journal .= '.';
+                        }
                     }
+
                     $journal = trim($journal, '_');
                     $this->setField($item, 'journal', trim($journal, '"*,;:{}-| '), 'setField 38');
                 } elseif (! $journalNameMissingButHasVolume) {
@@ -2397,6 +2413,15 @@ class Converter
                             }
 
                             if (! isset($item->volume) && ! isset($item->number)) {
+                                if (! isset($item->year)) {
+                                    if (preg_match('/^(?P<before>.*?)(?P<year>(19|20)[0-9]{2})[} ](?P<after>.*)$/u', $remainder, $matches)) {
+                                        $year = $matches['year'];
+                                        $this->setField($item, 'year', $year, 'setField 41a');
+                                        $before = $matches['before'] == '{\bf ' ? '' : $matches['before'];
+                                        $remainder = trim($before . ' ' . $matches['after'], ', ');
+                                    }
+                                }
+
                                 // Get volume and number
                                 $numberInParens = false;
                                 $result = $this->articlePubInfoParser->getVolumeAndNumberForArticle(
@@ -4802,7 +4827,7 @@ class Converter
                 ) {
                 // 1--3 digit numbers are ignored (4-digit number could be year)
                 $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
-            } else {
+            } elseif ($remainder != '\em)') {
                 $this->addToField($item, 'note', $remainder, 'addToField 17b');
             }
         }
@@ -4859,6 +4884,10 @@ class Converter
 
         if (isset($item->year) && ! $item->year) {
             unset($item->year);
+        }
+
+        if (! isset($item->year)) {
+            $warnings[] = "No year found.";
         }
 
         foreach ($warnings as $warning) {

@@ -202,7 +202,7 @@ class AuthorParser
                     $authorstring .= ($authorstring ? ' and ' : '') . $this->formatAuthor($matches['lastAuthor'], $initials);
                 }
 
-                if (preg_match('%^et.? al.?(?P<remainder>.*)$%', $matches['remainder'], $endmatches)) {
+                if (preg_match('%^et.? al.?(?P<remainder>.*)$%u', $matches['remainder'], $endmatches)) {
                     $authorstring .= ' and others';
                     $remainder = $endmatches['remainder'];
                 } else {

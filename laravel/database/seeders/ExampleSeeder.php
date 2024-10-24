@@ -3135,7 +3135,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Yoon, H. M. and Lee, E. J. and Lim, K. H.',
                     'year' => '2018',
                     'title' => 'Study on benzo (a) pyran content and its transfer ratio in extracts of medicinal herbs',
-                    'journal' => 'Korean Chem. Eng. Res',
+                    'journal' => 'Korean Chem. Eng. Res.',
                     'volume' => '56',
                     'pages' => '832-840',
                     ]
@@ -12506,7 +12506,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Hu, L. and Geng, S. and Li, Y. and Cheng, S. and Fu, X. and Yue, X. and Han, X.',
                     'year' => '2018',
                     'title' => 'Exogenous fecal microbiota transplantation from local adult pigs to crossbred newborn piglets',
-                    'journal' => 'Front. Microbiol',
+                    'journal' => 'Front. Microbiol.',
                     'volume' => '8',
                     'pages' => '2663',
                     ]
@@ -13920,6 +13920,88 @@ class ExampleSeeder extends Seeder
                     ],
 					'char_encoding' => 'utf8leave',
             ],
+			// journal not detected
+			[
+                'source' => '\bibitem{ref3}  Yo Hamada. 2012. An effective way to improve listening skills through  shadowing, The Language Teacher, 36, 1, 3­--10. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Yo Hamada',
+                    'title' => 'An effective way to improve listening skills through shadowing',
+                    'journal' => 'The Language Teacher',
+                    'year' => '2012',
+                    'volume' => '36',
+                    'number' => '1',
+                    'pages' => '3-10',
+                    ]
+            ],
+			// journal not detected
+			[
+                'source' => '[82]	Chowdury M, Nahar N, Deb UK. The Growth Factors Involved in Microalgae Cultivation for Biofuel Production: A Review. Computational Water, Energy, and Environmental Engineering 2020;9:185–215. https://doi.org/10.4236/cweee.2020.94012. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Chowdury, M. and Nahar, N. and Deb, U. K.',
+                    'title' => 'The Growth Factors Involved in Microalgae Cultivation for Biofuel Production: A Review',
+                    'journal' => 'Computational Water, Energy, and Environmental Engineering',
+                    'year' => '2020',
+                    'volume' => '9',
+                    'pages' => '185-215',
+                    'doi' => '10.4236/cweee.2020.94012',
+                    ]
+            ],
+			// journal misidentified
+			[
+                'source' => 'BALTZER, F., AND PURSER, B.H., 1990, Modern alluvial fan and deltaic sedimentation in a foreland tectonic setting: the Lower Mesopotamian Plain and the Arabian Gulf: Sedimentary Geology, v. 67, p. 175–197. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Baltzer, F. and And Purser, B. H.',
+                    'year' => '1990',
+                    'volume' => '67',
+                    'title' => 'Modern alluvial fan and deltaic sedimentation in a foreland tectonic setting: the Lower Mesopotamian Plain and the Arabian Gulf',
+					'journal' => 'Sedimentary Geology',
+                    'pages' => '175-197',
+                    ]
+            ],
+			// volume and number not detected --- year identified as volume.
+			// Years are in boldface also in conversion 14332
+			[
+                'source' => '\bibitem[zhang(2011)]{zhang2011data} Zhang, J.; Wang, F. Y.; Wang, K.; Lin, W. H.; Xu, X.; Chen, C. Data-driven intelligent transportation systems: A survey. {\em IEEE trans. Intell. Transp. Syst.} {\bf 2011}, {\em 12(4)}, 1624--1639. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Zhang, J. and Wang, F. Y. and Wang, K. and Lin, W. H. and Xu, X. and Chen, C.',
+                    'title' => 'Data-driven intelligent transportation systems: A survey',
+                    'journal' => 'IEEE trans. Intell. Transp. Syst.',
+                    'year' => '2011',
+                    'volume' => '12',
+                    'number' => '4',
+                    'pages' => '1624-1639',
+                    ]
+            ],
+            // year in boldface
+            [
+                'source' => '\bibitem[Author2(year)]{ref-journal2} Prentice, A.M.; Jebb, S.A. Beyond body mass index. {\em Obes. Rev.} {\bf 2001}, {\em 2}, 141–147. [CrossRef] ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Prentice, A. M. and Jebb, S. A.',
+                    'title' => 'Beyond body mass index',
+                    'journal' => 'Obes. Rev.',
+                    'year' => '2001',
+                    'pages' => '141-147',
+                    'volume' => '2',
+                    ]
+            ], 
+            // year in boldface
+            [
+                'source' => '\bibitem[Author8(year)]{ref-journal8} Park, S.J.; Palvanov, A.; Lee, C.H.; Jeong, N.; Cho, Y.I.; Lee, H.J. The development of food image detection and recognition model of Korean food for mobile dietary management. {\em Nutr. Res. Pract}. {\bf 2019}, {\em 13}, 521–528. [CrossRef] ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Park, S. J. and Palvanov, A. and Lee, C. H. and Jeong, N. and Cho, Y. I. and Lee, H. J.',
+                    'title' => 'The development of food image detection and recognition model of Korean food for mobile dietary management',
+                    'journal' => 'Nutr. Res. Pract.',
+                    'pages' => '521-528',
+                    'year' => '2019',
+                    'volume' => '13',
+                    ]
+            ],           
  
             
         ];

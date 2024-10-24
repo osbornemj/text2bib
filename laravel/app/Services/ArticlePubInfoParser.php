@@ -384,7 +384,11 @@ class ArticlePubInfoParser
                                     if (preg_match('/^\((?P<volume>.*?)\)$/', $remainder, $matches)) {
                                         $remainder = $matches['volume'];
                                     }
-                                    $this->setField($item, 'volume', trim($remainder, ' ,;:.{}'), 'getVolumeAndNumberForArticle 13');
+                                    $volume = trim($remainder, ' ,;:.{}');
+                                    if (substr($volume, 0, 4) == '\em ') {
+                                        $volume = substr($volume, 4);
+                                    }
+                                    $this->setField($item, 'volume', $volume, 'getVolumeAndNumberForArticle 13');
                                 }
                                 $take = 0;
                                 $drop = strlen($remainder);
