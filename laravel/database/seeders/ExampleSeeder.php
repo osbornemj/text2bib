@@ -7696,7 +7696,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Dispositivos e diapositivos da educação científica: o TPACK e a constituição de práticas inovadoras na educação básica',
 					'school' => 'Universidade do Estado da Bahia, Salvador',
                     'year' => '2019',
-                    'note' => 'p. 202',
+                    'pagetotal' => '202',
                     ],
 					'language' => 'pt',
 					'char_encoding' => 'utf8leave',
@@ -13906,13 +13906,20 @@ class ExampleSeeder extends Seeder
                     'pages' => 'e13839',
                     ]
             ],
-    
-
-
-                
-
-
-
+			// phdthesis in French not recognized
+			[
+                'source' => 'Pierre Alain NAZÉ « Contribution à la prédiction du dommage des structures en béton armé sous sollicitations sismiques », Thèse de doctorat, Lyon, INSA, 06/12/2004; ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Pierre Alain Nazé',
+                    'title' => 'Contribution à la prédiction du dommage des structures en béton armé sous sollicitations sismiques',
+                    'year' => '2004',
+                    'school' => 'Lyon, INSA',
+                    'date' => '2004-12-06',
+                    'month' => 'December',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
  
             
         ];

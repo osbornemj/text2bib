@@ -43,6 +43,7 @@ class Converter
     var $entryPrefixes;
     var $entrySuffixes;
     var $excludedWords;
+    var $firstPublishedRegExp;
     var $fullThesisRegExp;
     var $inWords;
     var $inRegExp;
@@ -78,6 +79,7 @@ class Converter
     var $thesisRegExp;
     var $translatedByRegExp;
     var $translatorRegExp;
+    var $unpublishedRegExp;
     var $volumeRegExp;
     var $volumeAndCodesRegExp;
     var $volumeNumberPagesRegExp;
@@ -328,6 +330,7 @@ class Converter
 
         $this->pageWordsRegExp = $pageWordsRegExp;
 
+        // $this->page and $this->pageRange are in Utilities trait.
         $pageRegExpWithPp = '(' . $pageWordsRegExp . '):? ?' . $this->page;
         $pagesRegExpWithPp = '(' . $pageWordsRegExp . '):? ?' . $this->pageRange;
         $pageRegExp = '(' . $pageWordsRegExp . ')?:? ?' . $this->page;
@@ -443,6 +446,7 @@ class Converter
             'Ph[Dd]',
             'Ph\. ?D\.?',
             '[Dd]octoral',
+            '[Dd]octorat',
             '[Dd]oktora',
         ];
 
@@ -452,32 +456,31 @@ class Converter
         }
 
         $this->phdRegExp = $phdRegExp;
-        //$this->phdRegExp = 'Ph[Dd]|Ph\. ?D\.?|[Dd]octoral|[Dd]oktora';
         
         $fullThesisWords = [
             '((' . $this->phdRegExp . '|' . $this->masterRegExp . ') (' . $thesisRegExp . '))',
-            '[Tt]hèse de doctorat',           // French
-            '[Tt]hèse de master',             // French
-            'Thèse de Doctorat en droit',     // French
+            '[Tt]hèse de doctorat',              // French
+            '[Tt]hèse de master',                // French
+            'Thèse de Doctorat en droit',        // French
             'Thèse de Doctorat en droit public', // French
-            '[Tt]esis doctoral',              // Spanish
-            '[Dd]isertación [Dd]octoral',     // Spanish
-            '[Tt]esis de grado',              // Spanish
-            '[Tt]esis de [Mm]aestría',        // Spanish
+            '[Tt]esis doctoral',                 // Spanish
+            '[Dd]isertación [Dd]octoral',        // Spanish
+            '[Tt]esis de grado',                 // Spanish
+            '[Tt]esis de [Mm]aestría',           // Spanish
             '[Dd]isertación de [Ll]icenciatura', // Spanish
-            '[Tt]ese de [Dd]outorado',        // Portuguese
-            '[Tt]ese \([Dd]outorado\)',       // Portuguese
-            '[Dd]issertação de [Mm]estrado',  // Portuguese
-            '[Dd]issertação \([Mm]estrado\)', // Portuguese
-            '[Tt]ese de [Mm]estrado',         // Portuguese
-            '[Dd]octoraal [Pp]roefschrift',   // Dutch
-            '[Mm]asterproef',                 // Dutch
-            '[Dd]oktorská práce',             // Czech
-            '[Dd]iplomová práce',             // Czech
-            '[Yy]ayımlanmamış doktora tezi',  // Turkish
-            '[Dd]oktora [Tt]ezi',             // Turkish
-            '[Yy]üksek [Ll]isans [Tt]ezi',    // Turkish
-            '[Yy]ükseklisans [Tt]ezi',        // Turkish
+            '[Tt]ese de [Dd]outorado',           // Portuguese
+            '[Tt]ese \([Dd]outorado\)',          // Portuguese
+            '[Dd]issertação de [Mm]estrado',     // Portuguese
+            '[Dd]issertação \([Mm]estrado\)',    // Portuguese
+            '[Tt]ese de [Mm]estrado',            // Portuguese
+            '[Dd]octoraal [Pp]roefschrift',      // Dutch
+            '[Mm]asterproef',                    // Dutch
+            '[Dd]oktorská práce',                // Czech
+            '[Dd]iplomová práce',                // Czech
+            '[Yy]ayımlanmamış doktora tezi',     // Turkish
+            '[Dd]oktora [Tt]ezi',                // Turkish
+            '[Yy]üksek [Ll]isans [Tt]ezi',       // Turkish
+            '[Yy]ükseklisans [Tt]ezi',           // Turkish
         ];
 
         $fullThesisRegExp = '(';
@@ -487,13 +490,43 @@ class Converter
         $fullThesisRegExp .= ')';
 
         $this->fullThesisRegExp = $fullThesisRegExp;
-        //$this->fullThesisRegExp = '(((' . $this->phdRegExp . '|' . $this->masterRegExp . ') ([Tt]hesis|[Tt]esis|[Dd]iss(ertation|\.)))|[Tt]hèse de doctorat|[Tt]hèse de master|Tesis doctoral|Disertación Doctoral|Tesis de grado|Tesis de maestría|Tese de doutorado|Tese \(doutorado\)|Dissertação de Mestrado|Dissertação \(Mestrado\)|Tese de mestrado|Doctoraal proefschrift|Masterproef|Doktorská práce|Diplomová práce|[Tt]ezi|Yayımlanmamış doktora tezi|Doktora Tezi|Yüksek lisans tezi|Yükseklisans Tezi)';
-        // my: မဟာဘွဲ့စာတမ်း | ပါရဂူစာတမ်း
 
+        $unpublishedWords = [
+            '[Uu]npublished',      // English
+            '[Nn]epublikovaný',    // Czech
+            '[Nn]on publié',       // French
+            '[Nn]ão publicado',    // Portuguese
+            '[Ii]nédita',          // Spanish
+            '[Ii]nédito',          // Spanish
+            '[Yy]ayınlanmamış',    // Turkish
+        ];
+
+        $unpublishedRegExp = '';
+        foreach ($unpublishedWords as $i => $unpublishedWord) {
+            $unpublishedRegExp .= ($i ? '|' : '') . $unpublishedWord . ' ?';
+        }
+
+        $this->unpublishedRegExp = '(' . $unpublishedRegExp . ')';
+        
         ///////////
         // Other //
         ///////////
 
+        $firstPublishedWords = [
+            '[Ff]irst published( in)?',          // English
+            '[Oo]riginally published( in)?',     // English
+            '[Ii]nitialement publié( dans)?',    // French
+            '[Pp]ublicado originalmente( em)?',  // Portuguese
+            '[Pp]ublicado originalmente( en)?',  // Spanish
+        ];
+
+        $firstPublishedRegExp = '';
+        foreach ($firstPublishedWords as $i => $firstPublishedWord) {
+            $firstPublishedRegExp .= ($i ? '|' : '') . $firstPublishedWord . ' ?';
+        }
+
+        $this->firstPublishedRegExp = '(' . $firstPublishedRegExp . ')';
+        
         $this->inReviewRegExp1 = '/[Ii]n [Rr]eview\.?\)?$/';
         $this->inReviewRegExp2 = '/^[Ii]n [Rr]eview/';
         $this->inReviewRegExp3 = '/(\(?[Ii]n [Rr]eview\.?\)?)$/';
@@ -1061,7 +1094,7 @@ class Converter
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         $containsOriginalPubDate = false;
-        if (preg_match('/(?P<note>\(?([Ff]irst|[Oo]riginally) published (in )?[0-9]{4}\.?\)?\.?)$/', $remainder, $matches)) {
+        if (preg_match('/(?P<note>\(?' . $this->firstPublishedRegExp . ' [0-9]{4}\.?\)?\.?)$/', $remainder, $matches)) {
             $this->addToField($item, 'note', ' ' . trim($matches['note'], '(). ') . '.', 'setField 20');
             $containsOriginalPubDate = true;
             $remainder = trim(substr($remainder, 0, -strlen($matches[0])), '() ');
@@ -4672,22 +4705,26 @@ class Converter
                 } else {
                     if (preg_match('/\(' . $this->fullThesisRegExp . '\)/u', $remainder)) {
                         $remainder = $this->findAndRemove($remainder, ',? ?\(' . $this->fullThesisRegExp . '\)');
-                    //} elseif (preg_match('/^(Thesis|Dissertation)[.,]? (?P<remainder>.*)$/', $remainder, $matches)) {
                     } elseif (preg_match('/' . $this->thesisRegExp . ' (?P<remainder>.*)$/', $remainder, $matches)) {
                         $remainder = $matches['remainder'] ?? '';
                     } else {
-                        $remainder = preg_replace('/([Uu]npublished|[Yy]ayınlanmamış) /', '', $remainder);
+                        $remainder = preg_replace('/' . $this->unpublishedRegExp . ' /', '', $remainder);
                         $remainder = $this->findAndRemove($remainder, $this->fullThesisRegExp);
                     }
                     $remainder = trim($remainder, ' -.,)[]');
                     // if remainder contains number of pages, put them in note
-                    $result = $this->removeAndReturn($remainder, '(?P<pageWithPp>\(?' . $this->pageRegExpWithPp . '\)?)', ['pageWithPp']);
+                    $result = $this->removeAndReturn($remainder, '(?P<pageWithPp>\(?' . $this->pageRegExpWithPp . '\)?)', ['pageWithPp', 'pages']);
                     if ($result) {
-                        $this->setField($item, 'note', $result['pageWithPp'], 'setField 157');
+                        if ($use == 'latex') {
+                            $this->setField($item, 'note', $result['pageWithPp'], 'setField 157a');
+                        } else {
+                            $this->setField($item, 'pagetotal', $result['pages'], 'setField 157b');
+                        }
                         $remainder = trim($remainder, '., ');
                     }
 
                     if (strpos($remainder, ':') === false) {
+                        $this->verbose('Remainder: ' . $remainder);
                         // If there's an extra year before the $remainder, remove it
                         if (preg_match('/^(?P<year>' . $this->yearRegExp . ')/', $remainder, $matches)) {
                             $extraYear = $matches['year'];

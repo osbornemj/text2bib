@@ -55,6 +55,7 @@ class Dates
         $year = '';
         $remains = $string;
         $months = ($this->makeMonthsRegExp())[$language];
+        $monthNames = ($this->months)[$language];
 
         $centuries = $allowEarlyYears ? '13|14|15|16|17|18|19|20' : '18|19|20';
 
@@ -112,40 +113,49 @@ class Dates
 
                 return $year;
             }
-        }
 
-        if (! $start && $allowMonth) {
-            if (
-                // <year> <month> <day>? [month cannot be followed by '-': in that case it's a month range, picked up in next preg_match]
-                // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug;9(8):473-480'
-                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>(' . $months . ')(?!-))( (?P<day>[0-9]{1,2}))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
-                ||
-                // <year> <month>-<month> <day>?
-                // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug-Sep;9(8):473-480'
-                preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>(' . $months . ')-(' . $months . '))( (?P<day>[0-9]{1,2}))?)/iJ', $string, $matches2, PREG_OFFSET_CAPTURE)
-                ||
-                // <month> <day> <year>
-                preg_match('/[ \(](?P<date>(?P<month>' . $months . ') (?P<day>[0-9]{1,2}) (?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
-                ||
-                // <day>? <month> <year>
-                // The optional "de" between day and month and between month and year is for Spanish
-                preg_match('/[ \(](?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
-                ||
-                // <year> followed by volume, number, pages
-                // volume, number, pages pattern may need to be relaxed
-                // (pages might look like years, so this case should not be left to the routine below, which takes the last year-like string)
-                preg_match('/(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}))[.,;] ?[0-9]{1,4} ?\([0-9]{1,4}\)[:,.] ?[0-9]{1,5} ?- ?[0-9]{1,5}/i', $string, $matches2, PREG_OFFSET_CAPTURE)
-                ) {
-                $year = $matches2['year'][0] ?? null;
-                $month = $matches2['month'][0] ?? null;
-                if ($month) {
-                    $month = rtrim($month, '.,; ');
+            if (! $start) {
+                if (
+                    // <year> <month> <day>? [month cannot be followed by '-': in that case it's a month range, picked up in next preg_match]
+                    // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug;9(8):473-480'
+                    preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>(' . $months . ')(?!-))( (?P<day>[0-9]{1,2}))?)/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                    ||
+                    // <year> <month>-<month> <day>?
+                    // space after $months is not optional, otherwise will pick up '9' as day in '2020 Aug-Sep;9(8):473-480'
+                    preg_match('/[ \(](?P<date>(?P<year>(' . $centuries . ')[0-9]{2}) (?P<month>(' . $months . ')-(' . $months . '))( (?P<day>[0-9]{1,2}))?)/iJ', $string, $matches2, PREG_OFFSET_CAPTURE)
+                    ||
+                    // <month> <day> <year>
+                    preg_match('/[ \(](?P<date>(?P<month>' . $months . ') (?P<day>[0-9]{1,2}) (?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                    ||
+                    // <day>? <month> <year>
+                    // The optional "de" between day and month and between month and year is for Spanish
+                    preg_match('/[ \(](?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                    ||
+                    // <day>/<monthNumber>/<year>
+                    preg_match('%[ \(](?P<date>(?P<day>[0-9]{1,2})/(?P<monthNumber>[0-9]{1,2})/(?P<year>(' . $centuries . ')[0-9]{2}))%i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                    ||
+                    // <year> followed by volume, number, pages
+                    // volume, number, pages pattern may need to be relaxed
+                    // (pages might look like years, so this case should not be left to the routine below, which takes the last year-like string)
+                    preg_match('/(?P<date>(?P<year>(' . $centuries . ')[0-9]{2}))[.,;] ?[0-9]{1,4} ?\([0-9]{1,4}\)[:,.] ?[0-9]{1,5} ?- ?[0-9]{1,5}/i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                    ) {
+                    $year = $matches2['year'][0] ?? null;
+
+                    if (isset($matches2['monthNumber'])) {
+                        $month = $monthNames[$matches2['monthNumber'][0]];
+                    } else {
+                        $month = $matches2['month'][0] ?? null;
+                        if ($month) {
+                            $month = rtrim($month, '.,; ');
+                        }
+                    }
+
+                    $day = $matches2['day'][0] ?? null;
+                    $date = $matches2['date'][0] ?? null;
+                    $remains = rtrim(substr($string, 0, $matches2['date'][1]), '(') . ltrim(substr($string, $matches2['date'][1] + strlen($matches2['date'][0])), ')');
+
+                    return $year;
                 }
-                $day = $matches2['day'][0] ?? null;
-                $date = $matches2['date'][0] ?? null;
-                $remains = rtrim(substr($string, 0, $matches2['date'][1]), '(') . ltrim(substr($string, $matches2['date'][1] + strlen($matches2['date'][0])), ')');
-                
-                return $year;
             }
         }
 
