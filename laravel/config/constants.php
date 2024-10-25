@@ -14,5 +14,6 @@ return [
         'isbn',
         'issn',
         'translator',
+        'date',
     ],
 ];
