@@ -3,6 +3,7 @@
         <h2 class="font-semibold text-xl leading-tight">
             Edit information for BibTeX style file
         </h2>
+        <x-link href="{{ url('admin/bsts') }}">All files</x-link>
     </x-slot>
 
     <div class="sm:px-0 lg:px-0 space-y-6">

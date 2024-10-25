@@ -3,6 +3,7 @@
         <h2 class="font-semibold text-xl leading-tight">
             Add information about BibTeX style file (bst file)
         </h2>
+        <x-link href="{{ url('admin/bsts') }}">All files</x-link>
     </x-slot>
 
     <div class="sm:px-0 lg:px-0 space-y-6">
