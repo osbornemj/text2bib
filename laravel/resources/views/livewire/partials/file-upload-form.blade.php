@@ -264,7 +264,7 @@
             Standard information is provided about the conversion of each item.
         </x-option-info>
         <x-option-info class="peer-checked/detailed:block">
-            Detailed information is included about the logic behind the conversion.  This setting is effective only if your file contains at most 5 items.  (It is useful only if you want to suggest code changes to improve the conversion.) 
+            Detailed information is included about the logic behind the conversion.  This setting is effective only if your file contains at most 5 items.  (It is useful only if you want to suggest code changes to improve the conversion.)
         </x-option-info>
     </div>
 

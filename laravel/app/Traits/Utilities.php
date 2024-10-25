@@ -289,7 +289,13 @@ trait Utilities
                         // if pattern is [a-z]`[a-z] then ` is not an opening quote, but an accent in Arabic
                         ! isset($chars[$i-1])
                         ||
-                        ($chars[$i-1] != '\\' && ! (in_array($chars[$i-1], range('a', 'z')) && in_array($chars[$i+1], range('a', 'z'))))
+                        (
+                            $chars[$i-1] != '\\' 
+                            &&
+                            isset($chars[$i+1])
+                            &&
+                            ! (in_array($chars[$i-1], range('a', 'z')) && in_array($chars[$i+1], range('a', 'z')))
+                        )
                         ) {
                         $level++;
                         if ($begin) {
@@ -298,7 +304,7 @@ trait Utilities
                             $begin = '`';
                         }
                     } else {
-                        if (in_array($chars[$i-1], range('a', 'z')) && $chars[$i+1] == 's') {
+                        if (in_array($chars[$i-1], range('a', 'z')) && isset($chars[$i+1]) && $chars[$i+1] == 's') {
                             $char = "'";
                         }
                         if ($begin) {
