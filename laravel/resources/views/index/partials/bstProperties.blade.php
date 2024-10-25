@@ -6,7 +6,7 @@
   @endif
 </p>
   <p class="mt-0">
-    @foreach ($fields as $field)
+    @foreach ($nonstandardFields as $field)
       <span @if ($bst->$field) class="positive" @else class="negative" @endif>{{ $field }}</span>,
     @endforeach
   </p>

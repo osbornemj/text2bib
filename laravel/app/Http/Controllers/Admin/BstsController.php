@@ -14,6 +14,13 @@ use Illuminate\View\View;
 
 class BstsController extends Controller
 {
+    var $nonstandardFields;
+
+    public function __construct()
+    {
+        $this->nonstandardFields = config('constants.nonstandard_fields');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -42,8 +49,9 @@ class BstsController extends Controller
     {
         $bst = new Bst;
 
-        return view('admin.bsts.create')
-                        ->with('bst', $bst);
+        $nonstandardFields = $this->nonstandardFields;
+
+        return view('admin.bsts.create', compact('bst', 'nonstandardFields'));
     }
 
     /**
@@ -67,8 +75,9 @@ class BstsController extends Controller
     {
         $bst = Bst::find($id);
 
-        return view('admin.bsts.edit')
-                        ->with('bst', $bst);
+        $nonstandardFields = $this->nonstandardFields;
+
+        return view('admin.bsts.edit', compact('bst', 'nonstandardFields'));
     }
 
     /**

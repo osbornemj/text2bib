@@ -61,16 +61,27 @@
                     <x-input-error :messages="$errors->get('style_required')" class="mt-2" />
                 </div>
 
-                <div>
-                    <x-input-label for="doi" :value="__('Supports doi field?')" class="mt-4 mb-1" />
-                
-                    <x-radio-input name="doi" value="1" class="peer/doiTrue" :checked="old('doi', $bst->doi)" /> 
-                    <x-value-label for="doi" class="peer-checked/doi:text-blue-600 ml-1" :value="__('Yes')" />
-            
-                    <x-radio-input name="doi" value="0" class="peer/doiFalse ml-4" :checked="! old('doi', $bst->doi)"  />
-                    <x-value-label for="doi" class="peer-checked/doi:text-blue-600 ml-1" :value="__('No')" />
+                <div class="my-2">
+                    <h2 class="font-bold">
+                        Supported fields
+                    </h2>
                 </div>
-            
+
+                <div class="grid grid-cols-2 w-1/3">
+                    @foreach ($nonstandardFields as $nonstandardField)
+                        <div class="md:col-span-1">
+                            <span class="mr-4">{{ $nonstandardField }}</span>
+                        </div>
+                        <div class="md:col-span-1">
+                            <x-radio-input name="{{ $nonstandardField }}" value="1" class="peer/{{ $nonstandardField }}True" :checked="old('{{ $nonstandardField }}', $bst->$nonstandardField)" /> 
+                            <x-value-label for="{{ $nonstandardField }}" class="peer-checked/{{ $nonstandardField }}:text-blue-600 ml-1" :value="__('Yes')" />
+                    
+                            <x-radio-input name="{{ $nonstandardField }}" value="0" class="peer/{{ $nonstandardField }}False ml-4" :checked="! old('{{ $nonstandardField }}', $bst->$nonstandardField)" />
+                            <x-value-label for="{{ $nonstandardField }}" class="peer-checked/{{ $nonstandardField }}:text-blue-600 ml-1" :value="__('No')" />
+                        </div>
+                    @endforeach
+                </div>
+
                 <div>
                     <x-input-label for="doi_escape_underscore" :value="__('Requires underscores in dois to be escaped?  (Irrelevant if doi field is not supported.)')" class="mt-4 mb-1" />
                 
@@ -79,66 +90,6 @@
             
                     <x-radio-input name="doi_escape_underscore" value="0" class="peer/doi_escape_underscoreFalse ml-4" :checked="! old('doi_escape_underscore', $bst->doi_escape_underscore)" />
                     <x-value-label for="doi_escape_underscore" class="peer-checked/doi_escape_underscore:text-blue-600 ml-1" :value="__('No')" />
-                </div>
-            
-                <div>
-                    <x-input-label for="url" :value="__('Supports url field?')" class="mt-4 mb-1" />
-                
-                    <x-radio-input name="url" value="1" class="peer/urlTrue" :checked="old('url', $bst->url)" /> 
-                    <x-value-label for="url" class="peer-checked/url:text-blue-600 ml-1" :value="__('Yes')" />
-            
-                    <x-radio-input name="url" value="0" class="peer/urlFalse ml-4" :checked="! old('url', $bst->url)"/>
-                    <x-value-label for="url" class="peer-checked/url:text-blue-600 ml-1" :value="__('No')" />
-                </div>
-            
-                <div>
-                    <x-input-label for="urldate" :value="__('Supports urldate field?')" class="mt-4 mb-1" />
-                
-                    <x-radio-input name="urldate" value="1" class="peer/urldateTrue" :checked="old('urldate', $bst->urldate)" /> 
-                    <x-value-label for="urldate" class="peer-checked/urldate:text-blue-600 ml-1" :value="__('Yes')" />
-            
-                    <x-radio-input name="urldate" value="0" class="peer/urldateFalse ml-4" :checked="! old('urldate', $bst->urldate)" />
-                    <x-value-label for="urldate" class="peer-checked/urldate:text-blue-600 ml-1"  :value="__('No')" />
-                </div>
-            
-                <div>
-                    <x-input-label for="eid" :value="__('Supports eid field?')" class="mt-4 mb-1" />
-                
-                    <x-radio-input name="eid" value="1" class="peer/eidTrue" :checked="old('eid', $bst->eid)" /> 
-                    <x-value-label for="eid" class="peer-checked/eid:text-blue-600 ml-1" :value="__('Yes')" />
-            
-                    <x-radio-input name="eid" value="0" class="peer/eidFalse ml-4" :checked="! old('eid', $bst->eid)" />
-                    <x-value-label for="eid" class="peer-checked/eid:text-blue-600 ml-1"  :value="__('No')" />
-                </div>
-            
-                <div>
-                    <x-input-label for="isbn" :value="__('Supports isbn field?')" class="mt-4 mb-1" />
-                
-                    <x-radio-input name="isbn" value="1" class="peer/isbnTrue" :checked="old('isbn', $bst->isbn)" /> 
-                    <x-value-label for="isbn" class="peer-checked/isbn:text-blue-600 ml-1" :value="__('Yes')" />
-            
-                    <x-radio-input name="isbn" value="0" class="peer/isbnFalse ml-4" :checked="! old('isbn', $bst->isbn)" />
-                    <x-value-label for="isbn" class="peer-checked/isbn:text-blue-600 ml-1"  :value="__('No')" />
-                </div>
-            
-                <div>
-                    <x-input-label for="issn" :value="__('Supports issn field?')" class="mt-4 mb-1" />
-                
-                    <x-radio-input name="issn" value="1" class="peer/issnTrue" :checked="old('issn', $bst->issn)" /> 
-                    <x-value-label for="issn" class="peer-checked/issn:text-blue-600 ml-1" :value="__('Yes')" />
-            
-                    <x-radio-input name="issn" value="0" class="peer/issnFalse ml-4" :checked="! old('issn', $bst->issn)" />
-                    <x-value-label for="issn" class="peer-checked/issn:text-blue-600 ml-1"  :value="__('No')" />
-                </div>
-            
-                <div>
-                    <x-input-label for="translator" :value="__('Supports translator field?')" class="mt-4 mb-1" />
-                
-                    <x-radio-input name="translator" value="1" class="peer/translatorTrue" :checked="old('translator', $bst->translator)" /> 
-                    <x-value-label for="translator" class="peer-checked/translator:text-blue-600 ml-1" :value="__('Yes')" />
-            
-                    <x-radio-input name="translator" value="0" class="peer/translatorFalse ml-4" :checked="! old('translator', $bst->translator)" />
-                    <x-value-label for="translator" class="peer-checked/translator:text-blue-600 ml-1" :value="__('No')" />
                 </div>
             
                 <div>

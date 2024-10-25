@@ -9,11 +9,18 @@ use App\Models\Bst;
 
 class BstFileController extends Controller
 {
+    var $nonstandardFields;
+
+    public function __construct()
+    {
+        $this->nonstandardFields = config('constants.nonstandard_fields');
+    }
+
     public function index(Request $request): View
     {
         $bsts = Bst::where('available', 1);
         $types = ['author-date', 'numeric', 'other'];
-        $fields = ['doi', 'eid', 'isbn', 'issn', 'translator', 'url', 'urldate'];
+        $nonstandardFields = $this->nonstandardFields;
 
         $input = $request->except('_token');
         if (! empty($input)) {
@@ -23,7 +30,7 @@ class BstFileController extends Controller
                 }
             }
 
-            foreach ($fields as $field) {
+            foreach ($nonstandardFields as $field) {
                 if (isset($input[$field])) {
                     $bsts = $bsts->where($field, 1);
                 }
@@ -33,7 +40,7 @@ class BstFileController extends Controller
         $bsts = $bsts->orderBy('name')
             ->paginate(50);
 
-        return view('bsts', compact('bsts', 'types', 'fields', 'input'));
+        return view('bsts', compact('bsts', 'types', 'nonstandardFields', 'input'));
     }
     
 }

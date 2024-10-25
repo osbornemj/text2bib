@@ -10,9 +10,9 @@
     </div>
 
     <div>
-        Fields: standard fields and
-        @foreach ($fields as $field)
-            <x-checkbox-input id="{{ $field}}" name="{{ $field }}" value="1" class="ml-2" :checked="isset($input[$field])"/> {{ $field}}
+        Standard fields and:
+        @foreach ($nonstandardFields as $field)
+            <x-checkbox-input id="{{ $field}}" name="{{ $field }}" value="1" class="ml-2" :checked="isset($input[$field])"/>&nbsp;{{ $field}}
         @endforeach
     </div>
 
