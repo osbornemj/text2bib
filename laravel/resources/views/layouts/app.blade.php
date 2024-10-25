@@ -4,6 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="author" content="Martin J. Osborne">
+        <meta name="keywords" content="BibTeX, bst files, BibTeX style files, text to bibtex conversion">
         <link rel="icon" href="{{ asset('favicon.png') }}">
 
         <title>{{ config('app.name', 'text2bib') }}</title>

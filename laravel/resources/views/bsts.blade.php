@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl leading-tight">
-            BibTeX  style files (bst files)
+            BibTeX style files (bst files)
         </h2>
     </x-slot>
 
