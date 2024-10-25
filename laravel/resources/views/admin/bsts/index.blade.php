@@ -22,6 +22,9 @@
                         @method('DELETE')
                         @csrf
                         <x-link href="{{ url('admin/bsts/' . $bst->id . '/edit') }}">{{ $bst->name }}</x-link>
+                        @if (! $bst->available)
+                            (not available)
+                        @endif
                         <x-small-submit-button class="ml-2 bg-red-400 dark:bg-red-800">
                             {{ 'X' }}
                         </x-small-submit-button>
