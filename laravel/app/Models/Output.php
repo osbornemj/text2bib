@@ -15,6 +15,7 @@ class Output extends Model
 
     protected $casts = [
         'item' => 'array',
+        'orig_item' => 'array',
         'crossref_item' => 'array',
         'warnings' => 'array',
         'notices' => 'array',
@@ -26,13 +27,13 @@ class Output extends Model
         return $this->belongsTo(Conversion:: class);
     }
 
-    public function rawOutput(): HasOne
-    {
-        return $this->hasOne(RawOutput:: class);
-    }
-
     public function itemType(): BelongsTo
     {
         return $this->belongsTo(ItemType:: class);
+    }
+
+    public function origItemType(): BelongsTo
+    {
+        return $this->belongsTo(ItemType:: class, 'orig_item_type_id', 'id');
     }
 }

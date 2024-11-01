@@ -2,10 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Http\Requests\StoreJournalWordAbbreviationRequest;
 use Livewire\Component;
 
-use App\Livewire\Forms\ShowConvertedItemForm;
+//use App\Livewire\Forms\ShowConvertedItemForm;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +15,6 @@ use App\Models\ItemType;
 use App\Models\Journal;
 use App\Models\Output;
 use App\Models\Publisher;
-use App\Models\RawOutput;
 use App\Models\JournalWordAbbreviation;
 use App\Models\User;
 
@@ -24,7 +22,46 @@ use App\Notifications\ErrorReportPosted;
 
 class ShowConvertedItem extends Component
 {
-    public ShowConvertedItemForm $form;
+//    public ShowConvertedItemForm $form;
+
+    public $address;       
+    public $annote;       
+    public $archiveprefix; 
+    public $author;
+    public $booktitle;     
+    public $chapter;       
+    public $date;           
+    public $doi;           
+    public $edition;       
+    public $editor;        
+    public $eprint;  
+    public $howpublished;      
+    public $institution;
+    public $isbn;          
+    public $issn;          
+    public $journal;
+    public $key;       
+    public $month;         
+    public $note;          
+    public $number;        
+    public $oclc;         
+    public $organization;  
+    public $pages;         
+    public $pagetotal;         
+    public $publisher;     
+    public $school;        
+    public $series;        
+    public $title;         
+    public $translator;        
+    public $type;          
+    public $url;           
+    public $urldate;       
+    public $volume;        
+    public $year;          
+
+    public $postReport = false;
+
+    public $comment;
 
     public $convertedItem;
     public $outputId;
@@ -32,7 +69,7 @@ class ShowConvertedItem extends Component
     public $itemTypes;
     public $fields;
     public $errorReport;
-    public $language = 'my';
+    public $language;
 
     public $itemTypeId;
 
@@ -45,14 +82,14 @@ class ShowConvertedItem extends Component
 
     public function mount()
     {
-        foreach ($this->convertedItem['item'] as $name => $content) {
-            $this->form->{$name} = $content;
+        foreach ($this->convertedItem['item'] as $field => $content) {
+            $this->$field = $content;
         }
 
         $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
         $this->itemTypeId = $itemType->id;
 
-        // For Burmese items, just show the fields in the item
+        // For Burmese, show only the fields in the item
         if ($this->language == 'my') {
             $this->fields = [];
             foreach ($this->convertedItem['item'] as $f => $c) {
@@ -60,6 +97,10 @@ class ShowConvertedItem extends Component
             }
         } else {
             $this->fields = $itemType->fields;
+        }
+
+        foreach ($this->fields as $field) {
+            $this->$field = $this->convertedItem['item']->$field ?? '';
         }
 
         $this->displayState = 'none';
@@ -100,6 +141,50 @@ class ShowConvertedItem extends Component
         if ($this->status != 'changes') {
             $this->correctness = 0;
         }
+    }
+
+    /**
+     * Add field from Crossref data
+     */
+    public function addCrossrefField($field)
+    {
+        $output = Output::find($this->outputId);
+
+        // Add field to $output
+        $item = $output->item;
+        if (isset($item[$field])) {
+            unset($item[$field]);
+            unset($this->convertedItem['item']->$field);
+            $this->$field = '';
+        } else {
+           $item[$field] = $this->convertedItem['crossref_item'][$field];
+           $this->$field = $this->convertedItem['crossref_item'][$field];
+           $this->convertedItem['item']->$field = $item[$field];
+        }
+
+        // Update entry in database
+        $output->update(['item' => $item]);
+    }
+
+    public function setFieldSource($field, $fieldSource)
+    {
+        $output = Output::find($this->outputId);
+
+        // Set field in $item
+        $item = $output->item;
+        if ($fieldSource == 'conversion') {
+            $this->$field = $this->convertedItem['orig_item']->{$field};
+            $item[$field] = $this->convertedItem['orig_item']->{$field};
+        } elseif ($fieldSource == 'crossref') {
+            $this->$field = $this->convertedItem['crossref_item'][$field];
+            $item[$field] = $this->convertedItem['crossref_item'][$field];
+        }
+
+        // Update $this->convertedItem
+        $this->convertedItem['item']->{$field} = $item[$field];
+
+        // Update entry in database
+        $output->update(['item' => $item]);
     }
 
     public function updatedItemTypeId()
@@ -175,9 +260,9 @@ class ShowConvertedItem extends Component
             $changes = true;
         } else {
             foreach ($this->fields as $field) {
-                if ((isset($output->item[$field]) && isset($this->form->$field) && $output->item[$field] != $this->form->$field)
+                if ((isset($output->item[$field]) && isset($this->$field) && $output->item[$field] != $this->$field)
                         ||
-                        (! isset($output->item[$field]) && ! empty($this->form->$field))
+                        (! isset($output->item[$field]) && ! empty($this->$field))
                     ) {
                     $changes = true;
                     break;
@@ -188,24 +273,17 @@ class ShowConvertedItem extends Component
         $errorReport = ErrorReport::where('output_id', $output->id)->orderBy('created_at', 'asc')->first();
         $errorReportComment = $errorReport ? ErrorReportComment::where('error_report_id', $errorReport->id)->first() : null;
         $this->priorReportExists = $errorReport ? true : false;
-        if (!$changes 
+        if (! $changes 
                 && $errorReport 
-                && (($errorReportComment && $errorReportComment->comment_text != $this->form->comment) 
-                    || (!$errorReportComment && $this->form->comment))) {
+                && (($errorReportComment && $errorReportComment->comment_text != $this->comment) 
+                    || (!$errorReportComment && $this->comment))) {
             $changes = true;
         }
 
-        if (!$changes) {
+        if (! $changes) {
             $this->status = 'noChange';
             $this->displayState = 'block';
         } else {
-            // If RawOutput exists for this Output, leave it alone.  Otherwise create
-            // a RawOutput from Output, so that the RawOutput contains the original conversion.
-            RawOutput::firstOrCreate(
-                ['output_id' => $output->id],
-                ['output_id' => $output->id, 'item_type_id' => $output->item_type_id, 'item' => $output->item]
-            );
-
             // Change $output according to user's entries
             $output->update(['item_type_id' => $this->itemTypeId]);
 
@@ -213,18 +291,18 @@ class ShowConvertedItem extends Component
             $itemType = $this->itemTypes->where('id', $this->itemTypeId)->first();
             $this->convertedItem['itemType'] = $itemType->name;
 
-            $inputs = $this->form->except('comment');
+            $inputs = $this->except('comment');
 
             // Restrict to fields relevant to the item_type
             $item = [];
-            foreach ($inputs as $name => $content) {
-                if (in_array($name, $itemType->fields)) {
-                    $this->form->{$name} = $content;
-                    if (!empty($content)) {
-                        $item[$name] = $content;
-                        $this->convertedItem['item']->$name = $content;                    
+            foreach ($inputs as $field => $content) {
+                if (in_array($field, $itemType->fields)) {
+                    $this->$field = $content;
+                    if (! empty($content)) {
+                        $item[$field] = $content;
+                        $this->convertedItem['item']->$field = $content;                    
                     } else {
-                        unset($this->convertedItem['item']->$name);
+                        unset($this->convertedItem['item']->$field);
                     }                    
                 }
             }
@@ -238,24 +316,24 @@ class ShowConvertedItem extends Component
             $this->correctionExists = true;
 
             // File report
-            if ($this->form->postReport) {
+            if ($this->postReport) {
                 $newErrorReport = ErrorReport::updateOrCreate(
                     ['output_id' => $output->id],
                 );
 
                 if ($this->priorReportExists) {
-                    if ($this->form->comment) {
+                    if ($this->comment) {
                         $errorReportComment->update([
-                            'comment_text' => $this->form->comment
+                            'comment_text' => $this->comment
                         ]);
                     } elseif ($errorReportComment) {
                         $errorReportComment->delete();
                     }
-                } elseif ($this->form->comment) {
+                } elseif ($this->comment) {
                     ErrorReportComment::create([
                         'error_report_id' => $newErrorReport->id,
                         'user_id' => Auth::user()->id,
-                        'comment_text' => strip_tags($this->form->comment),
+                        'comment_text' => strip_tags($this->comment),
                     ]);
                 }
 

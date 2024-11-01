@@ -33,8 +33,6 @@ class ErrorReportController extends Controller
         $errorReport = ErrorReport::where('id', $id)
             ->with('output')
             ->with('output.itemType')
-            ->with('output.rawOutput')
-            ->with('output.rawOutput.itemType')
             ->first();
 
         $opUser = $errorReport->output->conversion->user;
@@ -48,8 +46,6 @@ class ErrorReportController extends Controller
         $errorReport = ErrorReport::where('id', $id)
             ->with('output')
             ->with('output.itemType')
-            ->with('output.rawOutput')
-            ->with('output.rawOutput.itemType')
             ->first();
 
         $conversion = new Conversion;

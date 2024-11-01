@@ -553,6 +553,7 @@ class Converter
         $this->retrievedFromRegExp1 = [
             'en' => '(Retrieved from:? |Available( online)? ?(at|from)?:? )',
             'cz' => '(Dostupné z:? |načteno z:? )',
+//            'de' => 'Abgerufen von',
             'fr' => '(Récupéré sur |Disponible( (à l\'adresse|sur))?:? )',
             'es' => '(Obtenido de |Disponible( en)?:? )',
 //            'id' => '(Diambil kembali dari )',

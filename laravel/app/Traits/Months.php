@@ -3,6 +3,21 @@ namespace App\Traits;
 
 trait Months
 {
+    var $bibtexMonths = [
+        'jan' => 'January',
+        'feb' => 'February',
+        'mar' => 'March',
+        'apr' => 'April',
+        'may' => 'May',
+        'jun' => 'June',
+        'jul' => 'July',
+        'aug' => 'August',
+        'sep' => 'September',
+        'oct' => 'October',
+        'nov' => 'November',
+        'dec' => 'December',
+    ];
+
     // Month abbreviations in many languages: https://web.library.yale.edu/cataloging/months
     var $months = [
         'en' => [

@@ -55,7 +55,10 @@
             </p>
         </div>
         <p class="mb-4">
-            Each reference may start with the authors, as in the examples above, or with the year, like this
+            You receive a <x-link href="https://economics.utoronto.ca/osborne/latex/BIBTEX.HTM" target="_blank">BibTeX file</x-link> of the references.
+        </p>
+        <p class="mb-4">
+            Each reference in the file you upload may start with the authors, as in the examples above, or with the year, like this
         </p>
         <div class="m-5 ml-8">
             <p>
@@ -64,9 +67,6 @@
         </div>
         <p class="mb-4">
             Each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem{&lt;label&gt;}</code>, <code>\bibitem[&lt;text&gt;]{&lt;label&gt;}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any of the characters in the string <code>.,[]()|*+</code>, or, if it doesn't start with the year, any digit.  If it starts with a string in brackets that contains at least one letter (e.g. <code>[Arrow1990]</code>), the string is interpreted as the label for the item.  (An entirely numeric string in brackets is intepreted as a number for the item, and is ignored.)  If it starts with the year, the year may be followed by any character in the string <code>|*+</code>.
-        </p>
-        <p class="mb-4">
-            You receive a BibTeX file of the references.
         </p>
         <p class="mb-4">
             The script attempts to detect items of the following types: <code>article</code>, <code>book</code>, <code>incollection</code>, <code>inproceedings</code>, <code>mastersthesis</code>, <code>online</code>, <code>phdthesis</code>, <code>techreport</code>, <code>unpublished</code>.  It attempts to parse the references into one of these types regardless of their format. 

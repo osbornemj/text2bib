@@ -37,10 +37,9 @@
             </dl>
 
             @php
-                $rawOutput = $errorReport->output->rawOutput;
                 $output = $errorReport->output;
             @endphp
-            @if ($errorReport->output->item_type_id == $errorReport->output->rawOutput->item_type_id)
+            @if ($errorReport->output->item_type_id == $errorReport->output->orig_item_type_id)
                 <dl>
                     <x-dt>BibTeX fields</x-dt>
                     <x-dd>
@@ -48,13 +47,13 @@
                             @foreach ($output->itemType->fields as $fieldName)
                             @php
                                 $outputContent = ($output->item)[$fieldName] ?? null;
-                                $rawOutputContent = ($rawOutput->item)[$fieldName] ?? null;
+                                $origOutputContent = ($output->orig_item)[$fieldName] ?? null;
                             @endphp
                             <ul class="ml-4">
-                                @if ($outputContent != $rawOutputContent)
-                                    <li>{{ $fieldName }} = <span class="text-red-600">{{ $rawOutputContent ?: '[null]' }}</span> &nbsp;&rarr;&nbsp; <span class="text-green-700">{{ $outputContent }}</span></li>
-                                @elseif ($rawOutputContent)
-                                    <li>{{ $fieldName }} = {{ $rawOutputContent }}</li>
+                                @if ($outputContent != $origOutputContent)
+                                    <li>{{ $fieldName }} = <span class="text-red-600">{{ $origOutputContent ?: '[null]' }}</span> &nbsp;&rarr;&nbsp; <span class="text-green-700">{{ $outputContent }}</span></li>
+                                @elseif ($origOutputContent)
+                                    <li>{{ $fieldName }} = {{ $origOutputContent }}</li>
                                 @endif
                             </ul>
                         @endforeach
@@ -65,10 +64,10 @@
                 <dl>
                     <x-dt>BibTeX entry created by script</x-dt>
                     <x-dd>
-                        @if ($rawOutput)
-                            <span class="text-red-600">{{ '@' }}{{ $rawOutput->itemType->name }}</span>{
+                        @if ($output->orig_item)
+                            <span class="text-red-600">{{ '@' }}{{ $output->origItemType->name }}</span>{
                                 <ul class="ml-4">
-                                @foreach ($rawOutput->item as $name => $field)
+                                @foreach ($output->orig_item as $name => $field)
                                     <li>{{ $name }} = {{ '{' }}{{ $field }}{{ '}' }}</li>
                                 @endforeach
                                 </ul>

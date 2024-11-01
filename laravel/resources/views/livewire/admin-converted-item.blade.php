@@ -47,28 +47,33 @@
 
         <br/>
         
-        {{ '@' }}{{ $output->itemType->name }}{{ '{' }}{{ $output->label }},
+        @if (isset($output['crossref_item_type']) && $output->itemType->name != $output['crossref_item_type'])
+        <p>
+            Crossref says that the type of this item is <code>{{ $output['crossref_item_type']}}</code>, not <code>{{ $output->itemType->name }}</code>.
+        </p>
+        @endif
+
+        <code>{{ '@' }}{{ $output->itemType->name }}</code>{{ '{' }}{{ $output->label }},
         @foreach ($convertedItem as $name => $content)
             <div class="ml-6">
-                {{ $name }} = {{ '{' }}{{ $content }}{{ '}' }},
+                <code>{{ $name }}</code> = {{ '{' }}{{ $content }}{{ '}' }},
             </div>
+            @if (! isset($originalItem[$name]) || $originalItem[$name] != $convertedItem[$name])
+                <div class="ml-10">
+                    original: 
+                    @if (! isset($originalItem[$name]))
+                        not set
+                    @else
+                        <span class="text-slate-600 dark:text-slate-400">{{ $originalItem[$name] }}</span>
+                    @endif
+                </div>
+            @endif
+            @if (isset($crossrefItem[$name]) && $crossrefItem[$name] != $convertedItem[$name])
+                <div class="ml-10">
+                    crossref: <span class="text-orange-800 dark:text-orange-300">{{ $crossrefItem[$name] }}</span>
+                </div>
+            @endif
         @endforeach
         {{ '}' }}
     </div>
-
-    @if ($output->rawOutput)
-        <div class="mt-2">
-            @if ($output->correctness == -1) 
-                <span class="bg-red-500 dark:bg-red-400">Original</span>
-            @endif
-
-            {{ '@' }}{{ $output->rawOutput->itemType->name }}{{ '{' }}{{ $output->rawOutput->label }},
-            @foreach ($originalItem as $name => $content)
-                <div class="ml-6">
-                    {{ $name }} = {{ '{' }}{{ $content }}{{ '}' }},
-                </div>
-            @endforeach
-        {{ '}' }}
-        </div>
-    @endif
 </div>

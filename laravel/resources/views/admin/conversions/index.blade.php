@@ -86,6 +86,20 @@
                                 ({{ $conversion->other_use }})
                             @endif
                         @endif
+                        @if ($conversion->crossref_count || $conversion->crossref_cache_count || $conversion->crossref_quota_remaining)
+                            @if ($conversion->crossref_count)
+                                &nbsp;&bull;&nbsp;
+                                crossref {{ $conversion->crossref_count }}
+                            @endif
+                            @if ($conversion->crossref_cache_count)
+                                &nbsp;&bull;&nbsp;
+                                cache {{ $conversion->crossref_cache_count }}
+                            @endif
+                            @if ($conversion->crossref_quota_remaining)
+                                &nbsp;&bull;&nbsp;
+                                quota remaining {{ $conversion->crossref_quota_remaining }}
+                            @endif
+                        @endif
                         @if ($conversion->examined_at)
                             <br/>
                             <span class="text-black bg-emerald-500 px-2 text-sm uppercase rounded">Examined {{ $conversion->examined_at }}</span>

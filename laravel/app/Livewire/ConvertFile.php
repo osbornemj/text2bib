@@ -5,26 +5,27 @@ namespace App\Livewire;
 use Livewire\WithFileUploads;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Str;
 
 use App\Models\Bst;
 use App\Models\Conversion;
+use App\Models\CrossrefBibtex;
 use App\Models\ItemType;
 use App\Models\Output;
 use App\Models\UserFile;
 use App\Models\UserSetting;
+use App\Models\Version;
 
 use App\Traits\AddLabels;
 
 use Livewire\Component;
 
 use App\Livewire\Forms\ConvertFileForm;
-use App\Models\Version;
+
 use App\Services\Converter;
-use stdClass;
+use App\Services\Crossref;
 
 class ConvertFile extends Component
 {
@@ -35,10 +36,16 @@ class ConvertFile extends Component
     public ConvertFileForm $uploadForm;
 
     private Converter $converter;
+    private Crossref $crossref;
 
     public $conversionExists = false;
     public $conversionCount;
     public $version;
+    public $crossrefQuota;
+    public $crossrefQuotaRemaining;
+    public $crossrefQueryCount;
+    public $retrievedFromCrossrefCount;
+    public $retrievedFromCacheCount;
 
     public $convertedItems;
     public $conversionId;
@@ -63,6 +70,7 @@ class ConvertFile extends Component
     public function boot()
     {
         $this->converter = new Converter();
+        $this->crossref = new Crossref();
     }
 
     public function mount()
@@ -92,6 +100,7 @@ class ConvertFile extends Component
             'char_encoding' => 'utf8leave',
             'percent_comment' => '1',
             'include_source' => '1',
+            'use_crossref' => '0',
             'report_type' => 'standard',
             'save_settings' => '1',
         ];
@@ -100,6 +109,8 @@ class ConvertFile extends Component
             $this->uploadForm->$setting = $userSettings ? $userSettings->$setting : $default;
         }
         $this->uploadForm->bstName = $bstName;
+
+        $this->crossrefQuota = config('constants.crossref_quota');
 
         $this->useOptions = [
             'latex' => 'In a LaTeX document, using a traditional BibTeX style file (your document specifies a \bibliographystyle)',
@@ -111,9 +122,21 @@ class ConvertFile extends Component
             'other' => 'Other (enter in text box)',
         ];
 
+        /** @var \App\Models\User $user **/
         $user = Auth::user();
         $this->conversionCount = $user->conversions->count();
         $this->version = Version::latest()->first()->created_at;
+
+        if ($user->crossref_date == null || ! $user->crossref_date->isToday()) {
+            $user->crossref_date = now();
+            $user->crossref_number = 0;
+            $user->save();
+        }
+
+        $this->crossrefQuotaRemaining = max(0, $this->crossrefQuota - $user->crossref_number);
+        $this->crossrefQueryCount = 0;
+        $this->retrievedFromCrossrefCount = 0;
+        $this->retrievedFromCacheCount = 0;
     }
 
     /*
@@ -144,9 +167,12 @@ class ConvertFile extends Component
 
         $file = $this->uploadForm->file;
 
+        /** @var \App\Models\User $user **/
+        $user = Auth::user();
+
         // Write file to user_files table
         $sourceFile = new UserFile;
-        $sourceFile->user_id = Auth::id();
+        $sourceFile->user_id = $user->id;
         $sourceFile->file_type = $file->getClientMimeType();
         $sourceFile->file_size = $file->getSize();
         $sourceFile->original_filename = $file->getClientOriginalName();
@@ -156,7 +182,7 @@ class ConvertFile extends Component
         // Store file
         $file->storeAs(
             'files',
-            Auth::id() . '-' . $sourceFile->id . '-source.txt',
+            $user->id . '-' . $sourceFile->id . '-source.txt',
             'public',
         );
 
@@ -182,7 +208,7 @@ class ConvertFile extends Component
 
         if ($this->uploadForm->save_settings) {
             $userSetting = UserSetting::firstOrNew( 
-                ['user_id' => Auth::id()]
+                ['user_id' => $user->id]
             );
             $userSetting->fill($settingValues);
             $userSetting->save();
@@ -194,7 +220,7 @@ class ConvertFile extends Component
         // Create Conversion
         $conversion = new Conversion;
         $conversion->fill($settingValues);
-        $conversion->user_id = Auth::id();
+        $conversion->user_id = $user->id;
         if ($redo) {
             $conversion->item_separator = 'cr';
         }
@@ -207,17 +233,17 @@ class ConvertFile extends Component
         $this->conversionId = $conversion->id;
 
         // Get content of the file that the user uploaded
-        $filestring = Storage::disk('public')->get('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
+        $filestring = Storage::disk('public')->get('files/' . $user->id . '-' . $conversion->user_file_id . '-source.txt');
 
         $sourceFile->update(['sha1_hash' => sha1($filestring)]);
 
-        $previousUserFile = UserFile::where('user_id', Auth::id())
+        $previousUserFile = UserFile::where('user_id', $user->id)
                 ->where('sha1_hash', $sourceFile->sha1_hash)
                 ->where('created_at', '<', $sourceFile->created_at)
                 ->latest()
                 ->first();
 
-        if ($previousUserFile && ! Auth::user()->is_admin) {
+        if ($previousUserFile && ! $user->is_admin) {
             $previousConversion = Conversion::where('user_file_id', $previousUserFile->id)->first();
             if (
                 $previousConversion &&
@@ -311,70 +337,131 @@ class ConvertFile extends Component
         }
 
         // If file is not already a BibTeX file and item_separator and encoding seem correct, perform the conversion
-        if (! $this->fileError && $this->itemSeparatorError == false && count($this->unknownEncodingEntries) == 0) {
-            $convertedEntries = [];
-            $previousAuthor = null;
-            foreach ($entries as $j => $entry) {
-                // Some files start with \u{FEFF}, but this character is now converted to space earlier in this method
-                if ($entry) {
-                    // $convertedEntries is array with components 
-                    // 'source', 'item', 'itemType', 'label', 'warnings', 'notices', 'details', 'scholarTitle'.
-                    // 'label' (which depends on whole set of converted items) is updated later
-                    $convertedEntry = $this->converter->convertEntry($entry, $conversion, null, null, null, $previousAuthor);
-                    $previousAuthor = $convertedEntry['item']->author ?? null;
-                    $convertedEntry['detected_encoding'] = $encodings[$j];
-                    if ($convertedEntry) {
-                        $convertedEntries[$j] = $convertedEntry;
-                    }
+        if ($this->fileError || $this->itemSeparatorError || count($this->unknownEncodingEntries) > 0) {
+            return;
+        }
+
+        $convertedEntries = [];
+        $previousAuthor = null;
+        foreach ($entries as $j => $entry) {
+            // Some files start with \u{FEFF}, but this character is now converted to space earlier in this method
+            if ($entry) {
+                // $convertedEntries is array with components 
+                // 'source', 'item', 'itemType', 'label', 'warnings', 'notices', 'details', 'scholarTitle'.
+                // 'label' (which depends on whole set of converted items) is updated later
+                $convertedEntry = $this->converter->convertEntry($entry, $conversion, null, null, null, $previousAuthor);
+                $previousAuthor = $convertedEntry['item']->author ?? null;
+                $convertedEntry['detected_encoding'] = $encodings[$j];
+                if ($convertedEntry) {
+                    $convertedEntries[$j] = $convertedEntry;
                 }
             }
+        }
 
-            // Add labels to entries
-            $convertedEntries = $this->addLabels($convertedEntries, $conversion);
+        // Add labels to entries
+        $convertedEntries = $this->addLabels($convertedEntries, $conversion);
 
-            $itemTypes = ItemType::all();
+        $itemTypes = ItemType::all();
 
-            // Write each converted item to an Output **and key array to output ids**.
-            // Note that source is written to conversions table, so original file
-            // is not needed except to check how entries were created from it.
-            $convertedItems = [];
-            foreach ($convertedEntries as $i => $convItem) {
-                if (isset($convItem['source'])) {
-                    /*
-                    $doi = $convItem['item']->doi ?? null;
+        // Write each converted item to an Output **and key array to output ids**.
+        // Note that source is written to conversions table, so original file
+        // is not needed except to check how entries were created from it.
+        $convertedItems = [];
+
+        foreach ($convertedEntries as $i => $convItem) {
+            if (isset($convItem['source'])) {
+
+                $doi = $convItem['item']->doi ?? null;
+
+                if ($conversion->use_crossref && $doi) {
                     $doi = str_replace('\_', '_', $doi);
 
-                    $crossref_item = null;
-                    if ($doi) {
-                        $crossref_item = $this->getCrossrefItemFromDoi($doi, $conversion->use);
-                        $convItem['crossref_item'] = $crossref_item;
+                    // Look for item in table crossref_bibtexs. If not there, go to Crossref.
+                    $crossrefBibtex = CrossrefBibtex::where('doi', $doi)->first();
+                    if ($crossrefBibtex) {
+                        $this->retrievedFromCacheCount++;
+                        $crossrefSource = 'database';
+                        $convItem['crossref_item_type'] = $crossrefBibtex->item_type;
+                        $convItem['crossref_item_label'] = null;
+                        $convItem['crossref_item'] = $crossrefBibtex->item;
+                        $convItem['notices'][] = "Item retrieved from Crossref cache";
+                    } elseif ($this->crossrefQuotaRemaining > 0 && isset($convItem['item']->title)) {
+                        $crossrefSource = 'crossref';
+                        $encodedDoi = urlencode($doi);
+                        $crossrefResult = $this->crossref->getCrossrefItemFromDoi($encodedDoi);
+                        $user->crossref_number++;
+                        $this->crossrefQuotaRemaining--;
+                        $this->crossrefQueryCount++;
+
+                        if ($crossrefResult !== null) {
+                            $crossref_item = trim($crossrefResult);
+                            //$crossref_item = trim($this->crossref->getCrossrefItemFromAuthorTitleYear($convItem['item']->author ?? '', $convItem['item']->title ?? '', $convItem['item']->year ?? ''));
+                            //dd($crossref_item);
+                            $result = $this->crossref->parseCrossrefBibtex($crossref_item);
+                            if ($result) {
+                                CrossrefBibtex::create([
+                                    'doi' => $doi,
+                                    'bibtex' => $crossref_item,
+                                    'item_type' => $result['crossref_item_type'],
+                                    'item' => $result['crossref_fields'],
+                                ]);
+    
+                                $this->retrievedFromCrossrefCount++;
+    
+                                $convItem['crossref_item_type'] = $result['crossref_item_type'];
+                                $convItem['crossref_item_label'] = $result['crossref_item_label'];
+                                $convItem['crossref_item'] = $result['crossref_fields'];
+                                $convItem['notices'][] = "Doi found in Crossref database";
+                            }
+                        } else {
+                            $convItem['notices'][] = "Doi not found in Crossref database";
+                        }
+
+                        if ($this->crossrefQuotaRemaining == 0) {
+                            $convItem['warnings'][] = 'You have now used all your quota of queries to Crossref for today.';
+                        }
                     }
-                    */
-
-                    $output = Output::create([
-                        'source' => $convItem['source'],
-                        'detected_encoding' => $encodings[$i],
-                        'conversion_id' => $conversion->id,
-                        'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
-                        'label' => $convItem['label'],
-                        'item' => $convItem['item'],
-                    //    'crossref_item' => $crossref_item,
-                        'author_pattern' => $convItem['author_pattern'],
-                        'seq' => $i,
-                    ]);
-                    $convertedItems[$output->id] = $convItem;
                 }
+
+                $user->save();
+
+                $conversion->update([
+                    'crossref_count' => $this->crossrefQueryCount,
+                    'crossref_cache_count' => $this->retrievedFromCacheCount,
+                    'crossref_quota_remaining' => $this->crossrefQuotaRemaining
+                ]);
+
+                $output = Output::create([
+                    'source' => $convItem['source'],
+                    'detected_encoding' => $encodings[$i],
+                    'conversion_id' => $conversion->id,
+                    'item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
+                    'orig_item_type_id' => $itemTypes->where('name', $convItem['itemType'])->first()->id,
+                    'label' => $convItem['label'],
+                    'item' => $convItem['item'],
+                    'orig_item' => $convItem['item'],
+                    'crossref_item_type' => $convItem['crossref_item_type'] ?? null,
+                    'crossref_item_label' => $convItem['crossref_item_label'] ?? null,
+                    'crossref_item' => $convItem['crossref_item'] ?? null,
+                    'crossref_source' => $crossrefSource ?? null,
+                    'author_pattern' => $convItem['author_pattern'],
+                    'seq' => $i,
+                ]);
+
+                $convItem['orig_item'] = $convItem['item'];
+
+                $convertedItems[$output->id] = $convItem;
             }
-
-            $this->conversionExists = true;
-            $this->conversion = $conversion;
-
-            $this->convertedItems = $convertedItems;
-            $this->includeSource = $conversion->include_source;
-            $this->reportType = $conversion->report_type;
-            $this->itemTypes = $itemTypes;
-            $this->itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
         }
+
+        $this->conversionExists = true;
+        $this->conversion = $conversion;
+
+        $this->convertedItems = $convertedItems;
+        $this->includeSource = $conversion->include_source;
+        $this->reportType = $conversion->report_type;
+        $this->itemTypes = $itemTypes;
+        $this->itemTypeOptions = $itemTypes->pluck('name', 'id')->all();
     }
 
     /**
@@ -390,54 +477,4 @@ class ConvertFile extends Component
         return false;
     }
 
-    public function getCrossrefItemFromDoi(string $doi, string $use): object
-    {
-        $response = Http::withHeaders([
-                'User-Agent' => 'text2bib (https://text2bib.org); mailto:' . env('CROSSREF_EMAIL'),
-            ])
-            ->acceptJson()
-            ->get('https://api.crossref.org/works/' . $doi);
-            //->accept('application/x-bibtex')
-            //->get('https://api.crossref.org/works/' . $doi . '/transform');
-
-        $body = json_decode($response->body());
-
-        if ($body) {
-            $details = $body->message;
-            $crossref_item = new \stdClass();
-            $crossref_item->doi = $use == 'latex' ? str_replace('_', '\_', $details->DOI) : $details->DOI;
-            $crossref_item->itemType = match ($details->type) {
-                'journal-article' => 'article',
-                'book-chapter' => 'incollection',
-                'book' => 'book',
-            };
-            $crossref_item->title = $details->title[0];
-            $crossref_item->author = '';
-            foreach ($details->author as $j => $author) {
-                $crossref_item->author .= ($j ? ' and ' : '') . $author->family . ', ' . $author->given;
-            }
-            $crossref_item->year = $details->{'published-print'}->{'date-parts'}[0][0];
-
-            switch ($crossref_item->itemType) {
-                case 'article':
-                    $crossref_item->journal = $details->{'container-title'}[0];
-                    $crossref_item->pages = $details->page;
-                    $crossref_item->number = $details->{'journal-issue'}->issue;
-                    $crossref_item->volume = $details->volume;
-                    break;
-                case 'incollection':
-                    $crossref_item->booktitle = $details->{'container-title'}[1];
-                    $crossref_item->address = $details->{'publisher-location'};
-                    $crossref_item->publisher = $details->publisher;
-                    $crossref_item->pages = $details->page;
-                    $crossref_item->isbn = '';
-                    foreach ($details->{'isbn-type'} as $j => $isbntype) {
-                        $crossref_item->isbn .= ($j ? ', ' : '') . $isbntype->value . ' (' . $isbntype->type .')';
-                    }
-                    break;
-            }
-        }
-
-        return $crossref_item ?? null;
-    }
 }

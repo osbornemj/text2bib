@@ -16,4 +16,5 @@ return [
         'translator',
         'date',
     ],
+    'crossref_quota' => env('CROSSREF_QUOTA'),
 ];

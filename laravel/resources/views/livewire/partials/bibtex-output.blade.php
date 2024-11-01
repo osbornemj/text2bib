@@ -32,6 +32,7 @@
             </div>
             <ul>
                 @foreach ($convertedItems as $outputId => $convertedItem)
+                <a name="{{ $outputId }}"></a>
                 <div class="mt-4">
                     <li>
                         @if ($convertedItem['detected_encoding'] != 'UTF-8')

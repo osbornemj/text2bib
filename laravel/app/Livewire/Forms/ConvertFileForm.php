@@ -58,6 +58,9 @@ class ConvertFileForm extends Form
     public $include_source;
 
     #[Rule('required', message: 'Please choose an option')]    
+    public $use_crossref;
+
+    #[Rule('required', message: 'Please choose an option')]    
     public $save_settings;
 
     #[Rule('required', message: 'Please choose an option')]    

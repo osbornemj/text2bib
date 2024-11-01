@@ -10,8 +10,6 @@ use App\Models\ItemField;
 use App\Models\ItemType;
 use App\Models\Output;
 use App\Models\OutputField;
-use App\Models\RawOutput;
-use App\Models\RawOutputField;
 
 class ErrorReport extends Component
 {
@@ -77,26 +75,6 @@ class ErrorReport extends Component
             $this->status = 'noChange';
             $this->displayState = 'block';
         } else {
-            // If RawOutput exists for this Output, leave it alone.  Otherwise create
-            // a RawOutput (and RawOutputFields) from Output and its fields.
-            $rawOutput = RawOutput::where('output_id', $output->id)->first();
-            if (!$rawOutput) {
-                $rawOutput = RawOutput::create([
-                        'output_id' => $output->id,
-                        'item_type_id' => $output->item_type_id,
-                        'comment' => $this->form->comment,
-                ]);
-
-                foreach ($output->fields as $field) {
-                    RawOutputField::create([
-                            'raw_output_id' => $rawOutput->id,
-                            'item_field_id' => $field->item_field_id,
-                            'content' => $field->content,
-                            'seq' => $field->seq,
-                    ]);
-                }
-            }
-
             // Change $output according to user's entries
             $output->update(['item_type_id' => $this->itemTypeId]);
 

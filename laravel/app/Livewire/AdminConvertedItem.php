@@ -14,12 +14,14 @@ class AdminConvertedItem extends Component
     public $output;
     public $convertedItem;
     public $originalItem;
+    public $crossrefItem;
 
     public function mount()
     {
         // Put fields in uniform order
         $convertedItem = [];
         $originalItem = [];
+        $crossrefItem = [];
 
         // For Burmese items, just show the fields in the item
         if ($this->output->conversion->language == 'my') {
@@ -35,13 +37,17 @@ class AdminConvertedItem extends Component
             if (isset($this->output->item[$field])) {
                 $convertedItem[$field] = $this->output->item[$field];
             }
-            if ($this->output->rawOutput && isset($this->output->rawOutput->item[$field])) {
-                $originalItem[$field] = $this->output->rawOutput->item[$field];
+            if (isset($this->output->orig_item[$field])) {
+                $originalItem[$field] = $this->output->orig_item[$field];
+            }
+            if (isset($this->output->crossref_item[$field])) {
+                $crossrefItem[$field] = $this->output->crossref_item[$field];
             }
         }
 
         $this->convertedItem = $convertedItem;
         $this->originalItem = $originalItem;
+        $this->crossrefItem = $crossrefItem;
     }
 
     public function setCorrectness($value)

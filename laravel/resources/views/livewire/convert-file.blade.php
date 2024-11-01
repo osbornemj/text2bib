@@ -39,3 +39,8 @@
 
 </div>
 
+<script>
+    function myScrollTo(hash) {
+        location.hash = "#" + hash;
+    }
+</script>

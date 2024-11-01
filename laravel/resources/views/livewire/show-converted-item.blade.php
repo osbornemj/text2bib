@@ -25,36 +25,50 @@
     </ul>
     @endif
 
-    <div class="mt-2">
-        {{ '@' }}{{ $convertedItem['itemType'] }}{{ '{' }}{{ $convertedItem['label'] }},
-            <ul class="ml-6">
-                @foreach ($fields as $field)
-                    @isset($convertedItem['item']->$field)
-                        <li>{{ $field }} = {{ '{' }}{{ $convertedItem['item']->$field }}{{ '}' }},</li>
-                    @endisset
-                @endforeach
-            </ul>
-        {{ '}' }}
-    </div>
-
-    {{--
-    <div class="mt-2">
-        @if (isset($convertedItem['crossref_item']))
-            {{ '@' }}{{ $convertedItem['crossref_item']->itemType }}{{ '{' }}{{ $convertedItem['label'] }},
+    <form id="item{{ $outputId }}">
+        <div class="mt-2">
+        @if (isset($convertedItem['crossref_item_type']) && $convertedItem['itemType'] != $convertedItem['crossref_item_type'])
+            <p>
+                Crossref says that the type of this item is <code>{{ $convertedItem['crossref_item_type']}}</code>, not <code>{{ $convertedItem['itemType'] }}</code>.
+            </p>
+        @endif
+            <code>{{ '@' }}{{ $convertedItem['itemType'] }}</code>{{ '{' }}{{ $convertedItem['label'] }},
                 <ul class="ml-6">
                     @foreach ($fields as $field)
-                        @isset($convertedItem['crossref_item']->$field)
-                            <li>{{ $field }} = {{ '{' }}{{ $convertedItem['crossref_item']->$field }}{{ '}' }},</li>
-                        @endisset
+                        @if (isset($convertedItem['item']->$field))
+                            <li>
+                                <span class="text-gray-800 dark:text-gray-200"><code>{{ $field }}</code> = {{ '{' }}{{ $convertedItem['item']->$field }}{{ '}' }}</span>,
+                            </li>
+                        @endif
+
+                        @if (isset($convertedItem['orig_item']->$field) && isset($convertedItem['crossref_item'][$field]))
+                            @if ($convertedItem['orig_item']->$field != $convertedItem['crossref_item'][$field])
+                                <li class="ml-4">
+                                    <x-radio-input name="{{ $field }}" wire:click="setFieldSource('{{ $field }}', 'conversion')" class="peer/t2b" checked /> 
+                                    &nbsp; 
+                                    <span class="text-blue-700 dark:text-blue-300">{{ $convertedItem['orig_item']->$field }}</span>
+                                </li>
+                                <li class="ml-4">
+                                    <x-radio-input name="{{ $field }}" wire:click="setFieldSource('{{ $field }}', 'crossref')" class="peer/cr" /> 
+                                    &nbsp; 
+                                    <span class="text-orange-800 dark:text-orange-300">{{ $convertedItem['crossref_item'][$field] }}</span>
+                                </li>
+                            @endif
+                        @elseif (isset($convertedItem['crossref_item'][$field]))
+                            <div>
+                                <li class="ml-4">
+                                    <x-checkbox-input value="cr" wire:click="addCrossrefField('{{ $field }}')" class="peer/cr" /> 
+                                    &nbsp; 
+                                    <span class="text-orange-800 dark:text-orange-300">{{ $field }} = {{ '{' }}{{ $convertedItem['crossref_item'][$field] }}{{ '}' }}</span>            
+                                </li>
+                            </div>
+                        @endif
                     @endforeach
                 </ul>
             {{ '}' }}
-        @else
-            No match found in Crossref.
-        @endif
-    </div>
-    --}}
-    
+        </div>
+    </form>
+
     <div class="mt-2">
         Check in
         <x-link href="https://scholar.google.com/scholar?q={{ $convertedItem['scholarTitle'] }}&num=100&btnG=Search+Scholar&as_sdt=1.&as_sdtp=on&as_sdtf=&as_sdts=5&hl=en" target="_blank">Google Scholar</x-link>
@@ -68,21 +82,7 @@
     @else
         <div style="display: block;" id="text1{{ $outputId }}">
     @endif
-
-    {{--
-        @if ($status == 'changes')
-            @if ($priorReportExists)
-                <span class="text-green-600">Report updated</span>
-            @elseif ($correctionExists)
-                <span class="text-green-600">Changes saved and report filed</span>  
-            @else
-                <span class="text-green-600">Changes saved</span>
-            @endif
-            <br/>
-        @endif
-    --}}
-
-    </div>
+        </div>
 
     @if ($correctness == 2) 
         <button class="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest focus:outline-none transition ease-in-out duration-150 bg-blue-500">Corrected</button>
@@ -92,18 +92,18 @@
                 {{ __('Correct') }}
             </x-basic-button>
         @else
-            <x-basic-button wire:click="setCorrectness(1)" class="ml-0 mt-2 bg-slate-600 dark:bg-slate-300">
+            <x-basic-button wire:click="setCorrectness(1)" class="ml-0 mt-2 bg-slate-400 dark:bg-slate-300">
                 {{ __('Correct') }}
             </x-basic-button>
         @endif
 
         @if ($correctness == -1)
             <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-2 bg-red-500 dark:bg-red-400">
-                {{ __('Incorrect') }}
+                {{ __('Edit') }}
             </x-basic-button>
         @else 
-            <x-basic-button wire:click="setCorrectness(-1)" class="ml-0 mt-2 bg-slate-600 dark:bg-slate-300">
-                {{ __('Incorrect') }}
+            <x-basic-button wire:click="setCorrectness(-1)" class="ml-0 mt-2 bg-slate-400 dark:bg-slate-300">
+                {{ __('Edit') }}
             </x-basic-button>
         @endif
     @endif
@@ -136,7 +136,7 @@
 
     @if ($displayState == "block")
         <div class="dark:bg-slate-600 bg-slate-300 p-4 mt-4" id="reportForm{{ $outputId }}">
-            <form method="POST" wire:submit="submit()" id="form{{ $outputId }}">
+            <form method="POST" wire:submit="submit()" onsubmit="myScrollTo({{ $outputId }});" id="form{{ $outputId }}">
                 @csrf
                 <div class="mb-2">
                     @php
@@ -146,24 +146,22 @@
                     <x-select-input id="itemTypeId" name="itemTypeId" class="block mt-1 w-full" :options="$itemTypeOptions" :selected="$selected" wire:model.change="itemTypeId" />
                 </div>
 
-                @foreach ($fields as $name)
-                    @php
-                        $modelName = 'form.' . $name;
-                        $value = $convertedItem['item']->$name ?? null;
-                    @endphp
+                @foreach ($fields as $field)
                     <div>
-                        <x-input-label :for="$name" :value="$name" />
-                        <x-text-input :id="$name" class="block mt-1 w-full" type="text" :name="$name" :value="$value" :wire:model="$modelName"/>
+                        {{-- {{ $convertedItem['item']->$field }} --}}
+                        <x-input-label :for="$field" :value="$field" />
+                        <x-text-input :id="$field" class="block mt-1 w-full" type="text" :name="$field" value="{{ $convertedItem['item']->$field ?? '' }}" :wire:model="$field"/>
+                        {{-- <x-text-input :id="$field" class="block mt-1 w-full" type="text" :name="$field" :value="$convertedItem['item']->$field ?? ''" :wire:model="$modelName"/> --}}
                     </div>
                 @endforeach
 
                 @if ($correctionsEnabled)
                     <div>
-                        <x-checkbox-input id="postReport" class="peer" type="checkbox" value="1" name="postReport" wire:model="form.postReport" />
+                        <x-checkbox-input id="postReport" class="peer" type="checkbox" value="1" name="postReport" wire:model="postReport" />
                         <span class="text-sm font-medium ml-1 text-gray-700 dark:text-gray-300">Report conversion error?</span>
                         <div class="hidden peer-checked:block">
                             <x-input-label for="comment" value="Comment on error (optional)" />
-                            <x-textarea-input rows="2" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="form.comment"/>
+                            <x-textarea-input rows="2" id="comment" class="block mt-1 w-full" name="comment" value="" wire:model="comment"/>
                         </div>
                     </div>
                 @endif
