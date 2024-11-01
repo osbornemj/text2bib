@@ -14017,6 +14017,21 @@ class ExampleSeeder extends Seeder
 					'char_encoding' => 'utf8leave',
 					'language' => 'pt',
             ],
+            // page numbers in Roman numerals
+            [
+                'source' => 'Cooper M (2020) Risk, Insurance, Security. In: Cooper M (ed) The Birth of Solidarity. Durham: DUP, pp. xiii-xvii. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Cooper, M.',
+                    'title' => 'Risk, Insurance, Security',
+                    'year' => '2020',
+                    'pages' => 'xiii-xvii',
+                    'editor' => 'Cooper, M.',
+                    'address' => 'Durham',
+                    'publisher' => 'DUP',
+                    'booktitle' => 'The Birth of Solidarity',
+                    ]
+            ],
  
             
         ];

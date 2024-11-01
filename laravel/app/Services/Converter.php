@@ -64,6 +64,8 @@ class Converter
     var $oclcLabelRegExp;
     var $oclcNumberRegExp;
     var $ordinals;
+    var $page;
+    var $pageRange;
     var $pagesRegExp;
     var $pageRegExp;
     var $pageRegExpWithPp;
@@ -319,6 +321,13 @@ class Converter
             'გვ\. ?',         // Georgian
         ];
 
+        // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
+        $firstPage = '[A-Za-z]?[1-9ivxl][0-9ivxl]{0,4}';
+        $lastPage = '[A-Za-z]?[0-9ivxl]{1,5}';
+        $this->pageRange = '(?P<pages>(?P<startPage>' . $firstPage . ') ?-{1,3} ?(?P<endPage>' . $lastPage . '))(?![a-zA-Z])';
+        // single page or page range
+        $this->page = '(?P<pages>' . $firstPage . ')( ?-{1,3} ?' . $lastPage . ')?(?![a-zA-Z])';
+
         $startPagesRegExp = '/(?P<pageWord>';
         $pageWordsRegExp = '(?P<pageWord>';
         foreach ($pageWords as $i => $pageWord) {
@@ -330,7 +339,6 @@ class Converter
 
         $this->pageWordsRegExp = $pageWordsRegExp;
 
-        // $this->page and $this->pageRange are in Utilities trait.
         $pageRegExpWithPp = '(' . $pageWordsRegExp . '):? ?' . $this->page;
         $pagesRegExpWithPp = '(' . $pageWordsRegExp . '):? ?' . $this->pageRange;
         $pageRegExp = '(' . $pageWordsRegExp . ')?:? ?' . $this->page;

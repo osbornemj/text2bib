@@ -118,12 +118,6 @@ trait Utilities
     // Note that "Issues" cannot be followed by "in" --- because "issues in" could be part of journal name
     var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]umbers? ?|[Nn] ?\. |№\.? ?|[Nn]\.? ?(°|º) ?|[Ii]ssues?:? ?(?! in)|Issue no. ?|Iss: |Heft ';
 
-    // page range
-    // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
-    var $pageRange = '(?P<pages>(?P<startPage>[A-Za-z]?[1-9][0-9]{0,4}) ?-{1,3} ?(?P<endPage>[A-Za-z]?[0-9]{1,5}))(?![a-zA-Z])';
-    // single page or page range
-    var $page = '(?P<pages>[A-Za-z]?[1-9][0-9]{0,4})( ?-{1,3} ?[A-Za-z]?[0-9]{1,5})?(?![a-zA-Z])';
-
     var $editionRegExp = '(?P<fullEdition>((?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie))|[1-9] ?ed\.)';
 
     var $workingPaperRegExp = '(preprint|arXiv preprint|bioRxiv|working paper|texto para discussão|discussion paper|'
