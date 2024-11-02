@@ -14056,6 +14056,18 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'McFarland & Company, Inc.',
                     ]
             ],
+            //
+            [
+                'source' => '	Dan Suciu, Semistructured Data and XML, in Handbook of Massive Data Sets, 2002, Volume 4 ISBN : 978-1-4613-4882-5 ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Dan Suciu',
+                    'title' => 'Semistructured Data and XML',
+                    'isbn' => '978-1-4613-4882-5',
+                    'booktitle' => 'Handbook of Massive Data Sets, Volume 4',
+                    'year' => '2002',
+                    ]
+            ],
             
              
             

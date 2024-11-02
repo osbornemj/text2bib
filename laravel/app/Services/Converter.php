@@ -540,7 +540,7 @@ class Converter
         $this->inReviewRegExp2 = '/^[Ii]n [Rr]eview/';
         $this->inReviewRegExp3 = '/(\(?[Ii]n [Rr]eview\.?\)?)$/';
 
-        $this->isbnLabelRegExp = 'ISBN(-(10|13))?:? ?';
+        $this->isbnLabelRegExp = 'ISBN(-(10|13))? ?:? ?';
         // ISBN should not have spaces, but allow them.  (ISBN has 10 or 13 digits.)
         $this->isbnNumberRegExp = '[0-9X -]{10,17}';
 

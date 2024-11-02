@@ -24,6 +24,7 @@ class RegisteredUserController extends Controller
             'webSearch' => 'A web search for a term like "convert references to BibTeX"',
             'youtube' => 'A search on YouTube',
             'friend' => 'A friend/colleague told you about it',
+            'chatGPT' => 'ChatGPT or another AI system suggested it',
             'otherSite' => 'Link on another website (enter URL in text box)',
             'other' => 'Other (enter in text box)',
         ];
