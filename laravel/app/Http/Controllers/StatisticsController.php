@@ -137,7 +137,7 @@ class StatisticsController extends Controller
           ->name('sourceCounts')
           ->type('bar')
           ->size(['width' => 400, 'height' => 200])
-          ->labels($useCounts->pluck('source')->toArray())
+          ->labels($sourceCounts->pluck('source')->toArray())
           ->datasets([$colors +
               [
                   "label" => "Number of users reporting each way of learning about the site",
