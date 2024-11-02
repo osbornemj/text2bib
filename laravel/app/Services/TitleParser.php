@@ -529,8 +529,8 @@ class TitleParser
                            )
                         // <publisher>, <address>, <year>
                         || preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}), (?P<year>' . $this->yearRegExp . ')\.?$/u', $remainder, $matches) 
-                        // <publisher>, <address> (<year>)
-                        || preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}) \((?P<year>' . $this->yearRegExp . ')\)\.?$/u', $remainder, $matches) 
+                        // <publisher>, <address>,? (<year>) OR <publisher>, <address>,? [<year>]
+                        || preg_match('/^(?P<publisher>[\p{L}&\\\ ]{5,20}), (?P<address>[\p{L} ]{5,15}),? [(\[](?P<year>' . $this->yearRegExp . ')[)\]]\.?$/u', $remainder, $matches) 
                         // (<publisher> in db
                         || Str::startsWith(ltrim($remainder, '('), $publishers)
                         // (<city> in db

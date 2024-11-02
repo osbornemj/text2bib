@@ -584,18 +584,19 @@ trait Utilities
         $begin = $start ? '/^' : '/';
         $end = $finish ? '$/u' : '/u';
 
-        $addressPublisher = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-.\' ]{0,50})';
+        $addressPublisherRegExp = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-.\' ]{0,50})';
 
         if ($allowYear) {
-            $match = preg_match($begin . '\(?' . $addressPublisher . '(, (?P<year>' . $this->yearRegExp . '))?\)?' . $end, $string, $matches);
+            // permit "?" after year (e.g. "[2023?]").
+            $match = preg_match($begin . '\(?' . $addressPublisherRegExp . '(, [(\[]?(?P<year>' . $this->yearRegExp . ')\??[)\]]?)?\)?' . $end, $string, $matches);
         } else {
-            $match = preg_match($begin . '\(?' . $addressPublisher . '\)?' . $end, $string, $matches);
+            $match = preg_match($begin . '\(?' . $addressPublisherRegExp . '\)?' . $end, $string, $matches);
         }
 
         if ($match) {
             $returner = true;
-            $addressPublisher = $matches['address'] . ' ' . $matches['publisher'];
-            $words = explode(' ', $addressPublisher);
+            $addressPublisherRegExp = $matches['address'] . ' ' . $matches['publisher'];
+            $words = explode(' ', $addressPublisherRegExp);
             foreach ($words as $word) {
                 if (substr($word, -1) == '.') {
                     if (! in_array($word, ['St.']) && ! preg_match('/^[A-Z]\.$/', $word)) {

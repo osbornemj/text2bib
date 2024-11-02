@@ -321,11 +321,12 @@ class Converter
             'გვ\. ?',         // Georgian
         ];
 
-        // (page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress")
         $firstPage = '[A-Za-z]?[1-9ivxl][0-9ivxl]{0,4}';
         $lastPage = '[A-Za-z]?[0-9ivxl]{1,5}';
+        // Page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress".
+        // Page range
         $this->pageRange = '(?P<pages>(?P<startPage>' . $firstPage . ') ?-{1,3} ?(?P<endPage>' . $lastPage . '))(?![a-zA-Z])';
-        // single page or page range
+        // Single page or page range
         $this->page = '(?P<pages>' . $firstPage . ')( ?-{1,3} ?' . $lastPage . ')?(?![a-zA-Z])';
 
         $startPagesRegExp = '/(?P<pageWord>';

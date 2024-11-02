@@ -14032,6 +14032,18 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'The Birth of Solidarity',
                     ]
             ],
+            //
+            [
+                'source' => 'Powell, John. How To Train Your Dragon: The Hidden World. Folsom, CA: Omni Music Publishing, [2023?] ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Powell, John',
+                    'title' => 'How To Train Your Dragon: The Hidden World',
+                    'year' => '2023',
+                    'address' => 'Folsom, CA',
+                    'publisher' => 'Omni Music Publishing',
+                    ]
+            ],
  
             
         ];

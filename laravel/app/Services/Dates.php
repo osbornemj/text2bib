@@ -72,7 +72,6 @@ class Dates
             } else {
                 $year = $matches0['year'];
             }
-            //$year = str_replace(['(', ')'], '', $matches0['year']);
             return $year;
         }
 
@@ -181,6 +180,8 @@ class Dates
         $regExp2 = '[ ,]' . $regExp0 . '$';
         $regExp3 = '\[' . $regExp0 . '\]';
         $regExp4 = '\(' . $regExp0 . '\)';
+
+        //dd($start, preg_match('/^(?P<remains1>.*)(' . $regExp3 . ')[.,]?(?P<remains2>.*)$/', $string, $matches2), $matches2);
 
         if ($start) {
             $regExps = [$regExp1, $regExp3, $regExp4];
