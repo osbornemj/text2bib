@@ -141,7 +141,7 @@ class StatisticsController extends Controller
           ->datasets([$colors +
               [
                   "label" => "Number of users reporting each way of learning about the site",
-                  'data' => $useCounts->pluck('source_count')->toArray(),
+                  'data' => $sourceCounts->pluck('source_count')->toArray(),
               ],
           ])
           ->options([
