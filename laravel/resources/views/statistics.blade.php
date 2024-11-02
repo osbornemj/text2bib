@@ -60,4 +60,12 @@
         </div>
     </div>
 
+    <div class="mx-4 mt-4 font-semibold">
+        <h2 class="text-xl">How have users discovered the site?</h2>
+
+        <div style="width:100%;">
+            {!! $chartjsSources->render() !!}
+        </div>
+    </div>
+
 </x-app-layout>

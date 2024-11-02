@@ -32,6 +32,14 @@ class StatisticsController extends Controller
             ->orderByDesc('use_count')
             ->get();
 
+        $sourceCounts = DB::table('users')
+            ->whereNotNull('source')
+            ->where('source', '!=', '')
+            ->groupBy('source')
+            ->select(DB::raw('`source`, count(*) AS source_count'))
+            ->orderByDesc('source_count')
+            ->get();
+
         $itemTypeCounts = DB::table('outputs')
             ->join('item_types', 'item_types.id', '=', 'outputs.item_type_id')
             ->groupBy('item_types.name')
@@ -125,10 +133,30 @@ class StatisticsController extends Controller
                  ]
           ]);
  
-         return view(
+          $chartjsSources = app()->chartjs
+          ->name('sourceCounts')
+          ->type('bar')
+          ->size(['width' => 400, 'height' => 200])
+          ->labels($useCounts->pluck('source')->toArray())
+          ->datasets([$colors +
+              [
+                  "label" => "Number of users reporting each way of learning about the site",
+                  'data' => $useCounts->pluck('source_count')->toArray(),
+              ],
+          ])
+          ->options([
+              "scales" => [
+                  "y" => [
+                      "beginAtZero" => true
+                      ]
+                  ]
+           ]);
+  
+          return view(
             'statistics', 
             compact(
                 'chartjsUsers', 
+                'chartjsSources', 
                 'chartjsConversions', 
                 'chartjsItems', 
                 'chartjsUses',
