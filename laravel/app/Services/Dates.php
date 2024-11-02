@@ -178,8 +178,8 @@ class Dates
         // to avoid picking up second part of page range (e.g. 1913-1920).  (Comma allowed in case of no space: e.g. 'vol. 17,1983'.)
         $regExp1 = ($start ? '' : '[ ,]') . $regExp0 . '[ .,):;]';
         $regExp2 = '[ ,]' . $regExp0 . '$';
-        $regExp3 = '\[' . $regExp0 . '\]';
-        $regExp4 = '\(' . $regExp0 . '\)';
+        $regExp3 = '\[' . $regExp0 . '\??\]';
+        $regExp4 = '\(' . $regExp0 . '\??\)';
 
         //dd($start, preg_match('/^(?P<remains1>.*)(' . $regExp3 . ')[.,]?(?P<remains2>.*)$/', $string, $matches2), $matches2);
 

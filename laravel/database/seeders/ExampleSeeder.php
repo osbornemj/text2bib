@@ -14032,7 +14032,7 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'The Birth of Solidarity',
                     ]
             ],
-            //
+            // Year followed by ?
             [
                 'source' => 'Powell, John. How To Train Your Dragon: The Hidden World. Folsom, CA: Omni Music Publishing, [2023?] ',
                 'type' => 'book',
@@ -14044,7 +14044,19 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Omni Music Publishing',
                     ]
             ],
- 
+            // Year followed by ?
+            [
+                'source' => 'Powell, John. How To Train Your Dragon 2. Sacramento, CA: Omni Music Publishing, [2021?].  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Powell, John',
+                    'title' => 'How To Train Your Dragon 2',
+                    'year' => '2021',
+                    'address' => 'Sacramento, CA',
+                    'publisher' => 'Omni Music Publishing',
+                    ]
+            ],
+             
             
         ];
 
