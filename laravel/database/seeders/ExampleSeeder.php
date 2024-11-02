@@ -14044,18 +14044,19 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Omni Music Publishing',
                     ]
             ],
-            // Year followed by ?
+            // Title included publication info
             [
-                'source' => 'Powell, John. How To Train Your Dragon 2. Sacramento, CA: Omni Music Publishing, [2021?].  ',
+                'source' => 'Heine, Erik. The Music of the How to Train Your Dragon Trilogy: A Guide to the Scores of John Powell. Jefferson, NC: McFarland & Company, Inc., 2024.  ',
                 'type' => 'book',
                 'bibtex' => [
-                    'author' => 'Powell, John',
-                    'title' => 'How To Train Your Dragon 2',
-                    'year' => '2021',
-                    'address' => 'Sacramento, CA',
-                    'publisher' => 'Omni Music Publishing',
+                    'author' => 'Heine, Erik',
+                    'title' => 'The Music of the How to Train Your Dragon Trilogy: A Guide to the Scores of John Powell',
+                    'year' => '2024',
+                    'address' => 'Jefferson, NC',
+                    'publisher' => 'McFarland & Company, Inc.',
                     ]
             ],
+            
              
             
         ];

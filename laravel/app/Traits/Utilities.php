@@ -584,7 +584,7 @@ trait Utilities
         $begin = $start ? '/^' : '/';
         $end = $finish ? '$/u' : '/u';
 
-        $addressPublisherRegExp = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-.\' ]{0,50})';
+        $addressPublisherRegExp = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-.,\' ]{0,50})';
 
         if ($allowYear) {
             // permit "?" after year (e.g. "[2023?]").
@@ -599,7 +599,7 @@ trait Utilities
             $words = explode(' ', $addressPublisherRegExp);
             foreach ($words as $word) {
                 if (substr($word, -1) == '.') {
-                    if (! in_array($word, ['St.']) && ! preg_match('/^[A-Z]\.$/', $word)) {
+                    if (! in_array($word, ['St.','Inc.']) && ! preg_match('/^[A-Z]\.$/', $word)) {
                         $returner = false;
                         break;
                     }

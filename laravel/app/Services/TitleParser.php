@@ -517,11 +517,11 @@ class TitleParser
                             &&
                             in_array(trim($matches['city']), $cities)
                            )
-                        // one- or two-word publisher, city (up to 2 words), US State, <year>?
+                        // <publisher> (1 or 2 words), <city> (1 or 2 words), US State, <year>?
                         || preg_match('/^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?, (?P<city>\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?, \p{Lu}{2})(, ' . $this->yearRegExp . ')?$/u', $remainder, $matches) 
                         // [,.] <address>: <publisher>(, <year>)?$ OR (<address>: <publisher>(, <year>)?)
-                        // Note that ',' is allowed in address and
-                        // '.' and '&' are allowed in publisher.  May need to put a limit on length of publisher part?
+                        // Note that ',' is allowed in address and '.' and '&' are allowed in publisher.
+                        //  May need to put a limit on length of publisher part?
                         || (
                             (Str::endsWith($word, '.') || Str::endsWith($word, ',') || $nextWord[0] == '(')
                             &&
@@ -764,6 +764,9 @@ class TitleParser
                             strlen($stringToNextPeriod) > 5 
                             &&
                             preg_match('/\p{Ll}[.,]$/u', $stringToNextPeriod) 
+                            &&
+                            // $stringToNextPeriod is not title of Proceedings
+                            ! preg_match('/(^| )[Cc]onference[., ]/', $stringToNextPeriod)
                             &&
                             ! Str::endsWith($stringToNextPeriod, ['Univ.']) 
                             //&& preg_match('/^[\p{L}., ]+: [\p{L}&\- ]+$/u', trim($remainderFollowingNextPeriod, '. '))
