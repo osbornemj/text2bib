@@ -24,7 +24,7 @@
     </div>
 
     <h2 class="mx-4 mt-2 font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-        {{ __('Usage statistics by day') }}
+        {{ __('Usage statistics by day for last 90 days') }}
     </h2>
 
     <div class="mx-4 mt-2 font-semibold">
