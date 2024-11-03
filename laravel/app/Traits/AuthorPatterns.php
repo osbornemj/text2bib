@@ -178,15 +178,12 @@ trait AuthorPatterns
                 'end2' => '[;,] ' . $notAnd, 
                 'end3' => ': ', 
             ],
-            // 7. Smith,? A. B., Jones,? C. D., and Gonzalez,? J. D.(, |\. | )
-            // Space is allowed at end only if preceded by period, to avoid matching last author name as
-            // Gonzalez, J. A.
-            // for the string ... Gonzalez, J. A theory of ...
+            // 7. Smith,? A. B., Jones,? C. D., and Gonzalez,? J. D.(, |\. )
             [
                 'name1' => $lastNameInitials, 
                 'end1' => ', ' . $notAnd, 
                 'end2' => ',? ' . $andRegExp . ' ', 
-                'end3' => '(, |\. |(?<=\.) )', 
+                'end3' => '(, |\. (?!\p{Lu}\.))', 
             ],
             // 8. A. B. Smith, C. D. Jones,? and J. D. Gonzalez[\., ]
             [

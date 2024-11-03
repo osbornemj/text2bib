@@ -14068,6 +14068,19 @@ class ExampleSeeder extends Seeder
                     'year' => '2002',
                     ]
             ],
+			// author pattern 7 truncates last name
+			[
+                'source' => 'Davis, R., Duane, G., Kenny, S. T., Cerrone, F., Guzik, M. W., Babu, R. P., Casey, E., and O’Connor, K. E.: High cell density cultivation of Pseudomonas putida KT2440 using glucose without the need for oxygen enriched air supply. Biotechnol. Bioeng., 112, 725–733 (2015). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Davis, R. and Duane, G. and Kenny, S. T. and Cerrone, F. and Guzik, M. W. and Babu, R. P. and Casey, E. and O\'Connor, K. E.',
+                    'title' => 'High cell density cultivation of Pseudomonas putida KT2440 using glucose without the need for oxygen enriched air supply',
+                    'year' => '2015',
+                    'journal' => 'Biotechnol. Bioeng.',
+                    'volume' => '112',
+                    'pages' => '725-733',
+                    ]
+            ],
             
              
             
