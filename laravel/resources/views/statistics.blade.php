@@ -51,6 +51,34 @@
         </div>
     </div>
 
+    <h2 class="mx-4 mt-2 font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        {{ __('Usage statistics by month') }}
+    </h2>
+
+    <div class="mx-4 mt-2 font-semibold">
+        <h2 class="text-lg">Users by month</h2>
+
+        <div style="width:100%;">
+            {!! $chartjsUsersByMonth->render() !!}
+        </div>
+    </div>
+
+    <div class="mx-4 mt-2 font-semibold">
+        <h2 class="text-lg">Conversions by month</h2>
+
+        <div style="width:100%;">
+            {!! $chartjsConversionsByMonth->render() !!}
+        </div>
+    </div>
+
+    <div class="mx-4 mt-2 font-semibold">
+        <h2 class="text-lg">Items converted by month</h2>
+
+        <div style="width:100%;">
+            {!! $chartjsItemsByMonth->render() !!}
+        </div>
+    </div>
+
     <div class="mx-4 mt-4 font-semibold">
         <h2 class="text-xl">Conversions by intended use</h2>
         (since 2024.4.30)

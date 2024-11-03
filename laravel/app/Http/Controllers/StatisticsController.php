@@ -25,6 +25,24 @@ class StatisticsController extends Controller
         $userCounts = $data->pluck('user_count')->toArray();
         $conversionCounts = $data->pluck('conversion_count')->toArray();
         $itemCounts = $data->pluck('item_count')->toArray();
+        
+        $monthlyData = Statistic::selectRaw(
+            'year(stat_date) as year,
+             month(stat_date) as month,
+             sum(user_count) as user_counts, 
+             sum(conversion_count) as conversion_counts, 
+             sum(item_count) as item_counts'
+             )
+            ->groupBy('year', 'month')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get();
+        $years = $monthlyData->pluck('year')->toArray();
+        $months = $monthlyData->pluck('month')->toArray();
+        foreach ($years as $i => $year) {
+            $monthlyLabels[] = $year . '.' . $months[$i];
+        }
+
         // select `use`,count(*) AS number from conversions where `use` is not null group by `use`;
         $useCounts = DB::table('conversions')
             ->whereNotNull('use')
@@ -78,6 +96,25 @@ class StatisticsController extends Controller
                 ]
          ]);
 
+        $chartjsUsersByMonth = app()->chartjs
+        ->name('userCountsByMonth')
+        ->type('bar')
+        ->size(['width' => 400, 'height' => 200])
+        ->labels($monthlyLabels)
+        ->datasets([$colors +
+            [
+                "label" => "Sum over the days in each month of number of users who converted at least one file on that day",
+                'data' => $monthlyData->pluck('user_counts')->toArray(),
+            ],
+        ])
+        ->options([
+            "scales" => [
+                "y" => [
+                    "beginAtZero" => true
+                    ]
+                ]
+         ]);
+
         $chartjsConversions = app()->chartjs
         ->name('conversionCounts')
         ->type('bar')
@@ -97,6 +134,25 @@ class StatisticsController extends Controller
                 ]
          ]);
 
+        $chartjsConversionsByMonth = app()->chartjs
+        ->name('conversionCountsByMonth')
+        ->type('bar')
+        ->size(['width' => 400, 'height' => 200])
+        ->labels($monthlyLabels)
+        ->datasets([$colors +
+            [
+                "label" => "Total number of conversions each month",
+                'data' => $monthlyData->pluck('conversion_counts')->toArray(),
+            ],
+        ])
+        ->options([
+            "scales" => [
+                "y" => [
+                    "beginAtZero" => true
+                    ]
+                ]
+         ]);
+
         $chartjsItems = app()->chartjs
         ->name('itemCounts')
         ->type('bar')
@@ -106,6 +162,25 @@ class StatisticsController extends Controller
             [
                 "label" => "Total number of items converted",
                 'data' => $itemCounts,
+            ],
+        ])
+        ->options([
+            "scales" => [
+                "y" => [
+                    "beginAtZero" => true
+                    ]
+                ]
+         ]);
+
+        $chartjsItemsByMonth = app()->chartjs
+        ->name('itemCountsByMonth')
+        ->type('bar')
+        ->size(['width' => 400, 'height' => 200])
+        ->labels($monthlyLabels)
+        ->datasets([$colors +
+            [
+                "label" => "Total number of items converted",
+                'data' => $monthlyData->pluck('item_counts')->toArray(),
             ],
         ])
         ->options([
@@ -158,9 +233,12 @@ class StatisticsController extends Controller
             'statistics', 
             compact(
                 'chartjsUsers', 
+                'chartjsUsersByMonth', 
                 'chartjsSources', 
                 'chartjsConversions', 
+                'chartjsConversionsByMonth', 
                 'chartjsItems', 
+                'chartjsItemsByMonth', 
                 'chartjsUses',
                 'userCount',
                 'conversionCount',
