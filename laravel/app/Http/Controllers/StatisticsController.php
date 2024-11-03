@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+
 use App\Models\Conversion;
 use App\Models\ItemType;
 use App\Models\Output;
@@ -18,7 +20,7 @@ class StatisticsController extends Controller
         $conversionCount = Conversion::count();
         $itemCount = Output::count();
 
-        $data = Statistic::orderBy('stat_date')->get();
+        $data = Statistic::whereDate('stat_date', '>=', Carbon::now()->subDays(90)->toDateString())->orderBy('stat_date')->get();
         $labels = $data->pluck('stat_date')->toArray();
         $userCounts = $data->pluck('user_count')->toArray();
         $conversionCounts = $data->pluck('conversion_count')->toArray();
