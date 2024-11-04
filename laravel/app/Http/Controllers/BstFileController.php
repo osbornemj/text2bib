@@ -13,7 +13,7 @@ class BstFileController extends Controller
 
     public function __construct()
     {
-        $this->nonstandardFields = config('constants.nonstandard_fields');
+        $this->nonstandardFields = config('constants.nonstandard_bst_fields');
     }
 
     public function index(Request $request): View

@@ -18,7 +18,7 @@ class BstsController extends Controller
 
     public function __construct()
     {
-        $this->nonstandardFields = config('constants.nonstandard_fields');
+        $this->nonstandardFields = config('constants.nonstandard_bst_fields');
     }
 
     /**

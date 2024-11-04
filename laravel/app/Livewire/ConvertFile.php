@@ -87,7 +87,7 @@ class ConvertFile extends Component
             $bstName = '';
         }
 
-        $this->bstFields = ['doi', 'eid', 'isbn', 'issn', 'translator', 'url', 'urldate'];
+        $this->bstFields = config('constants.nonstandard_bst_fields');
 
         $this->languages = config('constants.languages');
  

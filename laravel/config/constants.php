@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'nonstandard_fields' => [
+    'nonstandard_bst_fields' => [
         'doi',
         'url',
         'urldate',

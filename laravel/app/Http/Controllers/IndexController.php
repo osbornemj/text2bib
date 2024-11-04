@@ -104,7 +104,7 @@ class IndexController extends Controller
 
         $fileExists = Storage::disk('public')->exists('files/' . Auth::id() . '-' . $conversion->user_file_id . '-source.txt');
 
-        $bstFields = ['doi', 'eid', 'isbn', 'issn', 'translator', 'url', 'urldate'];
+        $bstFields = config('constants.nonstandard_bst_fields');
 
         return view('showConversion', compact('convertedItems', 'conversion', 'itemTypes', 'itemTypeOptions', 'fileExists', 'convertedEncodingCount', 'redirected', 'bstFields'));
     }

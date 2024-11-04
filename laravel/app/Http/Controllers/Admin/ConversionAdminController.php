@@ -63,7 +63,7 @@ class ConversionAdminController extends Controller
 
         $conversion = Conversion::find($conversionId);
 
-        $bstFields = ['doi', 'eid', 'isbn', 'issn', 'translator', 'url', 'urldate'];
+        $bstFields = config('constants.nonstandard_bst_fields');
 
         return view('admin.conversions.show',
             compact(
