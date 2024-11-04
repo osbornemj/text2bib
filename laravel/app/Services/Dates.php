@@ -145,7 +145,7 @@ class Dates
                         if (isset($monthNumber[0]) && $monthNumber[0] == '0') {
                             $monthNumber = substr($monthNumber, 1);
                         }
-                        $month = $monthNames[$monthNumber];
+                        $month = $monthNames[$monthNumber] ?? '??';
                     } else {
                         $month = $matches2['month'][0] ?? null;
                         if ($month) {

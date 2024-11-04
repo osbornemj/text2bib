@@ -161,6 +161,17 @@ class Converter
      * # Look for title (determining when it ends and publication info starts)
      * # Look for year if not already found
      * # Check for translators
+     * # Determine features of publication info, to be used to determine item type
+     * # Use features of publication info to determine item type
+     * # Parse publication info for each possible item type
+     *   ## article
+     *   ## unpublished
+     *   ## online
+     *   ## techreport
+     *   ## incollection and inproceedings
+     *   ## book
+     *   ## thesis
+     * # Fix up $remainder and $item
      */
 
     // If, after removing numbers etc. at start, entry is empty, return null.
@@ -1222,9 +1233,9 @@ class Converter
             $containsTranslator = true;
         }
 
-        ///////////////////////////////////////////////////////////////////////////////
-        // To determine type of item, first record some features of publication info //
-        ///////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////
+        // # Determine features of publication info, to be used to determine item type //
+        /////////////////////////////////////////////////////////////////////////////////
 
         // $remainder is item minus authors, year, and title
         $remainder = ltrim($remainder, '.,;,() ');
@@ -1517,9 +1528,9 @@ class Converter
         $commaCount = substr_count($remainder, ',');
         $this->verbose("Number of commas: " . $commaCount);
 
-        ///////////////////////////////////////////////////
-        // Use features of string to determine item type //
-        ///////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////
+        // # Use features of publication info to determine item type //
+        //////////////////////////////////////////////////////////////
 
         if ($itemKind) {
             // $itemKind is already set
@@ -1722,9 +1733,14 @@ class Converter
 
         $this->verbose('[3] Remainder: ' . $remainder);
 
+        //////////////////////////////////////////////////////////
+        // # Parse publication info for each possible item type //
+        //////////////////////////////////////////////////////////
+
         switch ($itemKind) {
 
             /////////////////////////////////////////////
+            // ## article                              //
             // Get publication information for article //
             /////////////////////////////////////////////
 
@@ -2008,6 +2024,7 @@ class Converter
                 break;
 
             /////////////////////////////////////////////////
+            // ## unpublished                              //
             // Get publication information for unpublished //
             /////////////////////////////////////////////////
 
@@ -2023,6 +2040,7 @@ class Converter
                 break;
 
             //////////////////////////
+            // ## online            //
             // Fix entry for online //
             //////////////////////////
 
@@ -2052,6 +2070,7 @@ class Converter
                 break;
 
             ////////////////////////////////////////////////
+            // ## techreport                              //
             // Get publication information for techreport //
             ////////////////////////////////////////////////
 
@@ -2096,6 +2115,7 @@ class Converter
                 break;
 
             ////////////////////////////////////////////////////////////////////
+            // ## incollection and inproceedings                              //
             // Get publication information for incollection and inproceedings //
             ////////////////////////////////////////////////////////////////////
 
@@ -3829,6 +3849,7 @@ class Converter
                 break;
 
             //////////////////////////////////////////
+            // ## book                              //
             // Get publication information for book //
             //////////////////////////////////////////
 
@@ -4179,6 +4200,7 @@ class Converter
                 break;
 
             ////////////////////////////////////////////
+            // ## thesis                              //
             // Get publication information for thesis //
             ////////////////////////////////////////////
 
@@ -4258,9 +4280,9 @@ class Converter
                 break;
         }
 
-        /////////////////////////////////
-        // Fix up $remainder and $item //
-        /////////////////////////////////
+        ///////////////////////////////////
+        // # Fix up $remainder and $item //
+        ///////////////////////////////////
 
         $remainderEndsInColon = substr($remainder, -1) == ':';
         $remainder = trim($remainder, '.,:;}{ ');
