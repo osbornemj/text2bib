@@ -60,10 +60,8 @@ class VonNamesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id): View
+    public function edit(VonName $vonName): View
     {
-        $vonName = VonName::find($id);
-
         return view('admin.vonNames.edit')
                         ->with('vonName', $vonName);
     }
@@ -83,9 +81,8 @@ class VonNamesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(VonName $vonName): RedirectResponse
     {
-        $vonName = VonName::find($id);
         $vonName->delete();
 
         return redirect()->route('vonNames.index');

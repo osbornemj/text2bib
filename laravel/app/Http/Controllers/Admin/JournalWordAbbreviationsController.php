@@ -69,20 +69,10 @@ class JournalWordAbbreviationsController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(JournalWordAbbreviation $journalWordAbbreviation)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id): View
+    public function edit(JournalWordAbbreviation $journalWordAbbreviation): View
     {
-        $journalWordAbbreviation = JournalWordAbbreviation::find($id);
-
         return view('admin.journalWordAbbreviations.edit')
                         ->with('journalWordAbbreviation', $journalWordAbbreviation);
     }
@@ -102,9 +92,8 @@ class JournalWordAbbreviationsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(JournalWordAbbreviation $journalWordAbbreviation): RedirectResponse
     {
-        $journalWordAbbreviation = JournalWordAbbreviation::find($id);
         $journalWordAbbreviation->delete();
 
         return redirect()->route('journalWordAbbreviations.index');

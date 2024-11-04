@@ -78,9 +78,8 @@ class ConversionAdminController extends Controller
         );
     }
 
-    public function destroy(int $conversionId)
+    public function destroy(Conversion $conversion)
     {
-        $conversion = Conversion::find($conversionId);
         $conversion->delete();
 
         return back();

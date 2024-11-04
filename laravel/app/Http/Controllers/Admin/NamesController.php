@@ -50,10 +50,8 @@ class NamesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id): View
+    public function edit(Name $name): View
     {
-        $name = Name::find($id);
-
         return view('admin.names.edit')
                         ->with('name', $name);
     }
@@ -73,9 +71,8 @@ class NamesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(Name $name): RedirectResponse
     {
-        $name = Name::find($id);
         $name->delete();
 
         return redirect()->route('names.index');

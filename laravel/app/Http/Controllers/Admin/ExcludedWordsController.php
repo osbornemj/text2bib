@@ -50,10 +50,8 @@ class ExcludedWordsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id): View
+    public function edit(ExcludedWord $excludedWord): View
     {
-        $excludedWord = ExcludedWord::find($id);
-
         return view('admin.excludedWords.edit')
                         ->with('excludedWord', $excludedWord);
     }
@@ -73,9 +71,8 @@ class ExcludedWordsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(ExcludedWord $excludedWord): RedirectResponse
     {
-        $excludedWord = ExcludedWord::find($id);
         $excludedWord->delete();
 
         return redirect()->route('excludedWords.index');

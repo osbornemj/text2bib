@@ -15,9 +15,17 @@
             <ul>
                 @foreach ($uncheckedBsts as $bst)
                 <li>
-                    <div>
-                        <x-link href="/admin/bsts/{{ $bst->id }}/edit">{{ $bst->name }}</x-link>
-                    </div>
+                    <form method="POST" action="{{ route('bsts.destroy', $bst->id) }}" onsubmit="return confirm('Do you really want to delete this file?');">
+                        @method('DELETE')
+                        @csrf
+                        <x-link href="{{ url('admin/bsts/' . $bst->id . '/edit') }}">{{ $bst->name }}</x-link>
+                        @if (! $bst->available)
+                            (not available)
+                        @endif
+                        <x-small-submit-button class="ml-2 bg-red-400 dark:bg-red-800">
+                            {{ 'X' }}
+                        </x-small-submit-button>
+                    </form>
                 </li>
                 @endforeach
             </ul>

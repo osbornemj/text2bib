@@ -66,10 +66,8 @@ class ItemTypesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): View
+    public function edit(ItemType $itemType): View
     {
-        $itemType = ItemType::find($id);
-
         return view('admin.ItemTypes.edit')
                         ->with('itemType', $itemType);
     }
@@ -93,10 +91,8 @@ class ItemTypesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): RedirectResponse
+    public function destroy(ItemType $itemType): RedirectResponse
     {
-        $itemType = ItemType::find($id);
-
         $itemType->delete();
 
         return redirect()->route('itemTypes.index');

@@ -71,10 +71,8 @@ class BstsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id): View
+    public function edit(Bst $bst): View
     {
-        $bst = Bst::find($id);
-
         $nonstandardFields = $this->nonstandardFields;
 
         return view('admin.bsts.edit', compact('bst', 'nonstandardFields'));
@@ -97,9 +95,8 @@ class BstsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(Bst $bst): RedirectResponse
     {
-        $bst = Bst::find($id);
         $bst->delete();
 
         return redirect()->route('bsts.index');

@@ -39,9 +39,8 @@ class UsersController extends Controller
         return view('admin.users.index', compact('users', 'searchString', 'sortBy'));
     }
 
-    public function destroy(int $id)
+    public function destroy(User $user)
     {
-        $user = User::find($id);
         $user->delete();
 
         return back();

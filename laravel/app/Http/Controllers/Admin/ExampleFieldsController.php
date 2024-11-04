@@ -11,10 +11,8 @@ use Illuminate\Http\RedirectResponse;
 
 class ExampleFieldsController extends Controller
 {
-    public function editContent(int $id): View
+    public function editContent(ExampleField $exampleField): View
     {
-        $exampleField = ExampleField::find($id);
-
         return view('admin.exampleFields.editContent')
                         ->with('exampleField', $exampleField);
     }

@@ -36,10 +36,8 @@ class ItemFieldsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): View
+    public function edit(ItemField $itemField): View
     {
-        $itemField = ItemField::find($id);
-
         return view('admin.ItemFields.edit')
                         ->with('itemField', $itemField);
     }
@@ -63,11 +61,9 @@ class ItemFieldsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): RedirectResponse
+    public function destroy(ItemField $itemField): RedirectResponse
     {
-        $ItemField = ItemField::find($id);
-
-        $ItemField->delete();
+        $itemField->delete();
 
         return redirect()->action('Admin\ItemFieldsController@index');
     }

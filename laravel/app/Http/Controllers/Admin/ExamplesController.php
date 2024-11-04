@@ -65,10 +65,8 @@ class ExamplesController extends Controller
         return redirect()->route('examples.index');
     }
 
-    public function edit(int $id): View
+    public function edit(Example $example): View
     {
-        $example = Example::find($id);
-
         return view('admin.examples.edit')
                         ->with('example', $example);
     }

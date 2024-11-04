@@ -60,10 +60,8 @@ class PublishersController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id): View
+    public function edit(Publisher $publisher): View
     {
-        $publisher = Publisher::find($id);
-
         return view('admin.publishers.edit')
                         ->with('publisher', $publisher);
     }
@@ -83,9 +81,8 @@ class PublishersController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(Publisher $publisher): RedirectResponse
     {
-        $publisher = Publisher::find($id);
         $publisher->delete();
 
         return redirect()->route('publishers.index');
