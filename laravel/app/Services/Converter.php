@@ -138,6 +138,31 @@ class Converter
     //////////////// MAIN METHOD //////////////////////
     ///////////////////////////////////////////////////
 
+    /**
+     * OUTLINE
+     * 
+     * # Clean up entry: remove comments, replace nonstandard characters with standard ones, ...
+     * # Extract initial year or label: If entry starts with year or label, extract it
+     * # Extract doi
+     * # Extract PMID and PMCID
+     * # Extract arXiv or bioRxiv info
+     * # Extract url and access date
+     * # Extract ISBN
+     * # Extract ISSN
+     * # Extract OCLC
+     * # Extract Epub info
+     * # Extract Chapter
+     * # Extract "first pubiished" statement
+     * # Split remaining string into words
+     * # Check for presence of word indicating journal
+     * # Look for authors (determining when author string ends)
+     * # Fix up authorstring
+     * # Get page count
+     * # Look for title (determining when it ends and publication info starts)
+     * # Look for year if not already found
+     * # Check for translators
+     */
+
     // If, after removing numbers etc. at start, entry is empty, return null.
     // Otherwise return array with components
     //   'source': original entry
@@ -165,6 +190,10 @@ class Converter
         $charEncoding = $charEncoding ?: $conversion->char_encoding;
         $use = $use ?: $conversion->use;
         $bst = $conversion->bst;
+
+        //////////////////////
+        // # Clean up entry //
+        //////////////////////
 
         // Concatenate lines in entry, removing comments.
         // (Do so before cleaning text, otherwise \textquotedbleft, e.g., at end of line will not be cleaned.)
@@ -208,6 +237,7 @@ class Converter
         $entry = str_replace("\' ", "\'", $entry);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////
+        // # Extract initial year or label                                                                  //
         // If entry starts with year, extract it.                                                           //
         // Otherwise extract label, if any, and remove numbers and other stray characters at start of entry //
         //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,9 +306,9 @@ class Converter
 
         $completeEntry = $remainder;
 
-        ////////////////////
-        // Get doi if any //
-        ////////////////////
+        ///////////////////
+        // # Extract doi //
+        ///////////////////
 
         $containsUrlAccessInfo = false;
 
@@ -407,9 +437,9 @@ class Converter
             $hasDoi = false;
         }
 
-        ///////////////////////////////
-        // Get PMID and PMCID if any //
-        ///////////////////////////////
+        //////////////////////////////
+        // # Extract PMID and PMCID //
+        //////////////////////////////
 
         $pmCodePatterns = ['pmid: [0-9]{6,9}', 'pmcid: [A-Z]{1,4}[0-9]{6,9}'];
 
@@ -421,9 +451,9 @@ class Converter
             }
         }
 
-        //////////////////////////////////////
-        // Get arXiv or bioRxiv info if any //
-        //////////////////////////////////////
+        /////////////////////////////////////
+        // # Extract arXiv or bioRxiv info //
+        /////////////////////////////////////
 
         $hasArxiv = false;
         $hasFullDate = false;
@@ -463,9 +493,9 @@ class Converter
             $hasArxiv = true;
         }
 
-        ////////////////////////////////////
-        // Get url and access date if any //
-        ////////////////////////////////////
+        ///////////////////////////////////
+        // # Extract url and access date //
+        ///////////////////////////////////
 
         $remainder = preg_replace('/ ?[\(\[](online|en ligne|internet)[\)\]]/i', '', $remainder, 1, $replacementCount);
         $onlineFlag = $replacementCount > 0;
@@ -552,9 +582,9 @@ class Converter
             $this->verbose("No url found.");
         }
 
-        /////////////////////
-        // Get ISBN if any //
-        /////////////////////
+        ////////////////////
+        // # Extract ISBN //
+        ////////////////////
 
         $containsIsbn = false;
         $match = $this->extractLabeledContent($remainder, ' \(?' . $this->regExps->isbnLabelRegExp, $this->regExps->isbnNumberRegExp . '\)?');
@@ -568,9 +598,9 @@ class Converter
             }
         }
         
-        /////////////////////
-        // Get ISSN if any //
-        /////////////////////
+        ////////////////////
+        // # Extract ISSN //
+        ////////////////////
 
         $containsIssn = false;
 
@@ -595,36 +625,38 @@ class Converter
             } 
         }
 
-        /////////////////////
-        // Get OCLC if any //
-        /////////////////////
+        ////////////////////
+        // # Extract OCLC //
+        ////////////////////
 
         $match = $this->extractLabeledContent($remainder, ' ' . $this->regExps->oclcLabelRegExp, $this->regExps->oclcNumberRegExp);
         if ($match) {
             $this->setField($item, 'oclc', $match, 'setField 18');
         }
 
-        //////////////////////////
-        // Get Epub info if any //
-        //////////////////////////
+        /////////////////////////
+        // # Extract Epub info //
+        /////////////////////////
 
         $result = $this->findRemoveAndReturn($remainder, '(Epub ahead of print|Epub \d{4} \p{L}+ \d{1,2}\.?)');
         if ($result !== false) {
             $this->addToField($item, 'note', rtrim($result[0], '.') . '.', 'addToField 2b');
         }
 
-        ////////////////////////
-        // Get chapter if any //
-        ////////////////////////
+        ///////////////////////
+        // # Extract chapter //
+        ///////////////////////
 
         $match = $this->extractLabeledContent($remainder, ' chapter ', '[1-9][0-9]?');
         if ($match) {
             $this->setField($item, 'chapter', $match, 'setField 19');
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // If remainder ends with phrase like "first published" or "originally published", remove it and put it in Note field //
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        // # Extract "first pubiished" statement                                            //
+        // If remainder ends with phrase like "first published" or "originally published",  //
+        // remove it and put it in Note field                                               //
+        //////////////////////////////////////////////////////////////////////////////////////
 
         $containsOriginalPubDate = false;
         if (preg_match('/(?P<note>\(?' . $this->regExps->firstPublishedRegExp . ' [0-9]{4}\.?\)?\.?)$/', $remainder, $matches)) {
@@ -633,9 +665,9 @@ class Converter
             $remainder = trim(substr($remainder, 0, -strlen($matches[0])), '() ');
         }
 
-        ///////////////////////////////////////
-        // Split remaining string into words //
-        ///////////////////////////////////////
+        /////////////////////////////////////////
+        // # Split remaining string into words //
+        /////////////////////////////////////////
 
         // Exploding on spaces isn't exactly right, because a word containing an accented letter
         // can have a space in it --- e.g. Oblo{\v z}insk{\' y}.  So perform a more sophisticated explosion.
@@ -731,9 +763,9 @@ class Converter
             array_shift($words);
         }
 
-        ///////////////////////////////////////////////////
-        // Check for presence of word indicating journal //
-        ///////////////////////////////////////////////////
+        /////////////////////////////////////////////////////
+        // # Check for presence of word indicating journal //
+        /////////////////////////////////////////////////////
 
         // Has to be done *after* string is split into words, because that process adds spaces 
         // after periods, converting U.S.A. into U. S. A., for example
@@ -746,9 +778,9 @@ class Converter
             $containsJournalName = true;
         }
 
-        //////////////////////
-        // Look for authors //
-        //////////////////////
+        ////////////////////////
+        // # Look for authors //
+        ////////////////////////
 
         $isEditor = false;
         $isTranslator = false;
@@ -843,9 +875,9 @@ class Converter
             }
         }
 
-        //////////////////////////
-        // Fix up $authorstring //
-        //////////////////////////
+        ////////////////////////////
+        // # Fix up $authorstring //
+        ////////////////////////////
 
         if (preg_match('/^' . $this->regExps->edsParensRegExp . '[.,;]? (?P<remainder>.*)$/', $remainder, $matches)) {
             $isEditor = true;
@@ -896,10 +928,9 @@ class Converter
                 $hasSecondaryDate = true;
             }
         }
-
-        ////////////////////////////
-        // Get page count, if any //
-        ////////////////////////////
+        //////////////////////
+        // # Get page count //
+        //////////////////////
 
         $remainder = trim($remainder);
 
@@ -915,9 +946,9 @@ class Converter
 
         $this->verbose("[1] Remainder: " . $remainder);
 
-        ////////////////////
-        // Look for title //
-        ////////////////////
+        //////////////////////
+        // # Look for title //
+        //////////////////////
 
         $remainder = ltrim($remainder, ': ');
 
@@ -1095,7 +1126,7 @@ class Converter
         $this->verbose("[2] Remainder: " . $remainder);
 
         ///////////////////////////////////////////////////////////
-        // Look for year if not already found                    //
+        // # Look for year if not already found                  //
         // (may already have been found at end of author string) //
         ///////////////////////////////////////////////////////////
 
@@ -1147,6 +1178,7 @@ class Converter
         $remainder = ltrim($newRemainder, ' ');
 
         ///////////////////////////////////////////////////
+        // # Check for translators                       //
         // Put "Translated by ..." in note or translator //
         // name in translator field.                     //
         // (Not extracted earlier, because the string    //

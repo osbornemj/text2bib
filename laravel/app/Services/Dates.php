@@ -141,7 +141,11 @@ class Dates
                     $year = $matches2['year'][0] ?? null;
 
                     if (isset($matches2['monthNumber'])) {
-                        $month = $monthNames[$matches2['monthNumber'][0]];
+                        $monthNumber = $matches2['monthNumber'][0];
+                        if (isset($monthNumber[0]) && $monthNumber[0] == '0') {
+                            $monthNumber = substr($monthNumber, 1);
+                        }
+                        $month = $monthNames[$monthNumber];
                     } else {
                         $month = $matches2['month'][0] ?? null;
                         if ($month) {
