@@ -14,11 +14,13 @@ class TitleParser
 
     private Dates $dates;
     private RegularExpressions $regExps;
+    public AuthorParser $authorParser;
 
     public function __construct()
     {
         $this->dates = new Dates();
         $this->regExps = new RegularExpressions;
+        $this->authorParser = new AuthorParser();
     }
 
     /**
@@ -823,4 +825,78 @@ class TitleParser
 
         return $result;
     }
+
+    /*
+     * Get title from a string that starts with title and then has authors (e.g. editors, in <booktitle> <editor> format)
+     */
+    public function getTitleAndEditor(string &$remainder, string $language = 'en'): array
+    {
+        $title = '';
+        $remainder = str_replace('  ', ' ', $remainder);
+
+        // Main routine, using author patterns
+        // Go through $remainder, stopping at each comma or period and checking whether the following
+        // string matches an author pattern.  (' 1' added to $remainder because author patterns require terminating string.)
+        $remains = $remainder . ' 1';
+        $isEditor = true;
+        $isTranslator = false;
+        while ($remains) {
+            if (preg_match('/^(?P<before>[^.,]*)(?P<punc>[.,])(?P<after>.*)$/', $remains, $matches)) {
+                $title .= $matches['before'];
+                $after = trim($matches['after']);
+                // Does $after match an author pattern?
+                $result = $this->authorParser->checkAuthorPatterns(
+                    $after,
+                    $year,
+                    $month,
+                    $day,
+                    $date,
+                    $isEditor,
+                    $isTranslator,
+                    $language
+                );
+
+                if ($result) {
+                    $editor = trim($result['authorstring']);
+                    return [
+                        'title' => $title,
+                        'editor' => $editor,
+                    ];
+                } else {
+                    $title .= $matches['punc'];
+                    $remains = $matches['after'];
+                }
+            } else {
+                $remains = '';
+            }
+        }
+
+        // Backup routine, relying on isNameString (which isn't very reliable).
+        if (preg_match('/^(?P<title>[^.,]{10,})[\.,] (?P<remainder>.{10,})$/u', $remainder, $matches)) {
+            $title = $matches['title'];
+            $remainder = $matches['remainder'];    
+        } else {
+            $words = explode(' ', $remainder);
+            $initialWords = [];
+            $remainingWords = $words;
+
+            foreach ($words as $word) {
+                array_shift($remainingWords);
+                $remainder = implode(' ', $remainingWords);
+                $initialWords[] = $word;
+                $nameStringResult = $this->authorParser->isNameString($remainder, $language);
+                if (Str::endsWith($word, ['.', ',']) && $nameStringResult['result']) {
+                    $this->detailLines = array_merge($this->detailLines, $nameStringResult['details']);
+                    $title = rtrim(implode(' ', $initialWords), ',');
+                    break;
+                }
+            }
+        }
+
+        return [
+            'title' => $title,
+            'editor' => null,
+        ];
+    }
+
 }
