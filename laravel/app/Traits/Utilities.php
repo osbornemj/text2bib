@@ -9,80 +9,6 @@ use PhpSpellcheck\Spellchecker\Aspell;
 
 trait Utilities
 {
-    var $phrases = [
-        'en' =>
-            [
-            'and' => 'and',
-            'in' => 'in',
-            'editor' => 'editor',
-            'editors' => 'editors',
-            'ed.' => 'ed.',
-            'eds.' => 'eds.',
-            'edited by' => 'edited by'
-            ],
-        'cz' =>
-            [
-            'and' => 'a',
-            'in' => 'v',
-            'editor' => 'editor',
-            'editors' => 'editors',
-            'ed.' => 'ed.',
-            'eds.' => 'eds.',
-            'edited by' => 'editoval'
-            ],
-        'fr' =>
-            [
-            'and' => 'et',
-            'in' => 'en',
-            'editor' => 'editor',
-            'editors' => 'editors',
-            'ed.' => 'ed.',
-            'eds.' => 'eds.',
-            'edited by' => 'édité par'
-            ],
-        'es' =>
-            [
-            'and' => 'y',
-            'in' => 'en',
-            'editor' => 'editor',
-            'editors' => 'editors',
-            'ed.' => 'ed.',
-            'eds.' => 'eds.',
-            'edited by' => 'editado por'
-            ],
-        'pt' =>
-            [
-            'and' => 'e',
-            'in' => 'em',
-            'editor' => 'editor',
-            'editors' => 'editors',
-            'ed.' => 'ed.',
-            'eds.' => 'eds.',
-            'edited by' => 'edited by'
-            ],
-        'my' =>
-            [
-            'and' => 'နှင့်',
-            'in' => 'in',
-            'editor' => 'editor',
-            'editors' => 'editors',
-            'ed.' => 'ed.',
-            'eds.' => 'eds.',
-            'edited by' => 'edited by'
-            ],
-        'nl' =>
-            [
-            'and' => 'en',
-            'in' => 'in',
-            'editor' => 'editor',
-            'editors' => 'editors',
-            'ed.' => 'ed.',
-            'eds.' => 'eds.',
-            'edited by' => 'bewerkt door'
-            ],
-
-    ];
-
     // Codes are ended by } EXCEPT \em, \it, and \sl, which have to be ended by something like \normalfont.  Code
     // that gets italic text handles only the cases in which } ends italics.
     // \enquote{ is not a signal of italics, but it is easiest to classify it thus.
@@ -130,8 +56,6 @@ trait Utilities
 
     var $proceedingsRegExp = '(^proceedings of |proceedings of the (.*) (conference|congress)|conference| symposium | meeting |congress of the | world congress|^proc\.| workshop|^actas del | scientific assembly of the )';
     var $proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the \p{L}+ (\p{L}+ )?Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proc\. Camb\. Phil\. Soc\.|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE (?!(International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
-
-    var $journalWord = 'Journal';
 
     var $detailLines;
     
@@ -200,7 +124,8 @@ trait Utilities
     private function isAnd(string $string, $language = 'en'): bool
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
-        return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, $this->andWords) || $string == 'with';
+        //return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, $this->andWords) || $string == 'with';
+        return in_array(mb_strtolower($string), $this->andWords) || $string == 'with';
     }
 
     /**

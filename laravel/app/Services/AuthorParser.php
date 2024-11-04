@@ -11,6 +11,8 @@ use App\Traits\Utilities;
 
 use App\Models\VonName;
 
+use App\Services\RegularExpressions;
+
 class AuthorParser
 {
     var $andWords;
@@ -21,6 +23,7 @@ class AuthorParser
     var $vonNames;
 
     private Dates $dates;
+    private RegularExpressions $regExps;
 
     use AuthorPatterns;
     use Stopwords;
@@ -29,6 +32,8 @@ class AuthorParser
     public function __construct()
     {
         $this->dates = new Dates();
+        $this->regExps = new RegularExpressions;
+
         $this->aspell = Aspell::create();
 
         $this->vonNames = VonName::all()->pluck('name')->toArray();
@@ -51,6 +56,7 @@ class AuthorParser
             've',  // Turkish
             'y',   // Spanish
             'и',   // Russian
+//            'a',   // Czech // causes confusion with English word 'a'.
         ];
 
         $andWordsRx = '';
@@ -86,7 +92,7 @@ class AuthorParser
      * @param string $type: 'authors' or 'editors'
      * @return array, with author string and warnings
      */
-    public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, string $translatorRegExp, string $edsNoParensRegExp, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
+    public function convertToAuthors(array $words, string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, array $cities, array $dictionaryNames, bool $determineEnd = true, string $type = 'authors', string $language = 'en'): array
     {
         $this->authorDetails = [];
 
@@ -111,7 +117,7 @@ class AuthorParser
         // Check for some common patterns //
         ////////////////////////////////////
 
-        $result = $this->checkAuthorPatterns($remainder, $year, $month, $day, $date, $isEditor, $isTranslator, $translatorRegExp, $edsNoParensRegExp, $language);
+        $result = $this->checkAuthorPatterns($remainder, $year, $month, $day, $date, $isEditor, $isTranslator, $language);
 
         if ($result) {
             return [
@@ -159,7 +165,7 @@ class AuthorParser
     /**
      * Determine whether $remainder matches any of the patterns in the AuthorPatterns trait.
      */
-    public function checkAuthorPatterns(string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, string $translatorRegExp, string $edsNoParensRegExp, string $language): array|null
+    public function checkAuthorPatterns(string|null &$remainder, string|null &$year, string|null &$month, string|null &$day, string|null &$date, bool &$isEditor, bool &$isTranslator, string $language): array|null
     {
         $authorRegExps = $this->authorPatterns();
         $authorstring = '';
@@ -221,7 +227,7 @@ class AuthorParser
         if ($authorstring) {
             $year = $this->dates->getDate(trim($remainder), $remainder, $month, $day, $date, true, true, true, $language);
             //if (preg_match('/^[(\[](tr(ans)?\. and ed\.|ed\. and tr(ans)?\.)[)\]]\.? (?P<remains>.*)$/', $remainder, $matches)) {
-            if (preg_match('%^[(\[](' . $translatorRegExp . ' ' . $this->andWordsRegExp . ' ' . $edsNoParensRegExp . '|' . $edsNoParensRegExp . ' ' . $this->andWordsRegExp . ' ' . $translatorRegExp . ')[)\]]\.? (?P<remains>.*)$%', $remainder, $matches)) {
+            if (preg_match('%^[(\[](' . $this->regExps->translatorRegExp . ' ' . $this->andWordsRegExp . ' ' . $this->regExps->edsNoParensRegExp . '|' . $this->regExps->edsNoParensRegExp . ' ' . $this->andWordsRegExp . ' ' . $this->regExps->translatorRegExp . ')[)\]]\.? (?P<remains>.*)$%', $remainder, $matches)) {
                 $isEditor = true;
                 $isTranslator = true;
                 $remainder = $matches['remains'];
@@ -232,7 +238,7 @@ class AuthorParser
 
             if (preg_match('%^(?P<firstWord>[^ ]+) (?P<remains>.*)$%', $remainder, $matches)) {
                 $isEditor = $this->isEd($matches['firstWord']);
-                $isTranslator = preg_match('/^[(\[]?' . $translatorRegExp . '[)\]]?[,.]?/', $matches['firstWord']);
+                $isTranslator = preg_match('/^[(\[]?' . $this->regExps->translatorRegExp . '[)\]]?[,.]?/', $matches['firstWord']);
                 if ($isEditor || $isTranslator) {
                     $remainder = $matches['remains'];
                     if ($year = $this->dates->getDate($remainder, $remains, $month, $day, $date, true, true, true, $language)) {
@@ -1378,7 +1384,6 @@ class AuthorParser
     {
         $this->authorDetails = [];
 
-        $phrases = $this->phrases[$language];
         $this->verbose("isNameString is examining string \"" . $string . "\"");
         $result = false;
         $words = explode(' ', $string);
@@ -1439,7 +1444,7 @@ class AuthorParser
         } elseif ($this->isName($words[0], ',') && count($words) >= 2 && in_array($word1, $this->vonNames) && $this->isName($words[2], ',') ) {
             $this->verbose("isNameString: string is name (case 6): <name> <vonName> <name>");
             $result = true;
-        } elseif ($this->isName($words[0], ',') && count($words) >= 3 && $this->isName($word1) && $words[2] == $phrases['and']) {
+        } elseif ($this->isName($words[0], ',') && count($words) >= 3 && $this->isName($word1) && in_array(mb_strtolower($words[2]), $this->andWords)) {
             $this->verbose("isNameString: string is name (case 7): <name> <name> and");
             $result = true;
         } else {
@@ -1458,7 +1463,6 @@ class AuthorParser
      */
     public function initialNameString(string $string): bool
     {
-        $phrases = $this->phrases;
         $result = false;
         $words = explode(' ', $string);
 
@@ -1475,7 +1479,7 @@ class AuthorParser
             $result = true;
         } elseif ($this->isName($words[0], ',;') && isset($words[1]) && $this->isName($words[1], '.')) {
             $result = true;
-        } elseif ($this->isName($words[0], ',;') && isset($words[1]) && $this->isName($words[1]) && isset($words[2]) && $words[2] == $phrases['and']) {
+        } elseif ($this->isName($words[0], ',;') && isset($words[1]) && $this->isName($words[1]) && isset($words[2]) && in_array(mb_strtolower($words[2]), $this->andWords)) {
             $result = true;
         }
 

@@ -8,7 +8,6 @@ use App\Models\City;
 use App\Models\Conversion;
 use App\Models\DictionaryName;
 use App\Models\ExcludedWord;
-//use App\Models\Journal;
 use App\Models\Name;
 use App\Models\Publisher;
 use App\Models\JournalWordAbbreviation;
@@ -21,72 +20,24 @@ use App\Traits\StringCleaners;
 use App\Traits\StringExtractors;
 use App\Traits\Utilities;
 
-//use SebastianBergmann\Type\NullType;
-
-//use function Safe\strftime;
+use App\Services\RegularExpressions;
 
 class Converter
 {
-    var $accessedRegExp1;
     var $bookTitleAbbrevs;
     var $cities;
     var $detailLines;
     var $dictionaryNames;
     var $distinctiveJournalWordAbbreviations;
-    var $editedByRegExp;
     var $editionWords;
-    var $editorStartRegExp;
-    var $edsNoParensRegExp;
-    var $edsParensRegExp;
-    var $edsOptionalParensRegExp;
-    var $edsRegExp;
     var $entryPrefixes;
     var $entrySuffixes;
     var $excludedWords;
-    var $firstPublishedRegExp;
-    var $fullThesisRegExp;
-    var $inWords;
-    var $inRegExp;
-    var $inRegExp1;
-    var $inRegExp2;
-    var $inReviewRegExp1;
-    var $inReviewRegExp2;
-    var $inReviewRegExp3;
-    var $isbnLabelRegExp;
-    var $isbnNumberRegExp;
-    var $issnRegExps;
     var $itemType;
-    var $journalNames;
-    var $masterRegExp;
-    var $monthsRegExp;
-    var $monthsAbbreviationsRegExp;
     var $names;
-    var $oclcLabelRegExp;
-    var $oclcNumberRegExp;
     var $ordinals;
-    var $page;
-    var $pageRange;
-    var $pagesRegExp;
-    var $pageRegExp;
-    var $pageRegExpWithPp;
-    var $pagesRegExpWithPp;
-    var $pageWordsRegExp;
-    var $phdRegExp;
     var $publishers;
-    var $retrievedFromRegExp1;
-    var $retrievedFromRegExp2;
-    var $seriesRegExp;
     var $journalWordAbbreviations;
-    var $startPagesRegExp;
-    var $thesisRegExp;
-    var $translatedByRegExp;
-    var $translatorRegExp;
-    var $unpublishedRegExp;
-    var $volumeRegExp;
-    var $volumeAndCodesRegExp;
-    var $volumeNumberPagesRegExp;
-    var $volumeNumberYearRegExp;
-    var $volumeWithNumberRegExp;
 
     use AuthorPatterns;
     use MakeScholarTitle;
@@ -102,6 +53,8 @@ class Converter
     public PublisherAddressParser $publisherAddressParser;
     public TitleParser $titleParser;
 
+    private RegularExpressions $regExps;
+
     public function __construct()
     {
         $this->dates = new Dates();
@@ -110,29 +63,13 @@ class Converter
         $this->publisherAddressParser = new PublisherAddressParser();
         $this->titleParser = new TitleParser();
 
+        $this->regExps = new RegularExpressions;
+
         // Words that are in dictionary but are abbreviations in journal names
         $this->excludedWords = ExcludedWord::all()->pluck('word')->toArray();
 
         // Words that are in dictionary but are names
         $this->dictionaryNames = DictionaryName::all()->pluck('word')->toArray();
-
-        // Journals with distinctive names (not single words like Science and Nature)
-        // The names are ordered by string length, longest first, so that if one journal name
-        // is a subset of another, the longer name is detected 
-        // $this->journalNames = Journal::where('distinctive', 1)
-        //     ->where('checked', 1)
-        //     ->orderByRaw('CHAR_LENGTH(name) DESC')
-        //     ->pluck('name')
-        //     ->toArray();
-        /*
-         * The number of journals is huge, and an array of all of them seems unweildy.
-         * Further, if a journal name is in the database and an item contains a journal 
-         * with a name that is not in the database but is a superset of the one that is,
-         * the shorter name gets assigned to the item.  Checking for that seems like it
-         * is pretty much equivalent to determining what part of the string is the journal
-         * name, which means the array of existing journal names is not useful.
-         */
-        $this->journalNames = [];
 
         // Abbreviations used as the first words of journal names (like "J." or "Bull.")
         $journalWordAbbreviations = JournalWordAbbreviation::where('checked', 1);
@@ -154,8 +91,6 @@ class Converter
 
         $this->names = Name::all()->pluck('name')->toArray();
 
-        // Introduced to facilitate a variety of languages, but the assumption that the language of the 
-        // citation --- though not necessarily of the reference itself --- is English pervades the code.
         $this->ordinals = [
             'en' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'],
@@ -173,121 +108,6 @@ class Converter
                 ['1e', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e', '10e'],
         ];
 
-        ////////////////////
-        // in [booktitle] //
-        ////////////////////
-
-        // en for Spanish (and French?), em for Portuguese, dans for French, dalam for Indonesian
-        $inWords = [
-            '[IiEe][nm]', // English, Spanish, French(?), Portuguese
-            '[Dd]ans',    // French
-            '[Dd]alam',   // Indonesian
-            'W',          // Polish
-        ];
-
-        // $this->inRegExp = '([IiEe][nm]| ...)';
-        // Following does not use ":?" because may want to match colon if it is present
-        // $this->inRegExp1 = '/^([IiEe][nm]:|[IiEe][nm]| ... )/';
-        // $this->inRegExp2 = '/( [IiEe][nm]: |[,.] [IiEe][nm] | [IiEe][nm]\) | ... )/';
-        foreach ($inWords as $i => $inWord) {
-            $this->inRegExp .= ($i ? '|' : '(') . $inWord;
-            $this->inRegExp1 .= ($i ? '|' : '/^(') . $inWord . ': |' . $inWord . ' ';
-            $this->inRegExp2 .= ($i ? '|' : '/(') . ' ' . $inWord . ': |[,.] ' . $inWord . ' | ' . $inWord . '\) ';
-        }
-        $this->inRegExp .= ')';
-        $this->inRegExp1 .= ')/';
-        $this->inRegExp2 .= ')/';
-
-        /////////////
-        // Editors //
-        /////////////
-
-        $editorWords = [
-            '[Ee]ditors?',
-            '[Ee]ds?\.?',   // English, Czech
-            'Hrsgg\.',      // German
-            'Hg\.',         // German
-            '[Dd]ir\.',     // French
-            '[Éé]ds?\.',    // French
-            'რედ\.?',      // Georgian
-            '[Aa] cura di', // Italian
-            '[Rr]ed\.',     // Polish
-            '[Dd]ü\.',      // Turkish
-        ];
-
-        $editedByWords = [
-            '[Ee]dited by',
-            '[Ee]d\. by',
-            '[Ee]d(itado|\.) por',  // Spanish, Portuguese
-            '[Éé]d(ité|\.) par',    // French
-            '[Bb]earbeitet von',    // German
-            '[Hh]rsg\. von',        // German
-            '[Bb]ewerkt door',      // Dutch
-            '[Dd]iedit oleh',       // Indonesian
-        ];
-
-        $edsRx1 = $edsRx2 = '';
-        foreach ($editorWords as $i => $editorWord) {
-            $edsRx1 .= ($i ? '|' : '') . $editorWord;
-            //$edsRx2 .= ($i ? '|' : '') . ' ' . $editorWord . ' | [(\[]' . $editorWord . '[)\]]';
-            $edsRx2 .= ($i ? '|' : '') . '[(\[ ]' . $editorWord . '[)\],. ]';
-        }
-
-        // "[Ee]ditors?" or ...
-        $this->edsNoParensRegExp = '(' . $edsRx1 . ')';
-        // "([Ee]ditors?)" or "[[Ee]ditors?]" or ...
-        $this->edsParensRegExp = '[(\[](' . $edsRx1 . ')[)\]]';
-        // "[Ee]ditors?" or "([Ee]ditors?)" or "[[Ee]ditors?]" or ...
-        $this->edsOptionalParensRegExp = '[(\[]?(' . $edsRx1 . ')[)\]]?';
-        // " [Ee]ditors? " or "([Ee]ditors?)" or "[[Ee]ditors?]" or ...
-        $this->edsRegExp = '/(' . $edsRx2 . ')/u';
-
-        $editedByRx = '';
-        foreach ($editedByWords as $i => $editedByWord) {
-            $editedByRx .= ($i ? '|' : '') . $editedByWord;
-        }
-
-        $this->editedByRegExp = '(' . $editedByRx . ')';
-
-        $this->editorStartRegExp = '/^[(\[]?(' . $editedByRx . '|' . $edsRx1 . ')/u';
-
-        $translatorWords = [
-            '[Tt]ranslators?',
-            '[Tt]rans\.(?! by)',
-            '[Tt]rad\.',
-            '[Tt]r\.(?! by)',
-            'Çev\.',      // Turkish
-        ];
-
-        $translatorRx = '';
-        foreach ($translatorWords as $i => $translatorWord) {
-            $translatorRx .= ($i ? '|' : '') . $translatorWord;
-        }
-
-        $this->translatorRegExp = '(' . $translatorRx . ')';
-
-        $translatedByWords = [
-            '[Tt]ranslat(ed|ion) by',
-            '[Tt]ransl?\. by',
-            '[Tt]r\.(?! by)',
-            '[Tt]r\.? by',
-            '[Tt]raducción de',   // Spanish
-            '[Tt]raducido por',   // Spanish
-            'Übersetzt von',      // German
-            'Übersetzung von',    // German
-            '[Tt]raduzido por',   // Portuguese
-            '[Tt]radução por',    // Portuguese
-            '[Tt]raduit par',     // French
-            '[Tt]raduction par',  // French
-        ];
-
-        $translatedByRx = '';
-        foreach ($translatedByWords as $i => $translatedByWord) {
-            $translatedByRx .= ($i ? '|' : '') . $translatedByWord;
-        }
-
-        $this->translatedByRegExp = '(' . $translatedByRx . ')';
-
         /////////////
         // Edition //
         /////////////
@@ -302,305 +122,10 @@ class Converter
         ];
 
         ///////////
-        // Pages //
-        ///////////
-
-        $pageWords = [
-            '[Pp]ages? ',
-            '[Pp]ages? : ',
-            '[Pp]p\.? ?',
-            'p\.? ?',
-            '[Pp]ágs?\. ?',   // Spanish, Portuguese
-            '[Bb]lz\. ?',     // Dutch
-            '[Hh]al[\.:] ?',  // Indonesian
-            '[Hh]lm\. ?',
-            '[Ss]s?\. ?',     // Turkish, Polish, German
-            '[Ss]tr\. ?',     // Czech
-            'стр\. ?',        // Russian
-            'С\. ?',          // Russian
-            'გვ\. ?',         // Georgian
-        ];
-
-        $firstPage = '[A-Za-z]?[1-9ivxl][0-9ivxl]{0,4}';
-        $lastPage = '[A-Za-z]?[0-9ivxl]{1,5}';
-        // Page number cannot be followed by letter, to avoid picking up string like "'21 - 2nd Congress".
-        // Page range
-        $this->pageRange = '(?P<pages>(?P<startPage>' . $firstPage . ') ?-{1,3} ?(?P<endPage>' . $lastPage . '))(?![a-zA-Z])';
-        // Single page or page range
-        $this->page = '(?P<pages>' . $firstPage . ')( ?-{1,3} ?' . $lastPage . ')?(?![a-zA-Z])';
-
-        $startPagesRegExp = '/(?P<pageWord>';
-        $pageWordsRegExp = '(?P<pageWord>';
-        foreach ($pageWords as $i => $pageWord) {
-            $startPagesRegExp .= ($i ? '|' : '') . '^' . $pageWord;
-            $pageWordsRegExp .= ($i ? '|' : '') . $pageWord;
-        }
-        $startPagesRegExp .= ')[0-9]/';
-        $pageWordsRegExp .= ')';
-
-        $this->pageWordsRegExp = $pageWordsRegExp;
-
-        $pageRegExpWithPp = '(' . $pageWordsRegExp . '):? ?' . $this->page;
-        $pagesRegExpWithPp = '(' . $pageWordsRegExp . '):? ?' . $this->pageRange;
-        $pageRegExp = '(' . $pageWordsRegExp . ')?:? ?' . $this->page;
-        $pagesRegExp = '(' . $pageWordsRegExp . ')?:? ?' . $this->pageRange;
-
-        $this->startPagesRegExp = $startPagesRegExp;
-        
-        // single page or page range, must be preceded by page word
-        $this->pageRegExpWithPp = $pageRegExpWithPp;
-        // page range, must be preceded by page word
-        $this->pagesRegExpWithPp = $pagesRegExpWithPp;
-        // single page or page range, page word before is optional
-        $this->pageRegExp = $pageRegExp;
-        // page range, page word before is optional
-        $this->pagesRegExp = $pagesRegExp;
-
-        ////////////
-        // Volume //
-        ////////////
-
-        $volumeWords = [
-            '[Vv]olumes?', // English, Portuguese
-            '[Vv]ols?\.?',
-            'VOL\.?',
-            '[Vv]\.',
-            '[Tt]omos?',   // Spanish
-            '[Tt]omes?',   // French
-            '[Bb]ände',    // German (plural)
-            '[Bb]and',     // German
-            '[Bb]d\.',     // German
-            'Т\.',         // Russian
-        ];
-
-        $volumeRegExp = '';
-        foreach ($volumeWords as $i => $volumeWord) {
-            $volumeRegExp .= ($i ? '|' : '') . $volumeWord . ' ?';
-        }
-
-        // volume words, with optional space after each one
-        $this->volumeRegExp = $volumeRegExp;
-        $this->volumeAndCodesRegExp = $volumeRegExp . '|{\\\bf |\\\textbf{|\\\textit{|\*';
-        $this->volumeWithNumberRegExp = '(' . $this->volumeRegExp . ') ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
-    
-        $this->volumeNumberPagesRegExp = '/(' . $this->volumeRegExp . ')?[0-9]{1,4} ?(' . $this->numberRegExp . ')?[ \(][0-9]{1,4}[ \)]:? ?(' . $this->pageRegExp . ')/u';
-
-        $this->volumeNumberYearRegExp = '/(' . $this->volumeAndCodesRegExp . ')? ?\d{1,4},? ?(' . $this->numberRegExp . ')? ?\d{1,4} [\(\[]?' . $this->yearRegExp . '[\)\]]/u';
-
-        ////////////
-        // Series //
-        ////////////
-
-        $seriesPhrases = [
-            '(?<![Tt]ime )[Ss]eries',
-            '[Ll]ecture [Nn]otes',
-            'Graduate [Tt]exts',
-            'Graduate Studies',
-            'Grundlehren der mathematischen Wissenschaften',
-            'Monographs',
-            'Pure and Applied Mathematics',
-            'Tracts',
-        ];
-
-        $this->seriesRegExp = '';
-        foreach ($seriesPhrases as $i => $seriesPhrase) {
-            $this->seriesRegExp .= ($i ? '|' : '') . $seriesPhrase . ' ?';
-        }
-
-        ////////////
-        // Thesis //
-        ////////////
-
-        $thesisWords = [
-            '[Tt]hesis',
-            '[Tt]esis',
-            '[Tt]hèse',
-            '[Tt]ese',
-            '{Tt]ezi',
-            '[Dd]issertation',
-            '[Dd]iss\.',
-            '[Dd]issertação',
-            '[Dd]isertación',
-        ];
-
-        $thesisRegExp = '';
-        foreach ($thesisWords as $i => $thesisWord) {
-            $thesisRegExp .= ($i ? '|' : '') . $thesisWord . ' ?';
-        }
-
-        $this->thesisRegExp = '(^|[ (\[])(' . $thesisRegExp . ')([ .,)\]]|$)';
-
-        $mastersWords = [
-            '[Mm]aster(\'?s)?( Degree)?,?',
-            'M\.? ?A\.?',
-            'M\.? ?Sc\.?',
-            'M\. ?S\.',
-            'MBA',
-            '[Mm]estrado',
-            '[Mm]aestría',
-            '[Ll]icenciatura',
-            'Yayınlanmamış Yüksek [Ll]isans',
-            'Yüksek [Ll]isans',
-            'Masterproef',
-        ];
-
-        $masterRegExp = '';
-        foreach ($mastersWords as $i => $mastersWord) {
-            $masterRegExp .= ($i ? '|' : '') . $mastersWord . ' ?';
-        }
-
-        $this->masterRegExp = $masterRegExp;
-        
-        $phdWords = [
-            'Ph[Dd]',
-            'Ph\. ?D\.?',
-            '[Dd]octoral',
-            '[Dd]octorat',
-            '[Dd]oktora',
-        ];
-
-        $phdRegExp = '';
-        foreach ($phdWords as $i => $phdWord) {
-            $phdRegExp .= ($i ? '|' : '') . $phdWord . ' ?';
-        }
-
-        $this->phdRegExp = $phdRegExp;
-        
-        $fullThesisWords = [
-            '((' . $this->phdRegExp . '|' . $this->masterRegExp . ') (' . $thesisRegExp . '))',
-            '[Tt]hèse de doctorat',              // French
-            '[Tt]hèse de master',                // French
-            'Thèse de Doctorat en droit',        // French
-            'Thèse de Doctorat en droit public', // French
-            '[Tt]esis doctoral',                 // Spanish
-            '[Dd]isertación [Dd]octoral',        // Spanish
-            '[Tt]esis de grado',                 // Spanish
-            '[Tt]esis de [Mm]aestría',           // Spanish
-            '[Dd]isertación de [Ll]icenciatura', // Spanish
-            '[Tt]ese de [Dd]outorado',           // Portuguese
-            '[Tt]ese \([Dd]outorado\)',          // Portuguese
-            '[Dd]issertação de [Mm]estrado',     // Portuguese
-            '[Dd]issertação \([Mm]estrado\)',    // Portuguese
-            '[Tt]ese de [Mm]estrado',            // Portuguese
-            '[Dd]octoraal [Pp]roefschrift',      // Dutch
-            '[Mm]asterproef',                    // Dutch
-            '[Dd]oktorská práce',                // Czech
-            '[Dd]iplomová práce',                // Czech
-            '[Yy]ayımlanmamış doktora tezi',     // Turkish
-            '[Dd]oktora [Tt]ezi',                // Turkish
-            '[Yy]üksek [Ll]isans [Tt]ezi',       // Turkish
-            '[Yy]ükseklisans [Tt]ezi',           // Turkish
-        ];
-
-        $fullThesisRegExp = '(';
-        foreach ($fullThesisWords as $i => $fullThesisWord) {
-            $fullThesisRegExp .= ($i ? '|' : '') . $fullThesisWord . ' ?';
-        }
-        $fullThesisRegExp .= ')';
-
-        $this->fullThesisRegExp = $fullThesisRegExp;
-
-        $unpublishedWords = [
-            '[Uu]npublished',      // English
-            '[Nn]epublikovaný',    // Czech
-            '[Nn]on publié',       // French
-            '[Nn]ão publicado',    // Portuguese
-            '[Ii]nédita',          // Spanish
-            '[Ii]nédito',          // Spanish
-            '[Yy]ayınlanmamış',    // Turkish
-        ];
-
-        $unpublishedRegExp = '';
-        foreach ($unpublishedWords as $i => $unpublishedWord) {
-            $unpublishedRegExp .= ($i ? '|' : '') . $unpublishedWord . ' ?';
-        }
-
-        $this->unpublishedRegExp = '(' . $unpublishedRegExp . ')';
-        
-        ///////////
         // Other //
         ///////////
 
-        $firstPublishedWords = [
-            '[Ff]irst published( in)?',          // English
-            '[Oo]riginally published( in)?',     // English
-            '[Ii]nitialement publié( dans)?',    // French
-            '[Pp]ublicado originalmente( em)?',  // Portuguese
-            '[Pp]ublicado originalmente( en)?',  // Spanish
-        ];
-
-        $firstPublishedRegExp = '';
-        foreach ($firstPublishedWords as $i => $firstPublishedWord) {
-            $firstPublishedRegExp .= ($i ? '|' : '') . $firstPublishedWord . ' ?';
-        }
-
-        $this->firstPublishedRegExp = '(' . $firstPublishedRegExp . ')';
-        
-        $this->inReviewRegExp1 = '/[Ii]n [Rr]eview\.?\)?$/';
-        $this->inReviewRegExp2 = '/^[Ii]n [Rr]eview/';
-        $this->inReviewRegExp3 = '/(\(?[Ii]n [Rr]eview\.?\)?)$/';
-
-        $this->isbnLabelRegExp = 'ISBN(-(10|13))? ?:? ?';
-        // ISBN should not have spaces, but allow them.  (ISBN has 10 or 13 digits.)
-        $this->isbnNumberRegExp = '[0-9X -]{10,17}';
-
-        $issnNumberFormat = '[0-9]{4}-[0-9]{3}[0-9X]';
-        $this->issnRegExps = [
-            '/[Oo]nline(:|: | )' . $issnNumberFormat . '(\)|,|.| |$)/',
-            '/[Pp]rint(:|: | )' . $issnNumberFormat . '(\)|,|.| |$)/',
-            '/[( ,]ISSN(:|: | )' . $issnNumberFormat . ' ?[( ](print|digital)(\) ?| |$)(' . $issnNumberFormat . ' ?[( ](print|digital)(\)| |$))?/',
-            '/[( ,](e-|p-)?ISSN(:|: | )(\(?(online|digital|print)[) ])?' . '(e-?|p-?)?' . $issnNumberFormat . '(\)|,|.| |$)/',
-        ];
-
-        $this->oclcLabelRegExp = 'OCLC:? ';
-        $this->oclcNumberRegExp = '[0-9]+';
-
         $this->bookTitleAbbrevs = ['Proc', 'Amer', 'Conf', 'Cont', 'Sci', 'Int', "Auto", 'Symp'];
-
-        // Used in: "*Retrieved from* (site)? <url> accessed <date>"
-        // and "*Retrieved from* (site)? <url> <date>?"
-        $this->retrievedFromRegExp1 = [
-            'en' => '(Retrieved from:? |Available( online)? ?(at|from)?:? )',
-            'cz' => '(Dostupné z:? |načteno z:? )',
-//            'de' => 'Abgerufen von',
-            'fr' => '(Récupéré sur |Disponible( (à l\'adresse|sur))?:? )',
-            'es' => '(Obtenido de |Disponible( en)?:? )',
-//            'id' => '(Diambil kembali dari )',
-            'pt' => '(Disponível( em)?:? |Obtido de:? )',
-            'my' => '(Retrieved from |Available( at)?:? )',
-            'nl' => '(Opgehaald van |Verkrijgbaar( bij)?:? |Beschikbaar op |Available( at)?:? )',
-        ];
-
-        // Dates are between 8 and 23 characters long (13 de novembre de 2024,)
-        $dateRegExp = '[\p{L}0-9,/\-\. ]{8,23}';
-
-        // Used in: "*Retrieved <date>? from* <url> <note>?
-        $this->retrievedFromRegExp2 = [
-            'en' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
-            'cz' => '[Dd]ostupné (?P<date1>' . $dateRegExp . ' )?(, )?z |[Zz]přístupněno (?P<date2>' . $dateRegExp . ' )?na |Staženo (?P<date1>' . $dateRegExp . ' )?(, )?z',
-            'fr' => '[Rr]écupéré (le )?(?P<date1>' . $dateRegExp . ' )?,? ?(sur|de) |[Cc]onsulté (le )?(?P<date2>' . $dateRegExp . ' )?,? ?(à|sur|de) ',
-            'es' => '[Oo]btenido (el )?(?P<date1>' . $dateRegExp . ' )?de |[Rr]ecuperado (el )?(?P<date1>' . $dateRegExp . ' )?de |[Aa]ccedido (?P<date2>' . $dateRegExp . ' )?en ',
-            'pt' => '[Oo]btido (?P<date1>' . $dateRegExp . ' )?de |[Aa]cess(ad)?o (?P<date2>' . $dateRegExp . ' )?em |[Aa]cedido (?P<date2>' . $dateRegExp . ' )?em ',
-            'my' => '[Rr]etrieved (?P<date1>' . $dateRegExp . ' )?(, )?from |[Aa]ccessed (?P<date2>' . $dateRegExp . ' )?at ',
-            'nl' => '[Oo]pgehaald (?P<date1>' . $dateRegExp . ' )?(, )?van |[Gg]eraadpleegd op (?P<date2>' . $dateRegExp . ' )?om ',
-        ];
-
-        // Used in: "Retrieved from (site)? <url> *accessed <date>*"
-        // <url> *accessed <date>*
-        // *acceessed <date>* <url>
-        // *accessed <date>*
-        $this->accessedRegExp1 = [
-            'en' => '(([Ll]ast|[Dd]ate) )?([Rr]etrieved|[Aa]ccessed|[Cc]onsulted|[Vv]iewed|[Vv]isited)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
-            'cz' => '([Nn]ačteno|[Zz]přístupněno|[Zz]obrazeno|[Cc]itováno)( dne)?[,:]? (?P<date2>' . $dateRegExp . ')',
-            'fr' => '([Rr]écupéré |[Cc]onsulté )(le )?(?P<date2>' . $dateRegExp . ')',
-            'es' => '([Oo]btenido|[Aa]ccedido)[,:]? (?P<date2>' . $dateRegExp . ')',
-            'pt' => '([Oo]btido |[Aa]cess(ad)?o( (a|em):?)? |[Aa]cedido (em:?)? )(?P<date2>' . $dateRegExp . ')',
-            'my' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
-            'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken|[Bb]ezocht op|[Gg]eopend),? (?P<date2>' . $dateRegExp . ')',
-        ];
-
-        $this->monthsRegExp = $this->dates->monthsRegExp;
-        $this->monthsAbbreviationsRegExp = $this->dates->monthsAbbreviationsRegExp;
 
         // These string are removed from the start of an entry.
         $this->entryPrefixes = ["\\noindent", "\\smallskip", "\\item", "\\bigskip"];
@@ -640,8 +165,6 @@ class Converter
         $charEncoding = $charEncoding ?: $conversion->char_encoding;
         $use = $use ?: $conversion->use;
         $bst = $conversion->bst;
-
-        $phrases = $this->phrases[$language];
 
         // Concatenate lines in entry, removing comments.
         // (Do so before cleaning text, otherwise \textquotedbleft, e.g., at end of line will not be cleaned.)
@@ -761,9 +284,9 @@ class Converter
 
         $urlRegExp = '(\\\url{|\\\href{)?(?P<url>https?://\S+)(})?';
 
-        $retrievedFromRegExp1 = $this->retrievedFromRegExp1[$language];
-        $retrievedFromRegExp2 = $this->retrievedFromRegExp2[$language];
-        $accessedRegExp1 = $this->accessedRegExp1[$language];
+        $retrievedFromRegExp1 = $this->regExps->retrievedFromRegExp1[$language];
+        $retrievedFromRegExp2 = $this->regExps->retrievedFromRegExp2[$language];
+        $accessedRegExp1 = $this->regExps->accessedRegExp1[$language];
 
         $urlDate = null;
         // doi in a Markdown-formatted url
@@ -1034,7 +557,7 @@ class Converter
         /////////////////////
 
         $containsIsbn = false;
-        $match = $this->extractLabeledContent($remainder, ' \(?' . $this->isbnLabelRegExp, $this->isbnNumberRegExp . '\)?');
+        $match = $this->extractLabeledContent($remainder, ' \(?' . $this->regExps->isbnLabelRegExp, $this->regExps->isbnNumberRegExp . '\)?');
         if ($match) {
             $containsIsbn = true;
             $isbn = trim(str_replace(' ', '', $match), '()');
@@ -1051,7 +574,7 @@ class Converter
 
         $containsIssn = false;
 
-        foreach ($this->issnRegExps as $issnRegExp) {
+        foreach ($this->regExps->issnRegExps as $issnRegExp) {
             preg_match($issnRegExp, $remainder, $matches);
             if (isset($matches[0])) {
                 // trim '(' and ')' from '(ISSN 1234-5678)' but not from 'ISSN 1234-5678 (digital)'
@@ -1076,7 +599,7 @@ class Converter
         // Get OCLC if any //
         /////////////////////
 
-        $match = $this->extractLabeledContent($remainder, ' ' . $this->oclcLabelRegExp, $this->oclcNumberRegExp);
+        $match = $this->extractLabeledContent($remainder, ' ' . $this->regExps->oclcLabelRegExp, $this->regExps->oclcNumberRegExp);
         if ($match) {
             $this->setField($item, 'oclc', $match, 'setField 18');
         }
@@ -1104,7 +627,7 @@ class Converter
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         $containsOriginalPubDate = false;
-        if (preg_match('/(?P<note>\(?' . $this->firstPublishedRegExp . ' [0-9]{4}\.?\)?\.?)$/', $remainder, $matches)) {
+        if (preg_match('/(?P<note>\(?' . $this->regExps->firstPublishedRegExp . ' [0-9]{4}\.?\)?\.?)$/', $remainder, $matches)) {
             $this->addToField($item, 'note', ' ' . trim($matches['note'], '(). ') . '.', 'setField 20');
             $containsOriginalPubDate = true;
             $remainder = trim(substr($remainder, 0, -strlen($matches[0])), '() ');
@@ -1208,27 +731,18 @@ class Converter
             array_shift($words);
         }
 
-        ////////////////////////////////////////
-        // Check for presence of journal name //
-        ////////////////////////////////////////
+        ///////////////////////////////////////////////////
+        // Check for presence of word indicating journal //
+        ///////////////////////////////////////////////////
 
         // Has to be done *after* string is split into words, because that process adds spaces 
         // after periods, converting U.S.A. into U. S. A., for example
         $journal = null;
         $containsJournalName = false;
         $wordString = ' ' . implode(' ', $words);
-        foreach ($this->journalNames as $name) {
-            // Precede journal name by space or {, so that subsets of journal names are not matched (e.g. JASA and EJASA).
-            // { is allowed because journal name might be preceded by \textit{.
-            if (Str::contains($wordString, [' ' . $name, '{' . $name])) {
-                $journal = $name;
-                $containsJournalName = true;
-                $this->verbose("Entry contains the name of a journal (" . $journal . ").");
-                break;
-            }
-        }
 
-        if (! $containsJournalName && Str::contains($wordString, [' ' . $this->journalWord . ' ', 'Frontiers in ', 'Annals of '])) {
+        // Internationalize?
+        if (Str::contains($wordString, [' Journal ', 'Frontiers in ', 'Annals of '])) {
             $containsJournalName = true;
         }
 
@@ -1277,8 +791,6 @@ class Converter
                 $date, 
                 $isEditor, 
                 $isTranslator, 
-                $this->translatorRegExp,
-                $this->edsNoParensRegExp,
                 $this->cities, 
                 $this->dictionaryNames, 
                 true, 
@@ -1335,20 +847,9 @@ class Converter
         // Fix up $authorstring //
         //////////////////////////
 
-        $editorPhrases = [
-            '(' . $phrases['editor'] . ')',
-            '(' . $phrases['editors'] . ')',
-            '(' . $phrases['ed.'] . ')',
-            '(' . $phrases['eds.'] . ')'
-        ];
-
-        if (preg_match('/^\(eds?\.?\)[.,;]? (?P<remainder>.*)$/', $remainder, $matches)) {
+        if (preg_match('/^' . $this->regExps->edsParensRegExp . '[.,;]? (?P<remainder>.*)$/', $remainder, $matches)) {
             $isEditor = true;
             $remainder = $matches['remainder'] ?? '';
-        }
-
-        if (Str::contains($authorstring, $editorPhrases)) {
-            $isEditor = true;
         }
 
         if (preg_match('/^\((trans|trad)\.?\)[.,;]? (?P<remainder>.*)$/', $remainder, $matches)) {
@@ -1362,7 +863,7 @@ class Converter
         }
 
         if ($isEditor) {
-            $this->setField($item, 'editor', trim(str_replace($editorPhrases, "", $authorstring), ' ,'), 'setField 24');
+            $this->setField($item, 'editor', trim(preg_replace('/' . $this->regExps->edsParensRegExp . '/', '', $authorstring), ' ,'), 'setField 24');
             if ($isTranslator) {
                 $noteString = $multipleAuthors ? 'Editors are translators.' : 'Editor is translator.';
                 $this->addToField($item, 'note', $noteString, 'setField 23a');
@@ -1429,7 +930,7 @@ class Converter
 
         // Does title start with "Doctoral thesis:" or something like that?
         $containsThesis = false;
-        if (preg_match('/^' . $this->fullThesisRegExp . '(: | -)(?P<remainder>.*)$/iu', $remainder, $matches)) {
+        if (preg_match('/^' . $this->regExps->fullThesisRegExp . '(: | -)(?P<remainder>.*)$/iu', $remainder, $matches)) {
             $containsThesis = true;
             $remainder = $matches['remainder'] ?? '';
         }
@@ -1487,21 +988,6 @@ class Converter
                     $this->excludedWords, 
                     $this->cities,
                     $this->dictionaryNames,
-                    $this->pagesRegExp, 
-                    $this->pageRegExp, 
-                    $this->startPagesRegExp, 
-                    $this->fullThesisRegExp,
-                    $this->thesisRegExp,
-                    $this->edsOptionalParensRegExp,
-                    $this->editedByRegExp,
-                    $this->monthsRegExp,
-                    $this->inRegExp,
-                    $this->volumeRegExp,
-                    $this->volumeAndCodesRegExp,
-                    $this->seriesRegExp,
-                    $this->edsNoParensRegExp,
-                    $this->translatorRegExp,
-                    $this->translatedByRegExp,
                     false, 
                     $language
                 );
@@ -1566,7 +1052,7 @@ class Converter
             if (preg_match('/^(?P<before>[^.]*)\.(?P<after>.*)$/', $title, $matches)) {
                 $beforePeriod = $matches['before'];
                 $afterPeriod = $matches['after'];
-                if (preg_match('/(' . $this->seriesRegExp . ') /', $afterPeriod, $afterMatches)) {
+                if (preg_match('/(' . $this->regExps->seriesRegExp . ') /', $afterPeriod, $afterMatches)) {
                     $title = $beforePeriod;
                     // Series string may contain volume number, in boldface
                     $series = $this->removeFontStyle($afterPeriod, 'bold');
@@ -1615,7 +1101,7 @@ class Converter
 
         // Look for volume-number-year pattern, to use later when determining item type
         $containsVolumeNumberYear = false;
-        if (preg_match($this->volumeNumberYearRegExp, $remainder)) {
+        if (preg_match($this->regExps->volumeNumberYearRegExp, $remainder)) {
             $containsVolumeNumberYear = true;
             $this->verbose("Contains volume-number-year string");
         }
@@ -1674,7 +1160,7 @@ class Converter
         // (?<=[.,] )
         $result = preg_match('/^(?P<before>.*)(?P<editedAndTranslatedBy>([Ee]d(ited|\.) and [Tt]rans(lated|\.)|[Tt]rans(lated|\.) and [Ee]d(ited|\.)) by) (?P<translator>.*?\p{Ll})(\),?|\.| \()(?P<after>.*)$/u', $remainder, $matches);
         if (! $result) {
-            $result = preg_match('/^(?P<before>.*?)(^| |\()(?P<translatedBy>(and )?' . $this->translatedByRegExp . ') (?P<translator>.*?\p{Ll})(\),?|\.| \()(?P<after>.*)$/u', $remainder, $matches);
+            $result = preg_match('/^(?P<before>.*?)(^| |\()(?P<translatedBy>(and )?' . $this->regExps->translatedByRegExp . ') (?P<translator>.*?\p{Ll})(\),?|\.| \()(?P<after>.*)$/u', $remainder, $matches);
         }
         if ($result && isset($matches['translator'])) {
             $translator = $matches['translator'];
@@ -1733,12 +1219,15 @@ class Converter
             $this->verbose("Consists only of letters and spaces");
         }
 
-        if (preg_match($this->inRegExp1, $remainder)) {
+        if (preg_match('/^' . $this->regExps->inRegExp . ':? /', $remainder)) {
             $inStart = true;
             $this->verbose("Starts with variant of \"in\".");
         }
 
-        if (preg_match($this->inRegExp2, $remainder)) {
+        if (preg_match('/ ' . $this->regExps->inRegExp . '[:)] /', $remainder) 
+            ||
+            preg_match('/[,.] ' . $this->regExps->inRegExp . ' /', $remainder)
+           ) {
             $containsIn = true;
             $this->verbose("Contains variant of \"in\".");
         }
@@ -1753,28 +1242,28 @@ class Converter
             $this->verbose("Contains a number.");
         }
 
-        if (preg_match('/ (' . $this->monthsRegExp[$language] . ')[,. ]/', $remainder, $matches)) {
+        if (preg_match('/ (' . $this->dates->monthsRegExp[$language] . ')[,. ]/', $remainder, $matches)) {
             $containsMonth = true;
             $this->verbose("Contains a month name.");
         }
 
         // Contains volume designation, but not at start of $remainder
-        if (preg_match('/[ \(\[](' . $this->volumeAndCodesRegExp . ') ?\d/', substr($remainder, 3))) {
+        if (preg_match('/[ \(\[](' . $this->regExps->volumeAndCodesRegExp . ') ?\d/', substr($remainder, 3))) {
             $containsInteriorVolume = true;
             $this->verbose("Contains a volume, but not at start.");
         }
 
-        if (preg_match($this->volumeNumberPagesRegExp, $remainder)) {
+        if (preg_match($this->regExps->volumeNumberPagesRegExp, $remainder)) {
             $containsVolumeNumberPages = true;
             $this->verbose("Contains volume-number-pages info.");
         }
 
         // Contains volume designation
-        if (preg_match('/(^|,? )(' . $this->volumeRegExp . ') ?(\\textit\{|\\textbf\{)?\d/', $remainder, $matches)) {
+        if (preg_match('/(^|,? )(' . $this->regExps->volumeRegExp . ') ?(\\textit\{|\\textbf\{)?\d/', $remainder, $matches)) {
             $match = $matches[0];
             if ($match) {
                 $this->verbose("Contains a volume designation.");
-                $remainderMinusVolume = $this->findAndRemove($remainder, $this->volumeWithNumberRegExp);
+                $remainderMinusVolume = $this->findAndRemove($remainder, $this->regExps->volumeWithNumberRegExp);
                 $containsDigitOutsideVolume = Str::contains($remainderMinusVolume, range('0','9'));
                 if ($containsDigitOutsideVolume) {
                     $this->verbose('Contains digits outside the volume designation');
@@ -1805,8 +1294,8 @@ class Converter
 
 //        $edPattern = '[ (}]([Ee]ds?\.|[Ee]ditors?|[Ee]dited by)';
 //dump($edPattern);
-        $edPattern = '[ (}](' . $this->edsNoParensRegExp . '|' . $this->editedByRegExp . ')';
-//        $edPattern = '[ (}]' . $this->edsNoParensRegExp;
+        $edPattern = '[ (}](' . $this->regExps->edsNoParensRegExp . '|' . $this->regExps->editedByRegExp . ')';
+//        $edPattern = '[ (}]' . $this->regExps->edsNoParensRegExp;
 //dump($edPattern);
         $regExpEnd1 = '|rev\.)' . $edPattern . ',/';
         $regExpEnd2 = '|rev\.), ?' . $edPattern . '/';
@@ -1820,9 +1309,9 @@ class Converter
         $regExp22 .= $regExpEnd2;
 
         if (
-            preg_match('/' . $this->edsParensRegExp . '/u', $remainder)
+            preg_match('/' . $this->regExps->edsParensRegExp . '/u', $remainder)
             ||
-            preg_match('/' . $this->editedByRegExp . '/', $remainder)
+            preg_match('/' . $this->regExps->editedByRegExp . '/', $remainder)
             || 
             (
                 preg_match($regExp11, $remainder, $matches)
@@ -1880,12 +1369,12 @@ class Converter
             $this->verbose("Contains string for an edition.");
         }
 
-        if (preg_match('/' . $this->fullThesisRegExp . '/iu', $remainder)) {
+        if (preg_match('/' . $this->regExps->fullThesisRegExp . '/iu', $remainder)) {
             $containsFullThesis = true;
             $this->verbose("Contains full thesis.");
         }
 
-        if (preg_match('/' . $this->thesisRegExp . '/u', $remainder)) {
+        if (preg_match('/' . $this->regExps->thesisRegExp . '/u', $remainder)) {
             $containsThesis = true;
             $this->verbose("Contains thesis.");
         }
@@ -1903,15 +1392,15 @@ class Converter
         //     $this->verbose("Contains page range.");
         // }
         if (
-            preg_match('/[ :]' . $this->pageRange . '([\.,\} ]|$)/', $remainder) 
+            preg_match('/[ :]' . $this->regExps->pageRange . '([\.,\} ]|$)/', $remainder) 
             ||
-            preg_match('/' . $this->pagesRegExp . '/', $remainder)
+            preg_match('/' . $this->regExps->pagesRegExp . '/', $remainder)
            ) {
             $containsPageRange = true;
             $this->verbose("Contains page range.");
         }
 
-        $remainderMinusPages = $this->findAndRemove($remainder, $this->pagesRegExp);
+        $remainderMinusPages = $this->findAndRemove($remainder, $this->regExps->pagesRegExp);
         if (preg_match('/\d/', $remainderMinusPages)) {
             $containsNumberOutsidePages = true;
         }
@@ -1926,8 +1415,8 @@ class Converter
             $this->verbose("Publication info ends with 'forthcoming', 'accepted', or 'in press', or 'to appear'.");
         }
 
-        if (preg_match($this->inReviewRegExp1, $remainder)
-                || preg_match($this->inReviewRegExp2, $remainder)) {
+        if (preg_match('/' . $this->regExps->inReviewRegExp . '\.?\)?$/', $remainder)
+                || preg_match('/^' . $this->regExps->inReviewRegExp . '/', $remainder)) {
             $endsWithInReview = true;
             $this->verbose("Starts with or ends with 'in review' string.");
         }
@@ -1988,7 +1477,7 @@ class Converter
             $this->verbose("Remainder has 'address: publisher' format.");
         }
 
-        if (preg_match('/[\p{L} ]{0,25}: [\p{L} ]{0,35},?( ' . $this->pagesRegExp . ')?$/u', $remainder)) {
+        if (preg_match('/[\p{L} ]{0,25}: [\p{L} ]{0,35},?( ' . $this->regExps->pagesRegExp . ')?$/u', $remainder)) {
             $endsAddressPublisher = true;
             $this->verbose("Remainder ends with 'address: publisher' format (and possibly page range).");
         }
@@ -2218,8 +1707,8 @@ class Converter
                 $remainder = preg_replace('/([^0-9]),([^ 0-9])/', '$1, $2', $remainder);
 
                 // if starts with "in", remove it and check whether what is left starts with italics
-                if (preg_match($this->inRegExp1, $remainder) && ! Str::startsWith($remainder, 'in press')) {
-                    $remainder = preg_replace($this->inRegExp1, '', $remainder);
+                if (preg_match('/^' . $this->regExps->inRegExp . ':? /', $remainder) && ! Str::startsWith($remainder, 'in press')) {
+                    $remainder = preg_replace('/^' . $this->regExps->inRegExp . ':? /', '', $remainder);
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
                         $italicStart = true;
                     }
@@ -2254,9 +1743,9 @@ class Converter
                         $remainder, 
                         $item, 
                         $language, 
-                        $this->pagesRegExp, 
-                        $this->pageWordsRegExp, 
-                        $this->volumeAndCodesRegExp, 
+                        $this->regExps->pagesRegExp, 
+                        $this->regExps->pageWordsRegExp, 
+                        $this->regExps->volumeAndCodesRegExp, 
                         true,
                     );
 
@@ -2264,7 +1753,7 @@ class Converter
 
                     $containsNumberDesignation = $result['containsNumberDesignation'];
 
-                    if ($result['result'] || preg_match('/^' . $this->volumeWithNumberRegExp . '/', $remainder)) {
+                    if ($result['result'] || preg_match('/^' . $this->regExps->volumeWithNumberRegExp . '/', $remainder)) {
                         $journalNameMissingButHasVolume = true;
                         $warnings[] = "Item seems to be article, but journal name not found.";
                     }
@@ -2277,8 +1766,8 @@ class Converter
                             $pubInfoStartsWithForthcoming, 
                             $pubInfoEndsWithForthcoming, 
                             $language, 
-                            $this->startPagesRegExp,
-                            $this->volumeRegExp
+                            $this->regExps->startPagesRegExp,
+                            $this->regExps->volumeRegExp
                         );
                         $this->detailLines = array_merge($this->detailLines, $journalResult['pub_info_details']);
                         $journal = rtrim($journalResult['journal'], ' ,(');
@@ -2370,7 +1859,7 @@ class Converter
                         $this->addToField($item, 'note', trim($remainder, '()'), 'addToField 6');
                         $remainder = '';
                     } else {
-                        if (preg_match('/^(?P<month>' . $this->monthsRegExp[$language] . ') (?P<day>[0-9]{1,2})[.,;]/', $remainder, $matches)) {
+                        if (preg_match('/^(?P<month>' . $this->dates->monthsRegExp[$language] . ') (?P<day>[0-9]{1,2})[.,;]/', $remainder, $matches)) {
                             $monthResult = $this->dates->fixMonth($matches['month'], $language);
                             $monthNumber = '00';
                             for ($j = 1; $j <= 12; $j++) {
@@ -2391,9 +1880,9 @@ class Converter
                             $remainder, 
                             $item, 
                             $language, 
-                            $this->pagesRegExp, 
-                            $this->pageWordsRegExp,
-                            $this->volumeAndCodesRegExp
+                            $this->regExps->pagesRegExp, 
+                            $this->regExps->pageWordsRegExp,
+                            $this->regExps->volumeAndCodesRegExp
                         );
 
                         $this->detailLines = array_merge($this->detailLines, $result['pub_info_details']);
@@ -2410,7 +1899,7 @@ class Converter
 
                         if ($remainder) {
                             // Get month, if any
-                            $months = $this->monthsRegExp[$language];
+                            $months = $this->dates->monthsRegExp[$language];
                             $regExp = '/(\(?(?P<month1>' . $months . '\)?)([-\/](?P<month2>' . $months . ')\)?)?)/iJ';
                             preg_match_all($regExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
 
@@ -2439,7 +1928,7 @@ class Converter
                                     $item, 
                                     $containsNumberDesignation, 
                                     $numberInParens,
-                                    $this->volumeAndCodesRegExp
+                                    $this->regExps->volumeAndCodesRegExp
                                 );
 
                                 $this->detailLines = array_merge($this->detailLines, $result['pub_info_details']);
@@ -2596,7 +2085,7 @@ class Converter
 
                 // If booktitle ends with period, not preceded by month abbreviations, then year, remove year.
                 if (isset($year) && preg_match('%^(?P<remainder>.*)\. ' . $year . '$%', $remainderWithMonthYear, $matches)) {
-                    if (! preg_match('/ (' . $this->monthsAbbreviationsRegExp[$language] . ')$/', $matches['remainder'])) {
+                    if (! preg_match('/ (' . $this->dates->monthsAbbreviationsRegExp[$language] . ')$/', $matches['remainder'])) {
                         $remainderWithMonthYear = $matches['remainder'];
                     }
                 }
@@ -2605,12 +2094,12 @@ class Converter
                 // $remainderWithMonthYear is $remainder before month and year (if any) were removed.
                 if ($inStart) {
                     $this->verbose("Starts with variant of \"in\"");
-                    $remainder = preg_replace($this->inRegExp1, '', $remainder);
+                    $remainder = preg_replace('/^' . $this->regExps->inRegExp . ':? /', '', $remainder);
                     $remainderWithMonthYear = ltrim(substr($remainderWithMonthYear, 2), ': ');
                 }
 
                 // If remainder starts with translator, remove it and put it in note field.
-                if (preg_match('/^(?P<note>(?P<translatedBy>' . $this->translatorRegExp . '|' . $this->translatedByRegExp . ') (?P<translator>.*?[a-z])\.)(?P<remainder>.*)$/', $remainder, $matches)) {
+                if (preg_match('/^(?P<note>(?P<translatedBy>' . $this->regExps->translatorRegExp . '|' . $this->regExps->translatedByRegExp . ') (?P<translator>.*?[a-z])\.)(?P<remainder>.*)$/', $remainder, $matches)) {
                     if (isset($matches['note']) && isset($matches['translator'])) {
                         $translator = $matches['translator'];
                         if (Str::endsWith($translator, 'et al')) {
@@ -2658,7 +2147,7 @@ class Converter
                     $this->verbose('Remainder without date: ' . $remainderWithoutDate);
 
                     // Get last match for page range in $remainderWithoutDate
-                    $numberOfMatches = preg_match_all('/(\()?' . $this->pagesRegExp . '(\))?/', $remainderWithoutDate, $matches, PREG_OFFSET_CAPTURE);
+                    $numberOfMatches = preg_match_all('/(\()?' . $this->regExps->pagesRegExp . '(\))?/', $remainderWithoutDate, $matches, PREG_OFFSET_CAPTURE);
                     if ($numberOfMatches) {
                         $matchIndex = $numberOfMatches - 1;
                         $pagesPos = $matches[0][$matchIndex][1];
@@ -2684,13 +2173,13 @@ class Converter
                     // Get pages
                     // Return last match for 'pages' and remove whole match from $remainder.
                     // Give preference to match that has page word before it.
-                    $result = $this->removeAndReturn($remainder, '(\(| |^)' . $this->pagesRegExpWithPp . '(\))?', ['pages'], 'last');
+                    $result = $this->removeAndReturn($remainder, '(\(| |^)' . $this->regExps->pagesRegExpWithPp . '(\))?', ['pages'], 'last');
                     if (! $result) {
-                        $result = $this->removeAndReturn($remainder, '(\(|(?<!\p{Ll}) |^)' . $this->pagesRegExp . '(\))?', ['pages'], 'last');
+                        $result = $this->removeAndReturn($remainder, '(\(|(?<!\p{Ll}) |^)' . $this->regExps->pagesRegExp . '(\))?', ['pages'], 'last');
                     }
                     if (! $result) {
                         // single page number, preceded by 'p.'
-                        $result = $this->removeAndReturn($remainder, '(\(| |^)' . $this->pageRegExpWithPp . '(\))?', ['pages'], 'last');
+                        $result = $this->removeAndReturn($remainder, '(\(| |^)' . $this->regExps->pageRegExpWithPp . '(\))?', ['pages'], 'last');
                     }
                     if ($result) {
                         $pages = $result['pages'];
@@ -2705,7 +2194,7 @@ class Converter
                 $remainder = ltrim($remainder, '., ');
 
                 // Next case occurs if remainder previously was like "pages 2-33 in ..."
-                $remainder = preg_replace($this->inRegExp1, '', $remainder);
+                $remainder = preg_replace('/^' . $this->regExps->inRegExp . ':? /', '', $remainder);
 
                 $this->verbose("[in2] Remainder: " . $remainder);
 
@@ -2716,7 +2205,7 @@ class Converter
                 $booktitle = $this->getQuotedOrItalic($remainder, false, false, $before, $after, $style);
 
                 // If booktitle is followed by volume, append it to booktitle
-                if (preg_match('/^(?P<volume>,? ?' . $this->volumeWithNumberRegExp . ')(?P<after>.*)$/', $after, $matches)) {
+                if (preg_match('/^(?P<volume>,? ?' . $this->regExps->volumeWithNumberRegExp . ')(?P<after>.*)$/', $after, $matches)) {
                     if (isset($matches['volume'])) {
                         $booktitle .= $matches['volume'];
                         $after = $matches['after'] ?? '';
@@ -2743,7 +2232,7 @@ class Converter
                             $possibleEditors = $string1;
                         }
                         if ($possibleEditors) {
-                            if (preg_match($this->editorStartRegExp, $possibleEditors, $matches, PREG_OFFSET_CAPTURE)) {
+                            if (preg_match($this->regExps->editorStartRegExp, $possibleEditors, $matches, PREG_OFFSET_CAPTURE)) {
                                 $possibleEditors = trim(substr($possibleEditors, strlen($matches[0][0])));
                             }
                             $isEditor = true;
@@ -2756,8 +2245,6 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 false, 
@@ -2816,7 +2303,7 @@ class Converter
                         }
                         $remainder = '';
                     // $remainder is <booktitle>. Ed. <editors> <address>: <publisher>.
-                    } elseif (preg_match('/^(?P<booktitle>' . $booktitleRegExp . ')\. ' . $this->edsNoParensRegExp . ' (?P<remains>.*)$/u', $remainder, $matches)) {
+                    } elseif (preg_match('/^(?P<booktitle>' . $booktitleRegExp . ')\. ' . $this->regExps->edsNoParensRegExp . ' (?P<remains>.*)$/u', $remainder, $matches)) {
                         if (isset($matches['remains'])) {
                             $result = $this->authorParser->convertToAuthors(
                                 explode(' ', $matches['remains']), 
@@ -2827,8 +2314,6 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2852,7 +2337,7 @@ class Converter
                             }
                         }
                     // $remainder is <editor> Ed., <booktitle>, <publisher>, <address>.
-                    } elseif (preg_match('/^(?P<editor>.{5,80}) ' . $this->edsNoParensRegExp . ', (?P<booktitle>[^,.]*), (?P<publisher>[\p{L} ]{3,40}), (?P<address>[\p{L}, ]{5,40})$/u', $remainder, $matches)) {
+                    } elseif (preg_match('/^(?P<editor>.{5,80}) ' . $this->regExps->edsNoParensRegExp . ', (?P<booktitle>[^,.]*), (?P<publisher>[\p{L} ]{3,40}), (?P<address>[\p{L}, ]{5,40})$/u', $remainder, $matches)) {
                         if (isset($matches['editor'])) {
                             $result = $this->authorParser->convertToAuthors(
                                 explode(' ', $matches['editor']), 
@@ -2863,8 +2348,6 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 false, 
@@ -2897,8 +2380,6 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -2956,8 +2437,8 @@ class Converter
                         && ! $booktitle
                         && $periodPosition !== false
                         && ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->bookTitleAbbrevs)
-                        && ! preg_match('/ (' . $this->monthsAbbreviationsRegExp[$language] . ')$/', substr($remainder, 0, $periodPosition))
-                        //&& ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->monthsAbbreviationsOld[$language])
+                        && ! preg_match('/ (' . $this->dates->monthsAbbreviationsRegExp[$language] . ')$/', substr($remainder, 0, $periodPosition))
+                        //&& ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->dates->monthsAbbreviationsOld[$language])
                         && ! preg_match('/ edited |[ \(]eds?\.|[ \(]pp\./i', $remainder)
                        ) {
                         if ($periodPosition > $datePos) {
@@ -3101,7 +2582,7 @@ class Converter
                     }
 
                     // $remainder ends in an editor string, possibly in parentheses, so format is <booktitle> <editor>
-                    if (! $lastTwoWordsHaveDigits && preg_match('/( ' . $this->edsOptionalParensRegExp . ')$/u', $tempRemainder)) {
+                    if (! $lastTwoWordsHaveDigits && preg_match('/( ' . $this->regExps->edsOptionalParensRegExp . ')$/u', $tempRemainder)) {
                         // Remove "eds" at end
                         $tempRemainderMinusEds = trim(Str::beforeLast($tempRemainder, ' '), ', ');
                         // If remaining string contains '(', take preceding string to be booktitle and following string to be editors.
@@ -3120,8 +2601,6 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -3150,8 +2629,6 @@ class Converter
                                     $date, 
                                     $isEditor, 
                                     $isTranslator, 
-                                    $this->translatorRegExp,
-                                    $this->edsNoParensRegExp,
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     true, 
@@ -3170,7 +2647,7 @@ class Converter
                         $remainderContainsEds = true;
                         $updateRemainder = false;
                         $remainder = '';
-                    } elseif (preg_match('/^(?P<booktitle>.*?)' . $this->editedByRegExp . '(?P<rest>.*?)$/i', $remainder, $matches)) {
+                    } elseif (preg_match('/^(?P<booktitle>.*?)' . $this->regExps->editedByRegExp . '(?P<rest>.*?)$/i', $remainder, $matches)) {
                         // $remainder does not end in editor string, but contains "edited by".
                         $this->verbose("Remainder contains 'edited by'. Taking it to be <booktitle> edited by <editor> <publicationInfo>");
                         $booktitle = trim($matches['booktitle'], ', ');
@@ -3193,8 +2670,6 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -3223,8 +2698,6 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -3244,8 +2717,6 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -3257,7 +2728,7 @@ class Converter
                         }
                         $this->setField($item, 'editor', $editor, 'setField 66');
                         $updateRemainder = false;
-                    } elseif ($containsEditors && preg_match($this->edsRegExp, $remainder, $matches)) {
+                    } elseif ($containsEditors && preg_match($this->regExps->edsRegExp, $remainder, $matches)) {
                         // $remainder does not *end* in editor string or contain "edited by", but contains an editor string.
                         // This case is dealt with in detail in the next code block.
                         $eds = $matches[0];
@@ -3335,19 +2806,19 @@ class Converter
                             $editorString = $beforeEds;
                             $determineEnd = false;
                             $postEditorString = $after;
-                        } elseif (preg_match('/' . $this->edsParensRegExp . '/u', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                        } elseif (preg_match('/' . $this->regExps->edsParensRegExp . '/u', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
                             // $remainder contains "(Eds.)" (parens required) or similar 
 
                             $results = $subMatches = $nameStringResults = [];
 
                             // booktitle, which can contain commas, ends in period
-                            $results[1] = preg_match('/^(?P<booktitle>[\p{L}\-:,. ]{15,}\p{Ll})\. (?P<editor>[\p{L}\-., ]{8,})' . $this->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[1]);
+                            $results[1] = preg_match('/^(?P<booktitle>[\p{L}\-:,. ]{15,}\p{Ll})\. (?P<editor>[\p{L}\-., ]{8,})' . $this->regExps->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[1]);
                            
                             // booktitle, which cannot contain commas, ends in comma
-                            $results[2] = preg_match('/^(?P<booktitle>[\p{L}\-:. ]{15,}), (?P<editor>[\p{L}\-., ]{8,})' . $this->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[2]);
+                            $results[2] = preg_match('/^(?P<booktitle>[\p{L}\-:. ]{15,}), (?P<editor>[\p{L}\-., ]{8,})' . $this->regExps->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[2]);
                            
                             // booktitle, which can contain commas, ends in comma, and subsequent editor string has no commas
-                            $results[3] = preg_match('/^(?P<booktitle>[\p{L}\-:., ]{15,}), (?P<editor>[\p{L}\-. ]{8,})' . $this->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[3]);
+                            $results[3] = preg_match('/^(?P<booktitle>[\p{L}\-:., ]{15,}), (?P<editor>[\p{L}\-. ]{8,})' . $this->regExps->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[3]);
 
                             foreach ($results as $i => $result) {
                                 $nameStringResults[$i] = $result ? $this->authorParser->isNameString($subMatches[$i]['editor'], $language) : false;
@@ -3371,8 +2842,6 @@ class Converter
                                         $date, 
                                         $isEditor, 
                                         $isTranslator, 
-                                        $this->translatorRegExp,
-                                        $this->edsNoParensRegExp,
                                         $this->cities, 
                                         $this->dictionaryNames, 
                                         determineEnd: false, 
@@ -3410,7 +2879,7 @@ class Converter
                                     $this->verbose("[in4b] Remainder: " . $remainder);
                                 }
                             }
-                        } elseif (preg_match($this->editorStartRegExp, $remainder)) {
+                        } elseif (preg_match($this->regExps->editorStartRegExp, $remainder)) {
                             // $remainder contains "eds" but not "(Eds.)" or "edited by"
                             // $remainder  starts with "Eds" or similar
                             // $remainder is Eds. <editors> <booktitle> <publicationInfo>
@@ -3420,7 +2889,9 @@ class Converter
                             $determineEnd = true;
                             $this->verbose("editorString: " . $editorString);
                             $this->verbose("[in5] Remainder: " . $remainder);
-                            if (substr($remainder, 0, strlen($phrases['and'])+1) == $phrases['and'] . ' ') {
+                            $andSpace = $this->authorParser->andWords;
+                            array_walk($andSpace, function(&$value) {$value .= ' ';});
+                            if (Str::startsWith($remainder, $andSpace)) {
                                 // In this case, the string starts something like 'ed. and '.  Assume the next
                                 // word is something like 'translated', and drop it
                                 $words = explode(" ", $remainder);
@@ -3444,8 +2915,6 @@ class Converter
                                 $trash5, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -3476,8 +2945,6 @@ class Converter
                                     $date,
                                     $isEditor,
                                     $isTranslator,
-                                    $this->translatorRegExp,
-                                    $this->edsNoParensRegExp,
                                     $language
                                 );
                                 if ($authorResult) {
@@ -3542,7 +3009,7 @@ class Converter
                                 if (
                                     $nameStringResult['result']
                                     &&
-                                    preg_match('/^(?P<editor>.*?) ' . $this->edsNoParensRegExp . ' (?P<remains>.*)$/', $remainder, $matches)
+                                    preg_match('/^(?P<editor>.*?) ' . $this->regExps->edsNoParensRegExp . ' (?P<remains>.*)$/', $remainder, $matches)
                                     ) {
                                     // <editor> <booktitle> <publicationInfo>
                                     $this->detailLines = array_merge($this->detailLines, $nameStringResult['details']);
@@ -3595,8 +3062,6 @@ class Converter
                                     $date, 
                                     $isEditor, 
                                     $isTranslator, 
-                                    $this->translatorRegExp,
-                                    $this->edsNoParensRegExp,
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     $determineEnd ?? true, 
@@ -3694,8 +3159,6 @@ class Converter
                                             $date, 
                                             $isEditor, 
                                             $isTranslator, 
-                                            $this->translatorRegExp,
-                                            $this->edsNoParensRegExp,
                                             $this->cities, 
                                             $this->dictionaryNames, 
                                             false, 
@@ -3727,7 +3190,7 @@ class Converter
                 $this->verbose("[in9] Remainder: " . $remainder);
 
                 // Remainder consists entirely of <address>: <publisher> --- no booktitle possible, so must in fact be book, not incollection
-                if (! $booktitle && preg_match('/^(?P<address>[\p{L} ]{0,25}): (?P<publisher>[\p{L} ]{0,35}),?( ' . $this->pagesRegExp . ')?$/u', $remainder, $matches)) {
+                if (! $booktitle && preg_match('/^(?P<address>[\p{L} ]{0,25}): (?P<publisher>[\p{L} ]{0,35}),?( ' . $this->regExps->pagesRegExp . ')?$/u', $remainder, $matches)) {
                     $itemKind = 'book';
                     $this->itemType = 'book';
                     $this->setField($item, 'address', $matches['address'], 'setField 80a');
@@ -3752,7 +3215,7 @@ class Converter
                 // Get editors
                 if ($remainder && $booktitle && ! isset($item->editor)) {
                     // CASE 2
-                    if (preg_match($this->editorStartRegExp, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                    if (preg_match($this->regExps->editorStartRegExp, $remainder, $matches, PREG_OFFSET_CAPTURE)) {
                         $this->verbose("[ed3] Remainder starts with editor string");
                         $remainder = substr($remainder, $matches[0][1] + strlen($matches[0][0]));
                         $this->verbose("Remainder: " . $remainder);
@@ -3799,8 +3262,6 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 false, 
@@ -3856,8 +3317,6 @@ class Converter
                                     $date, 
                                     $isEditor, 
                                     $isTranslator, 
-                                    $this->translatorRegExp,
-                                    $this->edsNoParensRegExp,
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     true, 
@@ -3878,8 +3337,6 @@ class Converter
                                     $date, 
                                     $isEditor, 
                                     $isTranslator, 
-                                    $this->translatorRegExp,
-                                    $this->edsNoParensRegExp,
                                     $this->cities, 
                                     $this->dictionaryNames, 
                                     true, 
@@ -3897,7 +3354,7 @@ class Converter
                             }
                             $this->setField($item, 'editor', trim($editor), 'setField 83');
                         }
-                    } elseif (preg_match('/' . $this->edsParensRegExp . '/u', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                    } elseif (preg_match('/' . $this->regExps->edsParensRegExp . '/u', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
                         // $remainder contains "(Eds.)" or something similar, so takes form <editor> (Eds.) <publicationInfo>
                         $this->verbose("[ed6] Remainder starts with editor string");
                         $editorString = substr($remainder, 0, $matches[0][1]);
@@ -3911,8 +3368,6 @@ class Converter
                             $date, 
                             $isEditor, 
                             $isTranslator, 
-                            $this->translatorRegExp,
-                            $this->edsNoParensRegExp,
                             $this->cities, 
                             $this->dictionaryNames, 
                             false, 
@@ -3939,8 +3394,6 @@ class Converter
                             $date, 
                             $isEditor, 
                             $isTranslator, 
-                            $this->translatorRegExp,
-                            $this->edsNoParensRegExp,
                             $this->cities, 
                             $this->dictionaryNames, 
                             true, 
@@ -3958,7 +3411,7 @@ class Converter
                         // Else editors are part of $remainder up to " ed." or "(ed.)" etc.
                         $this->verbose("Remainder: " . $remainder);
                         $this->verbose("[ed5] Remainder starts with editor string");
-                        $numberOfMatches = preg_match($this->edsRegExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
+                        $numberOfMatches = preg_match($this->regExps->edsRegExp, $remainder, $matches, PREG_OFFSET_CAPTURE);
                         if ($numberOfMatches) {
                             $take = $numberOfMatches ? $matches[0][1] : 0;
                             $match = $numberOfMatches ? $matches[0][0] : '';
@@ -3974,8 +3427,6 @@ class Converter
                                 $date, 
                                 $isEditor, 
                                 $isTranslator, 
-                                $this->translatorRegExp,
-                                $this->edsNoParensRegExp,
                                 $this->cities, 
                                 $this->dictionaryNames, 
                                 true, 
@@ -4004,8 +3455,6 @@ class Converter
                             $date, 
                             $isEditor, 
                             $isTranslator, 
-                            $this->translatorRegExp,
-                            $this->edsNoParensRegExp,
                             $this->cities, 
                             $this->dictionaryNames, 
                             true, 
@@ -4039,7 +3488,7 @@ class Converter
                     // Check whether publication info matches pattern for book to be a volume in a series
                     $result = $this->removeAndReturn(
                         $remainder,
-                        '(?P<volumeSeriesName>(' . $this->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}))(( of| in|,) )((?P<seriesName>[^\.,]*)\.|,))',
+                        '(?P<volumeSeriesName>(' . $this->regExps->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}))(( of| in|,) )((?P<seriesName>[^\.,]*)\.|,))',
                         ['volumeSeriesName', 'seriesName', 'volume']
                         );
                     if ($result) {
@@ -4144,7 +3593,7 @@ class Converter
                                         $booktitle = $tempRemainder;
                                         $this->verbose('booktitle case 9');
                                     }
-                                    if (preg_match('/^(?P<booktitle>.*?)(' . $this->volumeRegExp . ')(?P<volume>\d{1,3})\.?$/', $booktitle, $matches)) {
+                                    if (preg_match('/^(?P<booktitle>.*?)(' . $this->regExps->volumeRegExp . ')(?P<volume>\d{1,3})\.?$/', $booktitle, $matches)) {
                                         if ($use == 'latex') {
                                             $this->setField($item, 'booktitle', trim($booktitle, ' ,;'), 'setField 99');
                                         } else {
@@ -4257,7 +3706,7 @@ class Converter
                         if (str_contains($booktitle, trim($cityString, '. '))) {
                             $cityString = '';
                         }
-                        if (preg_match('/^(?P<remains>.*?)' . $this->pagesRegExp . '$/', $remainder, $matches)) {
+                        if (preg_match('/^(?P<remains>.*?)' . $this->regExps->pagesRegExp . '$/', $remainder, $matches)) {
                             $this->setField($item, 'pages', $matches['pages'], 'setField 110');
                             $remainder = trim($matches['remains'], ';., ');
                         }
@@ -4309,7 +3758,7 @@ class Converter
                         }
                         $booktitle = preg_replace('/\[C\](?=\.)/', '', $booktitle);
 
-                        if (preg_match('/^(?P<booktitle>.*?)(' . $this->volumeRegExp . ')(?P<volume>\d{1,4})\.?$/', $booktitle, $matches)) {
+                        if (preg_match('/^(?P<booktitle>.*?)(' . $this->regExps->volumeRegExp . ')(?P<volume>\d{1,4})\.?$/', $booktitle, $matches)) {
                             if ($use == 'latex') {
                                 $this->setField($item, 'booktitle', trim($booktitle, ' ,;'), 'setField 113');
                             } else {
@@ -4387,13 +3836,13 @@ class Converter
                 }
 
                 // If remainder starts with pages, put them in Note and remove them from remainder
-                if (preg_match('/^\(?(?P<note>' . $this->pageRegExpWithPp . ')/', $remainder, $matches)) {
+                if (preg_match('/^\(?(?P<note>' . $this->regExps->pageRegExpWithPp . ')/', $remainder, $matches)) {
                     $this->setField($item, 'note', $matches['note'], 'setField 114');
                     $remainder = trim(substr($remainder, strlen($matches[0])), '() ');
                 }
 
                 // Look for "edited by" in remainder
-                if (preg_match('/(?P<editorString>' . $this->editedByRegExp . ' .*?[a-z] ?\.)/', $remainder, $matches)) {
+                if (preg_match('/(?P<editorString>' . $this->regExps->editedByRegExp . ' .*?[a-z] ?\.)/', $remainder, $matches)) {
                     $this->addToField($item, 'note', str_replace(' .', '.', $matches['editorString']), 'setField 115');
                     $remainder = str_replace($matches['editorString'], '', $remainder);
                 }
@@ -4437,7 +3886,7 @@ class Converter
                 $origRemainder = $remainder;
                 $result = $this->removeAndReturn(
                     $remainder,
-                    '(?P<volumeDesignation>(\(?' . $this->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}|[IVXL]{1,3})\)?))((?P<punc> of| in|,|.|:)? )(?P<seriesAndPubInfo>.*)$',
+                    '(?P<volumeDesignation>(\(?' . $this->regExps->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}|[IVXL]{1,3})\)?))((?P<punc> of| in|,|.|:)? )(?P<seriesAndPubInfo>.*)$',
                     ['volumeDesignation', 'volume', 'punc', 'seriesAndPubInfo']
                 );
 
@@ -4572,7 +4021,7 @@ class Converter
                     if (! isset($item->series)) {
                         // If $cityString and $publisherString exist, so that $remainderMinusPubInfo contains no address or publisher info
                         // and title is strongly identified or $remainderMinusPubInfo contains no period or comma and matches
-                        // $this->seriesRegExp, then $remainderMinusPubInfo is series.
+                        // $this->regExps->seriesRegExp, then $remainderMinusPubInfo is series.
                         if (
                             ! empty($cityString)
                             &&
@@ -4582,7 +4031,7 @@ class Converter
                                 ($titleStyle && $titleStyle != 'none')
                                 ||
                                 (
-                                    preg_match('/(' . $this->seriesRegExp . ')/', $remainderMinusPubInfo)
+                                    preg_match('/(' . $this->regExps->seriesRegExp . ')/', $remainderMinusPubInfo)
                                     &&
                                     strpos($remainderMinusPubInfo, '.') === false 
                                     &&
@@ -4596,13 +4045,13 @@ class Converter
                             $remainder = '';
                         } else {
                             // If remainder contains a period following a lowercase letter and preceding string matches
-                            // $this->seriesRegExp, string before period is series name
+                            // $this->regExps->seriesRegExp, string before period is series name
                             $periodPos = strpos($remainderMinusPubInfo, '.');
                             if ($periodPos !== false && strtolower($remainderMinusPubInfo[$periodPos-1]) == $remainderMinusPubInfo[$periodPos-1]) {
                                 $beforePeriod = trim(Str::before($remainderMinusPubInfo, '.'));
-                                if (preg_match('/(' . $this->seriesRegExp . ')/', $beforePeriod)) {
+                                if (preg_match('/(' . $this->regExps->seriesRegExp . ')/', $beforePeriod)) {
                                     $series = $beforePeriod;
-                                    if (preg_match('/^(?P<volume> ?' . $this->volumeWithNumberRegExp . ')(?P<remainder>.*?)$/', Str::after($remainderMinusPubInfo, '.'), $matches)) {
+                                    if (preg_match('/^(?P<volume> ?' . $this->regExps->volumeWithNumberRegExp . ')(?P<remainder>.*?)$/', Str::after($remainderMinusPubInfo, '.'), $matches)) {
                                         if (isset($matches['volume'])) {
                                             $series .= '.' . $matches['volume'];
                                             $remainder = $matches['remainder'] ?? '';
@@ -4702,9 +4151,9 @@ class Converter
             ////////////////////////////////////////////
 
             case 'thesis':
-                if (preg_match('/' . $this->masterRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                if (preg_match('/' . $this->regExps->masterRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
                     $itemKind = 'mastersthesis';
-                } elseif (preg_match('/' . $this->phdRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+                } elseif (preg_match('/' . $this->regExps->phdRegExp . '/', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
                     $itemKind = 'phdthesis';
                 } else {
                     $itemKind = 'phdthesis';
@@ -4712,7 +4161,7 @@ class Converter
                 }
                 $this->verbose(['fieldName' => 'Item type', 'content' => $itemKind]);
 
-                if (preg_match('/^\(' . $this->fullThesisRegExp . '(?P<school>[^\)]*)\)(?P<remainder>.*)/u', $remainder, $matches)) {
+                if (preg_match('/^\(' . $this->regExps->fullThesisRegExp . '(?P<school>[^\)]*)\)(?P<remainder>.*)/u', $remainder, $matches)) {
                     $this->setField($item, 'school', trim($matches['school'], ', '), 'setField 154');
                     $remainder = $matches['remainder'];
                     if (empty($item->school)) {
@@ -4721,17 +4170,17 @@ class Converter
                         $this->addToField($item, 'note', trim($remainder, ',. '), 'setField 156');
                     }
                 } else {
-                    if (preg_match('/\(' . $this->fullThesisRegExp . '\)/u', $remainder)) {
-                        $remainder = $this->findAndRemove($remainder, ',? ?\(' . $this->fullThesisRegExp . '\)');
-                    } elseif (preg_match('/' . $this->thesisRegExp . ' (?P<remainder>.*)$/', $remainder, $matches)) {
+                    if (preg_match('/\(' . $this->regExps->fullThesisRegExp . '\)/u', $remainder)) {
+                        $remainder = $this->findAndRemove($remainder, ',? ?\(' . $this->regExps->fullThesisRegExp . '\)');
+                    } elseif (preg_match('/' . $this->regExps->thesisRegExp . ' (?P<remainder>.*)$/', $remainder, $matches)) {
                         $remainder = $matches['remainder'] ?? '';
                     } else {
-                        $remainder = preg_replace('/' . $this->unpublishedRegExp . ' /', '', $remainder);
-                        $remainder = $this->findAndRemove($remainder, $this->fullThesisRegExp);
+                        $remainder = preg_replace('/' . $this->regExps->unpublishedRegExp . ' /', '', $remainder);
+                        $remainder = $this->findAndRemove($remainder, $this->regExps->fullThesisRegExp);
                     }
                     $remainder = trim($remainder, ' -.,)[]');
                     // if remainder contains number of pages, put them in note
-                    $result = $this->removeAndReturn($remainder, '(?P<pageWithPp>\(?' . $this->pageRegExpWithPp . '\)?)', ['pageWithPp', 'pages']);
+                    $result = $this->removeAndReturn($remainder, '(?P<pageWithPp>\(?' . $this->regExps->pageRegExpWithPp . '\)?)', ['pageWithPp', 'pages']);
                     if ($result) {
                         if ($use == 'latex') {
                             $this->setField($item, 'note', $result['pageWithPp'], 'setField 157a');
@@ -4750,7 +4199,7 @@ class Converter
                             $remainder = ltrim($remainder, '., ');
                             $warnings[] = "The string \"" . $extraYear . "\" before the schoool name remains unidentified.";
                         }
-                        if (preg_match('/(?P<month>' . $this->monthsRegExp[$language] . ')?,? (?P<year>' . $this->yearRegExp . ')$/', $remainder, $matches)) {
+                        if (preg_match('/(?P<month>' . $this->dates->monthsRegExp[$language] . ')?,? (?P<year>' . $this->yearRegExp . ')$/', $remainder, $matches)) {
                             if (isset($matches['month'])) {
                                 $this->setField($item, 'month', $matches['month'], 'setField 157a');
                             }
@@ -4953,8 +4402,6 @@ class Converter
                     $date,
                     $isEditor,
                     $isTranslator,
-                    $this->translatorRegExp,
-                    $this->edsNoParensRegExp,
                     $language
                 );
 

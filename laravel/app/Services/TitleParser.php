@@ -6,15 +6,19 @@ use Str;
 use App\Traits\Countries;
 use App\Traits\Utilities;
 
+use App\Services\RegularExpressions;
+
 class TitleParser
 {
     var $titleDetails = [];
 
     private Dates $dates;
+    private RegularExpressions $regExps;
 
     public function __construct()
     {
         $this->dates = new Dates();
+        $this->regExps = new RegularExpressions;
     }
 
     /**
@@ -50,21 +54,6 @@ class TitleParser
         array $excludedWords, 
         array $cities, 
         array $dictionaryNames, 
-        string $pagesRegExp, 
-        string $pageRegExp, 
-        string $startPagesRegExp, 
-        string $fullThesisRegExp, 
-        string $thesisRegExp, 
-        string $edsOptionalParensRegExp, 
-        string $editedByRegExp, 
-        array $monthsRegExp,
-        string $inRegExp, 
-        string $volumeRegExp, 
-        string $volumeAndCodesRegExp, 
-        string $seriesRegExp,
-        string $edsRegExp,
-        string $translatorRegExp,
-        string $translatedByRegExp,
         bool $includeEdition = false, 
         string $language = 'en'
        ): array
@@ -174,8 +163,8 @@ class TitleParser
             }
         }
 
-        $containsPages = preg_match('/(\()?' . $pagesRegExp . '(\))?/', $remainder);
-        $volumeWithDigitRegExp = '/^(' . $volumeRegExp . ') (\d)\.?\)?[.,]?$/i';
+        $containsPages = preg_match('/(\()?' . $this->regExps->pagesRegExp . '(\))?/', $remainder);
+        $volumeWithDigitRegExp = '/^(' . $this->regExps->volumeRegExp . ') (\d)\.?\)?[.,]?$/i';
         $editionRegExp = '/(^(?P<fullEdition>\(' . $this->editionRegExp . '\)|^' . $this->editionRegExp . '))(?P<remains>.*$)/iJ';
 
         // Go through the words in $remainder one at a time.
@@ -222,7 +211,7 @@ class TitleParser
             $initialWords[] = $word;
 
             // volume is next
-            if (preg_match('/^(' . $volumeRegExp . ') [0-9]/', $remainder)) {
+            if (preg_match('/^(' . $this->regExps->volumeRegExp . ') [0-9]/', $remainder)) {
                 $this->verbose("Ending title, case 1d");
                 $title = rtrim(implode(' ', $initialWords), ',:;.');
                 break;
@@ -295,10 +284,10 @@ class TitleParser
                     $remainderFollowingNextPeriodOrComma = mb_substr($remainder, mb_strlen($stringToNextPeriodOrComma));
                     $remainderFollowingNextPeriod = mb_substr($remainder, mb_strlen($stringToNextPeriod));
                     $upcomingYear = $this->dates->isYear(trim($remainderFollowingNextPeriodOrComma));
-                    $upcomingVolumePageYear = preg_match('/^(' . $volumeRegExp . ' )?[0-9\(\)\., p\-]{2,}$/', trim($remainderFollowingNextPeriodOrComma));
-                    $upcomingVolumeNumber = preg_match('/^(' . $volumeAndCodesRegExp . ')[0-9]{1,4},? (' . $this->numberRegExp . ')? ?\(?[0-9]{1,4}\)?/', trim($remainderFollowingNextPeriodOrComma));
+                    $upcomingVolumePageYear = preg_match('/^(' . $this->regExps->volumeRegExp . ' )?[0-9\(\)\., p\-]{2,}$/', trim($remainderFollowingNextPeriodOrComma));
+                    $upcomingVolumeNumber = preg_match('/^(' . $this->regExps->volumeAndCodesRegExp . ')[0-9]{1,4},? (' . $this->numberRegExp . ')? ?\(?[0-9]{1,4}\)?/', trim($remainderFollowingNextPeriodOrComma));
                     $upcomingRoman = preg_match('/^[IVXLCD]{1,6}[.,; ] ?/', trim($remainderFollowingNextPeriodOrComma));
-                    $followingRemainderMinusMonth = preg_replace('/' . $monthsRegExp[$language] . '/', '', $remainderFollowingNextPeriodOrComma);
+                    $followingRemainderMinusMonth = preg_replace('/' . $this->dates->monthsRegExp[$language] . '/', '', $remainderFollowingNextPeriodOrComma);
                     $upcomingArticlePubInfo = preg_match('/^[0-9.,;:\-() ]{8,}$/', $followingRemainderMinusMonth);
                 }
 
@@ -311,9 +300,9 @@ class TitleParser
                 //     $remainder = ltrim($remainder, ' .');
                 // }
                 // Space before \S+ is important, because space after Vol in $volumeRegExp is optional.
-                $upcomingBookVolume = preg_match('/^\(?(' . $volumeRegExp . ') \S+ (?!of)/', $remainder);
-                $upcomingVolumeCount = preg_match('/^\(?(?P<note>[1-9][0-9]{0,1} (' . $volumeRegExp . '))\)?/', $remainder, $volumeCountMatches);
-                $journalPubInfoNext = preg_match('/^' . $this->yearRegExp . '(,|;| ) ?(' . $volumeAndCodesRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?([0-9, \-p\.():]*$|\([0-9]{2,4}\))/', $remainder);
+                $upcomingBookVolume = preg_match('/^\(?(' . $this->regExps->volumeRegExp . ') \S+ (?!of)/', $remainder);
+                $upcomingVolumeCount = preg_match('/^\(?(?P<note>[1-9][0-9]{0,1} (' . $this->regExps->volumeRegExp . '))\)?/', $remainder, $volumeCountMatches);
+                $journalPubInfoNext = preg_match('/^' . $this->yearRegExp . '(,|;| ) ?(' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->numberRegExp . ')?([0-9, \-p\.():]*$|\([0-9]{2,4}\))/', $remainder);
 
                 if ($journalPubInfoNext) {
                     $this->verbose("Ending title, case 2a (journal pub info next, with no journal name)");
@@ -368,28 +357,28 @@ class TitleParser
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]?(' . $this->endForthcomingRegExp . ')/u', $remainder) 
                             // journal name, volume (year?) issue? page
                             // Note: permits no space or punctuation between volume number and page number
-                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pagesRegExp . '\.? ?$/u', $remainder)
+                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $this->regExps->pagesRegExp . '\.? ?$/u', $remainder)
                             // similar, but requires some punctuation or space between volume and page numbers, but allows a single
                             // page --- does not require a page range.
-                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, |: | )([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pageRegExp . '\.? ?$/u', $remainder) 
+                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, |: | )([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $this->regExps->pageRegExp . '\.? ?$/u', $remainder) 
                             // journal name followed by year and publication info, allowing issue number and page
                             // numbers to be preceded by letters and issue number to have / or - in it.
-                            || preg_match('/^\p{Lu}[\p{L} &()\-]+[,.]? (' . $monthsRegExp[$language] . ')? ?' . $this->yearRegExp . '[,;]? ?(' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?(supp )?[A-Z]?[0-9\/\-]{0,4}\)?[:,]? ?' . $pagesRegExp . '\.? ?$/u', $remainder)
+                            || preg_match('/^\p{Lu}[\p{L} &()\-]+[,.]? (' . $this->dates->monthsRegExp[$language] . ')? ?' . $this->yearRegExp . '[,;]? ?(' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?(supp )?[A-Z]?[0-9\/\-]{0,4}\)?[:,]? ?' . $this->regExps->pagesRegExp . '\.? ?$/u', $remainder)
                             // year followed by journal name and publication info, allowing issue number and page
                             // numbers to be preceded by letters and issue number to have / or - in it.
                             // Note that this case allows a single page or a page range.
-                            || preg_match('/^' . $this->yearRegExp . ',? \p{Lu}[\p{L} &()\-]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pageRegExp . '\.? ?$/u', $remainder)
+                            || preg_match('/^' . $this->yearRegExp . ',? \p{Lu}[\p{L} &()\-]+[,.]? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $this->regExps->pageRegExp . '\.? ?$/u', $remainder)
                             // journal name followed by more specific publication info, year at end, allowing issue number and page
                             // numbers to be preceded by letters.
-                            || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '(, |. |.)(\(?' . $this->yearRegExp . '\)?)$/u', $remainder) 
+                            || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $this->regExps->pagesRegExp . '(, |. |.)(\(?' . $this->yearRegExp . '\)?)$/u', $remainder) 
                             // journal name followed by more specific publication info, year first, allowing issue number and page
                             // numbers to be preceded by letters.
-                            || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? ' . $this->yearRegExp . ',? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $pagesRegExp . '\.? ?$/u', $remainder)
+                            || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? ' . $this->yearRegExp . ',? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $this->regExps->pagesRegExp . '\.? ?$/u', $remainder)
                             // journal name (no commas) followed by comma, volume, number (and possible page numbers).
-                            || preg_match('/^\p{Lu}[\p{L} &]+,? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:( ] ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\/]*$/u', $remainderMinusArticle)
+                            || preg_match('/^\p{Lu}[\p{L} &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:( ] ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\/]*$/u', $remainderMinusArticle)
                             // $word ends in period && journal name (can include commma), pub info ('}' after volume # for \textbf{ (in $volumeAndCodesRegExp))
-                            || (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L}, &]+,? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:( ] ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\/]*$/u', $remainderMinusArticle))
-                            || (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L}, &]+,? (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?\([0-9]{2,4}\)/u', $remainderMinusArticle))
+                            || (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L}, &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:( ] ?(' . $this->numberRegExp . ')?[0-9, \-p\.():\/]*$/u', $remainderMinusArticle))
+                            || (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L}, &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->numberRegExp . ')?\([0-9]{2,4}\)/u', $remainderMinusArticle))
                         )
                     ) {
                         $upcomingJournalAndPubInfo = true;
@@ -399,7 +388,7 @@ class TitleParser
 
                     // $word ends in period && then there are letters and spaces, and then a page range in parens
                     // (so string before page range is booktitle?)
-                    if (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L} ]+,? ?\(?(' . $pagesRegExp . ')/u', $remainder)) { 
+                    if (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L} ]+,? ?\(?(' . $this->regExps->pagesRegExp . ')/u', $remainder)) { 
                         $upcomingPageRange = true;
                     }
 
@@ -410,15 +399,15 @@ class TitleParser
                     $translatorNext = false;
                     // "(Jane Smith, trans.)" or "(Volume 2, Jane Smith, trans.)"
                     if (in_array($nextWord[0], ['('])) {
-                        $translatorNext = preg_match('/^\((?P<string>(?P<editor>[^)]+) ' . $edsRegExp . '(?P<translator>[^)]+)' . $translatorRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
+                        $translatorNext = preg_match('/^\((?P<string>(?P<editor>[^)]+) ' . $this->regExps->edsNoParensRegExp . '(?P<translator>[^)]+)' . $this->regExps->translatorRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
                         if (! $translatorNext) {
-                            $translatorNext = preg_match('/^\((?P<string>(?P<translator>[^)]+) ' . $translatorRegExp . '(?P<editor>[^)]+)' . $edsRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
+                            $translatorNext = preg_match('/^\((?P<string>(?P<translator>[^)]+) ' . $this->regExps->translatorRegExp . '(?P<editor>[^)]+)' . $this->regExps->edsNoParensRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
                         }
                         if (! $translatorNext) {
-                            $translatorNext = preg_match('/^\((?P<string>(?P<translator>[^)]+) ' . $translatorRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
+                            $translatorNext = preg_match('/^\((?P<string>(?P<translator>[^)]+) ' . $this->regExps->translatorRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
                         }
                         if (isset($matches['string'])) {
-                            if (preg_match('/^(' . $volumeRegExp . ')(?P<volume>[\dIVXL]+)[, ](?P<translator>.*?)' . $translatorRegExp . '$/', $matches['string'], $volumeMatches)) {
+                            if (preg_match('/^(' . $this->regExps->volumeRegExp . ')(?P<volume>[\dIVXL]+)[, ](?P<translator>.*?)' . $this->regExps->translatorRegExp . '$/', $matches['string'], $volumeMatches)) {
                                 if (isset($volumeMatches['volume'])) {
                                     $volume = $volumeMatches['volume'];
                                 }
@@ -433,14 +422,14 @@ class TitleParser
                             $remainder = trim($matches['remainder'], '. ');
                             $remainingWords = explode(' ', $remainder);
                         }
-                    } elseif (preg_match('/^' . $translatedByRegExp . '$/', $nextWord . ' ' . $nextButOneWord)) {
+                    } elseif (preg_match('/^' . $this->regExps->translatedByRegExp . '$/', $nextWord . ' ' . $nextButOneWord)) {
                         // Extraction of translators' names handled separately.
                         $translatorNext = true;
-                    } elseif (preg_match('/^' . $translatorRegExp . '$/', $nextWord)) {
+                    } elseif (preg_match('/^' . $this->regExps->translatorRegExp . '$/', $nextWord)) {
                         // "trans. John Smith."
                         // Here trans must start with lowercase, because journal name might start with Trans. and period
                         // cannnot be preceded by uppercase letter (which would be initial of translator)
-                        if (preg_match('/^' . $translatorRegExp . ' (?P<translator>[^.]+(?<!\p{Lu})\.)(?P<remainder>.*)/u', $remainder, $matches)) {
+                        if (preg_match('/^' . $this->regExps->translatorRegExp . ' (?P<translator>[^.]+(?<!\p{Lu})\.)(?P<remainder>.*)/u', $remainder, $matches)) {
                             $translatorNext = true;
                             $translator = $matches['translator'];
                             $remainder = $matches['remainder'];
@@ -449,7 +438,7 @@ class TitleParser
                             $translator = $matches['translator'];
                             $remainder = $matches['remainder'];
                         }
-                    } elseif (preg_match('/((?!^[^(]*\p{Ll}\..*)^(?P<translator>[\p{L}. ]*))\(' . $translatorRegExp . '\)(?P<remainder>.*)$/u', $remainder, $matches)) {
+                    } elseif (preg_match('/((?!^[^(]*\p{Ll}\..*)^(?P<translator>[\p{L}. ]*))\(' . $this->regExps->translatorRegExp . '\)(?P<remainder>.*)$/u', $remainder, $matches)) {
                         // Jessica J. Smith (trans.), ...
                         // string up to first ( does not contain lowercase letter followed by period and string matches letters, spaces,
                         // and periods followed by '(Trans.)' or similar then any characters
@@ -470,10 +459,10 @@ class TitleParser
                             ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo || $upcomingBookVolume || $upcomingVolumeCount)
                            )
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
-                        || preg_match($startPagesRegExp, $remainder)
-                        || preg_match('/^' . $inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
-                        || preg_match('/^(' . $this->journalWord . ' |Annals |Proc(eedings)? )/', $remainder)
-                        || preg_match('/^\(?(' . $volumeRegExp . ') /', $remainder)
+                        || preg_match($this->regExps->startPagesRegExp, $remainder)
+                        || preg_match('/^' . $this->regExps->inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
+                        || preg_match('/^(Journal |Annals |Proc(eedings)? )/', $remainder)
+                        || preg_match('/^\(?(' . $this->regExps->volumeRegExp . ') /', $remainder)
                         || (
                             $nextWord 
                             &&
@@ -497,8 +486,8 @@ class TitleParser
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^' . $this->yearRegExp . '(\.|$)/', $remainder)
                         // editor next
-                        || preg_match('/^' . $edsOptionalParensRegExp . ' /', $remainder)
-                        || preg_match('/^' . $editedByRegExp . ' /', $remainder)
+                        || preg_match('/^' . $this->regExps->edsOptionalParensRegExp . ' /', $remainder)
+                        || preg_match('/^' . $this->regExps->editedByRegExp . ' /', $remainder)
                         // address [no spaces]: publisher in db
                         || (
                             preg_match('/^\p{Lu}\p{L}+: (?P<publisher>[\p{L} ]*),/u', $remainder, $matches) 
@@ -536,12 +525,12 @@ class TitleParser
                         // (<city> in db
                         || Str::startsWith(ltrim($remainder, '('), $cities)
                         // Thesis
-                        || preg_match('/^[(\[\-]? ?' . $fullThesisRegExp . '/', $remainder)
-                        || preg_match('/^[(\[\-]? ?' . $thesisRegExp . '/', $remainder)
+                        || preg_match('/^[(\[\-]? ?' . $this->regExps->fullThesisRegExp . '/', $remainder)
+                        || preg_match('/^[(\[\-]? ?' . $this->regExps->thesisRegExp . '/', $remainder)
                         ) {
                         $this->verbose("Ending title, case 2 (word '" . $word . "')");
                         $title = rtrim(implode(' ', $initialWords), ',:;.');
-                        if (preg_match('/^' . $this->journalWord . ' /', $remainder)) {
+                        if (preg_match('/^Journal /', $remainder)) {
                             $isArticle = true;
                         }
                         if ($upcomingBookVolume) {
@@ -644,12 +633,12 @@ class TitleParser
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
                     // elseif next sentence starts with a thesis designation, terminate title
-                    } elseif (preg_match('/^[\(\[]' . $fullThesisRegExp . '[\)\]]/', $stringToNextPeriodOrComma)) {
+                    } elseif (preg_match('/^[\(\[]' . $this->regExps->fullThesisRegExp . '[\)\]]/', $stringToNextPeriodOrComma)) {
                         $this->verbose("Ending title, case 4a");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         break;
                     // elseif next sentence contains word 'series', terminate title
-                    } elseif (preg_match('/' . $seriesRegExp . '/', $stringToNextPeriodOrComma)) {
+                    } elseif (preg_match('/' . $this->regExps->seriesRegExp . '/', $stringToNextPeriodOrComma)) {
                         $this->verbose("Ending title, case 4b (next sentence contains a phrase indicating a 'series')");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
                         $seriesNext = true;
@@ -666,7 +655,7 @@ class TitleParser
                     } elseif (
                             preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriodOrComma, 0, -1))
                             //preg_match('/[a-zA-Z -]+/', substr($stringToNextPeriodOrComma,0,-1))
-                            && ! preg_match('/^' . $inRegExp . ':? /', $remainder)
+                            && ! preg_match('/^' . $this->regExps->inRegExp . ':? /', $remainder)
                             && ! $this->isProceedings($remainder)
                             && strlen($remainder) > strlen($stringToNextPeriodOrComma) + ($containsPages ? 37 : 30)
                             && ! $upcomingYear
@@ -796,7 +785,7 @@ class TitleParser
                     }
                 } elseif (Str::endsWith($word, [':'])) {
                     // Journal name (spaces and letters), volume-number-page info
-                    if (preg_match('/^\p{Lu}[\p{L} ]{4,30}, (' . $volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, |: | )([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $pageRegExp . '\.? ?$/u', $remainder)) {
+                    if (preg_match('/^\p{Lu}[\p{L} ]{4,30}, (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, |: | )([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $this->regExps->pageRegExp . '\.? ?$/u', $remainder)) {
                         $upcomingJournalAndPubInfo = true;
                         $isArticle = true;
                         $this->verbose('Followed by journal name and publication info, so classified as article');
