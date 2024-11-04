@@ -69,7 +69,7 @@
             <x-value-label for="{{ $key }}" class="peer-checked/{{ $key }}:text-blue-600 ml-1" :value="$option" />
             @if ($key == 'latex')
                 <div class="hidden peer-checked/latex:block ml-6 -mb-6">
-                    Enter the name of the BibTeX style file you will use (the argument of <code>\bibliographystyle</code>):
+                    Enter the name of the BibTeX style file you will use (the argument of <code>\bibliographystyle</code> in your document):
                     <br/>
                     <x-text-input type="text" class="w-48 mt-1" wire:model="uploadForm.bstName" maxlength="255" />
                     &nbsp;&nbsp;&nbsp;
@@ -111,26 +111,10 @@
     <div>
         <x-input-label for="language" :value="__('Language of auxiliary words in references')" class="mt-4 mb-1"/>
     
-        <x-radio-input wire:model="uploadForm.language" value="en" class="peer/en" /> 
-        <x-value-label for="en" class="peer-checked/en:text-blue-600 ml-1" :value="__('English')" />
-
-        <x-radio-input wire:model="uploadForm.language" value="my" class="peer/my ml-4" /> 
-        <x-value-label for="en" class="peer-checked/my:text-blue-600 ml-1" :value="__('Burmese')" />
-
-        <x-radio-input wire:model="uploadForm.language" value="cz" class="peer/cz ml-4" />
-        <x-value-label for="cz" class="peer-checked/cz:text-blue-600 ml-1" :value="__('Czech')" />
-
-        <x-radio-input wire:model="uploadForm.language" value="nl" class="peer/nl ml-4" />
-        <x-value-label for="nl" class="peer-checked/nl:text-blue-600 ml-1" :value="__('Dutch')" />
-
-        <x-radio-input wire:model="uploadForm.language" value="fr" class="peer/fr ml-4" />
-        <x-value-label for="fr" class="peer-checked/fr:text-blue-600 ml-1" :value="__('French')" />
-
-        <x-radio-input wire:model="uploadForm.language" value="pt" class="peer/pt ml-4" />
-        <x-value-label for="pt" class="peer-checked/pt:text-blue-600 ml-1" :value="__('Portuguese')" />
-
-        <x-radio-input wire:model="uploadForm.language" value="es" class="peer/es ml-4" />
-        <x-value-label for="es" class="peer-checked/es:text-blue-600 ml-1" :value="__('Spanish')" />
+        @foreach ($languages as $key => $language)
+            <x-radio-input wire:model="uploadForm.language" value="{{ $key }}" class="peer/{{ $key }}" /> 
+            <x-value-label for="en" class="peer-checked/{{ $key }}:text-blue-600 ml-1 mr-4" value="{{ $language }}" />
+        @endforeach
 
         <x-input-error :messages="$errors->get('uploadForm.language')" class="mt-2" />
 

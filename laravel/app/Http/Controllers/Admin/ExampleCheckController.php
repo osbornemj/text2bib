@@ -30,7 +30,7 @@ class ExampleCheckController extends Controller
 
         $typeOptions = ['detailed' => 'details', 'brief' => 'brief'];
         $utf8Options = ['utf8leave' => 'do not convert accents to TeX', 'utf8' => 'convert accents to TeX'];
-        $languageOptions = ['en' => 'en', 'cz' => 'cz', 'es' => 'es', 'fr' => 'fr', 'my' => 'my', 'nl' => 'nl', 'pt' => 'pt'];
+        $languageOptions = config('constants.languages');
         $detailOptions = ['show' => 'show', 'hide' => 'hide'];
 
         $id = $request->exampleId ?: $id;

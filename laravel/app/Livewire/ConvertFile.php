@@ -66,6 +66,7 @@ class ConvertFile extends Component
     public $useOptions;
     public $bstName;
     public $bstFields;
+    public $languages;
 
     public function boot()
     {
@@ -87,6 +88,8 @@ class ConvertFile extends Component
         }
 
         $this->bstFields = ['doi', 'eid', 'isbn', 'issn', 'translator', 'url', 'urldate'];
+
+        $this->languages = config('constants.languages');
  
         $defaults = [
             'use' => '',
