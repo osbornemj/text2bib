@@ -886,7 +886,7 @@ class TitleParser
                 $initialWords[] = $word;
                 $nameStringResult = $this->authorParser->isNameString($remainder, $language);
                 if (Str::endsWith($word, ['.', ',']) && $nameStringResult['result']) {
-                    $this->detailLines = array_merge($this->detailLines, $nameStringResult['details']);
+                    $this->titleDetails = array_merge($this->titleDetails, $nameStringResult['details']);
                     $title = rtrim(implode(' ', $initialWords), ',');
                     break;
                 }
