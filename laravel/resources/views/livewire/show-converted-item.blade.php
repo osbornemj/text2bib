@@ -25,13 +25,21 @@
     </ul>
     @endif
 
-    <form id="item{{ $outputId }}">
-        <div class="mt-2">
-        @if (isset($convertedItem['crossref_item_type']) && $convertedItem['itemType'] != $convertedItem['crossref_item_type'])
-            <p>
-                Crossref says that the type of this item is <code>{{ $convertedItem['crossref_item_type']}}</code>, not <code>{{ $convertedItem['itemType'] }}</code>.
-            </p>
-        @endif
+    @if (count($convertedItem['infos']))
+    <ul>
+        @foreach ($convertedItem['infos'] as $info)
+            <li>
+                <span class="text-green-600">{{ $info }}</span>
+            </li>
+        @endforeach
+    </ul>
+    @endif
+
+    <div class="mt-2">
+
+        @if (! isset($convertedItem['crossref_item_type']) || $convertedItem['orig_item_type'] == $convertedItem['crossref_item_type'])
+
+        <form id="item{{ $outputId }}">
             <code>{{ '@' }}{{ $convertedItem['itemType'] }}</code>{{ '{' }}{{ $convertedItem['label'] }},
                 <ul class="ml-6">
                     @foreach ($fields as $field)
@@ -41,8 +49,8 @@
                             </li>
                         @endif
 
-                        @if (isset($convertedItem['orig_item']->$field) && isset($convertedItem['crossref_item'][$field]))
-                            @if ($convertedItem['orig_item']->$field != $convertedItem['crossref_item'][$field])
+                        @if (isset($convertedItem['orig_item']->$field) && isset($convertedItem['crossref_item']->$field))
+                            @if ($convertedItem['orig_item']->$field != $convertedItem['crossref_item']->$field)
                                 <li class="ml-4">
                                     <x-radio-input name="{{ $field }}" wire:click="setFieldSource('{{ $field }}', 'conversion')" class="peer/t2b" checked /> 
                                     &nbsp; 
@@ -51,23 +59,77 @@
                                 <li class="ml-4">
                                     <x-radio-input name="{{ $field }}" wire:click="setFieldSource('{{ $field }}', 'crossref')" class="peer/cr" /> 
                                     &nbsp; 
-                                    <span class="text-orange-800 dark:text-orange-300">{{ $convertedItem['crossref_item'][$field] }}</span>
+                                    <span class="text-orange-800 dark:text-orange-300">{{ $convertedItem['crossref_item']->$field }}</span>
                                 </li>
                             @endif
-                        @elseif (isset($convertedItem['crossref_item'][$field]))
+                        @elseif (isset($convertedItem['crossref_item']->$field))
                             <div>
                                 <li class="ml-4">
                                     <x-checkbox-input value="cr" wire:click="addCrossrefField('{{ $field }}')" class="peer/cr" /> 
                                     &nbsp; 
-                                    <span class="text-orange-800 dark:text-orange-300">{{ $field }} = {{ '{' }}{{ $convertedItem['crossref_item'][$field] }}{{ '}' }}</span>            
+                                    <span class="text-orange-800 dark:text-orange-300">{{ $field }} = {{ '{' }}{{ $convertedItem['crossref_item']->$field }}{{ '}' }}</span>            
                                 </li>
                             </div>
                         @endif
                     @endforeach
                 </ul>
             {{ '}' }}
-        </div>
-    </form>
+        </form>
+
+        @else
+
+            <p class="my-2">
+                text2bib's analysis of your source assigns this item the type <code>{{ $convertedItem['orig_item_type']}}</code> but Crossref assigns it the type <code>{{ $convertedItem['crossref_item_type']}}</code>:
+            </p>
+
+            <form id="choice{{ $outputId }}">
+                <code>{{ '@' }}{{ $convertedItem['itemType'] }}</code>{{ '{' }}{{ $convertedItem['label'] }},
+                <ul class="ml-6">
+                    @foreach ($fields as $field)
+                        @if (isset($convertedItem['item']->$field))
+                            <li>
+                                <code>{{ $field }}</code> = <span class="text-gray-800 dark:text-gray-200">{{ '{' }}{{ $convertedItem['item']->$field }}{{ '}' }}</span>,
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+                {{ '}' }}
+
+                <div class="mt-2">
+                    <x-radio-input wire:model="source" wire:click="setItemSource('conversion')" value="conversion" class="peer/t2b" />
+                    &nbsp;
+                    <code>{{ '@' }}{{ $convertedItem['orig_item_type'] }}</code>{{ '{' }}{{ $convertedItem['label'] }},
+                    <ul class="ml-10">
+                        @foreach ($origFields as $field)
+                            @if (isset($convertedItem['orig_item']->$field))
+                                <li>
+                                    <code>{{ $field }}</code> = <span class="text-blue-700 dark:text-blue-300">{{ '{' }}{{ $convertedItem['orig_item']->$field }}{{ '}' }}</span>,
+                                </li>
+                            @endif
+                        @endforeach
+                    </ul>
+                    {{ '}' }}
+                </div>
+
+                <div class="mt-2">
+                    <x-radio-input wire:model="source" wire:click="setItemSource('crossref')" value="crossref" class="peer/cr" />
+                    &nbsp;
+                    <code>{{ '@' }}{{ $convertedItem['crossref_item_type'] }}</code>{{ '{' }}{{ $convertedItem['label'] }},
+                    <ul class="ml-10">
+                        @foreach ($crossrefFields as $field)
+                            @if (isset($convertedItem['crossref_item']->$field))
+                                <li>
+                                    <code>{{ $field }}</code> = <span class="text-orange-800 dark:text-orange-300">{{ '{' }}{{ $convertedItem['crossref_item']->$field }}{{ '}' }}</span>,
+                                </li>
+                            @endif
+                        @endforeach
+                    </ul>
+                    {{ '}' }}
+                </div>
+            </form>
+
+        @endif
+    </div>
 
     <div class="mt-2">
         Check in
@@ -148,10 +210,8 @@
 
                 @foreach ($fields as $field)
                     <div>
-                        {{-- {{ $convertedItem['item']->$field }} --}}
                         <x-input-label :for="$field" :value="$field" />
                         <x-text-input :id="$field" class="block mt-1 w-full" type="text" :name="$field" value="{{ $convertedItem['item']->$field ?? '' }}" :wire:model="$field"/>
-                        {{-- <x-text-input :id="$field" class="block mt-1 w-full" type="text" :name="$field" :value="$convertedItem['item']->$field ?? ''" :wire:model="$modelName"/> --}}
                     </div>
                 @endforeach
 
@@ -177,7 +237,7 @@
                 </x-primary-button>
 
                 <x-secondary-button class="ml-0 mt-3">
-                    <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="hideForm"> @if(!$status) Cancel @else Hide form @endif </a>
+                    <a class="text-blue-500 dark:text-blue-400 cursor-pointer" wire:click="hideForm" onclick="myScrollTo({{ $outputId }});"> @if(!$status) Cancel @else Hide form @endif </a>
                 </x-secondary-button>
 
             </form>                                            

@@ -186,7 +186,7 @@ class Converter
     // $language, $charEncoding: if set, overrides values in $conversion (used when admin converts examples)
     public function convertEntry(string $rawEntry, Conversion $conversion, string|null $language = null, string|null $charEncoding = null, string|null $use = null, $previousAuthor = null): array|null
     {
-        $warnings = $notices = [];
+        $warnings = $notices = $infos = [];
         $this->detailLines = [];
         $this->itemType = null;
 
@@ -4421,6 +4421,7 @@ class Converter
             'itemType' => $itemKind,
             'warnings' => $warnings,
             'notices' => $notices,
+            'infos' => $infos,
             'details' => $conversion->report_type == 'detailed' ? $this->detailLines : [],
             'scholarTitle' => $scholarTitle,
             'author_pattern' => $authorConversion['author_pattern'] ?? null,

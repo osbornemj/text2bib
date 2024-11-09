@@ -68,6 +68,8 @@ class ShowConvertedItem extends Component
     public $itemTypeOptions;
     public $itemTypes;
     public $fields;
+    public $origFields;
+    public $crossrefFields;
     public $errorReport;
     public $language;
 
@@ -79,6 +81,7 @@ class ShowConvertedItem extends Component
     public $correctionExists;
     public $priorReportExists;
     public $correctionsEnabled;
+    public $source = 'conversion';
 
     public function mount()
     {
@@ -86,7 +89,7 @@ class ShowConvertedItem extends Component
             $this->$field = $content;
         }
 
-        $itemType = $this->itemTypes->where('name', $this->convertedItem['itemType'])->first();
+        $itemType = $this->itemTypes->where('id', $this->convertedItem['item_type_id'])->first();
         $this->itemTypeId = $itemType->id;
 
         // For Burmese, show only the fields in the item
@@ -97,10 +100,25 @@ class ShowConvertedItem extends Component
             }
         } else {
             $this->fields = $itemType->fields;
+            $this->origFields = $itemType->fields;
         }
 
         foreach ($this->fields as $field) {
             $this->$field = $this->convertedItem['item']->$field ?? '';
+        }
+
+        if (isset($this->convertedItem['crossref_item_type'])) {
+            $crossrefItemType = $this->itemTypes->where('name', $this->convertedItem['crossref_item_type'])->first();
+            if ($crossrefItemType) {
+                $this->crossrefFields = $crossrefItemType->fields;
+            } else {
+                // If crossref type is not one of the types detected by Converter, assign the crossrefFields
+                // to be the ones in the record retrieved from Crossref
+                $this->crossrefFields = [];
+                foreach ($this->convertedItem['crossref_item'] as $f => $c) {
+                    $this->crossrefFields[] = $f;
+                }
+            }
         }
 
         $this->displayState = 'none';
@@ -157,8 +175,8 @@ class ShowConvertedItem extends Component
             unset($this->convertedItem['item']->$field);
             $this->$field = '';
         } else {
-           $item[$field] = $this->convertedItem['crossref_item'][$field];
-           $this->$field = $this->convertedItem['crossref_item'][$field];
+           $item[$field] = $this->convertedItem['crossref_item']->$field;
+           $this->$field = $this->convertedItem['crossref_item']->$field;
            $this->convertedItem['item']->$field = $item[$field];
         }
 
@@ -176,20 +194,62 @@ class ShowConvertedItem extends Component
             $this->$field = $this->convertedItem['orig_item']->{$field};
             $item[$field] = $this->convertedItem['orig_item']->{$field};
         } elseif ($fieldSource == 'crossref') {
-            $this->$field = $this->convertedItem['crossref_item'][$field];
-            $item[$field] = $this->convertedItem['crossref_item'][$field];
+            $this->$field = $this->convertedItem['crossref_item']->$field;
+            $item[$field] = $this->convertedItem['crossref_item']->$field;
         }
 
         // Update $this->convertedItem
-        $this->convertedItem['item']->{$field} = $item[$field];
+        $this->convertedItem['item']->$field = $item[$field];
 
         // Update entry in database
         $output->update(['item' => $item]);
     }
 
+    public function setItemSource($itemSource)
+    {
+        $output = Output::find($this->outputId);
+        
+        if ($itemSource == 'crossref') {
+            $item = (object) $output->crossref_item;
+            $item_type_id = $output->crossref_item_type_id;
+            $item_type_name = $item_type_id ? ItemType::find($item_type_id)->name : $output->crossref_item_type;
+            $this->fields = $this->crossrefFields;
+            $this->source = 'crossref';
+        } else {
+            $item = (object) $output->orig_item;
+            $item_type_id = $output->orig_item_type_id;
+            $item_type_name = ItemType::find($item_type_id)->name;
+            $this->fields = $this->origFields;
+            $this->source = 'conversion';
+        }
+
+        $this->itemTypeId = $item_type_id;
+        $output->update(['item' => $item, 'item_type_id' => $item_type_id]);
+        $this->convertedItem['item'] = $item;
+        $this->convertedItem['itemType'] = $item_type_name;
+        $this->convertedItem['item_type_id'] = $item_type_id;
+
+        $this->itemTypeOptions = $this->itemTypes->pluck('name', 'id')->all();
+        if (! in_array($item_type_name, $this->itemTypeOptions)) {
+            $this->itemTypeOptions[99] = $item_type_name;
+            $this->itemTypeId = 99;
+        }
+        //dd($this->itemTypeOptions);
+
+        foreach ($this->fields as $field) {
+            $this->$field = $this->convertedItem['item']->$field ?? '';
+        }
+    }
+
     public function updatedItemTypeId()
     {
-        $this->fields = ItemType::find($this->itemTypeId)->fields;
+        if ($this->itemTypeId == 99) {
+            $inputs = $this->except('comment');
+            $this->fields = $inputs['crossrefFields'];
+        } else {
+            $this->fields = ItemType::find($this->itemTypeId)->fields;
+        }
+
         $this->displayState = 'block';
     }
 
@@ -212,7 +272,7 @@ class ShowConvertedItem extends Component
 
     private function insertPublisherJournalCity($output)
     {
-        if ($output->itemType->name == 'article' && isset(($output->item)['journal'])) {
+        if ($output->itemType && $output->itemType->name == 'article' && isset(($output->item)['journal'])) {
             $journalName = ($output->item)['journal'];
             if (! Journal::where('name', $journalName)->exists()) {
                 $journal = new Journal;
@@ -229,7 +289,7 @@ class ShowConvertedItem extends Component
                 }
             }
         } else {
-            if (in_array($output->itemType->name, ['book', 'incollection'])) {
+            if ($output->itemType && in_array($output->itemType->name, ['book', 'incollection'])) {
                 if (isset(($output->item)['publisher'])) {
                     $publisherName = ($output->item)['publisher'];
                     if (!Publisher::where('name', $publisherName)->exists()) {
@@ -285,33 +345,52 @@ class ShowConvertedItem extends Component
             $this->displayState = 'block';
         } else {
             // Change $output according to user's entries
-            $output->update(['item_type_id' => $this->itemTypeId]);
+            if ($this->itemTypeId == 99) {
+                $output->update(['item_type_id' => null]);
+            } else {
+                $output->update(['item_type_id' => $this->itemTypeId]);
+            }
 
             // Update $convertedItem['itemType']
-            $itemType = $this->itemTypes->where('id', $this->itemTypeId)->first();
-            $this->convertedItem['itemType'] = $itemType->name;
+            if ($this->itemTypeId == 99) {
+                $this->convertedItem['itemType'] = $output->crossref_item_type;
+            } else {
+                $itemType = $this->itemTypes->where('id', $this->itemTypeId)->first();
+                $this->convertedItem['itemType'] = $itemType->name;
+            }
 
             $inputs = $this->except('comment');
 
-            // Restrict to fields relevant to the item_type
             $item = [];
-            foreach ($inputs as $field => $content) {
-                if (in_array($field, $itemType->fields)) {
-                    $this->$field = $content;
-                    if (! empty($content)) {
-                        $item[$field] = $content;
-                        $this->convertedItem['item']->$field = $content;                    
-                    } else {
-                        unset($this->convertedItem['item']->$field);
-                    }                    
+            if ($this->itemTypeId == 99) {
+                $this->fields = $inputs['crossrefFields'];
+                foreach ($this->fields as $field) {
+                    $this->$field = $inputs[$field];
+                    $item[$field] = $inputs[$field];
+                    $this->convertedItem['item']->$field = $inputs[$field];                    
+                }
+            } else {
+                // Restrict to fields relevant to the item_type
+                foreach ($inputs as $field => $content) {
+                    if (in_array($field, $itemType->fields)) {
+                        $this->$field = $content;
+                        if (! empty($content)) {
+                            $item[$field] = $content;
+                            $this->convertedItem['item']->$field = $content;                    
+                        } else {
+                            unset($this->convertedItem['item']->$field);
+                        }                    
+                    }
                 }
             }
 
             // Update entry in database
             $output->update(['item' => $item]);
 
-            $this->itemTypeId = $output->item_type_id;
-            $this->fields = $itemType->fields;
+            if ($this->itemTypeId != 99) {
+                $this->itemTypeId = $output->item_type_id;
+                $this->fields = $itemType->fields;
+            }
 
             $this->correctionExists = true;
 
@@ -346,6 +425,7 @@ class ShowConvertedItem extends Component
             }
 
             $this->status = 'changes';
+            $this->source = '';
             $this->displayState = 'none';
             // correctness = 2 for item that has been corrected
             $this->correctness = 2;

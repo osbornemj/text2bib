@@ -33,9 +33,11 @@ line endings = {{ $conversion->line_endings }}
       @if ($conversion->bst->checked && $conversion->bst->available)
         <p>
           According to my data, the <code>{{ $conversion->bst->name }}</code> BibTeX style has the following support for nonstandard fields (<span class="positive">supported</span>, <span class="negative">unsupported</span>):
+          <br/>
           @foreach ($bstFields as $field)
             <span @if ($conversion->bst->$field) class="positive" @else class="negative" @endif>{{ $field }}</span>@if ($loop->last).@endif
           @endforeach
+          <br/>
           The conversion algorithm writes content relating to unsupported fields to the <code>note</code> field.
           The style
           @if ($conversion->bst->online) 
@@ -69,17 +71,17 @@ line endings = {{ $conversion->line_endings }}
           @else
             I have been unable to locate the <code>{{ $conversion->bst->name }}</code> BibTeX style on a public website.  (If you tell me where to find it, I will record its features.)
           @endif
-          The conversion algorithm has assumed that, like most styles, it does not support the <code>doi</code>, <code>url</code>, <code>urldate</code>, or <code>translator</code> fields or the <code>@online</code> item type, requires underscores in <code>doi</code>s to be escaped, and treats the <code>address</code> field for an <code>inproceedings</code> item as the city of publication.
+          The conversion algorithm has assumed that it does not support any nonstandard fields or the <code>@online</code> item type, requires underscores in <code>doi</code>s to be escaped, and treats the <code>address</code> field for an <code>inproceedings</code> item as the city of publication.
         </p>
       @endif
     @endif
   @endif
 @endif
 @if ($conversion->use_crossref)
-  <br/>
-  Queries to Crossref.org: {{ $conversion->crossref_count }}.
-  Items retrieved from local Crossref cache: {{ $conversion->crossref_cache_count }}.
-  <div class="ml-4">
+  <div class="mt-2">
+    Queries to Crossref.org: {{ $conversion->crossref_count }}.
+    Items retrieved from local Crossref cache: {{ $conversion->crossref_cache_count }}.
+    <br/>
     Daily quota of requests to Crossref.org remaining after this conversion: {{ $conversion->crossref_quota_remaining }}.
     @if ($conversion->crossref_count > 0 || $conversion->crossref_cache_count > 0)
       <br/>

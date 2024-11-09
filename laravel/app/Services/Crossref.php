@@ -29,15 +29,18 @@ class Crossref
         }
     }
 
-    public function getCrossrefItemFromAuthorTitleYear(string $author, string $title, string $year): string
+    public function getCrossrefItemFromAuthorTitleYear(string $author, string $title, string $year, string $journal, string $publisher): string
     {
         $response = Http::withHeaders([
                 'User-Agent' => 'text2bib (https://text2bib.org); mailto:' . env('CROSSREF_EMAIL'),
             ])
-            ->accept('application/x-bibtex')
-            ->get('https://api.crossref.org/works/transform?query.bibliographic="' . $title . ', ' . $author . ' ' . $year . '"');
+            ->get('https://api.crossref.org/works?query.bibliographic="' . $title . ', ' . $author . ' ' . $year . ' ' . $journal . ' ' . $publisher . '"&select=DOI&rows=1');
 
-        return $response->body();
+            if ($response->status() == '200') {
+                return $response->body();
+            } else {
+                return null;
+            }
     }
 
     public function parseCrossrefBibtex($crossrefItem) {
@@ -68,7 +71,7 @@ class Crossref
             return [
                 'crossref_item_type' => $matches['itemType'],
                 'crossref_item_label' => $matches['label'],
-                'crossref_fields' => $crossref_fields
+                'crossref_fields' => (object) $crossref_fields
             ];
         } else {
             return null;
