@@ -17,7 +17,7 @@
         @endif
 
         <p class="mb-4">
-            An explanatory video (5:45) is available at <x-link href="https://youtu.be/uDYHszzWhfk" target="_blank">https://youtu.be/uDYHszzWhfk</x-link>
+            Explanatory video: <x-link href="https://youtu.be/uDYHszzWhfk" target="_blank">https://youtu.be/uDYHszzWhfk</x-link> (5:45).  Retrieving items from <x-link href="https://crossref.org" target="_blank">crossref.org</x-link> during conversion: <x-link href="https://youtu.be/W4-WEwo2esY" target="_blank">https://youtu.be/W4-WEwo2esY</x-link> (5:56).
         </p>
 
         <p class="mb-4">
