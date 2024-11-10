@@ -29,7 +29,7 @@ class Crossref
         }
     }
 
-    public function getCrossrefItemFromAuthorTitleYear(string $author, string $title, string $year, string $journal, string $publisher): string
+    public function getCrossrefItemFromAuthorTitleYear(string $author, string $title, string $year, string $journal, string $publisher): string|null
     {
         $response = Http::withHeaders([
                 'User-Agent' => 'text2bib (https://text2bib.org); mailto:' . env('CROSSREF_EMAIL'),
