@@ -87,9 +87,11 @@ class IndexController extends Controller
             $convItem['source'] = $output->source;
             $convItem['detected_encoding'] = $output->detected_encoding;
             $convItem['itemType'] = $output->itemType->name;
+            $convItem['item_type_id'] = $output->item_type_id;
             $convItem['label'] = $output->label;
             $convItem['warnings'] = [];
             $convItem['notices'] = [];
+            $convItem['infos'] = [];
             $convItem['scholarTitle'] = $this->makeScholarTitle($item->title ?? '');
 
             $convertedItems[$output->id] = $convItem;
