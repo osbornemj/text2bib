@@ -58,11 +58,11 @@ class Crossref
                     $remainder = trim(substr($remainder, $pos + 5));
                 } else {
                     preg_match('/^\{(?P<content>[^}]+)\},?(?P<remainder>.*)/', substr($remainder, $pos + 1), $contentMatches);
-                    $content = $contentMatches['content'];
+                    $content = $contentMatches['content'] ?? '';
                     if ($name == 'pages') {
                         $content = str_replace('–', '-', $content);
                     }
-                    $crossref_fields[$name] = $content ?? substr($remainder, $pos + 1);
+                    $crossref_fields[$name] = $content ?: substr($remainder, $pos + 1);
                     $remainder = $contentMatches['remainder'] ?? null;
                     $remainder = trim($remainder);
                 }
