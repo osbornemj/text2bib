@@ -379,9 +379,10 @@ class ConvertFile extends Component
                 $doi = $convItem['item']->doi ?? null;
 
                 if ($conversion->use_crossref) {
+                    // If no doi in item, look for item in Crossref to get doi
                     if ($doi) {
                         $doi = str_replace('\_', '_', $doi);
-                    } elseif (isset($convItem['item']->author) && isset($convItem['item']->title)) {
+                    } elseif ($this->crossrefQuotaRemaining > 0 && isset($convItem['item']->author) && isset($convItem['item']->title)) {
                         $journal = isset($convItem['item']->journal) ? $convItem['item']->journal : '';
                         $publisher = isset($convItem['item']->publisher) ? $convItem['item']->publisher : '';
                         $data = $this->crossref->getCrossrefItemFromAuthorTitleYear(
@@ -401,14 +402,16 @@ class ConvertFile extends Component
                         }
                     }
 
+                    // If doi is in item or has been found in Crossref, look for it in table crossref_bibtexs of cached
+                    // (previously found) items. If it is not there, get it from Crossref (in BibTeX format).
                     if ($doi) {
-                        // Look for doi in table crossref_bibtexs. If not there, go to Crossref.
                         $crossrefBibtex = CrossrefBibtex::where('doi', $doi)->first();
                         if ($crossrefBibtex) {
                             $this->retrievedFromCacheCount++;
                             $crossrefSource = 'database';
                             $convItem['crossref_item_type'] = $crossrefBibtex->item_type;
-                            $crossrefItemType = ItemType::where('name', $convItem['crossref_item_type'])->first();                            $convItem['crossref_item_type_id'] = $crossrefItemType->id ?? null;
+                            $crossrefItemType = ItemType::where('name', $convItem['crossref_item_type'])->first();                            
+                            $convItem['crossref_item_type_id'] = $crossrefItemType->id ?? null;
                             $convItem['crossref_item_label'] = null;
                             $convItem['crossref_item'] = (object) $crossrefBibtex->item;
                             $convItem['infos'][] = "Item retrieved from Crossref cache";
@@ -452,8 +455,8 @@ class ConvertFile extends Component
                         $this->retrievedFromCrossrefCount++;
                     }
 
-                    if ($this->crossrefQuotaRemaining == 0) {
-                        $convItem['warnings'][] = 'You have now used all your quota of queries to Crossref for today.';
+                    if ($this->crossrefQuotaRemaining <= 0) {
+                        $convItem['warnings'][] = 'You have used all your quota of queries to Crossref for today.';
                     }
                 }
 
