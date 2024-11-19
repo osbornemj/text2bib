@@ -30,7 +30,7 @@ class AdminConvertedItem extends Component
                 $fields[] = $f;
             }
         } else {
-            $fields = $this->output->itemType->fields;
+            $fields = $this->output->itemType ? $this->output->itemType->fields : [];
         }
         
         foreach ($fields as $field) {
