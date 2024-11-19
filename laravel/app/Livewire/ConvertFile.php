@@ -322,7 +322,8 @@ class ConvertFile extends Component
                     } elseif ($encodings[$i] != 'UTF-8') {
                         // Need to convert to UTF-8 because Livewire uses json encoding
                         // (and will crash if non-utf-8 string is passed to it)
-                        $this->unknownEncodingEntries[] = mb_convert_encoding($entry, "UTF-8");
+                        $entries[$i] = mb_convert_encoding($entry, "UTF-8");
+                        $this->unknownEncodingEntries[] = $entries[$i];
                     }
                 }
             }
