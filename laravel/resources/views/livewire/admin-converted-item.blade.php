@@ -48,32 +48,82 @@
         <br/>
         
         @if (isset($output['crossref_item_type']) && $output->itemType->name != $output['crossref_item_type'])
-        <p>
-            Crossref says that the type of this item is <code>{{ $output['crossref_item_type']}}</code>, not <code>{{ $output->itemType->name }}</code>.
-        </p>
-        @endif
+            <p>
+                Crossref says that the type of this item is <code>{{ $output['crossref_item_type']}}</code>, not <code>{{ $output->itemType->name }}</code>.
+            </p>
 
-        <code>{{ '@' }}{{ $output->itemType->name }}</code>{{ '{' }}{{ $output->label }},
-        @foreach ($convertedItem as $name => $content)
-            <div class="ml-6">
-                <code>{{ $name }}</code> = {{ '{' }}{{ $content }}{{ '}' }},
+            <code>{{ '@' }}{{ $output->itemType->name }}</code>{{ '{' }}{{ $output->label }},
+            @foreach ($convertedItem as $name => $content)
+                <div class="ml-6">
+                    <code>{{ $name }}</code> = {{ '{' }}{{ $content }}{{ '}' }},
+                </div>
+                @if (! isset($originalItem[$name]) || $originalItem[$name] != $convertedItem[$name])
+                    <div class="ml-10">
+                        original: 
+                        @if (! isset($originalItem[$name]))
+                            not set
+                        @else
+                            <span class="text-slate-600 dark:text-slate-400">{{ $originalItem[$name] }}</span>
+                        @endif
+                    </div>
+                @endif
+                @if (isset($crossrefItem[$name]) && $crossrefItem[$name] != $convertedItem[$name])
+                    <div class="ml-10">
+                        crossref: <span class="text-orange-800 dark:text-orange-300">{{ $crossrefItem[$name] }}</span>
+                    </div>
+                @endif
+            @endforeach
+            {{ '}' }}
+
+            <div class="mt-2">
+                <code>{{ '@' }}{{ $output->itemType->name }}</code>{{ '{' }}{{ $output->label }},
+                <ul class="ml-10">
+                    @foreach ($output->orig_item as $name => $content)
+                        <li>
+                            <code>{{ $name }}</code> = <span class="text-blue-700 dark:text-blue-300">{{ '{' }}{{ $content }}{{ '}' }}</span>,
+                        </li>
+                    @endforeach
+                </ul>
+                {{ '}' }}
             </div>
-            @if (! isset($originalItem[$name]) || $originalItem[$name] != $convertedItem[$name])
-                <div class="ml-10">
-                    original: 
-                    @if (! isset($originalItem[$name]))
-                        not set
-                    @else
-                        <span class="text-slate-600 dark:text-slate-400">{{ $originalItem[$name] }}</span>
-                    @endif
+
+            <div class="mt-2">
+                <code>{{ '@' }}{{ $output->crossref_item_type }}</code>{{ '{' }}{{ $output->label }},
+                <ul class="ml-10">
+                    @foreach ($output->crossref_item as $name => $content)
+                        <li>
+                            <code>{{ $name }}</code> = <span class="text-orange-800 dark:text-orange-300">{{ '{' }}{{ $content }}{{ '}' }}</span>,
+                        </li>
+                    @endforeach
+                </ul>
+                {{ '}' }}
+            </div>
+
+        @else
+
+            <code>{{ '@' }}{{ $output->itemType->name }}</code>{{ '{' }}{{ $output->label }},
+            @foreach ($convertedItem as $name => $content)
+                <div class="ml-6">
+                    <code>{{ $name }}</code> = {{ '{' }}{{ $content }}{{ '}' }},
                 </div>
-            @endif
-            @if (isset($crossrefItem[$name]) && $crossrefItem[$name] != $convertedItem[$name])
-                <div class="ml-10">
-                    crossref: <span class="text-orange-800 dark:text-orange-300">{{ $crossrefItem[$name] }}</span>
-                </div>
-            @endif
-        @endforeach
-        {{ '}' }}
+                @if (! isset($originalItem[$name]) || $originalItem[$name] != $convertedItem[$name])
+                    <div class="ml-10">
+                        original: 
+                        @if (! isset($originalItem[$name]))
+                            not set
+                        @else
+                            <span class="text-slate-600 dark:text-slate-400">{{ $originalItem[$name] }}</span>
+                        @endif
+                    </div>
+                @endif
+                @if (isset($crossrefItem[$name]) && $crossrefItem[$name] != $convertedItem[$name])
+                    <div class="ml-10">
+                        crossref: <span class="text-orange-800 dark:text-orange-300">{{ $crossrefItem[$name] }}</span>
+                    </div>
+                @endif
+            @endforeach
+            {{ '}' }}
+
+        @endif
     </div>
 </div>
