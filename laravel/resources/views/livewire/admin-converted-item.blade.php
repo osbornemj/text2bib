@@ -47,7 +47,7 @@
 
         <br/>
         
-        @if (isset($output['crossref_item_type']) && $output->itemType->name != $output['crossref_item_type'])
+        @if (isset($output['crossref_item_type']) && $output->itemType && $output->itemType->name != $output['crossref_item_type'])
             <p>
                 Crossref says that the type of this item is <code>{{ $output['crossref_item_type']}}</code>, not <code>{{ $output->itemType->name }}</code>.
             </p>
@@ -99,7 +99,7 @@
                 {{ '}' }}
             </div>
 
-        @else
+        @elseif ($output->itemType)
 
             <code>{{ '@' }}{{ $output->itemType->name }}</code>{{ '{' }}{{ $output->label }},
             @foreach ($convertedItem as $name => $content)
@@ -124,6 +124,10 @@
             @endforeach
             {{ '}' }}
 
+        @else
+            <p>
+                Item type of output not set.
+            </p>
         @endif
     </div>
 </div>
