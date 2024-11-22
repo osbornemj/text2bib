@@ -2640,7 +2640,7 @@ class Converter
                         // If remaining string contains '(', take preceding string to be booktitle and following string to be editors.
                         // Remaining string might not contain '(': might be error, or "eds" could have been "(eds").
                         // <booktitle> (<editor> ed.)
-                        if ($tempRemainderEndsWithParen && Str::contains($tempRemainderMinusEds, '(')) {
+                        if (isset($tempRemainderEndsWithParen) && $tempRemainderEndsWithParen && Str::contains($tempRemainderMinusEds, '(')) {
                             $this->verbose('Format is <booktitle> (<editor> eds).');
                             $booktitle = Str::beforeLast($tempRemainderMinusEds, '(');
                             $editorString = Str::afterLast($tempRemainderMinusEds, '(');
