@@ -121,6 +121,9 @@ trait AddLabels
     // Returns string consisting only of letters and spaces and commas in $string
     public function onlyLetters(string $string): string
     {
+        if ($string == null) {
+            $string = '';
+        }
         return preg_replace("/[^\p{L},\s]+/u", "", $string);
     }
 

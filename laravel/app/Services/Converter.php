@@ -1903,7 +1903,7 @@ class Converter
 
                     // If $remainder ends with 'forthcoming' phrase and contains no digits (which might be volume & number,
                     // for example, even if paper is forthcoming), put that in note.  Else look for pages & volume etc.
-                    if (preg_match('/' . $this->endForthcomingRegExp . '/', $remainder) && !preg_match('/[0-9]/', $remainder)) {
+                    if (preg_match('/' . $this->endForthcomingRegExp . '/i', $remainder) && !preg_match('/[0-9]/', $remainder)) {
                         $this->addToField($item, 'note', trim($remainder, '()'), 'addToField 6');
                         $remainder = '';
                     } else {
