@@ -89,11 +89,14 @@ class ShowConvertedItem extends Component
             $this->$field = $content;
         }
 
+        // There is no itemType if the user is viewing an item for which she chose
+        // the result reported by Crossref and the item type that Crossref reported 
+        // is not one of the item types that text2bib detects (for example, it is @inbook).
         $itemType = $this->itemTypes->where('id', $this->convertedItem['item_type_id'])->first();
-        $this->itemTypeId = $itemType->id;
+        $this->itemTypeId = $itemType?->id;
 
         // For Burmese, show only the fields in the item
-        if ($this->language == 'my') {
+        if (! $itemType || $this->language == 'my') {
             $this->fields = [];
             foreach ($this->convertedItem['item'] as $f => $c) {
                 $this->fields[] = $f;

@@ -86,7 +86,7 @@ class IndexController extends Controller
             $convItem['item'] = $item;
             $convItem['source'] = $output->source;
             $convItem['detected_encoding'] = $output->detected_encoding;
-            $convItem['itemType'] = $output->itemType->name;
+            $convItem['itemType'] = $output->itemType ? $output->itemType->name : $output->crossref_item_type;
             $convItem['item_type_id'] = $output->item_type_id;
             $convItem['label'] = $output->label;
             $convItem['warnings'] = [];
