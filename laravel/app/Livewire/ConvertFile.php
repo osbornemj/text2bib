@@ -396,7 +396,7 @@ class ConvertFile extends Component
                         $crossrefQueried = true;
                         if ($data) {
                             $data = json_decode($data);
-                            $doi = $data->message->items[0]->DOI;
+                            $doi = isset($data->message->items[0]) ? $data->message->items[0]->DOI : null;
                         } else {
                             $doi = null;
                             $convItem['notices'][] = "Item not found in Crossref database";
