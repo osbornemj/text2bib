@@ -3,7 +3,7 @@
     <div class="px-4">
 
         <div class="bg-blue-200 text-blue-800 m-4 p-2">
-            A bug introduced in a standard package I am using made it impossible to register as a user from 2024.12.11 until I implemented a workaround today, 2024.12.13.  If you tried to register during that period and got an error, please try again.
+            A bug introduced in a standard package I am using made it impossible to register as a user from 2024.12.11 until I implemented a workaround on 2024.12.13.  If you tried to register during that period and got an error, please try again.
         </div>
 
         <p class="my-4">
