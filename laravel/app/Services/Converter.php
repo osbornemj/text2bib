@@ -782,10 +782,10 @@ class Converter
         // after periods, converting U.S.A. into U. S. A., for example
         $journal = null;
         $containsJournalName = false;
-        $wordString = ' ' . implode(' ', $words);
+        $wordString = mb_strtolower(' ' . implode(' ', $words));
 
         // Internationalize?
-        if (Str::contains($wordString, [' Journal ', 'Frontiers in ', 'Annals of '])) {
+        if (Str::contains($wordString, [' journal ', 'frontiers in ', 'annals of ', ' bulletin'])) {
             $containsJournalName = true;
         }
 
@@ -1530,7 +1530,7 @@ class Converter
 
         ///////////////////////////////////////////////////////////////
         // # Use features of publication info to determine item type //
-        //////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////
 
         if ($itemKind) {
             // $itemKind is already set

@@ -455,15 +455,17 @@ class TitleParser
                         || $upcomingPageRange
                         || $translatorNext
                         // After stringToNextPeriod, there are only digits and punctuation for volume-number-page-year info
+                        // Condition used to include $upcomingRoman, but that is too general --- e.g. conference title could begin
+                        // with Roman numerals.
                         || (
                             (Str::endsWith(rtrim($word, "'\""), [',', '.']) || Str::startsWith(rtrim($nextWord, "'\""), ['(']))
                             &&
-                            ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingRoman || $upcomingArticlePubInfo || $upcomingBookVolume || $upcomingVolumeCount)
+                            ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingArticlePubInfo || $upcomingBookVolume || $upcomingVolumeCount)
                            )
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->regExps->startPagesRegExp, $remainder)
                         || preg_match('/^' . $this->regExps->inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
-                        || preg_match('/^(Journal |Annals |Proc(eedings)? )/', $remainder)
+                        || preg_match('/^(Journal |Annals |Proc(eedings)? |Bulletin )/', $remainder)
                         || preg_match('/^\(?(' . $this->regExps->volumeRegExp . ') /', $remainder)
                         || (
                             $nextWord 
@@ -538,7 +540,6 @@ class TitleParser
                         if ($upcomingBookVolume) {
                             $volume = trim($nextButOneWord, '.,) ');
                             $remainder = implode(' ', array_splice($remainingWords, 2));
-                            //dump($volume, $remainder);
                         }
                         if ($upcomingVolumeCount) {
                             $note = $volumeCountMatches['note'];

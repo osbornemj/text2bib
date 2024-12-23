@@ -14004,15 +14004,14 @@ class ExampleSeeder extends Seeder
             ],           
 			// why doesn't it match author pattern 30?
 			[
-                'source' => 'Ferro, M. C. T. Participación social en la construcción de la política nacional para la población en situación de calle en Brasil: alcances y límites. In: Congreso de la Asociación de Estudios Latinoamericanos (Lasa), 29., 2010, Toronto. Anais… ',
-                'type' => 'incollection',
+                'source' => 'Ferro, M. C. T. Participación social en la construcción de la política nacional para la población en situación de calle en Brasil: alcances y límites. In: Congreso de la Asociación de Estudios Latinoamericanos (Lasa), 29, 2010, Toronto. Anais ',
+                'type' => 'inproceedings',
                 'bibtex' => [
                     'author' => 'Ferro, M. C. T.',
                     'title' => 'Participación social en la construcción de la política nacional para la población en situación de calle en Brasil: alcances y límites',
                     'year' => '2010',
-                    'publisher' => '29',
-                    'address' => 'Toronto. Anais…',
-                    'booktitle' => 'Congreso de la Asociación de Estudios Latinoamericanos (Lasa)',
+                    'publisher' => 'Anais',
+                    'booktitle' => 'Congreso de la Asociación de Estudios Latinoamericanos (Lasa), 29, 2010, Toronto',
                     ],
 					'char_encoding' => 'utf8leave',
 					'language' => 'pt',
@@ -14109,6 +14108,45 @@ class ExampleSeeder extends Seeder
                     'year' => '2009',
                 ],
                 'char_encoding' => 'utf8leave',
+            ],
+			// Journal misidentified
+			[
+                'source' => 'Kenny, D. A., & Judd, C. M. (1984). Estimating the nonlinear and interactive effects of latent variables. Psychological bulletin, 96(1), 201. https://psycnet.apa.org/doi/10.1037/0033-2909.96.1.201 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kenny, D. A. and Judd, C. M.',
+                    'journal' => 'Psychological bulletin',
+                    'number' => '1',
+                    'pages' => '201',
+                    'title' => 'Estimating the nonlinear and interactive effects of latent variables',
+                    'volume' => '96',
+                    'year' => '1984',
+                    'url' => 'https://psycnet.apa.org/doi/10.1037/0033-2909.96.1.201',
+                    ]
+            ],
+			// 'Congreso' for conference
+			[
+                'source' => 'Ahumada, A. L., Palacios, G. I., & Páez, S. V. (2005). Los glaciares de escombros en el NW argentino, acuíferos de altura en riesgo ante los cambios globales. XX Congreso Nacional del Agua–III Simposio de Recursos Hídricos del Cono Sur, Mendoza.',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Ahumada, A. L. and Palacios, G. I. and Páez, S. V.',
+                    'booktitle' => 'XX Congreso Nacional del Agua--III Simposio de Recursos Hídricos del Cono Sur, Mendoza',
+                    'title' => 'Los glaciares de escombros en el NW argentino, acuíferos de altura en riesgo ante los cambios globales',
+                    'year' => '2005',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// 'conferencia' for conference
+			[
+                'source' => 'Bottegal, E., Lanutti, E., Trombotto Liaudat, D., &Saito, K. (2017). Monitoring Morenas Coloradas rock glacier cryodyynamics in the Central Andes, Mendoza, Argentina. II Conferencia asiática de permafrost (ACOP2017). ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Bottegal, E. and Lanutti, E. and Trombotto Liaudat, D. and Saito, K.',
+                    'booktitle' => 'II Conferencia asiática de permafrost (ACOP2017)',
+                    'title' => 'Monitoring Morenas Coloradas rock glacier cryodyynamics in the Central Andes, Mendoza, Argentina',
+                    'year' => '2017',
+                    ],
+                    'char_encoding' => 'utf8leave',
             ],
             
              
