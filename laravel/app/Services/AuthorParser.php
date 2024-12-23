@@ -46,7 +46,7 @@ class AuthorParser
             '\&', 
             '&', 
             '$\&$', 
-            'dan', // Indonesian
+            'dan', // Indonesian // confusion with name "Dan"
             'e',   // Portuguese, Italian
             'en',  // Dutch
             'et',  // French

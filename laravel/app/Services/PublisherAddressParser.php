@@ -36,8 +36,14 @@ class PublisherAddressParser
             return '';
         } 
 
+        $periodExceptions = ['Inc.', 'St.', 'Univ.'];
+
         $containsPublisher = $containsCity = false;
-        $string = trim($string, ' ().,');
+        $string = trim($string, ' (),');
+        if (! Str::endsWith($string, $periodExceptions)) {
+            $string = trim($string, '.');
+        }
+
         // If $string contains a single ':', take city to be preceding string and publisher to be
         // following string
         if (substr_count($string, ':') == 1) {
@@ -54,25 +60,25 @@ class PublisherAddressParser
             }
             $colonPos = strpos($string, ':');
             $address = rtrim(ltrim(substr($string, 0, $colonPos), ',. '), ': ');
-            $remainder = trim(substr($string, $colonPos + 1), ',.: ');
+
+            $remainder = substr($string, $colonPos + 1);
+            $remainder = trim($remainder, ',: ');
+            if (! Str::endsWith($remainder, $periodExceptions)) {
+                $remainder = trim($remainder, '.');
+            }
 
             // If year is repeated at end of $remainder, remove it and put it in $remainder
             $result = $this->findRemoveAndReturn($remainder, '(' . $this->yearRegExp . ')');
             $dupYear = $result ? $result[0] : null;
 
             $periodPos = strpos($remainder, '.');
+            $truncatedRemainder = $periodPos !== false ? substr($remainder, 0, $periodPos+1) : null;
 
             // If period follows 'St.' at start of string or ' St.' later in string, ignore it and find next period
             if (
                 $periodPos !== false 
                 && 
-                (
-                    ($periodPos == 2 && Str::startsWith($remainder, ['St.', 'Univ.']))
-                    ||
-                    ($periodPos > 2 && substr($remainder, $periodPos - 3, 4) == ' St.')
-                    ||
-                    ($periodPos > 4 && substr($remainder, $periodPos - 5, 6) == ' Univ.')
-                )
+                Str::endsWith($truncatedRemainder, $periodExceptions)
                ) {
                 $pos = strpos(substr($remainder, $periodPos + 1), '.');
                 $periodPos = ($pos === false) ? false : $periodPos + 1 + $pos;
@@ -82,7 +88,10 @@ class PublisherAddressParser
                 $publisher = substr($remainder, 0, $periodPos);
                 $remainder = substr($remainder, $periodPos);
             } else {
-                $publisher = trim($remainder, '., ');
+                $publisher = trim($remainder, ', ');
+                if (! Str::endsWith($publisher, $periodExceptions)) {
+                    $publisher = trim($publisher, '.');
+                }
                 $remainder = '';
             }
 
