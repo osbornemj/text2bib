@@ -36,6 +36,7 @@ class PublisherAddressParser
             return '';
         } 
 
+        // Strings that occur in publishers' names and end in periods that are not sentence-ending
         $periodExceptions = ['Inc.', 'St.', 'Univ.'];
 
         $containsPublisher = $containsCity = false;
@@ -74,7 +75,7 @@ class PublisherAddressParser
             $periodPos = strpos($remainder, '.');
             $truncatedRemainder = $periodPos !== false ? substr($remainder, 0, $periodPos+1) : null;
 
-            // If period follows 'St.' at start of string or ' St.' later in string, ignore it and find next period
+            // If period ends one of the $periodExceptions, ignore it and find next period
             if (
                 $periodPos !== false 
                 && 

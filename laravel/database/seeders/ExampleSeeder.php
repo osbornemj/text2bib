@@ -14081,6 +14081,35 @@ class ExampleSeeder extends Seeder
                     'pages' => '725-733',
                     ]
             ],
+			// Spanish abbreviation for "number"
+			[
+                'source' => 'Brubaker, Rogers. (2002). Ethnicity without groups. European Journal of Sociology, vol. 43, núm. 2: 163-189. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Brubaker, Rogers',
+                    'journal' => 'European Journal of Sociology',
+                    'number' => '2',
+                    'pages' => '163-189',
+                    'title' => 'Ethnicity without groups',
+                    'volume' => '43',
+                    'year' => '2002',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// Spanish abbreviation for "number"
+			[
+                'source' => 'Berjón, Manuel y Miguel Ángel Cadenas. (2009). La inquietud “se hizo carne”… y vino a vivir entre los kukama. Dos lecturas a propósito de los pelacara. Estudio Agustiniano, núm.: 44: 425-437. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Berjón, Manuel and Miguel Ángel Cadenas',
+                    'journal' => 'Estudio Agustiniano',
+                    'number' => '44',
+                    'pages' => '425-437',
+                    'title' => 'La inquietud ``se hizo carne\'\'… y vino a vivir entre los kukama. Dos lecturas a propósito de los pelacara',
+                    'year' => '2009',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
             
              
             
