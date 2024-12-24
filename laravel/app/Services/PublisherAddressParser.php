@@ -100,8 +100,8 @@ class PublisherAddressParser
                 $remainder .= ' ' . $dupYear;
             }
 
-            // If publisher ends in " [A-Z][A-Z]" (US 2-letter state abbreviation) then in fact it must be the address, so swith the publisher and address
-            if (preg_match('/ ([A-Z]{2}|USA)$/', $publisher)) {
+            // If publisher ends in " [A-Z][A-Z]" (US 2-letter state abbreviation) then in fact it must be the address, and if address ends in 'Press' it must be publisher, so swith the publisher and address
+            if (preg_match('/ ([A-Z]{2}|USA)$/', $publisher) || preg_match('/ Press$/', $address)) {
                 $oldPublisher = $publisher;
                 $publisher = $address;
                 $address = $oldPublisher;

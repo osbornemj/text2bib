@@ -14224,6 +14224,30 @@ class ExampleSeeder extends Seeder
 					'publisher' => 'Gower Publishing',
                     ]
             ],
+			// publisher, address not detected
+            [
+                'source' => 'Skliris, Stamatis. 2007. In the Mirror, St Sebastian Press: Los Angeles. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Skliris, Stamatis',
+                    'title' => 'In the Mirror',
+                    'year' => '2007',
+                    'address' => 'Los Angeles',
+                    'publisher' => 'St Sebastian Press',
+                    ]
+            ],
+			// publisher, address not detected
+			[
+                'source' => 'Harries, Richard. 1993. Art and the Beauty of God, London: Continuum.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Harries, Richard',
+                    'title' => 'Art and the Beauty of God',
+                    'year' => '1993',
+                    'address' => 'London',
+                    'publisher' => 'Continuum',
+                    ]
+            ],
             
              
             
