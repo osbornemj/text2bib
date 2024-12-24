@@ -2225,7 +2225,13 @@ class Converter
                     // Get pages
                     // Return last match for 'pages' and remove whole match from $remainder.
                     // Give preference to match that has page word before it.
-                    $result = $this->removeAndReturn($remainder, '(\(| |^)' . $this->regExps->pagesRegExpWithPp . '(\))?', ['pages'], 'last');
+                    $result = $this->removeAndReturn($remainder, '(\()' . $this->regExps->pagesRegExpWithPp . '(\))', ['pages'], 'last');
+                    if (! $result) {
+                        $result = $this->removeAndReturn($remainder, '(, )' . $this->regExps->pagesRegExpWithPp, ['pages'], 'last');
+                    }
+                    if (! $result) {
+                        $result = $this->removeAndReturn($remainder, '(\(| |^)' . $this->regExps->pagesRegExpWithPp, ['pages'], 'last');
+                    }
                     if (! $result) {
                         $result = $this->removeAndReturn($remainder, '(\(|(?<!\p{Ll}) |^)' . $this->regExps->pagesRegExp . '(\))?', ['pages'], 'last');
                     }
@@ -2241,6 +2247,10 @@ class Converter
 
                 if (! isset($item->pages)) {
                     $warnings[] = "Pages not found.";
+                }
+
+                if ($result && Str::startsWith($result['after'], ')')) {
+                    $remainder = $result['before'] . $result['after'];
                 }
 
                 $remainder = ltrim($remainder, '., ');
@@ -2491,7 +2501,7 @@ class Converter
                         && ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->bookTitleAbbrevs)
                         && ! preg_match('/ (' . $this->dates->monthsAbbreviationsRegExp[$language] . ')$/', substr($remainder, 0, $periodPosition))
                         //&& ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->dates->monthsAbbreviationsOld[$language])
-                        && ! preg_match('/ edited |[ \(]eds?\.|[ \(]pp\./i', $remainder)
+                        && ! preg_match('/ edited |[ \(]eds?[\.)]|[ \(]pp\./i', $remainder)
                        ) {
                         if ($periodPosition > $datePos) {
                             $booktitle = substr($remainder, 0, $periodPosition);
@@ -3714,7 +3724,11 @@ class Converter
                                             $booktitle = substr($remainder, 0, strrpos($remainder, '('));
                                             $this->verbose('booktitle case 12');
                                         } else {
-                                            $booktitle = $potentialTitle;
+                                            // Original code:
+                                            //$booktitle = $potentialTitle;
+                                            // But whenever this point is reached, in fact $booktitle is "", so just set
+                                            // it to be ""
+                                            $booktitle = "";
                                             $this->verbose('booktitle case 13');
                                         }
                                         $remainder = substr($remainder, strlen($booktitle));
@@ -3745,8 +3759,9 @@ class Converter
 
                 $newRemainder = '';
 
-                if ($itemKind == 'inproceedings' && empty($booktitle) && empty($item->booktitle)) {
-                    $this->setField($item, 'booktitle', $remainder, 'setField 107');
+                //if ($itemKind == 'inproceedings' && empty($booktitle) && empty($item->booktitle)) {
+                if (empty($booktitle) && empty($item->booktitle)) {
+                    $this->setField($item, 'booktitle', rtrim($remainder, ' ,:'), 'setField 107');
                 } elseif (empty($item->publisher) || empty($item->address)) {
                     if (! empty($item->publisher)) {
                         $this->setField($item, 'address', $remainder, 'setField 108');
@@ -4172,7 +4187,7 @@ class Converter
                         $this->setField($item, 'publisher', trim($publisher, '();{} '), 'setField 150');
                     }
 
-                    if ($address) {
+                    if ($address && ! preg_match('/^s\. ?l\.$/', $address)) {
                         if (isset($item->year)) {
                             $address = Str::replace($item->year, '', $address);
                             $address = rtrim($address, ', ');

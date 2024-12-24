@@ -2750,9 +2750,8 @@ class ExampleSeeder extends Seeder
                     'year' => '2009',
                     'title' => 'Unskilled and unaware of it: How difficulties in recognizing one\'s own incompetence lead to inflated self-assessments',
                     'pages' => '1-70',
-                    'volume' => '41',
                     'publisher' => 'Academic Press',
-                    'booktitle' => 'Advances in Experimental Social Psychology',
+                    'booktitle' => 'Advances in Experimental Social Psychology (Vol. 41)',
                     ]
             ],
             [
@@ -14147,6 +14146,83 @@ class ExampleSeeder extends Seeder
                     'year' => '2017',
                     ],
                     'char_encoding' => 'utf8leave',
+            ],
+            // problem with title and journal name
+			[
+                'source' => '\bibitem{feller2023dexterity}Feller, D. Dexterity, Workspace and Performance Analysis of the Conceptual Design of a Novel Three-legged, Redundant, Lightweight, Compliant, Serial-parallel Robot. {\em Journal Of Intelligent \& Robotic Systems}. \textbf{109}, 6 (2023) ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Feller, D.',
+                    'title' => 'Dexterity, Workspace and Performance Analysis of the Conceptual Design of a Novel Three-legged, Redundant, Lightweight, Compliant, Serial-parallel Robot',
+                    'year' => '2023',
+                    'volume' => '109',
+					'pages' => '6',
+                    'journal' => 'Journal Of Intelligent \& Robotic Systems',
+                    ]
+            ],
+			// urldate missed
+			[
+                'source' => 'Start Campus, "Sustainable data center services," Available: https://www.startcampus.pt/en/. [Accessed: Sep. 6, 2024] ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'Start Campus',
+                    'title' => 'Sustainable data center services',
+                    'url' => 'https://www.startcampus.pt/en/',
+                    'urldate' => 'Sep. 6, 2024',
+                    ]
+            ],
+			// errors in editors, booktitle
+			[
+                'source' => 'Margaret Maclagan and Jen Hay. (2004)  The rise and rise of NZE DRESS. In S. Cassidy, F. Cox and R. Mannell. (eds), Proceedings of the 10th Australian International conference on Speech Science and Technology: 183-188.',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Margaret Maclagan and Jen Hay',
+                    'year' => '2004',
+                    'title' => 'The rise and rise of NZE DRESS',
+                    'pages' => '183-188',
+                    'editor' => 'S. Cassidy and F. Cox and R. Mannell',
+					'booktitle' => 'Proceedings of the 10th Australian International conference on Speech Science and Technology',
+                    ]
+            ],
+			// booktitle and other elements misidentified
+			[
+                'source' => 'Kieslich, P., Henninger, F., Wulff, D., Haslbeck, J., & Schulte-Mecklenbeck, M. (2018). Mouse-tracking: A practical guide to implementation and analysis. In M. Schulte-Mecklenbeck, A. Kuehberger, & J. G. Johnson (Eds.), A Handbook of Process Tracing Methods (2nd ed., pp. 111–129). Routledge. https://doi.org/10.31234/osf.io/zuvqa ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'doi' => '10.31234/osf.io/zuvqa',
+                    'author' => 'Kieslich, P. and Henninger, F. and Wulff, D. and Haslbeck, J. and Schulte-Mecklenbeck, M.',
+                    'year' => '2018',
+                    'title' => 'Mouse-tracking: A practical guide to implementation and analysis',
+                    'pages' => '111-129',
+                    'editor' => 'M. Schulte-Mecklenbeck and A. Kuehberger and J. G. Johnson',
+                    'booktitle' => 'A Handbook of Process Tracing Methods (2nd ed.)',
+                    'publisher' => 'Routledge',
+                    ]
+            ],
+			// booktitle truncated
+			[
+                'source' => 'Petronio, S., & Durham, W. T. (2015). Communication Privacy Management theory: Significance for interpersonal communication. In D. Braithwaite & P. Schrodt (Eds.), Engaging Theories in Interpersonal Communication (pp. 335–348). SAGE. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Petronio, S. and Durham, W. T.',
+                    'booktitle' => 'Engaging Theories in Interpersonal Communication',
+                    'editor' => 'D. Braithwaite and P. Schrodt',
+                    'pages' => '335-348',
+                    'publisher' => 'SAGE',
+                    'title' => 'Communication Privacy Management theory: Significance for interpersonal communication',
+                    'year' => '2015',
+                    ]
+            ],
+			// 's.l.' means sine loco: no place of publication.  Also could be 's.n.' for no name.
+			[
+                'source' => 'Harrison, F. L. & Lock, D., 2004. Advanced Project Management. s.l.:Gower Publishing. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Harrison, F. L. and Lock, D.',
+                    'year' => '2004',
+                    'title' => 'Advanced Project Management',
+					'publisher' => 'Gower Publishing',
+                    ]
             ],
             
              

@@ -1395,7 +1395,7 @@ class AuthorParser
             $result = false;
         } elseif ($this->isInitials($words[0]) && count($words) >= 2) {
             $this->verbose('First word is initials and there are at least 2 words in string');
-            if ($this->isName(rtrim($word1, '.,')) && (preg_match('/^\p{L}+$/u', $word1) || count($words) == 2)) {
+            if ($this->isName(rtrim($word1, '.,')) && (preg_match('/^[\p{L}\-]+$/u', $word1) || count($words) == 2)) {
                 $this->verbose("isNameString: string is name (case 1): <initial> <name>");
                 $result = true;
             } elseif (

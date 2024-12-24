@@ -583,11 +583,12 @@ class TitleParser
                     // if first character of next word is lowercase letter and does not end in period
                     // OR $word and $nextWord are A. and D. or B. and C.
                     // OR following string starts with a part designation, continue, skipping next word,
+                    // s.l. (sine loco) is used for citation for which address of publisher is unknown
                     if (
                         $nextWord 
                         &&
                         (
-                            (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.' && rtrim($nextWord, ':') != 'in')
+                            (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.' && rtrim($nextWord, ':') != 'in' && ! Str::startsWith($nextWord, 's.l.'))
                             || 
                             ($word == 'A.' && $nextWord == 'D.')
                             || 

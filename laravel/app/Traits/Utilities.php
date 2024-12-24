@@ -524,7 +524,7 @@ trait Utilities
             $words = explode(' ', $addressPublisherRegExp);
             foreach ($words as $word) {
                 if (substr($word, -1) == '.') {
-                    if (! in_array($word, ['St.','Inc.']) && ! preg_match('/^[A-Z]\.$/', $word)) {
+                    if (! in_array($word, ['St.', 'Inc.']) && ! preg_match('/^[A-Z]\.$/', $word)) {
                         $returner = false;
                         break;
                     }

@@ -182,7 +182,7 @@ class RegularExpressions
             '[Bb]lz\. ?',     // Dutch
             '[Hh]al[\.:] ?',  // Indonesian
             '[Hh]lm\. ?',
-            '[Ss]s?\. ?',     // Turkish, Polish, German
+            '[Ss]s?\. ?(?!l\.)',  // Turkish, Polish, German (($! expression means string is not "s. l." or "s.l."))
             '[Ss]tr\. ?',     // Czech
             'стр\. ?',        // Russian
             'С\. ?',          // Russian
