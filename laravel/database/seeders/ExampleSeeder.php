@@ -14341,6 +14341,19 @@ class ExampleSeeder extends Seeder
                     'pages' => '1-26',
                     ]
             ],
+			// edition not detected
+			[
+                'source' => 'Ary, D., Jacobs, L.C., Sorensen, C. K., & Razavieh, A. (2010). Introduction to research in education (Eight Edition). Belmont, California: Wadsworth Cengage Learning. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ary, D. and Jacobs, L. C. and Sorensen, C. K. and Razavieh, A.',
+                    'title' => 'Introduction to research in education',
+					'edition' => 'Eight',
+                    'year' => '2010',
+                    'address' => 'Belmont, California',
+                    'publisher' => 'Wadsworth Cengage Learning',
+                    ]
+            ],
             
              
             

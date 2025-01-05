@@ -48,7 +48,7 @@ trait Utilities
     // Note that "Issues" cannot be followed by "in" --- because "issues in" could be part of journal name
     var $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]úm\.:? ?|[Nn]umbers? ?|[Nn] ?\. |№\.? ?|[Nn]\.? ?(°|º) ?|[Ii]ssues?:? ?(?! in)|Issue no. ?|Iss: |Heft ';
 
-    var $editionRegExp = '(?P<fullEdition>((?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie))|[1-9] ?ed\.)';
+    var $editionRegExp = '(?P<fullEdition>((?P<edition>(1st|first|2nd|second|3rd|third|[4-9]th|[1-9][0-9]th|fourth|fifth|sixth|seventh|eighth|eight|ninth|tenth|[12][0-9]{3}|revised) (rev\.|revised )?)(ed\.|edition|vydání|édition|edición|edição|editie))|[1-9] ?ed\.)';
 
     var $workingPaperRegExp = '(preprint|arXiv preprint|bioRxiv|working paper|texto para discussão|discussion paper|'
         . 'technical report|tech\. report|report no\.|'
