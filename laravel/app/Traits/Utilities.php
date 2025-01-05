@@ -14,9 +14,13 @@ trait Utilities
     // \enquote{ is not a signal of italics, but it is easiest to classify it thus.
     var $italicCodes = [
         "\\textit{", 
+        "\\textit {", 
         "\\textsl{", 
+        "\\textsl {", 
         "\\textsc{", 
+        "\\textsc {", 
         "\\emph{", 
+        "\\emph {", 
         "{\\em ", 
         "\\em ", 
         "{\\it ", 

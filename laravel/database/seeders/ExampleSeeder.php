@@ -14327,6 +14327,20 @@ class ExampleSeeder extends Seeder
 					'pages' => '1-17',
                     ]
             ],
+			// space after \textit
+			[
+                'source' => '\bibitem {13episodepattern} X. Ao, H. Shi, J. Wang, L. Zuo, H. Li, and Q. He, ``Large-scale frequent episode mining from complex event sequences with hierarchies,\'\' \textit { ACM Trans. Intell. Syst. Technol.}, vol. 10, no. 4, pp. 1-26, 2019. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'X. Ao and H. Shi and J. Wang and L. Zuo and H. Li and Q. He',
+                    'title' => 'Large-scale frequent episode mining from complex event sequences with hierarchies',
+                    'year' => '2019',
+                    'journal' => 'ACM Trans. Intell. Syst. Technol.',
+                    'volume' => '10',
+                    'number' => '4',
+                    'pages' => '1-26',
+                    ]
+            ],
             
              
             
