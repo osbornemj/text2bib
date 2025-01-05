@@ -169,7 +169,7 @@ trait AuthorPatterns
                 'name1' => $lastNameInitials, 
                 'end1' => '[;,] ', 
                 'end2' => '; ' . $notAnd, 
-                'end3' => '[,.] (?!(\p{Lu}\.|;|' . $lastNameInitials . '[; ]))', 
+                'end3' => '[,.] (?!(\p{Lu}\.|;|' . $andRegExp . '|' . $lastNameInitials . '[; ]))', 
             ],
             // 6. Smith, A. B.[,;] Jones, C. D.[,;] Gonzalez, J. D.:
             [

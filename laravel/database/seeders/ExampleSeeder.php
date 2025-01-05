@@ -14297,6 +14297,36 @@ class ExampleSeeder extends Seeder
                     ],
 					'char_encoding' => 'utf8leave',
             ],
+			// author pattern 5 ends author string early
+			[
+                'source' => 'Alonso, F.; Fuertes, J. L.; González, A. L. & Martínez, L. (2010). On the testability of WCAG 2.0 for beginners. Proceedings of the 2010 International Cross Disciplinary Conference on Web Accessibility (W4A). Association for Computing Machinery, Nueva York, pp. 1-9. https://dl.acm.org/doi/10.1145/1805986.1806000 ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'address' => 'Nueva York',
+                    'author' => 'Alonso, F. and Fuertes, J. L. and González, A. L. and Martínez, L.',
+                    'booktitle' => 'Proceedings of the 2010 International Cross Disciplinary Conference on Web Accessibility (W4A)',
+                    'pages' => '1-9',
+                    'publisher' => 'Association for Computing Machinery',
+					'address' => 'Nueva York',
+                    'title' => 'On the testability of WCAG 2.0 for beginners',
+                    'year' => '2010',
+                    'url' => 'https://dl.acm.org/doi/10.1145/1805986.1806000',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// error in author pattern 5
+			[
+                'source' => 'Kumar, K. B.C.; Tripathi, K.; Singh, R.; Gore, P. G.; Kumar, R.; Bhardwaj, R. and Gupta, K. (2024): Screening diverse cowpea (Vigna unguiculata (L.) Walp.) germplasm for Callosobruchus chinensis (L.) resistance and SSR based genetic diversity assessment. Genetic Resources and Crop Evolution, 1-17. Doi.org/10.1007/s10722-024-018631. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1007/s10722-024-018631',
+                    'author' => 'Kumar, K. B. C. and Tripathi, K. and Singh, R. and Gore, P. G. and Kumar, R. and Bhardwaj, R. and Gupta, K.',
+                    'title' => 'Screening diverse cowpea (Vigna unguiculata (L.) Walp.) germplasm for Callosobruchus chinensis (L.) resistance and SSR based genetic diversity assessment',
+                    'year' => '2024',
+                    'journal' => 'Genetic Resources and Crop Evolution',
+					'pages' => '1-17',
+                    ]
+            ],
             
              
             
