@@ -14248,6 +14248,55 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Continuum',
                     ]
             ],
+			// editor, booktitle misidentified
+			[
+                'source' => 'Arrizabalaga, Jon (1994), Facing the Black Death: perceptions and reactions of university medical practitioners, en García-Ballester, Luís, et al. (eds.) Practical Medicine from Salerno to the Black Death, Cambridge, Cambridge University Press, pp. 237-288 ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Arrizabalaga, Jon',
+                    'year' => '1994',
+                    'title' => 'Facing the Black Death: perceptions and reactions of university medical practitioners',
+                    'pages' => '237-288',
+                    'editor' => 'García-Ballester, Luís and others',
+                    'booktitle' => 'Practical Medicine from Salerno to the Black Death',
+                    'address' => 'Cambridge',
+					'publisher' => 'Cambridge University Press',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// editors not identified
+			[
+                'source' => 'Auer, Peter. 2006. Costruction Grammar meets conversation: Einige Überlegungen am Beispiel von ‚so’-Konstruktionen. In Konstruktionen in der Interaktion, Suzanne Günthner & Wolfgang Imo (eds), 291–314. Berlin: Mouton de Gruyter.   doi:  10.1515/9783110894158.291 ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'doi' => '10.1515/9783110894158.291',
+                    'author' => 'Auer, Peter',
+                    'year' => '2006',
+                    'title' => 'Costruction Grammar meets conversation: Einige Überlegungen am Beispiel von,so\'-Konstruktionen',
+                    'pages' => '291-314',
+                    'address' => 'Berlin',
+                    'publisher' => 'Mouton de Gruyter',
+                    'booktitle' => 'Konstruktionen in der Interaktion',
+					'editor' => 'Suzanne Günthner and Wolfgang Imo',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// editors not identified
+			// Many incollection examples in conversion 11459
+			[
+                'source' => 'Barotto, Allesandra & Lo Baido, Maria Cristina. 2021. Exemplification in interaction: from reformulation to the creation of common ground. In Building Categories in Interaction: Linguistic Resources at Work, Caterina Mauri, Eugenio Goria & Ilaria Fiorentini (eds). Amsterdam: John Benjamins. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Barotto, Allesandra and Lo Baido, Maria Cristina',
+                    'title' => 'Exemplification in interaction: from reformulation to the creation of common ground',
+                    'year' => '2021',
+                    'publisher' => 'John Benjamins',
+                    'address' => 'Amsterdam',
+                    'booktitle' => 'Building Categories in Interaction: Linguistic Resources at Work',
+					'editor' => 'Caterina Mauri and Eugenio Goria and Ilaria Fiorentini',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
             
              
             

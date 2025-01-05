@@ -335,7 +335,8 @@ trait AuthorPatterns
                 'name2' => $firstNameInitialsLastName,
                 'end1' => ',? ' . $andRegExp . ' ',
                 //'end2' => '(: |\. |,? ' . $notJr . ')',
-                'end2' => $periodOrColonOrCommaYearOrCommaNotJr, 
+                //'end2' => $periodOrColonOrCommaYearOrCommaNotJr, 
+                'end2' => $periodOrColonOrCommaYearOrBareWords, 
                 'end3' => null,
             ],
             // 26. Jane (A. )?Smith[,;] Susan (B. )?Jones(period or colon or comma year)

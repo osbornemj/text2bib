@@ -2795,7 +2795,11 @@ class Converter
                         // This case is dealt with in detail in the next code block.
                         $eds = $matches[0];
                         $beforeEds = Str::before($remainder, $eds);
-                        $wordsBeforeEds = explode(' ', $before);
+                        // Logically, the following line, with $beforeEds, is correct.  But it produces a lot of incorrect
+                        // conversions.
+                        $wordsBeforeEds = explode(' ', $beforeEds);
+                        //dd($wordsBeforeEds);
+                        //$wordsBeforeEds = explode(' ', $before);
                         $afterEds = rtrim(Str::after($remainder, $eds), '; ');
                         $setRemainder = false;
 
@@ -2818,8 +2822,12 @@ class Converter
                             }
                             if (isset($matches['publisher'])) {
                                 $this->setField($item, 'publisher', rtrim($matches['publisher'], ','), 'setField 68');
-                                //$remainder = $beforeEds . $eds . ($matches['string'] ?? '');
                             }
+                            // The following code is logical, but causes items that are processed correctly by later code to be processed
+                            // incorrectly here.
+                            // if (isset($matches['address']) && isset($matches['publisher'])) {
+                            //     $remainder = $beforeEds . ' ' . trim($matches['string'], ": ");
+                            // }
                             if (isset($matches['addressOrPublisher'])) {
                                 $addressOrPublisher = $matches['addressOrPublisher'];
                                 if (in_array($addressOrPublisher, $this->cities)) {
@@ -2848,12 +2856,14 @@ class Converter
                         if ($remainderContainsEds) {
                             $noWordBeforeEdsInDict = true;
                             foreach ($wordsBeforeEds as $word) {
-                                if ($this->inDict(trim($word, ' .,'), $this->dictionaryNames)) {
+                                if ($this->inDict(trim($word, ' .,'), $this->dictionaryNames) && strlen(trim($word, ' .,')) > 1) {
                                     $noWordBeforeEdsInDict = false;
                                     break;
                                 }
                             }
                         }
+
+                        $this->verbose("[in4a] Remainder: " . $remainder);
 
                         // $remainder contains 'eds', but not at end.  Determine which of $beforeEds and $afterEds is
                         // booktitle and which is editor.
@@ -2861,26 +2871,27 @@ class Converter
                         // Require string for editors to have at least 6 characters and string for booktitle to have at least 10 characters
                         // if ($remainderContainsEds && 
                         //   ($noWordBeforeEdsInDict || (strlen($beforeEds) > 5 && $publisherPosition !== false && $publisherPosition > 10))
-                        if ($remainderContainsEds && $noWordBeforeEdsInDict) {
+                        if ($remainderContainsEds && $noWordBeforeEdsInDict && $afterEds) {
                             // <editors> eds <booktitle> <publicationInfo>
                             $this->verbose("Remainder seems to be <editors> eds <booktitle> <publicationInfo>");
                             $editorStart = true;
                             $editorString = $beforeEds;
                             $determineEnd = false;
-                            $postEditorString = $after;
+                            //$postEditorString = $after;
+                            $postEditorString = $afterEds;
                         } elseif (preg_match('/' . $this->regExps->edsParensRegExp . '/u', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
                             // $remainder contains "(Eds.)" (parens required) or similar 
 
                             $results = $subMatches = $nameStringResults = [];
 
                             // booktitle, which can contain commas, ends in period
-                            $results[1] = preg_match('/^(?P<booktitle>[\p{L}\-:,. ]{15,}\p{Ll})\. (?P<editor>[\p{L}\-., ]{8,})' . $this->regExps->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[1]);
+                            $results[1] = preg_match('/^(?P<booktitle>[\p{L}\-:,. ]{15,}\p{Ll})\. (?P<editor>[\p{L}\-.,& ]{8,})' . $this->regExps->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[1]);
                            
                             // booktitle, which cannot contain commas, ends in comma
-                            $results[2] = preg_match('/^(?P<booktitle>[\p{L}\-:. ]{15,}), (?P<editor>[\p{L}\-., ]{8,})' . $this->regExps->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[2]);
+                            $results[2] = preg_match('/^(?P<booktitle>[\p{L}\-:. ]{15,}), (?P<editor>[\p{L}\-.,& ]{8,})' . $this->regExps->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[2]);
                            
                             // booktitle, which can contain commas, ends in comma, and subsequent editor string has no commas
-                            $results[3] = preg_match('/^(?P<booktitle>[\p{L}\-:., ]{15,}), (?P<editor>[\p{L}\-. ]{8,})' . $this->regExps->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[3]);
+                            $results[3] = preg_match('/^(?P<booktitle>[\p{L}\-:., ]{15,}), (?P<editor>[\p{L}\-.& ]{8,})' . $this->regExps->edsParensRegExp . '[.,]? (?P<pubInfo>.{10,80})$/u', $remainder, $subMatches[3]);
 
                             foreach ($results as $i => $result) {
                                 $nameStringResults[$i] = $result ? $this->authorParser->isNameString($subMatches[$i]['editor'], $language) : false;
@@ -3269,9 +3280,18 @@ class Converter
                 }
 
                 // If $remainder consists only of letters and spaces, has to be publisher(?)
-                if (preg_match('/^[\p{L} ]+$/u', $remainder) && ! isset($item->publisher)) {
-                    $this->setField($item, 'publisher', $remainder, 'setField 81a');
-                    $remainder = '';
+                // if (preg_match('/^[\p{L} ]+$/u', $remainder) && ! isset($item->publisher)) {
+                //     $this->setField($item, 'publisher', $remainder, 'setField 81a');
+                //     $remainder = '';
+                // }
+                if (preg_match('/^[\p{L} ]+$/u', $remainder)) {
+                    if (! $booktitle) {
+                        $this->setField($item, 'booktitle', $remainder, 'setField 81a');
+                        $remainder = '';
+                    } elseif (! isset($item->publisher)) {
+                        $this->setField($item, 'publisher', $remainder, 'setField 81b');
+                        $remainder = '';
+                    }
                 }
 
                 // Get editors
@@ -3693,9 +3713,13 @@ class Converter
                             // $remainder is <booktitle>, <publisher> [with no commas or periods in booktitle or publisher]
                             } elseif (preg_match('/^(?P<booktitle>[^,.]*), (?P<publisher>[^,.]*)$/', $remainder, $matches)) {
                                 $booktitle = $matches['booktitle'];
-                                $this->setField($item, 'booktitle', $booktitle, 'setField 106d');
-                                $this->setField($item, 'publisher', $matches['publisher'], 'setField 106e');
-                                $this->verbose('booktitle case 14d');
+                                if (isset($item->publisher)) {
+                                    $this->setField($item, 'booktitle', $remainder, 'setField 106d');
+                                } else {
+                                    $this->setField($item, 'booktitle', $booktitle, 'setField 106e');
+                                    $this->setField($item, 'publisher', $matches['publisher'], 'setField 106f');
+                                    $this->verbose('booktitle case 14d');
+                                }
                                 $remainder = '';
                             } else {
                                 $words = explode(" ", $remainder);
@@ -3745,7 +3769,7 @@ class Converter
                     $warnings[] = "Editor not found.";
                 }
 
-                $remainder = trim($remainder, '[]()., ');
+                $remainder = trim($remainder, '[](., ');
                 $this->verbose("[in12] Remainder: " . ($remainder ? $remainder : '[empty]'));
 
                 // If $remainder contains 'forthcoming' string, remove it and put it in $item->note.
