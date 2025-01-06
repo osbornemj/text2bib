@@ -32,7 +32,7 @@ trait Utilities
 
     var $boldCodes = [
         "\\textbf{", 
-        "{\\bf ", 
+        "{\\bf ",
         "{\\bfseries "
     ];
 
@@ -42,7 +42,7 @@ trait Utilities
 
     var $forthcomingRegExp = '[Ff]orthcoming( at| in)?|[Ii]n [Pp]ress|[Aa]ccepted( at)?|[Tt]o [Aa]ppear [Ii]n|à paraître';
     var $endForthcomingRegExp = '( |\()([Ff]orthcoming|[Ii]n [Pp]ress|[Aa]ccepted|[Tt]o [Aa]ppear|à paraître)\.?\)?$';
-    var $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted( at)?|^to appear in|^à paraître';
+    var $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted for publication in|^accepted( at)?|^to appear in|^à paraître';
 
     // (°|º) cannot be replaced by [°º].  Don't know why.
     // Note that "Issues" cannot be followed by "in" --- because "issues in" could be part of journal name

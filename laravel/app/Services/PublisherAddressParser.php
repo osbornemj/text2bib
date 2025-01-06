@@ -119,6 +119,8 @@ class PublisherAddressParser
             } elseif ($stringBeforeComma == $cityString) {
                 $address = $stringBeforeComma . ', ' . $stringAfterComma;
                 $publisher = '';
+            } elseif (in_array($stringAfterComma, ['Publishers', 'Publisher'])) {
+                $publisher = $string;
             } else {
                 $publisher = $stringBeforeComma;
                 $address = $stringAfterComma;

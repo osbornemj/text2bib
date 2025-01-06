@@ -99,7 +99,7 @@ trait AuthorPatterns
         $words1 = '(?=(\p{Lu}[\p{L}\-]*(( [\p{Ll}\-]+){3}|( [\p{L}\-]+){6})))';
         // Space followed by word starting with uc followed by at least 6 words, without any punctuation
         $words2 = '(?=(\p{Lu}[\p{L}\-]*(( [\p{L}\-]+){6})))';
-        $commaYearOrBareWords = '(' . $commaYear . '|, ' . $words1 . '| ' . $words2 . ')';
+        $commaYearOrBareWords = '(' . $commaYear . '|[,.] ' . $words1 . '| ' . $words2 . ')';
         $colon = ': (?!\p{Ll})';
         $colonOrCommaYear = '(' . $colon . '|' . $commaYear . ')';
         $colonOrCommaYearOrBareWords = '(' . $colon . '|' . $commaYearOrBareWords . ')';

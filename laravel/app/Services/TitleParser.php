@@ -390,8 +390,11 @@ class TitleParser
 
                     // $word ends in period && then there are letters and spaces, and then a page range in parens
                     // (so string before page range is booktitle?)
-                    if (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L} ]+,? ?\(?(' . $this->regExps->pagesRegExp . ')/u', $remainder)) { 
-                        $upcomingPageRange = true;
+                    if (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L} ]{3,}(?P<punc>,?) ?\(?(' . $this->regExps->pagesRegExp . ')/u', $remainder, $matches)) { 
+                        // If number range is preceded by at least 3 letters/spaces, with no punctuation, it is not a page range
+                        if (isset($matches['punc']) && ($matches['pageWord'] || $matches['punc'] == ',')) {
+                            $upcomingPageRange = true;
+                        }
                     }
 
                     /////////////////

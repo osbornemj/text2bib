@@ -93,7 +93,7 @@ class Converter
 
         $this->ordinals = [
             'en' =>
-                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'],
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', 'first', 'second', 'third', 'fourth','fifth', 'sixth', 'seventh', 'eighth', 'ninth'],
             'cz' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'],
             'fr' =>
@@ -963,6 +963,12 @@ class Converter
 
         $remainder = ltrim($remainder, ': ');
 
+        // If remainder starts with year in parens, extract it.
+        if (preg_match('/^\((?P<year>' . $this->yearRegExp . ')\)(?P<remains>.*)$/', $remainder, $matches)) {
+            $this->setField($item, 'year', $matches['year'], 'setField 25a');
+            $remainder = ltrim($matches['remains'], '., ');
+        }
+
         $title = null;
         $titleEndsInPeriod = false;
         $titleStyle = '';
@@ -1290,8 +1296,12 @@ class Converter
             $this->verbose("Contains a month name.");
         }
 
-        // Contains volume designation, but not at start of $remainder
-        if (preg_match('/[ \(\[](' . $this->regExps->volumeAndCodesRegExp . ') ?\d/', substr($remainder, 3))) {
+        // Contains volume designation, but not at start of $remainder, and not of the form '(Vol. 12)', which 
+        // could be for a book
+        if (preg_match('/[ (\[](' . $this->regExps->volumeAndCodesRegExp . ') ?\d/', substr($remainder, 3))
+            &&
+            ! preg_match('/[(\[](' . $this->regExps->volumeAndCodesRegExp . ') ?\d+[)\]]/', substr($remainder, 3))
+            ) {
             $containsInteriorVolume = true;
             $this->verbose("Contains a volume, but not at start.");
         }
@@ -1358,12 +1368,14 @@ class Converter
             || 
             (
                 preg_match($regExp11, $remainder, $matches)
-                && preg_match($regExp21, $remainder, $matches)
+                &&
+                preg_match($regExp21, $remainder, $matches)
             )
             ||
             (
                 preg_match($regExp12, $remainder, $matches)
-                && preg_match($regExp22, $remainder, $matches)
+                &&
+                preg_match($regExp22, $remainder, $matches)
             )
            ) {
             $containsEditors = true;
@@ -1435,12 +1447,25 @@ class Converter
         //     $this->verbose("Contains page range.");
         // }
         if (
-            preg_match('/[ :]' . $this->regExps->pageRange . '([\.,\} ]|$)/', $remainder) 
+            preg_match('/^(?P<before>.*)[ :]' . $this->regExps->pageRange . '(?P<after>([.,\} .*$]|$))/', $remainder, $matches) 
             ||
-            preg_match('/' . $this->regExps->pagesRegExp . '/', $remainder)
+            preg_match('/^(?P<before>.*)' . $this->regExps->pagesRegExp . '(?P<after>.*$)/', $remainder, $matches)
            ) {
             $containsPageRange = true;
-            $this->verbose("Contains page range.");
+            if (isset($matches['before'])) {
+                if (preg_match('/^' . $this->yearRegExp . '$/', $matches['startPage'])) {
+                    if (preg_match('/[\p{L} ]{4,}$/', $matches['before'])) {
+                        $containsPageRange = false;
+                        $this->verbose("Contains number range that appears not to be page range.");
+                        if (isset($matches['after']) && ! preg_match('/\d/', $matches['before'] . $matches['after'])) {
+                            $containsDigitOutsideVolume = false;
+                        }
+                    }
+                }
+            }
+            if ($containsPageRange) {
+                $this->verbose("Contains page range.");
+            }
         }
 
         $remainderMinusPages = $this->findAndRemove($remainder, $this->regExps->pagesRegExp);
@@ -1494,11 +1519,7 @@ class Converter
                 // Is city followed by US State abbreviation?
                 $state = $this->getUsState($afterCity);
 
-                if ($state) {
-                    $cityString = trim($city . $state);
-                } else {
-                    $cityString = $city;
-                }
+                $cityString = $state ? trim($city . $state) : $city;
 
                 $this->verbose("Contains city \"" . $cityString . "\"");
                 break;
@@ -1889,8 +1910,16 @@ class Converter
                     $journal = trim($journal, '_');
                     $this->setField($item, 'journal', trim($journal, '"*,;:{}-| '), 'setField 38');
                 } elseif (! $journalNameMissingButHasVolume) {
-                    $warnings[] = "Item seems to be article, but journal name not found.  Setting type to unpublished.";
-                    $itemKind = 'unpublished';  // but continue processing as if journal
+                    // If journal name not found and previously assigned title contains a single period, assume
+                    // title precedes period and journal name follows period.
+                    if (preg_match('/^(?P<before>[^.]+)\.(?P<after>[^.]+)$/', $item->title, $matches)) {
+                        $this->setField($item, 'title', $matches['before'], 'setField 38a');
+                        $this->setField($item, 'journal', $matches['after'], 'setField 38b');
+                        $remainder = '';
+                    } else {
+                        $warnings[] = "Item seems to be article, but journal name not found.  Setting type to unpublished.";
+                        $itemKind = 'unpublished';  // but continue processing as if journal
+                    }
                 }
                 $remainder = trim($remainder, ' ,.');
                 $this->verbose("Remainder: " . $remainder);
@@ -2430,6 +2459,38 @@ class Converter
                                 $remainder = '';
                             }
                         }
+                    // $remainder is <booktitle> (eds. editor>), <address>: <publisher>
+                    } elseif (preg_match('/^(?P<booktitle>.{5,80}) \(' . $this->regExps->edsNoParensRegExp . ' (?P<editor>[\p{L}\- .]+)\), (?P<address>[\p{L}]+): (?P<publisher>[\p{L} ]{3,40})$/u', $remainder, $matches)) {
+                        if (isset($matches['editor'])) {
+                            $result = $this->authorParser->convertToAuthors(
+                                explode(' ', $matches['editor']), 
+                                $remainder, 
+                                $trash, 
+                                $month, 
+                                $day, 
+                                $date, 
+                                $isEditor, 
+                                $isTranslator, 
+                                $this->cities, 
+                                $this->dictionaryNames, 
+                                false, 
+                                'editors', 
+                                $language
+                            );
+                            if ($result) {
+                                $this->setField($item, 'editor', trim($result['authorstring']), 'setField 55d');
+                                if (isset($matches['booktitle'])) {
+                                    $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 55e');
+                                }
+                                if (isset($matches['address'])) {
+                                    $this->setField($item, 'address', $matches['address'], 'setField 55f');
+                                }
+                                if (isset($matches['publisher'])) {
+                                    $this->setField($item, 'publisher', $matches['publisher'], 'setField 55g');
+                                }
+                                $remainder = '';
+                            }
+                        }
                     // $remainder is <booktitle>, trans. <translator> <address>: <publisher>.
                     } elseif (preg_match('/^(?P<booktitle>' . $booktitleRegExp . ')[.,] (?P<trans>[Tt]rans(\.?|lators?) )(?P<remains>.*)$/u', $remainder, $matches)) {
                         if (isset($matches['remains'])) {
@@ -2806,6 +2867,9 @@ class Converter
                         // Remove address and publisher, if present, and if match one of these patterns
                         if (
                             preg_match('/^(?P<string>[^(]+) \((?P<address>[^:]+): (?P<publisher>[^)0-9]+)( (?P<year>' . $this->yearRegExp . '))?\)$/', $afterEds, $matches)
+                            ||
+                            // Case of address ending in 2-letter US state abbreviation
+                            preg_match('/^(?P<string>.+)\. (?P<address>\p{L}+, [A-Z]{2}): (?P<publisher>[^)0-9,]+)( (?P<year>' . $this->yearRegExp . '))?$/u', $afterEds, $matches)
                             ||
                             preg_match('/^(?P<string>.+), (?P<address>[\p{L}\-]+): (?P<publisher>[^)0-9,]+)( (?P<year>' . $this->yearRegExp . '))?$/u', $afterEds, $matches)
                             ||
@@ -3720,6 +3784,12 @@ class Converter
                                     $this->setField($item, 'publisher', $matches['publisher'], 'setField 106f');
                                     $this->verbose('booktitle case 14d');
                                 }
+                                $remainder = '';
+                            } elseif (preg_match('/^(?P<booktitle>[\p{L}: ]+)[.,] (?P<publisher>[\p{L} ]+(Press|Publishing)), (?P<address>[\p{L}, ]+)$/', $remainder, $matches)) {
+                                $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 106g');
+                                $this->setField($item, 'address', trim($matches['address']), 'setField 106h');
+                                $this->setField($item, 'publisher', $matches['publisher'], 'setField 106i');
+                                $this->verbose('booktitle case 14d');
                                 $remainder = '';
                             } else {
                                 $words = explode(" ", $remainder);

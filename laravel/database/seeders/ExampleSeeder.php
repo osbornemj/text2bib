@@ -14354,6 +14354,186 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Wadsworth Cengage Learning',
                     ]
             ],
+			// Should match author pattern
+			[
+                'source' => 'Eisner, S. P. (n.d.). Managing Generation Y. SAM Advanced Management Journal, 70(4), 2005. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Eisner, S. P.',
+                    'year' => 'n.d.',
+                    'title' => 'Managing Generation Y',
+                    'journal' => 'SAM Advanced Management Journal',
+                    'volume' => '70',
+                    'number' => '4',
+                    'pages' => '2005',
+                    ]
+            ],
+			// date range interpreted as page range, and item consequently misclassified as article
+			[
+                'source' => 'Adams, D. W. (1995). Education for Extinction. American Indians and the Boarding School Experience 1875-1928. University Press of Kansas . ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Adams, D. W.',
+                    'year' => '1995',
+                    'title' => 'Education for Extinction. {A}merican Indians and the Boarding School Experience 1875-1928',
+                    'publisher' => 'University Press of Kansas',
+                    ]
+            ],
+			// incollection identified as article
+            [
+                'source' => 'Byrne, Z., & Cropanzano, R. (2001). The history of organizational justice: The founders speak. In R. Cropanzano, Justice in the Workplace: From Theory to Practice (Vol. 2). Lawrence Erlbaum Associates, Publishers. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Byrne, Z. and Cropanzano, R.',
+                    'year' => '2001',
+                    'title' => 'The history of organizational justice: The founders speak',
+					'editor' => 'R. Cropanzano',
+                    'booktitle' => 'Justice in the Workplace: From Theory to Practice (Vol. 2)',
+                    'publisher' => 'Lawrence Erlbaum Associates, Publishers',
+                    ]
+            ],
+			// journal missed because of parens in name?
+			[
+                'source' => '14: Yilmaz E, Gul M. Effects of essential oils on heat-stressed poultry: A review. J Anim Physiol Anim Nutr (Berl). 2024 May 29. doi: 10.1111/jpn.13992. Epub ahead of print. PMID: 38808374. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'PMID: 38808374. Epub ahead of print.',
+                    'doi' => '10.1111/jpn.13992',
+                    'author' => 'Yilmaz, E. and Gul, M.',
+                    'title' => 'Effects of essential oils on heat-stressed poultry: A review',
+					'journal' => 'J Anim Physiol Anim Nutr (Berl)',
+                    'year' => '2024',
+                    'month' => 'May',
+                    'date' => '2024-05-29',
+                    ]
+            ],
+			// catch "accepted for publication"
+			[
+                'source' => 'Rai, G., Rahn, C., Smith, E., and Marr, C., “3D Printed Circular Nodal Plate Stacks for Broadband Vibration Isolation,” accepted for publication in Journal of Sound and Vibration, Feb 2023. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'accepted for publication',
+                    'author' => 'Rai, G. and Rahn, C. and Smith, E. and Marr, C.',
+                    'title' => '3D Printed Circular Nodal Plate Stacks for Broadband Vibration Isolation',
+                    'year' => '2023',
+                    'month' => 'February',
+                    'journal' => 'Journal of Sound and Vibration',
+                    ]
+            ],
+			// 'and others' not handled correctly in author list?
+			[
+                'source' => 'Taylor, V. A., Daneault, V., Grant, J., Scavone, G., Breton, E., Roffe-Vidal, S., Courtemanche, J., Lavarenne, A. S., Marrelec, G., Benali, H., & others. (2013). Impact of meditation training on the default mode network during a restful state. Social Cognitive and Affective Neuroscience, 8(1), 4–14. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Taylor, V. A. and Daneault, V. and Grant, J. and Scavone, G. and Breton, E. and Roffe-Vidal, S. and Courtemanche, J. and Lavarenne, A. S. and Marrelec, G. and Benali, H. and others',
+                    'title' => 'Impact of meditation training on the default mode network during a restful state',
+                    'journal' => 'Social Cognitive and Affective Neuroscience',
+                    'year' => '2013',
+                    'volume' => '8',
+                    'number' => '1',
+                    'pages' => '4-14',
+                    ]
+            ],
+			// book, not incollection; remove commas at end of booktitle
+			[
+                'source' => '\bibitem{BergouHillery2013} J. A. Bergou and M. Hillery, \textit{Introduction to the Theory of Quantum Information Processing}, Graduate Texts in Physics, Springer, New York, NY, first ed., 2013. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'J. A. Bergou and M. Hillery',
+                    'title' => 'Introduction to the Theory of Quantum Information Processing',
+                    'year' => '2013',
+                    'series' => 'Graduate Texts in Physics',
+					'edition' => 'first',
+                    'address' => 'New York, NY',
+                    'publisher' => 'Springer',
+                    ]
+            ],
+			// why do authors not match a pattern (22?)
+			[
+                'source' => 'Cattivelli, F., and Harinath G. Noninvasive cuffless estimation of blood pressure from pulse arrival time and heart rate with adaptive calibration. Proc. of IEEE Wearable and Implantable Body Sensor Networks, 2009. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Cattivelli, F. and Harinath, G.',
+                    'title' => 'Noninvasive cuffless estimation of blood pressure from pulse arrival time and heart rate with adaptive calibration',
+                    'year' => '2009',
+                    'booktitle' => 'Proc. of IEEE Wearable and Implantable Body Sensor Networks, 2009',
+                    ]
+            ],
+			// part of address included in booktitle
+			[
+                'source' => 'Mortimer JT. Motor prostheses. In: Brookhart JM, Mountcastle VB, eds. Handbook of Physiology-The Nervous System II. Bethesda, MD: American Physiolgical Society, 1981:155-187. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Mortimer, J. T.',
+                    'title' => 'Motor prostheses',
+                    'year' => '1981',
+                    'pages' => '155-187',
+                    'address' => 'Bethesda, MD',
+                    'publisher' => 'American Physiolgical Society',
+                    'editor' => 'Brookhart, J. M. and Mountcastle, V. B.',
+                    'booktitle' => 'Handbook of Physiology-The Nervous System II',
+                    ]
+            ],
+			// publisher included in booktitle
+			[
+                'source' => 'Kilgore KL, Sensors for motor neuroprostheses, In A. Inmann and D. Hodgins, (eds.): Intelligent implantable sensor systems for medical applications, Woodhead Publishing, Cambridge, UK, 2013. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Kilgore, K. L.',
+                    'title' => 'Sensors for motor neuroprostheses',
+                    'year' => '2013',
+                    'editor' => 'A. Inmann and D. Hodgins',
+                    'address' => 'Cambridge, UK',
+                    'booktitle' => 'Intelligent implantable sensor systems for medical applications',
+					'publisher' => 'Woodhead Publishing',
+                    ]
+            ],
+			// publisher included in booktitle
+			[
+                'source' => 'Mathias CJ, Bannister R.  Autonomic disturbances in spinal cord lesions.  In:  Mathias CJ, editor.  Autonomic failure:  a textbook of clinical disorders of the autonomic nervous system.  Oxford University Press, Oxford, p.839-81, 2002. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Mathias, C. J. and Bannister, R.',
+                    'title' => 'Autonomic disturbances in spinal cord lesions',
+                    'year' => '2002',
+                    'pages' => '839-81',
+                    'editor' => 'Mathias, C. J.',
+                    'booktitle' => 'Autonomic failure: a textbook of clinical disorders of the autonomic nervous system',
+                    'publisher' => 'Oxford University Press',
+					'address' => 'Oxford',
+                    ]
+            ],
+			// editor and booktitle interchanged
+			[
+                'source' => 'Hamilton BB, et al. A uniform national data system for medical rehabilitation. In: Fuhrer MJ, ed. Rehabilitation Outcomes. Analysis and Measurement. Baltimore, MD: Paul H. Brookes Publishing Co.; 1987:37-147. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Hamilton, B. B. and others',
+                    'title' => 'A uniform national data system for medical rehabilitation',
+                    'year' => '1987',
+                    'booktitle' => 'Rehabilitation Outcomes. Analysis and Measurement',
+                    'editor' => 'Fuhrer, M. J.',
+                    'publisher' => 'Paul H. Brookes Publishing Co.',
+					'pages' => '37-147',
+                    'address' => 'Baltimore, MD',
+                    ]
+            ],
+            // editors not identified
+			[
+                'source' => '\bibitem{Satake1982-fabric}Satake, M. (1982). Fabric tensor in granular materials. In: Deformation and Failure of Granular Materials (eds. P.A. Vermeer and H.J. Luger), Rotterdam: Balkema, 63-68. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Satake, M.',
+                    'year' => '1982',
+                    'title' => 'Fabric tensor in granular materials',
+                    'pages' => '63-68',
+                    'publisher' => 'Balkema',
+                    'address' => 'Rotterdam',
+                    'booktitle' => 'Deformation and Failure of Granular Materials',
+					'editor' => 'P. A. Vermeer and H. J. Luger',
+                    ]
+            ],
+
             
              
             
