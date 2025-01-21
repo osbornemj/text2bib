@@ -17,11 +17,28 @@ use Illuminate\View\View;
 
 class CommentController extends Controller
 {
-    public function index(): View
+    public function index(string $sortBy = 'latest'): View
     {
-        $threads = Thread::orderBy('updated_at', 'desc')->paginate();
+        if ($sortBy == 'latest') {
+            $threads = Thread::orderByDesc('updated_at');
+        } elseif ($sortBy == 'title') {
+            $threads = Thread::orderBy('title');
+        } elseif ($sortBy == 'poster') {
+            $threads = Thread::join('comments', function($join) {
+                    $join->on('comments.thread_id', '=', 'threads.id')
+                         ->whereRaw('comments.created_at = (select min(created_at) from comments where thread_id = threads.id)');
+                })
+            ->join('users', 'users.id', '=', 'comments.user_id')
+            ->orderBy('users.last_name')
+            ->orderBy('users.first_name');
+            //$threads = Thread::with('poster')->join('users', 'users.id', '=', 'threads.user_id')->orderBy('users.last_name');
+        } elseif ($sortBy == 'status') {
+            $threads = Thread::orderBy('status');
+        }
 
-        return view('threads', compact('threads'));
+        $threads = $threads->paginate(50);
+
+        return view('threads', compact('threads', 'sortBy'));
     }
 
     public function show($id): View

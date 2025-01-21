@@ -40,4 +40,9 @@ class ErrorReport extends Model
     {
         return $this->status == ReportStatus::Closed;
     }
+
+    public function poster()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

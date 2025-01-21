@@ -9,6 +9,20 @@
         {{ $thread->title }}
     </h2>
 
+    <div class="ml-4 max-w-7xl space-y-6">
+        <div class="mt-0">
+            <p>
+                @if (Auth::user()->is_admin)
+                    <div>
+                        <livewire:thread-status :thread="$thread" />
+                    </div>
+                @else
+                    Status: <span class="{{ $thread->status->color() }}">{{ $thread->status->name }}</span>
+                @endif
+            </p>
+        </div>
+    </div>
+
     <div>
         <livewire:comments :thread="$thread" :opUser="$opUser" :type="$type" />
     </div>

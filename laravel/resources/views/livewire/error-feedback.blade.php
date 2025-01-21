@@ -12,8 +12,8 @@
                         :type="$type"
                     />
                 </div>
-            @endif
-    </x-dt>
+                @endif
+            </x-dt>
             <x-dd><p style="white-space: pre-line;">{{ $comment->comment_text }}</p></x-dd>
         @endforeach        
     </dl>

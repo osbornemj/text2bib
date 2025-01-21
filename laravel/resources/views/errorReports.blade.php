@@ -15,6 +15,44 @@
         </div>
     @endif
 
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 mx-4 border-b mb-1">
+        <div class="col-span-7 mb-1">
+            Title
+        </div>
+        <div class="col-span-2 mb-1">
+            <x-link href="{{ url('errorReports/latest') }}">
+                @if ($sortBy == 'latest')
+                    <b>
+                @endif
+                    Latest
+                @if ($sortBy == 'latest')
+                    </b>
+                @endif
+            </x-link>
+        </div>
+        <div class="col-span-2 mb-1">
+            <x-link href="{{ url('errorReports/poster') }}">
+                @if ($sortBy == 'poster')
+                    <b>
+                @endif
+                    Poster
+                @if ($sortBy == 'poster')
+                    </b>
+                @endif
+            </x-link>
+        </div>
+        <div class="col-span-1 mb-1">
+            <x-link href="{{ url('errorReports/status') }}">
+                @if ($sortBy == 'status')
+                    <b>
+                @endif
+                    Status
+                @if ($sortBy == 'status')
+                    </b>
+                @endif
+            </x-link>
+        </div>
+    </div>
     @foreach ($errorReports as $errorReport)
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 mx-4">
             <div class="col-span-7">
@@ -27,7 +65,7 @@
                 {{ $errorReport->output->conversion->user->fullName() }}
             </div>
             <div class="mt-0 pt-0 col-span-1">
-                {{ $errorReport->status->name }}
+                <span class="{{ $errorReport->status->color() }}">{{ $errorReport->status->name }}
             </div>
         </div>
     @endforeach

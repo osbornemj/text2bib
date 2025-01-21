@@ -87,7 +87,7 @@ Route::middleware(['auth', 'verified', 'noRequiredResponses'])->group(function (
     });
 
     Route::controller(ErrorReportController::class)->group(function () {
-        Route::get('/errorReports', 'index')->name('errorReports');
+        Route::get('/errorReports/{sortBy?}', 'index')->name('errorReports');
     });
 
     Route::resources([
@@ -95,7 +95,7 @@ Route::middleware(['auth', 'verified', 'noRequiredResponses'])->group(function (
     ]);
 
     Route::controller(CommentController::class)->group(function () {
-        Route::get('/comments', 'index')->name('comments');
+        Route::get('/comments/{sortBy?}', 'index')->name('comments');
     });
 
     Route::get('/downloadBibtex/{conversionId}', DownloadBibtexController::class)->name('conversion.downloadBibtex');

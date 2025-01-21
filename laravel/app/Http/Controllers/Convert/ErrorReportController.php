@@ -19,13 +19,25 @@ class ErrorReportController extends Controller
         $this->converter = new Converter;
     }
 
-    public function index(): View
+    public function index(string $sortBy = 'latest'): View
     {
-        $errorReports = ErrorReport::with('output')
-            ->orderBy('created_at', 'desc')
-            ->paginate();
+        $errorReports = ErrorReport::with('output');
 
-        return view('errorReports', compact('errorReports'));
+        if ($sortBy == 'latest') {
+            $errorReports = $errorReports->orderByDesc('updated_at');
+        } elseif ($sortBy == 'poster') {
+            $errorReports = ErrorReport::join('outputs', 'outputs.id', '=', 'error_reports.output_id')
+                ->join('conversions', 'conversions.id', '=', 'outputs.conversion_id')
+                ->join('users', 'users.id', '=', 'conversions.user_id')
+                ->orderBy('users.last_name')
+                ->orderBy('users.first_name');
+        } elseif ($sortBy == 'status') {
+            $errorReports = ErrorReport::orderBy('status');
+        }
+
+        $errorReports = $errorReports->paginate(50);
+
+        return view('errorReports', compact('errorReports', 'sortBy'));
     }
 
     public function show($id): View
@@ -36,7 +48,6 @@ class ErrorReportController extends Controller
             ->first();
 
         $opUser = $errorReport->output->conversion->user;
-        //$opUser = ErrorReportComment::where('error_report_id', $id)->oldest()->first()?->user;
 
         return view('errorReport', compact('errorReport', 'opUser'));
     }
