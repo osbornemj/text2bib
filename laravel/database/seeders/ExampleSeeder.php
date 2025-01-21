@@ -14546,7 +14546,20 @@ class ExampleSeeder extends Seeder
                     'year' => '2005',
                 ],
                 'char_encoding' => 'utf8leave',
-            ]
+            ],
+            // Piece of title omitted
+            [
+                'source' => 'MARTINS, Ives Gandra. O Brasil em 2024: perspectivas. Disponível em: \url{https://www.conjur.com.br/2024-jan-19/o-brasil-em-2024-perspectivas/}. Acesso em 02.11.2024. ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'Martins, Ives Gandra',
+                    'title' => 'O Brasil em 2024: perspectivas',
+                    'url' => 'https://www.conjur.com.br/2024-jan-19/o-brasil-em-2024-perspectivas/',
+                    'urldate' => '02.11.2024',
+                    ],
+                    'char_encoding' => 'utf8leave',
+                    'language' => 'pt',
+            ],
 
             
              

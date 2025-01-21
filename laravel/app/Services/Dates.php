@@ -272,7 +272,7 @@ class Dates
         } else {
             $isDates[1] = preg_match('/(' . $starts . $day . '( ' . $of . ')?' . ' ' . $monthName . ',? ?' . '(' . $of . ' )?' . $year . $ends . ')/i' , $string, $matches[1]);
             $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $day . '(,? ' . $year . ')?' . $ends . ')/i', $string, $matches[2]);
-            $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/ ]' . $of . $monthNumber . ',?[\-\/ ]'. $of . $year . $ends . ')/i', $string, $matches[3]);
+            $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/. ]' . '(' . $of . ')?' . $monthNumber . ',?[\-\/. ]'. '(' . $of .')?' . $year . $ends . ')/i', $string, $matches[3]);
             $isDates[4] = preg_match('/(' . $starts . $monthNumber . '[\-\/ ]' . $day . ',?[\-\/ ]'. $year . $ends . ')/i', $string, $matches[4]);
             $isDates[5] = preg_match('/(' . $starts . $year . '[\-\/, ]' . $day . '[\-\/ ]' . $monthNumber . $ends . ')/i', $string, $matches[5]);
             $isDates[6] = preg_match('/(' . $starts . $year . '[, ]' . $monthName . ' ' . $day . $ends . ')/i', $string, $matches[6]);
