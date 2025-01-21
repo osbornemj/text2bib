@@ -71,7 +71,7 @@
                 <x-link href="{{ url('threads/' . $thread->id) }}">{{ $thread->title }}</x-link> ({{ $thread->comments->count() }})
             </div>
             <div class="col-span-2">
-                {{ $thread->comments->last()->created_at->format('Y-m-d') }}
+                {{ $thread->comments->last()->updated_at->format('Y-m-d') }}
             </div>
             <div class="mt-0 pt-0 col-span-3">
                 {{ $thread->comments->first()->user->fullName() }}

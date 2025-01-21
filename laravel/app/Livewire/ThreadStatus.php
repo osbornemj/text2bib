@@ -20,6 +20,8 @@ class ThreadStatus extends Component
 
     public function updatedStatus()
     {
+        // Don't change updated_at
+        $this->thread->timestamps = false;
         $this->thread->update(['status' => $this->status]);
     }
 }

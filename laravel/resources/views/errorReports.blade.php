@@ -59,7 +59,7 @@
                 <x-link href="{{ url('errorReport/' . $errorReport->id) }}">{{ substr($errorReport->output->source, 0, strpos($errorReport->output->source, ' ', 45)) . ' ...' }}</x-link>
             </div>
             <div class="col-span-2">
-                {{ $errorReport->created_at->format('Y-m-d h:i') }}
+                {{ $errorReport->updated_at->format('Y-m-d') }}
             </div>
             <div class="mt-0 pt-0 col-span-3">
                 {{ $errorReport->output->conversion->user->fullName() }}

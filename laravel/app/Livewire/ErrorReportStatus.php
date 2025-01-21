@@ -20,6 +20,8 @@ class ErrorReportStatus extends Component
 
     public function updatedStatus()
     {
+        // Don't change updated_at
+        $this->errorReport->timestamps = false;
         $this->errorReport->update(['status' => $this->status]);
     }
 }
