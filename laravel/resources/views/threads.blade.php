@@ -20,7 +20,7 @@
     @endif
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 mx-4 border-b mb-1">
-        <div class="col-span-7 mb-1">
+        <div class="col-span-6 mb-1">
             <x-link href="{{ url('comments/title') }}">
                 @if ($sortBy == 'title')
                     <b>
@@ -42,7 +42,7 @@
                 @endif
             </x-link>
         </div>
-        <div class="col-span-2 mb-1">
+        <div class="col-span-3 mb-1">
             <x-link href="{{ url('comments/poster') }}">
                 @if ($sortBy == 'poster')
                     <b>
@@ -67,13 +67,13 @@
     </div>
     @foreach ($threads as $thread)
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 mx-4">
-            <div class="col-span-7">
+            <div class="col-span-6">
                 <x-link href="{{ url('threads/' . $thread->id) }}">{{ $thread->title }}</x-link> ({{ $thread->comments->count() }})
             </div>
             <div class="col-span-2">
                 {{ $thread->comments->last()->created_at->format('Y-m-d') }}
             </div>
-            <div class="mt-0 pt-0 col-span-2">
+            <div class="mt-0 pt-0 col-span-3">
                 {{ $thread->comments->first()->user->fullName() }}
             </div>
             <div class="mt-0 pt-0 col-span-1">
