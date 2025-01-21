@@ -348,7 +348,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'CLIFF, Gary X., R.P. VAN DER ELST, GOVENDER AB, SMITH X. Y., Teng A., Ulster, Z., Thomas K. WITTHUKN AND E. M. BULLEN 1996. First estimates of mortality and population size of white sharks on the South African coast. In Great white sharks: the biology of Carcharodon carcharias, Klimley, A.P. and D.G. Ainley. (Eds), Academic Press, San Diego: 393-400.',
                 'type' => 'incollection',
                 'bibtex' => [
-                    'author' => 'Cliff, Gary X. and R. P. Van Der Elst and Govender, A. B. and Smith, X. Y. and Teng, A. and Ulster, Z. and Thomas K. Witthukn and E. M. Bullen',
+                    'author' => 'Cliff, Gary X. and R. P. van der Elst and Govender, A. B. and Smith, X. Y. and Teng, A. and Ulster, Z. and Thomas K. Witthukn and E. M. Bullen',
                     'title' => 'First estimates of mortality and population size of white sharks on the South African coast',
                     'booktitle' => 'Great white sharks: the biology of Carcharodon carcharias',
                     'year' => '1996',
@@ -3658,7 +3658,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'HOSTER HA, ZANES RP Jr, VON HAAM E. Studies in Hodgkin\'s syndrome; the association of viral hepatitis and Hodgkin\'s disease; a preliminary report. Cancer Res. 1949 Aug;9(8):473-80. PMID: 18134519. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'author' => 'Hoster, H. A. and Zanes, Jr, R. P. and Von Haam, E.',
+                    'author' => 'Hoster, H. A. and Zanes, Jr, R. P. and von Haam, E.',
                     'title' => 'Studies in Hodgkin\'s syndrome; the association of viral hepatitis and Hodgkin\'s disease; a preliminary report',
                     'year' => '1949',
                     'month' => 'August',
@@ -14533,6 +14533,20 @@ class ExampleSeeder extends Seeder
 					'editor' => 'P. A. Vermeer and H. J. Luger',
                     ]
             ],
+            // Capitalization in author's name
+            [
+                'source' => 'DA SILVA, Virgílio Afonso. A evolução dos direitos fundamentais.~Revista Latino-Americana de Estudos Constitucionais, v. 6, p. 541-558, 2005.',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'da Silva, Virgílio Afonso',
+                    'title' => 'A evolução dos direitos fundamentais',
+                    'journal' => 'Revista Latino-Americana de Estudos Constitucionais',
+                    'volume' => '6',
+                    'pages' => '541-558',
+                    'year' => '2005',
+                ],
+                'char_encoding' => 'utf8leave',
+            ]
 
             
              

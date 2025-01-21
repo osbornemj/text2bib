@@ -359,19 +359,34 @@ class AuthorParser
             }
 
             // Word is in vonNames or it is all uppercase and lowercased version of it is a lowercased vonName
-            $wordIsVon = in_array($word, $this->vonNames)
-                 || (preg_match('/^[A-Z]*$/', $word) && in_array(strtolower($word), array_map('strtolower', $this->vonNames)));
+            // $wordIsVon = in_array($word, $this->vonNames)
+            //     ||
+            //     (preg_match('/^[A-Z]*$/', $word) && in_array(strtolower($word), array_map('strtolower', $this->vonNames)));
+
+            $wordIsVon = false;
+            if (in_array($word, $this->vonNames)) {
+                $wordIsVon = true;
+            }
+            if (preg_match('/^[A-Z]*$/', $word) && in_array(strtolower($word), array_map('strtolower', $this->vonNames))) {
+                $wordIsVon = true;
+                $word = strtolower($word);
+            }
 
             // If word is all uppercase, with no trailing punctuation, and next word is not all uppercase,
             // and word is not a von name and is not "and"
             // then add a comma at the end
             // The idea is to interpret SMITH John to be SMITH, John.
             if (
-                strlen($word) > 2 &&
-                ! $wordIsVon &&
-                preg_match('/^[A-Z]*$/', $word) &&
-                isset($words[$i+1]) &&
-                mb_strtoupper($words[$i+1]) != $words[$i+1] &&
+                strlen($word) > 2 
+                &&
+                ! $wordIsVon 
+                &&
+                preg_match('/^[A-Z]*$/', $word) 
+                &&
+                isset($words[$i+1]) 
+                &&
+                mb_strtoupper($words[$i+1]) != $words[$i+1] 
+                &&
                 ! $this->isAnd(strtolower($word), $language)
                ) {
                 $word = $word . ',';
@@ -617,13 +632,15 @@ class AuthorParser
                     $remainder = implode(" ", $remainingWords);
                     $reason = 'Word ends in period and has more than 3 letters, previous letter is lowercase, and namePart is > 0';
                 } elseif (
-                        isset($remainingWords[0])
-                        && isset($remainingWords[1])
-                        && (
-                            (substr(trim($remainingWords[0], ', '), -1) == '.' && $this->isInitials(trim($remainingWords[0], ', ')))
-                            ||
-                             $this->isAnd($remainingWords[0])
-                           )
+                    isset($remainingWords[0])
+                    &&
+                    isset($remainingWords[1])
+                    &&
+                    (
+                        (substr(trim($remainingWords[0], ', '), -1) == '.' && $this->isInitials(trim($remainingWords[0], ', ')))
+                        ||
+                        $this->isAnd($remainingWords[0])
+                    )
                         ) {
                     // case like "Richerson, Peter. J., and ..."
                     $warnings[] = "Unexpected period after \"" . substr($word, 0, -1) . "\" in source.  Typo?  Period was ignored.";
@@ -634,7 +651,7 @@ class AuthorParser
                     $this->verbose('[convertToAuthors 7a]');
                     $nameComponent = $word;
                     $fullName .= " " . trim($nameComponent, '.');
-                    $this->addToAuthorString(18, $authorstring, $fullName);
+                    $this->addToAuthorString(19, $authorstring, $fullName);
                     $reason = 'Word ends in period, namePart is 1, and next word is not initials or "and", so ending author list.';
                     $done = true;
                     $replaced = false;
@@ -648,8 +665,8 @@ class AuthorParser
                         }
                     }
                     if (! $replaced) {
-                        //$remainder = Str::replaceStart(trim($fullName), '', $remainder);
-                        $remainder = substr($remainder, strlen(trim($fullName)));
+                        //$remainder = substr($remainder, strlen(trim($fullName)));
+                        $remainder = substr($remainder, strlen(trim($nameComponent)));
                     }
                 }
                 $this->verbose("Remainder: " . $remainder);
