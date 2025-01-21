@@ -113,6 +113,7 @@ trait AddLabels
             $label .= $year;
         }
 
+        $label = str_replace(' ', '', $label);
         $label = substr(trim($label), 0, 255);
 
         return $label;
