@@ -26,7 +26,7 @@ class CommentController extends Controller
             $threads = Thread::orderBy('title');
         } elseif ($sortBy == 'poster') {
             $threads = Thread::with('comments.user')
-                ->select('threads.*')
+//                ->select('threads.*')
                 ->join('comments', function(JoinClause $join) {
                     $join->on('comments.thread_id', '=', 'threads.id')
                          ->whereRaw('comments.created_at = (select min(created_at) from comments where thread_id = threads.id)');
@@ -34,13 +34,12 @@ class CommentController extends Controller
             ->join('users', 'users.id', '=', 'comments.user_id')
             ->orderBy('users.last_name')
             ->orderBy('users.first_name');
-            //$threads = Thread::with('poster')->join('users', 'users.id', '=', 'threads.user_id')->orderBy('users.last_name');
         } elseif ($sortBy == 'status') {
             $threads = Thread::orderBy('status')->orderByDesc('updated_at');
         }
 
         $threads = $threads->paginate(50);
-//dd($threads);
+
         return view('threads', compact('threads', 'sortBy'));
     }
 
