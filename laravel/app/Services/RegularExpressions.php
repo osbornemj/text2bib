@@ -152,14 +152,14 @@ class RegularExpressions
             '[Tt]ransl?\. by',
             '[Tt]r\.(?! by)',
             '[Tt]r\.? by',
-            '[Tt]raducción de',   // Spanish
-            '[Tt]raducido por',   // Spanish
-            'Übersetzt von',      // German
-            'Übersetzung von',    // German
-            '[Tt]raduzido por',   // Portuguese
-            '[Tt]radução por',    // Portuguese
-            '[Tt]raduit par',     // French
-            '[Tt]raduction par',  // French
+            '[Tt]raducción de',       // Spanish
+            '[Tt]raducido por',       // Spanish
+            'Übersetzt von',          // German
+            'Übersetzung von',        // German
+            '[Tt]raduzido (por|de)',  // Portuguese
+            '[Tt]radução( por)?',     // Portuguese
+            '[Tt]raduit par',         // French
+            '[Tt]raduction par',      // French
         ];
 
         $translatedByRx = '';

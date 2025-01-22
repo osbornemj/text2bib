@@ -14573,7 +14573,19 @@ class ExampleSeeder extends Seeder
                 ],
                 'language' => 'pt',
                 'char_encoding' => 'utf8leave',
-                ]
+            ],
+            // Problem with name
+            [
+                'source' => 'TOCQUEVILLE, Alexis de. Democracy in America, University of Chicago Press, 2012.',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Tocqueville, Alexis de',
+                    'title' => 'Democracy in America',
+                    'publisher' => 'University of Chicago Press',
+                    'year' => '2012',
+                ],
+            ],
+
 
 
             

@@ -56,7 +56,6 @@ trait AuthorPatterns
         $andRegExp .= ')';
 
         // Last name has to start with uppercase letter
-        //$lastNameRegExp = '(' . $vonNameRegExp . ' )?\p{Lu}[\p{L}\-\']+';
         // Following allows double-barelled last name with space; doesn't produce any errors in Examples, and seems OK
         // as long as none of the patterns end with simply a space.
         // Last names can be enclosed in braces (e.g. in a \bibitem so that a name with a double-barelled last name is formatted correctly).
@@ -391,7 +390,8 @@ trait AuthorPatterns
             // Jane Smith, Leiden
             // (However, this case should be dealt with by extracing the publication info before getting the editor.)
             [
-                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu}\.?)?( \p{Lu}\.?)?',
+                'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu}\.?)?( \p{Lu}\.?)?' . '( ' . $vonNameRegExp . ')?',
+                //'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu}\.?)?( \p{Lu}\.?)?',
                 'end1' => '((?<!\p{Lu})\. ' . $notAnd . '(?!\p{Lu}\.)' . '|' . $commaYearOrBareWords . ')',
                 //'end1' => $periodNotAndOrCommaYear, 
                 'end2' => null, 
@@ -411,12 +411,19 @@ trait AuthorPatterns
                 'end2' => null, 
                 'end3' => null, 
             ],
-
+            // 34. SMITH, Jane.
+            [
+                'name1' => $ucNameRegExp . ',? ' . $otherNameRegExp, 
+                'end1' => $periodOrColonOrCommaYearOrBareWords, 
+                'end2' => null,
+                'end3' => null, 
+            ],
+            
             /////////////////////
             // ONE NAME et al. //
             /////////////////////
 
-            // 34. J. A. Smith et.? al.? OR Jane A. Smith,? et.? al.?
+            // 35. J. A. Smith et.? al.? OR Jane A. Smith,? et.? al.?
             [
                 'name1' => '(' . $initialsLastName . '|' . $firstNameInitialsLastName . ')', 
                 'end1' => $etal, 
@@ -424,7 +431,7 @@ trait AuthorPatterns
                 'end3' => null, 
                 'etal' => true,
             ],
-            // 35. Smith,? A.,? et al. OR Smith, Jane A.,? et.? al.?
+            // 36. Smith,? A.,? et al. OR Smith, Jane A.,? et.? al.?
             [
                 'name1' => '(' . $lastNameInitials . '|' . $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu})?)',
                 'end1' => $etal,
