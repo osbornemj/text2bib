@@ -19,7 +19,7 @@ class ErrorReportController extends Controller
         $this->converter = new Converter;
     }
 
-    public function index(string $sortBy = 'latest'): View
+    public function index(string $sortBy = 'status'): View
     {
         $errorReports = ErrorReport::with('output');
 
@@ -32,7 +32,7 @@ class ErrorReportController extends Controller
                 ->orderBy('users.last_name')
                 ->orderBy('users.first_name');
         } elseif ($sortBy == 'status') {
-            $errorReports = ErrorReport::orderBy('status');
+            $errorReports = ErrorReport::orderBy('status')->orderByDesc('updated_at');
         }
 
         $errorReports = $errorReports->paginate(50);
