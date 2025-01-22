@@ -76,7 +76,9 @@
                 @endif
             </div>
             <div class="mt-0 pt-0 col-span-3">
-                {{ $thread->comments->first()->user->fullName() }}
+                @if ($thread->comments->first())
+                    {{ $thread->comments->first()->user->fullName() }}
+                @endif
             </div>
             <div class="mt-0 pt-0 col-span-1">
                 <span class="{{ $thread->status->color() }}">{{ $thread->status->name }}</span>
