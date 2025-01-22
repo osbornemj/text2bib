@@ -63,7 +63,7 @@ trait AddLabels
                     if ($conversion->label_style == 'short') {
                         $label .= mb_substr($authorLetters, 0, 1) ?? '';
                     } elseif ($conversion->label_style == 'long-kebab') {
-                        $label .= mb_strtolower(mb_substr($authorLetters, 0, $commaPos)) . '-';
+                        $label .= mb_substr($authorLetters, 0, $commaPos) . '-';
                     } else {
                         $label .= mb_substr($authorLetters, 0, $commaPos);
                     }
@@ -72,7 +72,7 @@ trait AddLabels
                         // Take first letter after first space ('John Smith' => 'S')
                         $label .= mb_substr($authorLetters, $spacePos + 1, 1);
                     } elseif ($conversion->label_style == 'long-kebab') {
-                        $label .= mb_strtolower(trim(mb_substr($authorLetters, $spacePos + 1), ' ')) . '-';
+                        $label .= trim(mb_substr($authorLetters, $spacePos + 1), ' ') . '-';
                     } else {
                         // Take letters after first space ('John Smith' => 'Smith')
                         $label .= trim(mb_substr($authorLetters, $spacePos + 1), ' ');

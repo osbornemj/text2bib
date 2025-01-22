@@ -147,7 +147,7 @@
             Concatenation of authors' last names and year, spaces removed (upper camel case).  E.g. Arrow and Hahn (1971) &rArr; ArrowHahn1971
         </x-option-info>
         <x-option-info class="peer-checked/long-kebab:block">
-            Authors' last names and year, spaces removed, names lowercased, separated by hyphens (kebab case).  E.g. Arrow and Hahn (1971) &rArr; arrow-hahn-1971
+            Authors' last names and year, spaces removed, separated by hyphens (kebab case).  E.g. Arrow and Hahn (1971) &rArr; Arrow-Hahn-1971
         </x-option-info>
         <x-option-info class="peer-checked/gs:block">
             Concatenation of lowercased first author's last name, year of publication, and lowercased significant first word of title, where "a", "an", "the", and "on" are regarded as insignificant. (I don't know exactly which words Google Scholar treats as insignificant. If you know, please tell me.) If the first author's last name contains a space, my algorithm uses the last segment, whereas Google Scholar may use the first segment.  E.g. Arrow and Hahn (1971) &rArr; arrow1971general
