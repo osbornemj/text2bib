@@ -35,7 +35,7 @@ class ConvertFileForm extends Form
 
     #[Rule('required', message: 'Please choose an option')]    
     #[Rule('string', message: 'The value of this field must be a string')]    
-    #[Rule('in:short,long,gs', message: 'The value of this field must be "short", "long", or "gs"')]    
+    #[Rule('in:short,long,long-kebab,gs', message: 'The value of this field must be "short", "long", "long-kebab", or "gs"')]    
     public $label_style;
 
     #[Rule('required', message: 'Please choose an option')]    

@@ -62,6 +62,8 @@ trait AddLabels
                 if ($commaPos !== false || $spacePos === false) {
                     if ($conversion->label_style == 'short') {
                         $label .= mb_substr($authorLetters, 0, 1) ?? '';
+                    } elseif ($conversion->label_style == 'long-kebab') {
+                        $label .= mb_strtolower(mb_substr($authorLetters, 0, $commaPos)) . '-';
                     } else {
                         $label .= mb_substr($authorLetters, 0, $commaPos);
                     }
@@ -69,6 +71,8 @@ trait AddLabels
                     if ($conversion->label_style == 'short') {
                         // Take first letter after first space ('John Smith' => 'S')
                         $label .= mb_substr($authorLetters, $spacePos + 1, 1);
+                    } elseif ($conversion->label_style == 'long-kebab') {
+                        $label .= mb_strtolower(trim(mb_substr($authorLetters, $spacePos + 1), ' ')) . '-';
                     } else {
                         // Take letters after first space ('John Smith' => 'Smith')
                         $label .= trim(mb_substr($authorLetters, $spacePos + 1), ' ');
@@ -80,7 +84,7 @@ trait AddLabels
         if ($conversion->language == 'my') {
             $year = $this->translateFrom($item->year, 'my');
         } else {
-            $year = $item->year ?? '';
+            $year = $item->year ?? '??';
         }
 
         if ($conversion->label_style == 'short') {

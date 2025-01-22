@@ -130,7 +130,10 @@
         <x-value-label for="short" class="peer-checked/short:text-blue-600 ml-1" :value="__('Short')" />
 
         <x-radio-input name="label_style" wire:model="uploadForm.label_style" value="long" class="peer/long ml-4" />
-        <x-value-label for="long" class="peer-checked/long:text-blue-600 ml-1" :value="__('Long')" />
+        <x-value-label for="long" class="peer-checked/long:text-blue-600 ml-1" :value="__('Long (camel case)')" />
+
+        <x-radio-input name="label_style" wire:model="uploadForm.label_style" value="long-kebab" class="peer/long-kebab ml-4" />
+        <x-value-label for="long" class="peer-checked/long-kebab:text-blue-600 ml-1" :value="__('Long (kebab case)')" />
 
         <x-radio-input name="label_style" wire:model="uploadForm.label_style" value="gs" class="peer/gs ml-4" />
         <x-value-label for="gs" class="peer-checked/gs:text-blue-600 ml-1" :value="__('Google Scholar')" />
@@ -141,7 +144,10 @@
             Concatenation of lowercased first letter of each author's last name and last two digits of year.  E.g. Arrow and Hahn (1971) &rArr; ah71
         </x-option-info>
         <x-option-info class="peer-checked/long:block">
-            Concatenation of authors' last names and year, with any spaces removed.  E.g. Arrow and Hahn (1971) &rArr; ArrowHahn1971
+            Concatenation of authors' last names and year, spaces removed (upper camel case).  E.g. Arrow and Hahn (1971) &rArr; ArrowHahn1971
+        </x-option-info>
+        <x-option-info class="peer-checked/long-kebab:block">
+            Authors' last names and year, spaces removed, names lowercased, separated by hyphens (kebab case).  E.g. Arrow and Hahn (1971) &rArr; arrow-hahn-1971
         </x-option-info>
         <x-option-info class="peer-checked/gs:block">
             Concatenation of lowercased first author's last name, year of publication, and lowercased significant first word of title, where "a", "an", "the", and "on" are regarded as insignificant. (I don't know exactly which words Google Scholar treats as insignificant. If you know, please tell me.) If the first author's last name contains a space, my algorithm uses the last segment, whereas Google Scholar may use the first segment.  E.g. Arrow and Hahn (1971) &rArr; arrow1971general
