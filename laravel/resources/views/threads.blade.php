@@ -43,15 +43,15 @@
             </x-link>
         </div>
         <div class="col-span-3 mb-1">
-            <x-link href="{{ url('comments/poster') }}">
-                {{-- @if ($sortBy == 'poster')
+            {{-- <x-link href="{{ url('comments/poster') }}">
+                @if ($sortBy == 'poster')
                     <b>
                 @endif --}}
                 Poster
                 {{-- @if ($sortBy == 'poster')
                     </b>
-                @endif --}}
-            </x-link>
+                @endif
+            </x-link> --}}
         </div>
         <div class="col-span-1 mb-1">
             <x-link href="{{ url('comments/status') }}">
