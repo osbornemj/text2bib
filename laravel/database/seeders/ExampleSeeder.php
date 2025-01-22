@@ -14560,6 +14560,21 @@ class ExampleSeeder extends Seeder
                     'char_encoding' => 'utf8leave',
                     'language' => 'pt',
             ],
+            // Problem with title
+            [
+                'source' => 'AMARAL, Carlos Eduardo Frazão do. \emph{Direitos políticos na Constituição de 1988}: Uma proposta de revisitação de seus pressupostos filosóficos, teóricos e dogmáticos, Tese de doutorado. São Paulo: USP, 2023.',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Amaral, Carlos Eduardo Frazão do',
+                    'title' => 'Direitos políticos na Constituição de 1988: Uma proposta de revisitação de seus pressupostos filosóficos, teóricos e dogmáticos',
+                    'school' => 'USP',
+                    'year' => '2023',
+                    'note' => 'São Paulo',
+                ],
+                'language' => 'pt',
+                'char_encoding' => 'utf8leave',
+                ]
+
 
             
              

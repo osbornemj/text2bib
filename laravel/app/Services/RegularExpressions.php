@@ -305,6 +305,9 @@ class RegularExpressions
             '[Dd]octoral',
             '[Dd]octorat',
             '[Dd]oktora',
+            '[Dd]outorado',
+            '[Pp]roefschrift',
+            '[Dd]oktorská',
         ];
 
         $phdRegExp = '';
