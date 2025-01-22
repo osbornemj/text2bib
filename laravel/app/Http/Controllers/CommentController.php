@@ -13,6 +13,7 @@ use App\Models\Thread;
 use App\Models\User;
 
 use App\Notifications\CommentPosted;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\View\View;
 
 class CommentController extends Controller
@@ -24,7 +25,8 @@ class CommentController extends Controller
         } elseif ($sortBy == 'title') {
             $threads = Thread::orderBy('title');
         } elseif ($sortBy == 'poster') {
-            $threads = Thread::join('comments', function($join) {
+            $threads = Thread::with('comments.user')
+                ->join('comments', function(JoinClause $join) {
                     $join->on('comments.thread_id', '=', 'threads.id')
                          ->whereRaw('comments.created_at = (select min(created_at) from comments where thread_id = threads.id)');
                 })
@@ -37,7 +39,7 @@ class CommentController extends Controller
         }
 
         $threads = $threads->paginate(50);
-
+//dd($threads);
         return view('threads', compact('threads', 'sortBy'));
     }
 
