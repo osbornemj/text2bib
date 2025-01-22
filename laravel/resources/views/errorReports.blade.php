@@ -11,7 +11,7 @@
         </div>
     @else
         <div class="mx-4 mb-2">
-            "Waiting" = waiting for the poster of the report to respond to a clarifactory question.
+            "Waiting" = waiting for the poster of the report to respond to a clarifactory question.  Posting a response on a closed thread reopens the thread.
         </div>
     @endif
 

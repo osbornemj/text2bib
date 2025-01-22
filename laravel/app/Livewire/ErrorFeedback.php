@@ -55,6 +55,8 @@ class ErrorFeedback extends Component
 
         // Notify user who posted report (if different from user)
         $errorReport = ErrorReport::find($this->errorReportId);
+        $errorReport->update(['status' => 1]);
+        
         $reportUser = $errorReport->output->conversion->user;
         if ($reportUser->id != $user->id) {
             $reportUser->notify(new ErrorReportCommentPosted($errorReport, $reportUser));
