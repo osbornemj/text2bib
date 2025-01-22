@@ -151,11 +151,11 @@
     @else
         @if ($correctness == 1)
             <x-basic-button wire:click="setCorrectness(0)" class="ml-0 mt-2 bg-emerald-600 dark:bg-emerald-600">
-                {{ __('Correct') }}
+                {{ __('Mark as correct') }}
             </x-basic-button>
         @else
             <x-basic-button wire:click="setCorrectness(1)" class="ml-0 mt-2 bg-slate-400 dark:bg-slate-300">
-                {{ __('Correct') }}
+                {{ __('Mark as correct') }}
             </x-basic-button>
         @endif
 
