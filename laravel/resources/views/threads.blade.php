@@ -43,15 +43,15 @@
             </x-link>
         </div>
         <div class="col-span-3 mb-1">
-            {{-- <x-link href="{{ url('comments/poster') }}">
+            <x-link href="{{ url('comments/poster') }}">
                 @if ($sortBy == 'poster')
                     <b>
-                @endif --}}
+                @endif
                 Poster
-                {{-- @if ($sortBy == 'poster')
+                @if ($sortBy == 'poster')
                     </b>
                 @endif
-            </x-link> --}}
+            </x-link>
         </div>
         <div class="col-span-1 mb-1">
             <x-link href="{{ url('comments/status') }}">
@@ -71,10 +71,10 @@
                 <x-link href="{{ url('threads/' . $thread->id) }}">{{ $thread->title }}</x-link> ({{ $thread->comments->count() }})
             </div>
             <div class="col-span-2">
-                {{ $thread->comments->last()->updated_at->format('Y-m-d') }}
+                {{ $thread->comments()->latest()->first()->updated_at->format('Y-m-d') }}
             </div>
             <div class="mt-0 pt-0 col-span-3">
-                {{ $thread->comments->first()->user->fullName() }}
+                {{ $thread->comments()->oldest()->first()->user->fullName() }}
             </div>
             <div class="mt-0 pt-0 col-span-1">
                 <span class="{{ $thread->status->color() }}">{{ $thread->status->name }}</span>

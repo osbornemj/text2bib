@@ -17,7 +17,7 @@ use Illuminate\View\View;
 
 class CommentController extends Controller
 {
-    public function index(string $sortBy = 'latest'): View
+    public function index(string $sortBy = 'status'): View
     {
         if ($sortBy == 'latest') {
             $threads = Thread::orderByDesc('updated_at');
@@ -33,7 +33,7 @@ class CommentController extends Controller
             ->orderBy('users.first_name');
             //$threads = Thread::with('poster')->join('users', 'users.id', '=', 'threads.user_id')->orderBy('users.last_name');
         } elseif ($sortBy == 'status') {
-            $threads = Thread::orderBy('status');
+            $threads = Thread::orderBy('status')->orderByDesc('updated_at');
         }
 
         $threads = $threads->paginate(50);

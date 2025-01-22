@@ -20,8 +20,13 @@ class Thread extends Model
         return $this->hasMany(Comment:: class);
     }
 
-    public function poster()
+    public function latestComment()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->hasOne(Comment::class)->latestOfMany();
     }
+    
+    // public function poster()
+    // {
+    //     return $this->belongsTo(User::class, 'user_id');
+    // }
 }
