@@ -573,6 +573,7 @@ class Converter
 
         if (! empty($url)) {
             $url = trim($url, '{)}],. ');
+            $url = str_replace('\\', '', $url);
             if ($use != 'latex' || ($bst && $bst->url)) {
                 $this->setField($item, 'url', $url, 'setField 15');
             } else {

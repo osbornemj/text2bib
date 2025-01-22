@@ -1680,7 +1680,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2001',
                     'title' => 'Robust Mechanism Design',
                     'author' => 'Bergemann, D. and S. Morris',
-                    'url' => 'http://www.princeton.edu/\symbol{126}smorris/pdfs/robustmechanism2001.pdf',
+                    'url' => 'http://www.princeton.edu/symbol{126}smorris/pdfs/robustmechanism2001.pdf',
                     ]
             ],
             [
@@ -11433,7 +11433,7 @@ class ExampleSeeder extends Seeder
                     'author' => '{Bundesministerium für Verkehr und Digitale Infrastruktur}',
                     'title' => 'MiD - Mobilität in Deutschland',
                     'year' => '2019',
-                    'url' => 'https://nachhaltige-mobilitaet.region-stuttgart.de/wp-content/uploads/2020/04/infas_Pr\%C3\%A4sentation_Mobilit\%C3\%A4tskongress-2019.pdf',
+                    'url' => 'https://nachhaltige-mobilitaet.region-stuttgart.de/wp-content/uploads/2020/04/infas_Pr%C3%A4sentation_Mobilit%C3%A4tskongress-2019.pdf',
                     ],
 					'char_encoding' => 'utf8leave',
             ],
