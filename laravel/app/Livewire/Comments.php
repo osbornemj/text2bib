@@ -45,6 +45,9 @@ class Comments extends Component
             'content' => $this->comment,
         ]);
 
+        // Change status to Open
+        $this->thread->update(['status' => 1]);
+
         // Delete required response, if there is one
         RequiredResponse::where('user_id', $user->id)->whereIn('comment_id', $commentIds)->first()?->delete();
 
