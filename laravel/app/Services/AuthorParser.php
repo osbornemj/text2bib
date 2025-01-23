@@ -792,10 +792,10 @@ class AuthorParser
                         $prevWordAnd = true;
                     }
                     $name = $this->spaceOutInitials($word);
-                    // If part of name is all uppercase and 3 or more letters long, convert it to ucfirst(mb_strtolower())
+                    // If part of name is all uppercase and 3 or more letters long, convert it to mb_ucfirst(mb_strtolower())
                     // For component with 1 or 2 letters, assume it's initials and leave it uc (to be processed by formatAuthor)
                     if (strlen($name) > 2 && mb_strtoupper($name) == $name && strpos($name, '.') === false) {
-                        $nameComponent = ucfirst(mb_strtolower($name));
+                        $nameComponent = mb_ucfirst(mb_strtolower($name));
                         // Simpler version of following code, without check for hyphen, produces strange result ---
                         // the *next* word has a period replaced by a comma
                         if (str_contains($nameComponent, '-')) {
