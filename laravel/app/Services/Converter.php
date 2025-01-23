@@ -880,7 +880,9 @@ class Converter
 
         if ($month) {
             $monthResult = $this->dates->fixMonth($month, $language);
-            $this->setField($item, 'month', $monthResult['months'], 'setField 21');
+            $itemMonth = ($use == 'biblatex') ? $monthResult['month1numberNoLeadingZero'] : $monthResult['months'];
+
+            $this->setField($item, 'month', $itemMonth, 'setField 21');
             if ($day) {
                 $this->setField($item, 'date', $year . '-' . $monthResult['month1number'] . '-' . (strlen($day) == 1 ? '0' : '') . $day, 'setField 22');
                 $hasFullDate = true;
@@ -1184,7 +1186,15 @@ class Converter
             if (isset($month)) {
                 $containsMonth = true;
                 $monthResult = $this->dates->fixMonth($month, $language);
-                $this->setField($item, 'month', $monthResult['months'], 'setField 35');
+
+                if ($use == 'biblatex' && ! $monthResult['month2number']) {
+                    $this->setField($item, 'month', $monthResult['month1numberNoLeadingZero'], 'setField 35');
+                } else {
+                    $this->setField($item, 'month', $monthResult['months'], 'setField 35');
+                    if ($use == 'biblatex' && $monthResult['month2number']) {
+                        $warnings[] = "month field is a range of months, which biblatex may not handle correctly.";
+                    }
+                }
                 if ($year && ! empty($day)) {
                     $day = strlen($day) == 1 ? '0' . $day : $day;
                     $this->setField($item, 'date', $year . '-' . $monthResult['month1number'] . '-' . $day, 'setField 36');
@@ -1964,7 +1974,10 @@ class Converter
                                 }
                             }
                             $day = strlen($matches['day']) == 1 ? '0' . $matches['day'] : $matches['day'];
-                            $this->setField($item, 'month', $monthResult['months'], 'setField 39');
+
+                            $itemMonth = ($use == 'biblatex') ? $monthResult['month1numberNoLeadingZero'] : $monthResult['months'];
+
+                            $this->setField($item, 'month', $itemMonth, 'setField 39');
                             $this->setField($item, 'date', $year . '-' . $monthNumber . '-' . $day, 'setField 40');
                             $hasFullDate = true;
                             $remainder = substr($remainder, strlen($matches[0]));
@@ -2001,7 +2014,15 @@ class Converter
                             if (! empty($matches[0][0][0])) {
                                 $month = trim($matches[0][0][0], '();');
                                 $monthResult = $this->dates->fixMonth($month, $language);
-                                $this->setField($item, 'month', $monthResult['months'], 'setField 41');
+                                if ($use == 'biblatex' && ! $monthResult['month2number']) {
+                                    $itemMonth = $monthResult['month1numberNoLeadingZero'];
+                                } else {
+                                    $itemMonth = $monthResult['months'];
+                                    if ($use == 'biblatex' && $monthResult['month2number']) {
+                                        $warnings[] = "month field is a range of months, which biblatex may not handle correctly.";
+                                    }
+                                }
+                                $this->setField($item, 'month', $itemMonth, 'setField 41');
                                 $remainder = substr($remainder, 0, $matches[0][0][1]) . ' ' . ltrim(substr($remainder, $matches[0][0][1] + strlen($matches[0][0][0])), ', )');
                                 $this->verbose('Remainder: ' . $remainder);
                             }
@@ -4382,10 +4403,16 @@ class Converter
                         }
                         if (preg_match('/(?P<month>' . $this->dates->monthsRegExp[$language] . ')?,? (?P<year>' . $this->yearRegExp . ')$/', $remainder, $matches)) {
                             if (isset($matches['month'])) {
-                                $this->setField($item, 'month', $matches['month'], 'setField 157a');
+                                if ($use == 'biblatex') {
+                                    $monthResult = $this->dates->fixMonth($matches['month'], $language);
+                                    $itemMonth = ($use == 'biblatex') ? $monthResult['month1numberNoLeadingZero'] : $monthResult['months'];
+                                    $this->setField($item, 'month', $itemMonth, 'setField 21');
+                                } else {
+                                    $this->setField($item, 'month', $matches['month'], 'setField 157c');
+                                }
                             }
                             if (! isset($item->year) && isset($matches['year'])) {
-                                $this->setField($item, 'year', $matches['year'], 'setField 157b');
+                                $this->setField($item, 'year', $matches['year'], 'setField 157d');
                             }
                             $remainder = substr($remainder, 0, strlen($remainder) - strlen($matches[0]));
                             $remainder = trim($remainder, '. ');

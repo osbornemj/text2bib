@@ -329,7 +329,13 @@ class Dates
     public function fixMonth(string $month, string $language = 'en'): array
     {
         if (is_numeric($month)) {
-            return ['months' => $month, 'month1number' => $month, 'month2number' => null];
+            return [
+                'months' => $month,
+                'month1number' => $month,
+                'month1numberNoLeadingZero' => substr($month, 0, 1) == '0' ? substr($month, 1) : $month,
+                'month2number' => null,
+                'month2numberNoLeadingZero' => null,
+            ];
         }
 
         Carbon::setLocale($language);
@@ -337,7 +343,7 @@ class Dates
         $month1number = $month2number = null;
 
         $month1 = trim(Str::before($month, '-'), ', ');
-        if (preg_match('/^[a-zA-Z.]*$/', $month1)) {
+        if (preg_match('/^[\p{L}.]*$/u', $month1)) {
             $fullMonth1 = Carbon::parseFromLocale('1 ' . $month1, $language)->monthName;
             $month1number = Carbon::parseFromLocale('1 ' . $month1, $language)->format('m');
         } else {
@@ -356,7 +362,16 @@ class Dates
 
         $months = $fullMonth1 . ($fullMonth2 ? '--' . $fullMonth2 : '');
 
-        return ['months' => $months, 'month1number' => $month1number, 'month2number' => $month2number];
+        $month1numberNoLeadingZero = substr($month1number, 0, 1) == '0' ? substr($month1number, 1) : $month1number;
+        $month2numberNoLeadingZero = substr($month2number, 0, 1) == '0' ? substr($month2number, 1) : $month2number;
+
+        return [
+            'months' => $months,
+            'month1number' => $month1number,
+            'month1numberNoLeadingZero' => $month1numberNoLeadingZero,
+            'month2number' => $month2number,
+            'month2numberNoLeadingZero' => $month2numberNoLeadingZero,
+        ];
     }
     
 }
