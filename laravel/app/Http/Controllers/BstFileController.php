@@ -22,7 +22,7 @@ class BstFileController extends Controller
         $types = ['author-date', 'numeric', 'other'];
         $nonstandardFields = $this->nonstandardFields;
 
-        $input = $request->except('_token');
+        $input = $request->except('_token', 'page');
         if (! empty($input)) {
             foreach ($types as $type) {
                 if (! isset($input[$type])) {
@@ -38,7 +38,7 @@ class BstFileController extends Controller
         }
 
         $bsts = $bsts->orderBy('name')
-            ->paginate(50);
+            ->paginate(5);
 
         return view('bsts', compact('bsts', 'types', 'nonstandardFields', 'input'));
     }

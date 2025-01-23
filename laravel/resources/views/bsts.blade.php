@@ -81,9 +81,9 @@
                     </ul>
                 @endif
 
-                {{ $bsts->links() }}
             </div>
         @endif
+        {{ $bsts->appends(Request::only('author-date', 'numeric', 'other'))->links() }}
     </div>
 
 </x-app-layout>
