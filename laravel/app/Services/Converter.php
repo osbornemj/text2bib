@@ -556,6 +556,7 @@ class Converter
 
             if ($dateResult) {
                 $accessDate = $dateResult['date'];
+                $accessDate = $dateResult['isoDate'];
             }
         }
 
@@ -563,10 +564,11 @@ class Converter
 
         // Write access date even if there is no URL.  (Presumably "accessed ..." means it is in fact an online item.)
         if (! empty($accessDate)) {
+            $accessDate = rtrim($accessDate, '.,]) ');
             if ($use != 'latex' || ($bst && $bst->urldate)) {
                 $this->setField($item, 'urldate', rtrim($accessDate, '.,]) '), 'setField 14');
             } else {
-                $this->addToField($item, 'note', 'Retrieved ' . rtrim($accessDate, '.,]) ') . '.', 'addToField 2c');
+                $this->addToField($item, 'note', 'Retrieved ' . $accessDate . '.', 'addToField 2c');
             }
             $containsUrlAccessInfo = true;
         }

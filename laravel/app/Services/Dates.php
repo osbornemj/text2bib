@@ -294,11 +294,21 @@ class Dates
                             }
                         }
                     }
+
+                    $monthNumber = $matches[$i]['monthNumber'] ?? $monthNumber;
+
+                    if (isset($matches[$i]['year']) && $monthNumber && isset($matches[$i]['day'])) {
+                        $isoDate = $matches[$i]['year'] . '-' . $monthNumber . '-' . $matches[$i]['day'];
+                    } else {
+                        $isoDate = null;
+                    }
+
                     return [
                         'date' => $matches[$i][0],
+                        'isoDate' => $isoDate,
                         'year' => $matches[$i]['year'] ?? '',
                         'day' => $matches[$i]['day'] ?? '',
-                        'monthNumber' => $matches[$i]['monthNumber'] ?? $monthNumber,
+                        'monthNumber' => $monthNumber,
                         'monthName' => $matches[$i]['monthName'] ?? '',
                     ];
                 }

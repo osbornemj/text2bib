@@ -14555,7 +14555,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Martins, Ives Gandra',
                     'title' => 'O Brasil em 2024: perspectivas',
                     'url' => 'https://www.conjur.com.br/2024-jan-19/o-brasil-em-2024-perspectivas/',
-                    'urldate' => '02.11.2024',
+                    'urldate' => '2024-11-02',
                     ],
                     'char_encoding' => 'utf8leave',
                     'language' => 'pt',
@@ -14585,7 +14585,38 @@ class ExampleSeeder extends Seeder
                     'year' => '2012',
                 ],
             ],
-
+            // month should be number
+            [
+                'source' => 'MAGRIS, Claudio, ``Los Poetas y Los Legisladores\'\', La Nacion, 12 de março de 2006.',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Magris, Claudio',
+                    'title' => 'Los Poetas y Los Legisladores',
+                    'journal' => 'La Nacion',
+                    'month' => '3',
+                    'day' => '12',
+                    'year' => '2006',
+                    'date' => '2006-3-12',
+                ],
+                'language' => 'pt',
+                'char_encoding' => 'utf8leave',
+            ],
+            // date extraction
+            [
+                'source' => 'SMINK, Veronica. `Onde ficam as prisões mais superlotadas da América Latina\', \emph{BBC News Brasil}, 12.10.2021.',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Smink, Veronica',
+                    'title' => 'Onde ficam as prisões mais superlotadas da América Latina',
+                    'journal' => 'BBC News Brasil',
+                    'month' => '10',
+                    'day' => '12',
+                    'year' => '2021',
+                    'date' => '2021-10-12',
+                ],
+                'language' => 'pt',
+                'char_encoding' => 'utf8leave',
+            ]
 
 
             
