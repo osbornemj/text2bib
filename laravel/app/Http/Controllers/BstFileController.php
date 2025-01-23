@@ -38,7 +38,7 @@ class BstFileController extends Controller
         }
 
         $bsts = $bsts->orderBy('name')
-            ->paginate(5);
+            ->paginate(50);
 
         return view('bsts', compact('bsts', 'types', 'nonstandardFields', 'input'));
     }
