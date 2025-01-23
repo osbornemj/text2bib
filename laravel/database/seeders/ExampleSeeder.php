@@ -722,7 +722,7 @@ class ExampleSeeder extends Seeder
                     'note' => 'Acoustic Ecology @ The University of Hull, Scarborough Campus',
                     'year' => '2013',
                     'url' => 'https://acousticecologyuoh.wordpress.com/2013/12/04/how-to-make-a-sound-map/',
-                    'urldate' => '29 May 2018',
+                    'urldate' => '2018-05-29',
                 ]
             ],
             [
@@ -733,7 +733,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Adventure at C',
                     'year' => '2016',
                     'url' => 'http://www.vgstorm.com/aac/about.php',
-                    'urldate' => '2 Sept 2016',
+                    'urldate' => '2016-09-02',
                 ]
             ],
             [
@@ -744,7 +744,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'What is a Side Scroller?',
                     'year' => '2018',
                     'url' => 'https://www.techopedia.com/definition/27153/side-scroller',
-                    'urldate' => '2018/4/2',
+                    'urldate' => '2018-04-02',
                 ]
             ],
             [
@@ -755,7 +755,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'AudioGames, your resource for audiogames, games for the blind, games for the visually impaired!',
                     'year' => '2017',
                     'url' => 'http://audiogames.net/',
-                    'urldate' => 'Sept 2, 2018',
+                    'urldate' => '2018-09-02',
                 ]
             ],
             [
@@ -2607,7 +2607,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'online',
                 'bibtex' => [
                     'url' => 'https://aerospace.org/article/brief-history-gps',
-                    'urldate' => '11 March 2024',
+                    'urldate' => '2024-03-11',
                     'author' => 'Aerospace.org',
                     'year' => '2023',
                     'title' => 'Brief history of GPS',
@@ -2937,7 +2937,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Saudi Arabia Says $50 Billion Investments Agreed With {C}hina',
                     'year' => '2022',
                     'month' => 'December',
-                    'urldate' => '2022, December 12',
+                    'urldate' => '2022-12-12',
                     'date' => '2022-12-12',
                     'note' => 'Retrieved from Bloomberg.com Website',
                     ]
@@ -3075,7 +3075,7 @@ class ExampleSeeder extends Seeder
                     'url' => 'https://safety.networkrail.co.uk/wp-content/uploads/2017/03/How-Network-Rail-buys-energy-v2-2017-03.docx',
                     'author' => 'Network Rail',
                     'title' => 'How Network Rail Buys Utlities',
-                    'urldate' => '13 12 2023',
+                    'urldate' => '2023-12-13',
                     ]
             ],
             [   
@@ -3219,7 +3219,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2018',
                     'month' => 'July',
                     'url' => 'https://www.solarpowerworldonline.com/2018/07/the-difference-between-n-type-and-p-type-solar-cells/',
-                    'urldate' => '2018, July 2',
+                    'urldate' => '2018-07-02',
                     'date' => '2018-07-02',
                     'note' => 'Retrieved from Solar Power World',
                     ]
@@ -3233,7 +3233,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2022',
                     'month' => 'January',
                     'url' => 'https://www.wired.com/story/energy-vault-gravity-storage/',
-                    'urldate' => '2022, January 4',
+                    'urldate' => '2022-01-04',
                     'date' => '2022-01-04'
                     ]
             ],
@@ -3256,7 +3256,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Karki, M.',
                     'year' => '2022',
                     'title' => 'Deepfake and real images, Kaggle',
-                    'urldate' => '9 July 2023',
+                    'urldate' => '2023-07-09',
                     ]
             ],
             [
@@ -3456,7 +3456,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Bluetooth Addresses & Privacy in Bluetooth Low Energy',
                     'year' => '2020',
                     'month' => 'avril',
-                    'urldate' => 'Mars 21, 2023',
+                    'urldate' => '2023-03-21',
                     'date' => '2020-04-06',
                     'note' => 'Consulté le Mars 21, 2023, sur NovelBits',
                 ],
@@ -3472,7 +3472,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'BlueZ',
                     'year' => '2022',
                     'month' => 'novembre',
-                    'urldate' => 'Mars 27, 2023',
+                    'urldate' => '2023-03-27',
                     'date' => '2022-11-14',
                     'note' => 'Consulté le Mars 27, 2023, sur BlueZ',
                 ],
@@ -3484,7 +3484,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'online',
                 'bibtex' => [
                     'url' => 'https://github.com/keinix/peer_to_peer_ble',
-                    'urldate' => '2020, Juin 3',
+                    'urldate' => '2020-06-03',
                     'date' => '2020-06-03',
                     'author' => 'Osborn, Z.',
                     'title' => 'peer_to_peer_ble',
@@ -3576,7 +3576,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Marburg (Marburg Virus Disease)',
                     'year' => '2023',
                     'url' => 'https://www.cdc.gov/vhf/marburg/index.html',
-                    'urldate' => '15 mar. 2023',
+                    'urldate' => '2023-03-15',
                     'note' => 'Estados Unidos: CDC',
                 ],
                 'language' => 'pt',
@@ -3623,7 +3623,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Kjaer, A. M.',
                     'year' => '2018',
                     'title' => 'State capture',
-                    'urldate' => 'November 24, 2023',
+                    'urldate' => '2023-11-24',
                     'date' => '2018-12-27',
                     'note' => 'Retrieved November 24, 2023, from Encyclopedia Britannica',
                     ]
@@ -4060,7 +4060,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'online',
                 'bibtex' => [
                     'url' => 'https://yardlink.com/blog/what-is-bim-and-why-is-it-important-in-construction',
-                    'urldate' => '12 December 2023',
+                    'urldate' => '2023-12-12',
                     'year' => '2021',
                     'month' => 'October',
                     'date' => '2021-10-12',
@@ -4296,7 +4296,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Developing linguistic corpora: a guide to good practice. Metadata for corpus work',
                     'year' => '2004',
                     'url' => 'https://users.ox.ac.uk/~martinw/dlc/chapter3.htm',
-                    'urldate' => '7 March 2024',
+                    'urldate' => '2024-03-07',
                     ]
             ],
             [
@@ -4516,7 +4516,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2023',
                     'month' => 'januari',
                     'date' => '2023-01-18',
-                    'urldate' => '2023 januari 18',
+                    'urldate' => '2023-01-18',
                 ],
                 'language' => 'nl',
             ],
@@ -4527,7 +4527,7 @@ class ExampleSeeder extends Seeder
                     'url' => 'https://www.vliegles.nl/vliegtuig/lockheedf16#:~:text=Hoeveeln',
                     'author' => 'E. v. d. Boom',
                     'title' => 'Lockheed F-16',
-                    'urldate' => '18 juli 2022',
+                    'urldate' => '2022-07-18',
                     'year' => '2022',
                     'month' => 'juli',
                     'date' => '2022-07-18',
@@ -5222,7 +5222,7 @@ class ExampleSeeder extends Seeder
                     'url' => 'https://www.agenciase.org/energia-a-tu-pyme/',
                     'author' => 'Agencia de Sostenibilidad Energética',
                     'year' => '2023',
-                    'urldate' => '07 de 03 de 2023',
+                    'urldate' => '2023-03-07',
                     'title' => 'Ponle energia a tu Pyme',
                 ],
                 'language' => 'pt',
@@ -5459,7 +5459,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'title' => 'PubChem Compound Summary for CID 62648, Ammonium Persulfate',
                     'url' => 'https://pubchem.ncbi.nlm.nih.gov/compound/Ammonium-Persulfate',
-                    'urldate' => 'May 10, 2024',
+                    'urldate' => '2024-05-10',
                     'author' => '{National Center for Biotechnology Information}',
                     'year' => '2024',
                     ]
@@ -6189,7 +6189,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Thèse.fr',
                     'year' => '2016',
                     'title' => 'Système hybride d\'adaptation dans les systèmes de recommandation',
-					'urldate' => '24 avril 2024',
+					'urldate' => '2024-04-24',
                 ],
                 'language' => 'fr',
                 'char_encoding' => 'utf8leave',
@@ -6205,7 +6205,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2018',
                     'month' => 'septembre',
                     'date' => '2018-09-20',
-                    'urldate' => '24 avril 2024',
+                    'urldate' => '2024-04-24',
                     ],
 					'language' => 'fr',
                     'char_encoding' => 'utf8leave',
@@ -6359,7 +6359,7 @@ class ExampleSeeder extends Seeder
 					'year' => '2023',
 					'month' => '08',
 					'date' => '2023-08-28',
-					'urldate' => '2023, 08 28',
+					'urldate' => '2023-08-28',
                     'note' => 'UNAD',
                 ],
                 'char_encoding' => 'utf8leave',
@@ -6373,7 +6373,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'fastText',
                     'year' => 'n.d.',
                     'title' => 'Pretrained-vectors',
-					'urldate' => '08 28, 2020',
+					'urldate' => '2020-08-28',
                     ]
             ],
 			// date not detected
@@ -6385,7 +6385,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Perez, J.',
                     'year' => 'n.d.',
                     'title' => 'Spanish Word Embeddings',
-                    'urldate' => '08 01, 2020',
+                    'urldate' => '2020-01-08',
                     ]
             ],
    			// [J] at end of title and entry should be ignored
@@ -7345,7 +7345,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2023',
                     'month' => 'April',
 					'date' => '2023-04-21',
-					'urldate' => 'April 24',
+					'urldate' => '????-04-24',
                     'url' => 'https://www.washingtonpost.com/world/2023/04/21/germany-russia-interference-afd-wagenknecht/',
                     ]
             ],
@@ -7360,7 +7360,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2024',
                     'month' => 'April',
 					'date' => '2024-04-19',
-					'urldate' => 'April 21',
+					'urldate' => '????-04-21',
                     'url' => 'https://www.foreignaffairs.com/ukraine/brave-new-ukraine',
                     ]
             ],
@@ -7375,7 +7375,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2016',
                     'month' => 'February',
 					'date' => '2016-02-01',
-					'urldate' => 'April 24',
+					'urldate' => '????-04-24',
                     'url' => 'https://www.politico.eu/article/afd-petry-german-far-right-slammed-for-shoot-refugees-remark/',
                     ]
             ],
@@ -7390,7 +7390,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2023',
                     'month' => 'May',
 					'date' => '2023-05-27',
-					'urldate' => 'April 24',
+					'urldate' => '????-04-24',
                     'url' => 'https://thehill.com/opinion/international/4022705-putin-needs-a-geography-lesson/',
                     ]
             ],
@@ -7405,7 +7405,7 @@ class ExampleSeeder extends Seeder
                     'doi' => '10.48550/arXiv.1804.01694',
                     'url' => 'https://arxiv.org/abs/1804.01694',
                     'archiveprefix' => 'arXiv',
-                    'urldate' => 'May 21, 2024',
+                    'urldate' => '2024-05-21',
 					'date' => '2018-04-05',
                     ]
             ],
@@ -7419,7 +7419,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2017',
                     'url' => 'http://arxiv.org/abs/1609.04747',
                     'archiveprefix' => 'arXiv',
-                    'urldate' => 'May 21, 2024',
+                    'urldate' => '2024-05-21',
 					'date' => '2017-06-15',
                     ]
             ],
@@ -7438,7 +7438,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '1860-1878',
                     'doi' => '10.1007/s11427-020-1804-5',
                     'url' => 'https://doi.org/10.1007/s11427-020-1804-5',
-					'urldate' => 'May 21, 2024',
+					'urldate' => '2024-05-21',
                     ]
             ],
 			// number and page numbers not picked up
@@ -7793,7 +7793,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2024',
                     'title' => 'Improving farmer income through sustainable practices',
                     'journal' => 'World Cocoa Foundation',
-					'urldate' => '25-05-2024',
+					'urldate' => '2024-05-25',
                     ]
             ],
             // remove colon before doi
@@ -7862,7 +7862,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2023',
 					'month' => 'December',
 					'date' => '2023-12-14',
-                    'urldate' => '2023, December 14',
+                    'urldate' => '2023-12-14',
                     'url' => 'https://www.cdc.gov/respiratory-viruses/whats-new/index.html',
                     ]
             ],
@@ -7920,7 +7920,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'note' => 'Translation by Hassen Hussein. Published at: OPride',
                     'url' => 'https://www.opride.com/2018/04/03/english-partial-transcript-of-ethiopian-prime-minister-abiy-ahmeds-inaugural-address/',
-                    'urldate' => '2 January 2024',
+                    'urldate' => '2024-01-02',
                     'month' => 'April',
                     'date' => '2018-04-03',
                     'author' => 'Abiy, A.',
@@ -8441,7 +8441,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'note' => 'AFP. Mailonline',
                     'url' => 'https://www.dailymail.co.uk/wires/afp/article-10010089/US-blasts-dangerous-rhetoric-ally-Ethiopia-PM.html',
-                    'urldate' => '17 January 2021',
+                    'urldate' => '2021-01-17',
                     'month' => 'September',
                     'date' => '2021-09-20',
                     'author' => 'AFP',
@@ -8456,7 +8456,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'note' => 'Addis Standard',
                     'url' => 'https://addisstandard.com/analysis-tigray-election-beyond-defying-the-central-government/',
-                    'urldate' => '17 September 2023',
+                    'urldate' => '2023-09-17',
                     'month' => 'September',
                     'date' => '2020-09-11',
                     'author' => 'Addis Standard',
@@ -8911,7 +8911,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'online',
                 'bibtex' => [
                     'url' => 'https://circuitcellar.com/resources/quickbits/ntc-thermistor',
-                    'urldate' => '1 11 2023',
+                    'urldate' => '2023-11-01',
                     'author' => 'A. Levido',
                     'title' => 'NTC Thermistor Linearization',
                     'note' => 'circuit cellar',
@@ -9023,7 +9023,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'M. Kabori',
                     'title' => 'Problématique de la gestion des stocks dans les secteurs hotéliers. Cas de l\'hôtel Lac Kivu Lodge de 2009 à 2011',
                     'year' => '2012',
-					'urldate' => '11 04 2024',
+					'urldate' => '2024-04-11',
                 ],
                 'char_encoding' => 'utf8leave',
             ],
@@ -9070,7 +9070,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Anthropogenic carbon and ocean pH',
                     'journal' => 'Nature',
                     'url' => 'https://doi.org/10.1038/425365a',
-					'urldate' => '20 de mayo de 2024',
+					'urldate' => '2024-05-20',
                     ],
                     'language' => 'es',
             ],
@@ -9079,7 +9079,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Kind Designs. (20 de febrero de 2024). Parametric Architecture. Recuperado el 14 de mayo de 2024, de https://parametric-architecture.com/kind-designs-installed-the-worlds-first-3d-printed-living-seawall/ ',
                 'type' => 'online',
                 'bibtex' => [
-					'urldate' => '14 de mayo de 2024',
+					'urldate' => '2024-05-14',
                     'url' => 'https://parametric-architecture.com/kind-designs-installed-the-worlds-first-3d-printed-living-seawall/',
                     'month' => 'febrero',
                     'date' => '2024-02-20',
@@ -9100,7 +9100,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'UNEP',
                     'year' => '2020',
                     'title' => 'Naciones Unidas Para el Medio Ambiente',
-                    'urldate' => '17 de mayo de 2024',
+                    'urldate' => '2024-05-17',
                 ],
                 'language' => 'es',
             ],
@@ -9653,7 +9653,7 @@ class ExampleSeeder extends Seeder
                 'source' => '[10] Solectroshop. (s.f.). Diferencias de los protocolos de comunicación UART vs I2C vs SPI. Solectroshop. Recuperado el 16 de junio de 2024, de https://solectroshop.com/es/blog/diferencias-de-los-protocolos-de-comunicacion-uart-vs-i2c-vs-spi-n107 ',
                 'type' => 'online',
                 'bibtex' => [
-                    'urldate' => '16 de junio de 2024',
+                    'urldate' => '2024-06-16',
                     'url' => 'https://solectroshop.com/es/blog/diferencias-de-los-protocolos-de-comunicacion-uart-vs-i2c-vs-spi-n107',
                     'author' => 'Solectroshop',
                     'year' => 's.f.',
@@ -9668,7 +9668,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Reuters. (2022). Mexico nationalizes lithium, plans review of contracts. Retrieved May 5, 2024,  from https://www.reuters.com/article/idUSKCN2MB12Y/. ',
                 'type' => 'online',
                 'bibtex' => [
-                    'urldate' => 'May 5, 2024',
+                    'urldate' => '2024-05-05',
                     'url' => 'https://www.reuters.com/article/idUSKCN2MB12Y/',
                     'author' => 'Reuters',
                     'year' => '2022',
@@ -9680,7 +9680,7 @@ class ExampleSeeder extends Seeder
                 'source' => '---. (2023a). Albemarle agrees $1.5 billion plan to double Australian lithium hydroxide output. Retrieved May 4, 2024,  from https://www.reuters.com/markets/commodities/albermarle-agrees-1-bln-plan-double-australian-lithium-hydroxide-output-state-2023-05-03/. ',
                 'type' => 'online',
                 'bibtex' => [
-                    'urldate' => 'May 4, 2024',
+                    'urldate' => '2024-05-04',
                     'url' => 'https://www.reuters.com/markets/commodities/albermarle-agrees-1-bln-plan-double-australian-lithium-hydroxide-output-state-2023-05-03/',
                     'author' => 'Reuters',
                     'year' => '2023',
@@ -9930,7 +9930,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2007',
                     'note' => 'National Catholic Register 4 September',
                     'url' => 'https://www.ncregister.com/news/benedict-and-jesus',
-                    'urldate' => '1 March 2022',
+                    'urldate' => '2022-03-01',
                     ]
             ],
 			// address-publisher not detected (because of dash?)
@@ -11213,7 +11213,7 @@ class ExampleSeeder extends Seeder
                     'note' => 'ABC News',
                     'year' => '2021',
                     'month' => 'December',
-                    'urldate' => 'Dec. 28, 2021',
+                    'urldate' => '2021-12-28',
 					'date' => '2021-12-28',
                     'url' => 'https://abcnews.go.com/Politics/russia-closes-human-rights-group-recorded-stalin-era/story?id=81968455',
                     ]
@@ -11722,7 +11722,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Avian Influenza in Wild Birds',
                     'year' => '2022',
                     'url' => 'https://www.gov.uk/government/publications/avian-influenza-in-wild-birds',
-                    'urldate' => '7th March 2022',
+                    'urldate' => '2022-03-07',
                     ]
             ],
 			// urldate wrong
@@ -11730,7 +11730,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'UNAIDS. Global HIV and AIDS Statistics-Fact Sheet (2023). Available at https://www.unaids.org/sites/default/files/media_asset/UNAIDS_FactSheet_en.pdf (Accessed on 24th June 2024) ',
                 'type' => 'online',
                 'bibtex' => [
-                    'urldate' => '24th June 2024',
+                    'urldate' => '2024-06-24',
                     'url' => 'https://www.unaids.org/sites/default/files/media_asset/UNAIDS_FactSheet_en.pdf',
                     'author' => 'UNAIDS',
                     'title' => 'Global HIV and AIDS Statistics-Fact Sheet (2023)',
@@ -13505,7 +13505,7 @@ class ExampleSeeder extends Seeder
 					'month' => 'diciembre',
                     'date' => '2014-12-24',
                     'url' => 'https://trianarts.com/mi-recuerdo-a-louis-aragon-no-hay-amor-feliz/#sthash.Qvc7TcTZ.VuARGjgc.dpbs',
-                    'urldate' => '24 de diciembre, 2014',
+                    'urldate' => '2014-12-24',
                 ],
                 'language' => 'es',
             ],
@@ -14168,7 +14168,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Start Campus',
                     'title' => 'Sustainable data center services',
                     'url' => 'https://www.startcampus.pt/en/',
-                    'urldate' => 'Sep. 6, 2024',
+                    'urldate' => '2024-09-06',
                     ]
             ],
 			// errors in editors, booktitle

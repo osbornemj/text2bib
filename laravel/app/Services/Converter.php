@@ -368,8 +368,8 @@ class Converter
             $dateResult = $this->dates->isDate(trim($date, ' .,'), $language, 'contains');
 
             if ($dateResult) {
-                $accessDate = $dateResult['date'];
-                $urlDate = rtrim($accessDate, '., ');
+                $urlDate = rtrim($dateResult['date'], '., ');
+                $isoDate = $dateResult['isoDate'];
                 $containsUrlAccessInfo = true;
             }
         }
@@ -430,7 +430,7 @@ class Converter
 
         if ($urlDate) {
             if ($use != 'latex' || ($bst && $bst->urldate)) {
-                $this->setField($item, 'urldate', $urlDate, 'setField 2');
+                $this->setField($item, 'urldate', isset($isoDate) ? $isoDate : $urlDate, 'setField 2');
             } else {
                 $this->addToField($item, 'note', 'Retrieved ' . $urlDate . '.', 'addToField 2a');
             }
@@ -555,20 +555,23 @@ class Converter
             $dateResult = $date ? $this->dates->isDate(trim($date, ' .,'), $language, 'contains') : null;
 
             if ($dateResult) {
-                $accessDate = $dateResult['date'];
-                $accessDate = $dateResult['isoDate'];
+                $isoDate = $dateResult['isoDate'];
             }
         }
 
         $urlHasPdf = false;
 
         // Write access date even if there is no URL.  (Presumably "accessed ..." means it is in fact an online item.)
-        if (! empty($accessDate)) {
-            $accessDate = rtrim($accessDate, '.,]) ');
+        if (! empty($isoDate)) {
             if ($use != 'latex' || ($bst && $bst->urldate)) {
-                $this->setField($item, 'urldate', rtrim($accessDate, '.,]) '), 'setField 14');
+                if (! isset($item->urldate)) {
+                    $this->setField($item, 'urldate', $isoDate, 'setField 14');
+                    if (Str::startsWith($isoDate, '????')) {
+                        $warnings[] = "Access date for item is missing year";
+                    }
+                }
             } else {
-                $this->addToField($item, 'note', 'Retrieved ' . $accessDate . '.', 'addToField 2c');
+                $this->addToField($item, 'note', 'Retrieved ' . $isoDate . '.', 'addToField 2c');
             }
             $containsUrlAccessInfo = true;
         }
@@ -864,11 +867,6 @@ class Converter
             $remainder = $remainder . ' ' . substr($completeRemainder, $mismatchPosition);
         }
 
-        $itemYear = $year;
-        $itemMonth = $month;
-        $itemDay = $day;
-        $itemDate = $date;
-
         $authorstring = $authorConversion['authorstring'];
 
         foreach ($authorConversion['warnings'] as $warning) {
@@ -887,7 +885,18 @@ class Converter
                 $this->setField($item, 'date', $year . '-' . $monthResult['month1number'] . '-' . (strlen($day) == 1 ? '0' : '') . $day, 'setField 22');
                 $hasFullDate = true;
             }
+            if (isset($monthResult['month1number'])) {
+                $monthNumber = (strlen($monthResult['month1number']) == 1 ? '0' : '') . $monthResult['month1number'];
+            } else {
+                $monthNumber = '??';
+            }
         }
+
+        $itemYear = $year;
+        $itemMonth = $month;
+        $itemMonthNumber = $monthNumber ?? '??';
+        $itemDay = $day;
+        $itemDate = $date;
 
         ////////////////////////////
         // # Fix up $authorstring //
@@ -1176,17 +1185,23 @@ class Converter
                 $containsMonth = true;
                 $monthResult = $this->dates->fixMonth($month, $language);
                 $this->setField($item, 'month', $monthResult['months'], 'setField 35');
-            }
-
-            if ($year && isset($month) && ! empty($day)) {
-                $day = strlen($day) == 1 ? '0' . $day : $day;
-                $this->setField($item, 'date', $year . '-' . $monthResult['month1number'] . '-' . $day, 'setField 36');
-                $hasFullDate = true;
+                if ($year && ! empty($day)) {
+                    $day = strlen($day) == 1 ? '0' . $day : $day;
+                    $this->setField($item, 'date', $year . '-' . $monthResult['month1number'] . '-' . $day, 'setField 36');
+                    $hasFullDate = true;
+                }
             }
 
             if (isset($item->url) && ! isset($item->urldate) && $day) {
                 if ($use != 'latex' || ($bst && $bst->urldate)) {
-                    $this->setField($item, 'urldate', $date, 'setField 37');
+                    if (isset($month)) {
+                        $monthNumber = (strlen($monthResult['month1number']) == 1 ? '0' : '') . $monthResult['month1number'];
+                        $dayNumber = (strlen($day) == 1 ? '0' : '') . $day;
+                        $urldate = $year . '-' . $monthNumber . '-' . $dayNumber;
+                    } else {
+                        $urldate = $date;
+                    }
+                    $this->setField($item, 'urldate', $urldate, 'setField 37');
                 } else {
                     $this->addToField($item, 'note', 'Retrieved ' . $date . '.', 'addToField 2d');
                 }
@@ -2083,7 +2098,7 @@ class Converter
 
                 if (empty($item->urldate) && $itemYear && $itemMonth && $itemDay && $itemDate) {
                     if ($use != 'latex' || ($bst && $bst->urldate)) {
-                        $this->setField($item, 'urldate', rtrim($itemDate, '., '), 'setField 43');
+                        $this->setField($item, 'urldate', $itemYear . '-' . $itemMonthNumber . '-' . (strlen($itemDay) == 1 ? '0' : '') . $itemDay, 'setField 43');
                     } else {
                         $this->addToField($item, 'note', 'Retrieved ' . rtrim($itemDate, '., ') . '.', 'addToField 2e');
                     }

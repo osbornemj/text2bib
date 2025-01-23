@@ -247,7 +247,7 @@ class Dates
         $monthName = '(?P<monthName>' . ($this->makeMonthsRegExp())[$language] . ')';
 
         $of = $ofs[$language];
-        $day = '(?P<day>[0-3]?[0-9]((st|nd|rd|th)\.?)?)';
+        $day = '(?P<day>[0-3]?[0-9])((st|nd|rd|th)\.?)?';
         $dayRange = '(?P<day>[0-3]?[0-9](--?[0-3]?[0-9])?)';
         $monthNumber = '(?P<monthNumber>[01]?[0-9])';
 
@@ -274,7 +274,7 @@ class Dates
             $isDates[2] = preg_match('/(' . $starts . $monthName . ' ?' . $day . '(,? ' . $year . ')?' . $ends . ')/i', $string, $matches[2]);
             $isDates[3] = preg_match('/(' . $starts . $day . '[\-\/. ]' . '(' . $of . ')?' . $monthNumber . ',?[\-\/. ]'. '(' . $of .')?' . $year . $ends . ')/i', $string, $matches[3]);
             $isDates[4] = preg_match('/(' . $starts . $monthNumber . '[\-\/ ]' . $day . ',?[\-\/ ]'. $year . $ends . ')/i', $string, $matches[4]);
-            $isDates[5] = preg_match('/(' . $starts . $year . '[\-\/, ]' . $day . '[\-\/ ]' . $monthNumber . $ends . ')/i', $string, $matches[5]);
+            $isDates[5] = preg_match('/(' . $starts . $year . '[\-\/, ]' . $monthNumber . '[\-\/ ]' . $day . $ends . ')/i', $string, $matches[5]);
             $isDates[6] = preg_match('/(' . $starts . $year . '[, ]' . $monthName . ' ' . $day . $ends . ')/i', $string, $matches[6]);
             $isDates[7] = preg_match('/(' . $starts . $year . '[, ]' . $day . ' ' . $monthName . $ends . ')/i', $string, $matches[7]);
         }
@@ -296,9 +296,11 @@ class Dates
                     }
 
                     $monthNumber = $matches[$i]['monthNumber'] ?? $monthNumber;
-
+                   
                     if (isset($matches[$i]['year']) && $monthNumber && isset($matches[$i]['day'])) {
-                        $isoDate = $matches[$i]['year'] . '-' . $monthNumber . '-' . $matches[$i]['day'];
+                        $monthNumberLeadingZero = (strlen($monthNumber) == 1 ? '0' : '') . $monthNumber;
+                        $dayLeadingZero = (strlen($matches[$i]['day']) == 1 ? '0' : '') . $matches[$i]['day'];
+                        $isoDate = ($matches[$i]['year'] ?: '????') . '-' . $monthNumberLeadingZero . '-' . $dayLeadingZero;
                     } else {
                         $isoDate = null;
                     }
