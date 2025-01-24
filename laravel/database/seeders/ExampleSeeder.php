@@ -275,7 +275,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Ault, Bradley A. and Lisa C. Nevett',
                     'title' => 'Summing Up: Whither the Archaeology of the Greek Household?',
-                    'booktitle' => 'Ancient Greek Houses and Households: Chronological, Regional, and Social Diversity',
+                    'booktitle' => 'Ancient Greek Houses and Households',
+                    'booksubtitle' => 'Chronological, Regional, and Social Diversity',
                     'year' => '2005',
                     'publisher' => 'University of Pennsylvania Press',
                     'address' => 'Philadelphia',
@@ -311,7 +312,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Exner, Jr., J. E. and Smith, Sr., A. B. and Biden, Jr., Xavier Y. and Jones, Jr., X. Y.',
-                    'title' => 'The Rorschach: A comprehensive system',
+                    'title' => 'The Rorschach',
+                    'subtitle' => 'A comprehensive system',
                     'edition' => '3rd',
                     'volume' => '1',
                     'year' => '1993',
@@ -671,7 +673,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Cusihuam{\\\'a}n G., Antonio',
-                    'title' => 'Gram{\\\'a}tica quechua: Cuzco/Collao',
+                    'title' => 'Gram{\\\'a}tica quechua',
+                    'subtitle' => 'Cuzco/Collao',
                     'year' => '1976',
                     'address' => 'Lima',
                     'publisher' => 'Ministerio de Educaci{\\\'o}n',
@@ -682,7 +685,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'phdthesis',
                 'bibtex' => [
                     'author' => 'Michael, Lev David',
-                    'title' => 'Nanti evidential practice: Language, knowledge, and social action in an Amazonian society',
+                    'title' => 'Nanti evidential practice',
+                    'subtitle' => 'Language, knowledge, and social action in an Amazonian society',
                     'school' => 'University of Texas at Austin',
                     'year' => '2008',
                     'note' => 'Austin',
@@ -705,7 +709,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Barbe, Walter Burke and Swassing, Raymond H. and Milone, Michael N.',
-                    'title' => 'Teaching through modality strengths: concepts practices',
+                    'title' => 'Teaching through modality strengths',
+                    'subtitle' => 'Concepts practices',
                     'year' => '1979',
                     'address' => 'Columbus, Ohio',
                     'publisher' => 'Zaner-Bloser',
@@ -1973,7 +1978,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Couldry, Nick',
                     'editor' => 'David Crouch and Rhona Jackson and Felix Thompson',
                     'address' => 'London',
-                    'booktitle' => 'The Media and the Tourist Imagination: Converging Cultures',
+                    'booktitle' => 'The Media and the Tourist Imagination',
+                    'booksubtitle' => 'Converging Cultures',
                     'publisher' => 'Routledge',
                     ]
             ],
@@ -1987,7 +1993,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Fukunishi Suzuki, Midori',
                     'editor' => 'Kumiko Fujimura-Fanselow and Atsuko Kameda',
                     'address' => 'New York',
-                    'booktitle' => 'Japanese Women: New Feminist Perspectives on the Past, Present, and Future',
+                    'booktitle' => 'Japanese Women',
+                    'booksubtitle' => 'New Feminist Perspectives on the Past, Present, and Future',
                     'publisher' => 'Feminist Press at the City University of New York',
                     ]
             ],
@@ -2000,7 +2007,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'Media Academics as Media Audiences',
                     'author' => 'Hills, Matt',
                     'address' => 'New York',
-                    'booktitle' => 'Fandom: Identities and Communities in a Mediated World',
+                    'booktitle' => 'Fandom',
+                    'booksubtitle' => 'Identities and Communities in a Mediated World',
                     'editor' => 'Jonathan Gray and Cornel Sandvoss and C. Lee Harrington',
                     'publisher' => 'New York University Press',
                     ]
@@ -2015,7 +2023,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Hills, Matt',
                     'editor' => 'Sally Munt',
                     'address' => 'London',
-                    'booktitle' => 'Technospaces: inside the New Media',
+                    'booktitle' => 'Technospaces',
+                    'booksubtitle' => 'Inside the New Media',
                     'publisher' => 'Continuum',
                     ]
             ],
@@ -2189,7 +2198,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'year' => '2005',
-                    'title' => 'Grammaticalization and English complex prepositions: A corpus-based study',
+                    'title' => 'Grammaticalization and English complex prepositions',
+                    'subtitle' => 'A corpus-based study',
                     'author' => 'Hoffmann, S.',
                     'address' => 'London and New York',
                     'publisher' => 'Routledge',
@@ -2211,7 +2221,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'year' => '1981',
-                    'title' => 'Barabudur: History and Significance of a Buddhist Monument',
+                    'title' => 'Barabudur',
+                    'subtitle' => 'History and Significance of a Buddhist Monument',
                     'author' => 'Gomez, Luis O. and Woodward, Jr., Hiram W.',
                     'series' => 'Berkeley Buddhist Studies Series',
                     'address' => 'Berkeley',
@@ -2258,7 +2269,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'year' => '1990',
-                    'title' => 'Affinities and Extremes: Crisscrossing the Bittersweet Ethnology of East Indies History, Hindu-Balinese Culture, and Indo-European Allure',
+                    'title' => 'Affinities and Extremes',
+                    'subtitle' => 'Crisscrossing the Bittersweet Ethnology of East Indies History, Hindu-Balinese Culture, and Indo-European Allure',
                     'author' => 'Boon, James A.',
                     'address' => 'Chicago',
                     'publisher' => 'University of Chicago Press',
@@ -2296,7 +2308,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'year' => '2006',
-                    'title' => 'The Language of the Gods in the World of Men: Sanskrit, Culture, and Power in Premodern India',
+                    'title' => 'The Language of the Gods in the World of Men',
+                    'subtitle' => 'Sanskrit, Culture, and Power in Premodern India',
                     'author' => 'Pollock, Sheldon',
                     'address' => 'Berkeley',
                     'publisher' => 'U. of California Press',
@@ -2395,7 +2408,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'year' => '2013',
-                    'title' => 'Distance Geometry: Theory, Methods, and Applications',
+                    'title' => 'Distance Geometry',
+                    'subtitle' => 'Theory, Methods, and Applications',
                     'editor' => 'A. Mucherino and C. Lavor and L. Liberti and N. Maculan',
                     'address' => 'New York',
                     'publisher' => 'Springer',
@@ -2736,7 +2750,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'Value Sensitive Design and Information Systems',
                     'year' => '2006',
                     'pages' => '1-27',
-                    'booktitle' => 'Human-Computer Interaction in Management Information Systems: Foundations',
+                    'booktitle' => 'Human-Computer Interaction in Management Information Systems',
+                    'booksubtitle' => 'Foundations',
                     'editor' => 'P. Zhang and D. Galletta',
                     'publisher' => 'M. E. Sharpe, Inc',
                     'address' => 'New York',
@@ -3242,7 +3257,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Gracyk, T.',
-                    'title' => 'Rhythm and Noise: An Aesthetics of Rock',
+                    'title' => 'Rhythm and Noise',
+                    'subtitle' => 'An Aesthetics of Rock',
                     'year' => '1996',
                     'address' => 'Durham',
                     'publisher' => 'Duke University Press',
@@ -3704,7 +3720,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'Fast and accurate crop and weed identification with summarized train sets for precision agriculture',
                     'pages' => '105-121',
                     'publisher' => 'Springer International Publishing',
-                    'booktitle' => 'Intelligent Autonomous Systems 14: Proceedings of the 14th International Conference IAS-14 14',
+                    'booktitle' => 'Intelligent Autonomous Systems 14',
+                    'booksubtitle' => 'Proceedings of the 14th International Conference IAS-14 14',
                     ]
             ],
             [
@@ -3889,7 +3906,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Berthrong, John H.',
                     'year' => '1994',
-                    'title' => 'All Under Heaven: Transforming Paradigms in Confucian-Christian Dialogue',
+                    'title' => 'All Under Heaven',
+                    'subtitle' => 'Transforming Paradigms in Confucian-Christian Dialogue',
                     'publisher' => 'State University of New York Press',
                     'address' => 'Albany',
                     ]
@@ -3912,7 +3930,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Fei Hua and Yanhao Chen and Yuwei Jin and Chi Zhang and Ari Hayes and Youtao Zhang and Eddy Z. Zhang',
                     'title' => 'AutoBraid: A Framework for Enabling Efficient Surface Code Communication in Quantum Computing',
                     'year' => '2021',
-                    'booktitle' => 'MICRO-54: 54th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO \'21)',
+                    'booktitle' => 'MICRO-54',
+                    'booksubtitle' => '54th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO \'21)',
                     'pages' => '925-936',
                     'address' => 'New York, NY, USA',
                     'publisher' => 'ACM',
@@ -3989,7 +4008,8 @@ class ExampleSeeder extends Seeder
                     'pages' => '216-239',
                     'address' => 'Ramat Gan',
                     'publisher' => 'Bar-Ilan University Press',
-                    'booktitle' => 'Sages of the Mishnah and the Talmud: Teachings, Activities and Leadership',
+                    'booktitle' => 'Sages of the Mishnah and the Talmud',
+                    'booksubtitle' => 'Teachings, Activities and Leadership',
                     ]
             ],
             [
@@ -4011,7 +4031,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Ish Shalom, Benjamin',
-                    'title' => 'Rabbi Avraham Itzhak Ha-Cohen Kook: Between Rationalism and Mysticism',
+                    'title' => 'Rabbi Avraham Itzhak Ha-Cohen Kook',
+                    'subtitle' => 'Between Rationalism and Mysticism',
                     'year' => '1993',
                     'translator' => 'Ora Wiskind-Elper',
                     'address' => 'Albany',
@@ -4048,7 +4069,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Strauss, Leo',
-                    'title' => 'Leo Strauss on Maimonides: The Complete Writings',
+                    'title' => 'Leo Strauss on Maimonides',
+                    'subtitle' => 'The Complete Writings',
                     'year' => '2013',
                     'editor' => 'Kenneth Green Hart',
                     'address' => 'Chicago',
@@ -4244,7 +4266,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Maimonides, Moses',
                     'year' => '2012',
                     'edition' => '2nd',
-                    'title' => 'Moses Maimonides on Teshuvah: The Ways of Repentance. A New Translation and Commentary',
+                    'title' => 'Moses Maimonides on Teshuvah',
+                    'subtitle' => 'The Ways of Repentance. A New Translation and Commentary',
                     'translator' => 'Henry Abramson',
                     'publisher' => 'Smashwords',
                     'address' => 'Middletown, DE',
@@ -4489,7 +4512,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Adams, J. L.',
                     'year' => '1993',
-                    'title' => 'Flying Buttresses, Entropy, and O-Rings: The World of an Engineer',
+                    'title' => 'Flying Buttresses, Entropy, and O-Rings',
+                    'subtitle' => 'The World of an Engineer',
                     'publisher' => 'Harvard University Press',
                     ]
             ],
@@ -4645,7 +4669,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Ainsworth, L. and Viegut, D.',
                     'year' => '2006',
-                    'title' => 'Common formative assessments: How to Connect Standards-Based Instruction and Assessment',
+                    'title' => 'Common formative assessments',
+                    'subtitle' => 'How to Connect Standards-Based Instruction and Assessment',
                     'address' => 'Thousand Oaks, CA',
                     'publisher' => 'Corwin Press',
                     ]
@@ -4936,7 +4961,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'K. Plis and R. Bunescu and C. Marling',
                     'title' => 'A machine learning approach to predicting blood glucose levels for diabetes management',
-                    'booktitle' => 'AAAI-14: 2014 Association for the Advancement of Artificial Intelligence Workshop, Ohio',
+                    'booktitle' => 'AAAI-14',
+                    'booksubtitle' => '2014 Association for the Advancement of Artificial Intelligence Workshop, Ohio',
                     'year' => '2014',
                     ]
             ],
@@ -6222,7 +6248,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'David F. Ford',
                     'address' => 'Malden, MA',
                     'publisher' => 'Blackwell',
-                    'booktitle' => 'The Modern Theologians: An Introduction to Christian Theology in the Twentieth Century',
+                    'booktitle' => 'The Modern Theologians',
+                    'booksubtitle' => 'An Introduction to Christian Theology in the Twentieth Century',
                     ]
             ],
 			// book wrongly classified as online            
@@ -6235,7 +6262,8 @@ class ExampleSeeder extends Seeder
                     'url' => 'https://competingfordevelopment.com',
                     'author' => 'James, Vanus and Lloyd Taylor',
                     'year' => '2021',
-                    'title' => 'Competing for Development: Perspectives on Self-Sustaining Growth for Caribbean Economies',
+                    'title' => 'Competing for Development',
+                    'subtitle' => 'Perspectives on Self-Sustaining Growth for Caribbean Economies',
                     ]
             ],
 			// book wrongly classified as online
@@ -6249,7 +6277,8 @@ class ExampleSeeder extends Seeder
                     'url' => 'https://oll.libertyfund.org/title/clark-the-distribution-of-wealth-a-theory-of-wages-interest-and-profits',
                     'author' => 'Clark, J. B.',
                     'year' => '1899',
-                    'title' => 'The Distribution of Wealth: A Theory of Wages, Interest, and Profits',
+                    'title' => 'The Distribution of Wealth',
+                    'subtitle' => 'A Theory of Wages, Interest, and Profits',
                     ]
             ],
    			// repetition of doi; failure to get volume etc.
@@ -6501,7 +6530,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Gandt, R.',
                     'year' => '1995',
-                    'title' => 'Skygods: The Fall of Pan Am',
+                    'title' => 'Skygods',
+                    'subtitle' => 'The Fall of Pan Am',
                     'publisher' => 'William Morrow and Company',
                     'address' => 'New York',
                     ]
@@ -6698,7 +6728,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Ruozi, R. and Ferrari, P. and Ruozi, R. and Ferrari, P.',
                     'year' => '2013',
-                    'title' => 'Liquidity risk management in banks: economic and regulatory issues',
+                    'title' => 'Liquidity risk management in banks',
+                    'subtitle' => 'Economic and regulatory issues',
                     'note' => 'pp. 1-54',
                     'publisher' => 'Springer',
                     'address' => 'Berlin',
@@ -6775,7 +6806,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Richerson, Peter J. and Robert Boyd',
                     'year' => '2005',
-                    'title' => 'Not By Genes Alone: How Culture Transformed Human Evolution',
+                    'title' => 'Not By Genes Alone',
+                    'subtitle' => 'How Culture Transformed Human Evolution',
                     'address' => 'Chicago/London',
                     'publisher' => 'University of Chicago Press',
                     ]
@@ -7150,7 +7182,8 @@ class ExampleSeeder extends Seeder
                     'year' => '2018',
                     'pages' => '619-633',
                     'doi' => '10.1145/3243734.3243834',
-                    'booktitle' => 'CCS \'18: 2018 ACM SIGSAC Conference on Computer \& Communications Security Oct. 15-19, Toronto, ON, Canada',
+                    'booktitle' => 'CCS \'18',
+                    'booksubtitle' => '2018 ACM SIGSAC Conference on Computer \& Communications Security Oct. 15-19, Toronto, ON, Canada',
                     ]
             ],
    			// Names included in title
@@ -7505,7 +7538,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Saadia Gaon',
-                    'title' => 'The Book of Theodicy: Translation and Commentary on the Book of Job',
+                    'title' => 'The Book of Theodicy',
+                    'subtitle' => 'Translation and Commentary on the Book of Job',
                     'year' => '1988',
                     'translator' => 'L. E. Goodman',
                     'address' => 'New Haven',
@@ -7692,7 +7726,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'phdthesis',
                 'bibtex' => [
                     'author' => 'Araújo, K. S. S.',
-                    'title' => 'Dispositivos e diapositivos da educação científica: o TPACK e a constituição de práticas inovadoras na educação básica',
+                    'title' => 'Dispositivos e diapositivos da educação científica',
+                    'subtitle' => 'O TPACK e a constituição de práticas inovadoras na educação básica',
 					'school' => 'Universidade do Estado da Bahia, Salvador',
                     'year' => '2019',
                     'pagetotal' => '202',
@@ -7776,7 +7811,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Koselleck, Reinhart',
-                    'title' => 'The Practice of Conceptual History: Timing History, Spacing Concepts',
+                    'title' => 'The Practice of Conceptual History',
+                    'subtitle' => 'Timing History, Spacing Concepts',
                     'year' => '2002',
                     'translator' => 'Todd Samuel Presner et al.',
                     'address' => 'Stanford',
@@ -7975,7 +8011,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Earl, L. M.',
-                    'title' => 'Assessment as Learning: Using classroom assessment to maximize student learning',
+                    'title' => 'Assessment as Learning',
+                    'subtitle' => 'Using classroom assessment to maximize student learning',
                     'year' => '2013',
                     'edition' => '2nd',
                     'publisher' => 'Corwin',
@@ -8114,7 +8151,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Escolano Benito, A.',
-                    'title' => 'Etnografia della scuola: La cultura materiale dell\'educazione',
+                    'title' => 'Etnografia della scuola',
+                    'subtitle' => 'La cultura materiale dell\'educazione',
                     'year' => '2023',
                     'address' => 'Bergamo',
                     'publisher' => 'Junior',
@@ -8171,7 +8209,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Ricœur, P.',
-                    'title' => 'Percorsi del riconoscimento: Tre Studi',
+                    'title' => 'Percorsi del riconoscimento',
+                    'subtitle' => 'Tre Studi',
                     'year' => '2005',
                     'translator' => 'F. Polidori',
                     'publisher' => 'Raffaello Cortina',
@@ -8231,7 +8270,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'mastersthesis',
                 'bibtex' => [
                     'author' => 'Walubwa, J.',
-                    'title' => 'Kenya Slum Upgrading Programme: An Analysis of Kibera Integrated Water, Sanitation and Waste Management Project',
+                    'title' => 'Kenya Slum Upgrading Programme',
+                    'subtitle' => 'An Analysis of Kibera Integrated Water, Sanitation and Waste Management Project',
                     'year' => '2010',
                     'url' => 'http://erepository.uonbi.ac.ke/handle/11295/4615',
                     'school' => 'University of Nairobi',
@@ -8289,7 +8329,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'P. G. Rossi and C. Giaconi',
                     'address' => 'Milano',
                     'publisher' => 'Franco Angeli',
-                    'booktitle' => 'Micro-progettazione: pratiche didattiche a confronto PROPIT, EAS, Flipped Classroom',
+                    'booktitle' => 'Micro-progettazione',
+                    'booksubtitle' => 'Pratiche didattiche a confronto PROPIT, EAS, Flipped Classroom',
                     ],
                     'char_encoding' => 'utf8leave',
             ],
@@ -8298,19 +8339,8 @@ class ExampleSeeder extends Seeder
                 'source' => 'Conejo da Pena, A., Bridgewater Mateu, P. (eds.) (2023). The Medieval and  Early Modern Hospital: A Physical and Symbolic Space. Roma: Viella. ',
                 'type' => 'book',
                 'bibtex' => [
-                    'title' => 'The Medieval and Early Modern Hospital: A Physical and Symbolic Space',
-                    'year' => '2023',
-                    'editor' => 'Conejo da Pena, A. and Bridgewater Mateu, P.',
-                    'address' => 'Roma',
-                    'publisher' => 'Viella',
-                    ]
-            ],
-            // editors not detected
-            [
-                'source' => 'Conejo da Pena, A., Bridgewater Mateu, P. (eds.) (2023). The Medieval and  Early Modern Hospital: A Physical and Symbolic Space. Roma: Viella. ',
-                'type' => 'book',
-                'bibtex' => [
-                    'title' => 'The Medieval and Early Modern Hospital: A Physical and Symbolic Space',
+                    'title' => 'The Medieval and Early Modern Hospital',
+                    'subtitle' => 'A Physical and Symbolic Space',
                     'year' => '2023',
                     'editor' => 'Conejo da Pena, A. and Bridgewater Mateu, P.',
                     'address' => 'Roma',
@@ -8354,7 +8384,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'phdthesis',
                 'bibtex' => [
                     'author' => 'Kolpacoff, D. J.',
-                    'title' => 'Papal Schism, Archiepiscopal Politics, and Waldensian Persecution (1378--1396): The Ecclesiopolitical Landscape of Late Fourteenth-Century Mainz',
+                    'title' => 'Papal Schism, Archiepiscopal Politics, and Waldensian Persecution (1378--1396)',
+                    'subtitle' => 'The Ecclesiopolitical Landscape of Late Fourteenth-Century Mainz',
                     'year' => '2000',
                     'school' => 'Northwestern University',
                     ]
@@ -8575,7 +8606,8 @@ class ExampleSeeder extends Seeder
                     'pages' => '3-23',
                     'address' => 'Bern',
                     'publisher' => 'Peter Lang',
-                    'booktitle' => 'Frugality: Rebalancing Material and Spiritual Values in Economic Life',
+                    'booktitle' => 'Frugality',
+                    'booksubtitle' => 'Rebalancing Material and Spiritual Values in Economic Life',
                     ]
             ],
 			// detected as incollection
@@ -8584,7 +8616,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Guti{\\\'e}rrez, Gustavo',
-                    'title' => 'A Theology of Liberation: History, Politics, and Salvation',
+                    'title' => 'A Theology of Liberation',
+                    'subtitle' => 'History, Politics, and Salvation',
                     'year' => '1988',
                     'address' => 'Maryknoll, NY',
                     'publisher' => 'Orbis Books',
@@ -8653,7 +8686,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Barr, D. A.',
                     'year' => '2019',
                     'edition' => '3rd',
-                    'title' => 'Health disparities in the United States: Social class, race, ethnicity, and health',
+                    'title' => 'Health disparities in the United States',
+                    'subtitle' => 'Social class, race, ethnicity, and health',
 					'publisher' => 'Johns Hopkins University Press',
                     ]
             ],
@@ -8690,7 +8724,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Ferraro, Vincent',
-                    'title' => 'Dependency Theory: An Introduction',
+                    'title' => 'Dependency Theory',
+                    'subtitle' => 'An Introduction',
                     'year' => '1996',
                     'address' => 'South Hadley, MA',
                     'publisher' => 'Mount Holyoke College',
@@ -8769,7 +8804,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Mboga, S. M.',
                     'year' => '2014',
-                    'title' => 'Social and Cultural dynamics of the after retirement from public service in Kenya: A case of study of retirees from Kenyatta National Hospital, Nairobi Kenya',
+                    'title' => 'Social and Cultural dynamics of the after retirement from public service in Kenya',
+                    'subtitle' => 'A case of study of retirees from Kenyatta National Hospital, Nairobi Kenya',
                     'school' => 'University of Nairobi',
                     ]
             ],
@@ -8780,7 +8816,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Nyaboke, G.',
                     'year' => '2016',
-                    'title' => 'Challenges affecting the livelihood of teachers after retirement in Kenya: A case study of Kisii central sub- country in Kisii country, Kenya',
+                    'title' => 'Challenges affecting the livelihood of teachers after retirement in Kenya',
+                    'subtitle' => 'A case study of Kisii central sub- country in Kisii country, Kenya',
                     'school' => 'University of Nairobi Kenya',
                     ]
             ],
@@ -8897,7 +8934,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Archetti, C. and Speranza, M. G. and Vigo, D.',
                     'title' => 'Vehicle Routing Problems with Profits',
-					'booktitle' => 'Vehicle Routing: Problems, Methods, and Applications, Second Edition',
+					'booktitle' => 'Vehicle Routing',
+                    'booksubtitle' => 'Problems, Methods, and Applications, Second Edition',
 					'editor' => 'Paolo Toth and Daniele Vigo',
                     'publisher' => 'Society for Industrial and Applied Mathematics',
                     'year' => '2014',
@@ -8940,7 +8978,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Amabile, T. and Kramer, S.',
 					'year' => '2011',
-                    'title' => 'The progress principle: Using small wins to ignite joy, engagement, and creativity at work',
+                    'title' => 'The progress principle',
+                    'subtitle' => 'Using small wins to ignite joy, engagement, and creativity at work',
                     'publisher' => 'Harvard Business Press',
                     ]
             ],
@@ -9036,7 +9075,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'A cartografia como método de pesquisa-intervenção',
                     'year' => '2009',
                     'editor' => 'Passos, E. and Virgínia, K. and Escóssia, L. D.',
-					'booktitle' => 'Pistas do método da cartografia: pesquisa-intervenção e produção de subjetividade',
+					'booktitle' => 'Pistas do método da cartografia',
+                    'booksubtitle' => 'Pesquisa-intervenção e produção de subjetividade',
 					'address' => 'Porto Alegre',
 					'publisher' => 'Sulina',
 					'pages' => '207',
@@ -9310,7 +9350,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Abdel-Kader, Ali Hassan',
-                    'title' => 'The Life Personality and Writings of al-Junayd: A Study of a Third/Ninth Century Mystic with an Edition and Translation of his Writings',
+                    'title' => 'The Life Personality and Writings of al-Junayd',
+                    'subtitle' => 'A Study of a Third/Ninth Century Mystic with an Edition and Translation of his Writings',
                     'year' => '1962',
                     'address' => 'London',
                     'publisher' => 'E. J. W. Gibb',
@@ -9579,7 +9620,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Urbach, Ephraim E.',
-                    'title' => 'The Sages: Their Concepts and Beliefs',
+                    'title' => 'The Sages',
+                    'subtitle' => 'Their Concepts and Beliefs',
                     'year' => '1979',
                     'translator' => 'Israel Abrahams',
                     'address' => 'Jerusalem',
@@ -9631,7 +9673,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Çelik, K.',
                     'year' => '2018',
-                    'title' => 'Genişletilmiş Teknoloji Kabul Modeli: Uzaktan Eğitim Öğrencileri Üzerine Bir Araştırma',
+                    'title' => 'Genişletilmiş Teknoloji Kabul Modeli',
+                    'subtitle' => 'Uzaktan Eğitim Öğrencileri Üzerine Bir Araştırma',
                     'school' => 'Yönetim Bilişim Sistemleri Anabilim Dalı, Gazi Üniversitesi Bilişim Enstitüsü, Ankara',
                     ],
                     'char_encoding' => 'utf8leave',
@@ -9787,7 +9830,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Anderson, James F.',
-                    'title' => 'The Cause of Being: The Philosophy of Creation in St. Thomas',
+                    'title' => 'The Cause of Being',
+                    'subtitle' => 'The Philosophy of Creation in St. Thomas',
                     'year' => '1952',
                     'address' => 'St. Louis',
                     'publisher' => 'Herder',
@@ -9799,7 +9843,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Weinandy, Thomas G.',
-                    'title' => 'Does God Change?: The Word\'s Becoming in the Incarnation',
+                    'title' => 'Does God Change?',
+                    'subtitle' => 'The Word\'s Becoming in the Incarnation',
                     'year' => '1985',
                     'address' => 'Still River, MA',
                     'publisher' => 'St. Bede\'s Publications',
@@ -9817,7 +9862,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Yitzhak J. Melamed',
                     'address' => 'Oxford',
                     'publisher' => 'Oxford University Press',
-                    'booktitle' => 'Eternity: A History',
+                    'booktitle' => 'Eternity',
+                    'booksubtitle' => 'A History',
                     ]
             ],
 			// detected as article
@@ -10012,7 +10058,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'João J. Vila-Chã and George F. McLean and Charles Taylor and José Casanova',
                     'address' => 'Washington, D. C.',
                     'publisher' => 'Council for Research in Values and Philosophy',
-                    'booktitle' => 'Renewing the Church in a Secular Age: Holistic Dialogue and Kenotic Vision',
+                    'booktitle' => 'Renewing the Church in a Secular Age',
+                    'booksubtitle' => 'Holistic Dialogue and Kenotic Vision',
                     ],
 					'char_encoding' => 'utf8leave',
             ],
@@ -10043,7 +10090,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Gijsbert van den Brink and Luco van den Brom and Marcel Sarot',
                     'address' => 'Kampen',
                     'publisher' => 'Kok Pharos',
-                    'booktitle' => 'Christian Faith and Philosophical Theology: Essays in Honour of Vincent Brümmer',
+                    'booktitle' => 'Christian Faith and Philosophical Theology',
+                    'booksubtitle' => 'Essays in Honour of Vincent Brümmer',
                     ],
 					'char_encoding' => 'utf8leave',
             ],
@@ -10059,7 +10107,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Kieran J. Mahoney',
                     'address' => 'London',
                     'publisher' => 'Sheffield Academic Press',
-                    'booktitle' => 'Christian Origins: Worship, Belief and Society',
+                    'booktitle' => 'Christian Origins',
+                    'booksubtitle' => 'Worship, Belief and Society',
                     ]
             ],
 			// deal with month range
@@ -10337,7 +10386,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Przezdziecki, Marek A.',
                     'year' => '2005',
-                    'title' => 'Vowel harmony and coarticulation in three dialects of Yoruba: Phonetics determining phonology',
+                    'title' => 'Vowel harmony and coarticulation in three dialects of Yoruba',
+                    'subtitle' => 'Phonetics determining phonology',
                     'school' => 'Cornell University',
                     ]
             ],
@@ -10418,7 +10468,8 @@ class ExampleSeeder extends Seeder
                     'year' => '1999',
                     'title' => 'The Historical Interpretation of Vowel Harmony in Bantu',
                     'pages' => '235-295',
-                    'booktitle' => 'Bantu Historical Linguistics: Theoretical and Empirical Perspectives',
+                    'booktitle' => 'Bantu Historical Linguistics',
+                    'booksubtitle' => 'Theoretical and Empirical Perspectives',
 					'address' => 'Stanford',
 					'publisher' => 'CSLI Publications',
                     'editor' => 'Jean-Marie Hombert and Larry M. Hyman',
@@ -10433,7 +10484,8 @@ class ExampleSeeder extends Seeder
                     'year' => '2009',
                     'title' => 'Two types of vowel harmony in Malila (M.24)',
                     'pages' => '109-128',
-                    'booktitle' => 'Proceedings of the special world congress of African linguistics: Exploring the African language connection in the Americas, São Paulo, 2008',
+                    'booktitle' => 'Proceedings of the special world congress of African linguistics',
+                    'booksubtitle' => 'Exploring the African language connection in the Americas, São Paulo, 2008',
 					'address' => 'São Paulo',
 					'publisher' => 'Humanitas',
                     'editor' => 'Margarida Petter and Ronald Beline Mendes',
@@ -10449,7 +10501,8 @@ class ExampleSeeder extends Seeder
                     'year' => '2012',
                     'title' => 'Temporal and Aspectual Reference in Bassila Anii',
                     'pages' => '349-363',
-                    'booktitle' => 'Proceedings of SULA 6 and SULA-Bar: Semantics of Under-Represented Languages in the Americas (and Elsewhere)',
+                    'booktitle' => 'Proceedings of SULA 6 and SULA-Bar',
+                    'booksubtitle' => 'Semantics of Under-Represented Languages in the Americas (and Elsewhere)',
                     'publisher' => 'GLSA Publications',
                     'address' => 'Amherst',
                     'editor' => 'Elizabeth Bogal-Allbritton',
@@ -10503,7 +10556,9 @@ class ExampleSeeder extends Seeder
                     'author' => 'G. M. Cooper',
                     'title' => 'The Central Role of Enzymes as Biological Catalysts',
                     'year' => '2000',
-                    'booktitle' => 'The Cell: A Molecular Approach, 2nd edition',
+                    'booktitle' => 'The Cell',
+                    'booksubtitle' => 'A Molecular Approach',
+                    'edition' => '2',
                     'publisher' => 'Sinauer Associates',
                     'address' => 'Sunderland (MA)',
                     ]
@@ -10529,7 +10584,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'isbn' => '978-0-89871-407-4',
                     'author' => 'R. B. Lehoucq and D. C. Sorensen and C. Yang',
-                    'title' => 'ARPACK users guide: solution of large-scale eigenvalue problems with implicitly restarted Arnoldi methods',
+                    'title' => 'ARPACK users guide',
+                    'subtitle' => 'Solution of large-scale eigenvalue problems with implicitly restarted Arnoldi methods',
                     'year' => '1998',
                     'publisher' => 'SIAM',
                     'address' => 'Philadelphia',
@@ -10583,11 +10639,12 @@ class ExampleSeeder extends Seeder
                     'title' => 'Reverse Mission: From the Global South to Mainline Churches',
                     'year' => '2016',
                     'pages' => '91-103',
-                    'note' => '2nd edition',
+                    'edition' => '2',
                     'editor' => 'David Goodhew',
                     'address' => 'London',
                     'publisher' => 'Routledge',
-                    'booktitle' => 'Church Growth in Britain: 1980 to the Present',
+                    'booktitle' => 'Church Growth in Britain',
+                    'booksubtitle' => '1980 to the Present',
                     ]
             ],
 			// authors ended early
@@ -10761,7 +10818,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Benaroya, H.',
                     'year' => '2018',
-                    'title' => 'Building habitats on the Moon: Engineering Approaches to Lunar Settlements',
+                    'title' => 'Building habitats on the Moon',
+                    'subtitle' => 'Engineering Approaches to Lunar Settlements',
                     'publisher' => 'Springer',
                     'address' => 'Cham, Switzerland',
                     ]
@@ -11185,7 +11243,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Geert van Oyen and Tom Shepherd',
                     'address' => 'Leuven',
                     'publisher' => 'Peeters',
-                    'booktitle' => 'The Trial and Death of Jesus: Essays on the Passion Narrative in Mark',
+                    'booktitle' => 'The Trial and Death of Jesus',
+                    'booksubtitle' => 'Essays on the Passion Narrative in Mark',
                     ]
             ],
 			// trim left comma from address
@@ -11341,7 +11400,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'R. A. Maronna and R. D. Mardin and V. J. Yohai',
-                    'title' => 'Robust Statistics: Theory and Methods',
+                    'title' => 'Robust Statistics',
+                    'subtitle' => 'Theory and Methods',
 					'publisher' => 'John Wiley \& Sons',
 					'address' => 'Chichester',
                     'year' => '2006',
@@ -11483,7 +11543,8 @@ class ExampleSeeder extends Seeder
                     'year' => '2017',
                     'title' => 'Reconfigurable foot-to-gripper leg for underwater bottom operator, Hexaquad',
                     'pages' => '94-99',
-                    'booktitle' => 'USYS 2016 - 2016 IEEE 6th International Conference on Underwater System Technology: Theory and Applications',
+                    'booktitle' => 'USYS 2016 - 2016 IEEE 6th International Conference on Underwater System Technology',
+                    'booksubtitle' => 'Theory and Applications',
                     ]
             ],
 			// book with short title
@@ -11693,7 +11754,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Evdokimov, Paul',
-                    'title' => 'The Art of the Icon: A Theology of Beauty',
+                    'title' => 'The Art of the Icon',
+                    'subtitle' => 'A Theology of Beauty',
                     'year' => '1990',
                     'translator' => 'Fr Steven Bigham',
                     'address' => 'Redondo Beach',
@@ -11783,7 +11845,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Havel, V.',
-                    'title' => 'The power of the powerless: Citizens Against the State in Central-Eastern Europe',
+                    'title' => 'The power of the powerless',
+                    'subtitle' => 'Citizens Against the State in Central-Eastern Europe',
                     'year' => '1985',
                     'address' => 'London',
                     'publisher' => 'Hutchinson',
@@ -11810,7 +11873,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => '{Ministry of Environment (MoE)}',
-                    'title' => 'Cambodia: Long-Term Strategy for Carbon Neutrality (LTS4CN)',
+                    'title' => 'Cambodia',
+                    'subtitle' => 'Long-Term Strategy for Carbon Neutrality (LTS4CN)',
                     'year' => '2021',
                     'address' => 'Phnom Penh',
                     'publisher' => 'MoE',
@@ -11822,7 +11886,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => '{United Nations Development Programme (UNDP)}',
-                    'title' => 'Cambodia: Derisking Renewable Energy Investment',
+                    'title' => 'Cambodia',
+                    'subtitle' => 'Derisking Renewable Energy Investment',
                     'year' => '2019',
                     'address' => 'New York',
                     'publisher' => 'UNDP',
@@ -11868,7 +11933,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Steve Clarke and Russell Powell and Julian Savulescu',
                     'address' => 'Oxford',
                     'publisher' => 'Oxford University Press',
-                    'booktitle' => 'Religion, Intolerance, and Conflict: A Scientific and Conceptual Investigation',
+                    'booktitle' => 'Religion, Intolerance, and Conflict',
+                    'booksubtitle' => 'A Scientific and Conceptual Investigation',
                     ]
             ],
 			// en-dash in number range
@@ -11995,7 +12061,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Richard C. Martin and Mark R. Woodward and Dwi S. Atmaja',
                     'address' => 'Oxford',
                     'publisher' => 'Oneworld',
-                    'booktitle' => 'Defenders of Reason in Islam: Mu\'tazilism from medieval school to modern symbol',
+                    'booktitle' => 'Defenders of Reason in Islam',
+                    'booksubtitle' => 'Mu\'tazilism from medieval school to modern symbol',
                     ]
             ],
 			// author's name terminated early
@@ -12057,7 +12124,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Browne, Harold',
-                    'title' => 'An Exposition of the Thirty-Nine Articles: Historical and Doctrinal',
+                    'title' => 'An Exposition of the Thirty-Nine Articles',
+                    'subtitle' => 'Historical and Doctrinal',
                     'year' => '1874',
                     'note' => 'Originally published 1850. edited by J. Williams.',
                     'address' => 'New York',
@@ -12155,7 +12223,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Allan Fitzgerald',
                     'address' => 'Grand Rapids',
                     'publisher' => 'Eerdmanns',
-                    'booktitle' => 'Augustine Through the Ages: An Encyclopedia',
+                    'booktitle' => 'Augustine Through the Ages',
+                    'booksubtitle' => 'An Encyclopedia',
                     ]
             ],
 			// Should be author pattern 30?
@@ -12218,7 +12287,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Schmemann, Alexander',
-                    'title' => 'For the Life of the World: Sacraments and Orthodoxy',
+                    'title' => 'For the Life of the World',
+                    'subtitle' => 'Sacraments and Orthodoxy',
                     'year' => '2002',
                     'address' => 'Crestwood, NY',
                     'publisher' => 'St. Vladimir\'s Seminary Press',
@@ -12243,7 +12313,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'phdthesis',
                 'bibtex' => [
                     'author' => 'Gibbons, Christopher David',
-                    'title' => 'Beyond the Solar Door: Yoga in the Mahābhārata and its Vedic Antecedents',
+                    'title' => 'Beyond the Solar Door',
+                    'subtitle' => 'Yoga in the Mahābhārata and its Vedic Antecedents',
                     'year' => '2020',
                     'school' => 'The University of Queensland',
                     ],
@@ -12255,7 +12326,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'phdthesis',
                 'bibtex' => [
                     'author' => 'Slatoff, Zoë',
-                    'title' => 'Beyond the Body: Yoga and Advaita in the Aparokṣānubhūti',
+                    'title' => 'Beyond the Body',
+                    'subtitle' => 'Yoga and Advaita in the Aparokṣānubhūti',
                     'year' => '2022',
                     'school' => 'Lancaster University',
                 ],
@@ -12470,7 +12542,8 @@ class ExampleSeeder extends Seeder
                     'pages' => '145-162',
                     'publisher' => 'Springer',
                     'editor' => 'S. Sorooshian and K.-L. Hsu and E. Coppola and B. Tomassetti and M. Verdecchia and G. Visconti',
-                    'booktitle' => 'Hydrological Modelling and the Water Cycle: Coupling the Atmospheric and Hydrological Models',
+                    'booktitle' => 'Hydrological Modelling and the Water Cycle',
+                    'booksubtitle' => 'Coupling the Atmospheric and Hydrological Models',
                     ]
             ],
 			// publisher truncated
@@ -12491,7 +12564,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Brueggemann, W.',
-                    'title' => 'Sabbath as Resistance: Saying No the Culture of Now',
+                    'title' => 'Sabbath as Resistance',
+                    'subtitle' => 'Saying No the Culture of Now',
                     'year' => '2017',
                     'address' => 'Louisville KY',
                     'publisher' => 'Westminster John Knox',
@@ -12546,7 +12620,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Williams, B.',
                     'address' => 'Cambridge',
                     'publisher' => 'Cambridge University Press',
-                    'booktitle' => 'Problems of the Self: Philosophical Papers 1956--1972',
+                    'booktitle' => 'Problems of the Self',
+                    'booksubtitle' => 'Philosophical Papers 1956--1972',
                     ]
             ],
 			// publisher included in booktitle
@@ -12894,7 +12969,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Martin Straube and Roland Steiner and Jayandra Soni and Michael Hahn and Mitsuyo Demoto',
                     'address' => 'Marburg',
                     'publisher' => 'Indica et Tibetica Verlag',
-                    'booktitle' => 'P{\=a}s{\=a}dikad{\=a}naṃ: Festschrift f{\"u}r Bhikkhu P{\=a}s{\=a}dika',
+                    'booktitle' => 'P{\=a}s{\=a}dikad{\=a}naṃ',
+                    'booksubtitle' => 'Festschrift f{\"u}r Bhikkhu P{\=a}s{\=a}dika',
                     ]
             ],
    			// mastersthesis not detected
@@ -12903,7 +12979,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'mastersthesis',
                 'bibtex' => [
                     'author' => 'Chaoul, Marco Alejandro',
-                    'title' => 'Tracing the Origins of Ch{\"o} (gcod) in the B{\"o}n Tradition: A Dialogic Approach Cutting through Sectarian Boundaries',
+                    'title' => 'Tracing the Origins of Ch{\"o} (gcod) in the B{\"o}n Tradition',
+                    'subtitle' => 'A Dialogic Approach Cutting through Sectarian Boundaries',
                     'year' => '1999',
                     'school' => 'University of Virginia, Charlottesville',
                     ]
@@ -12961,7 +13038,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'M. Zanna and E. Higgins and C. Herman',
                     'address' => 'Hillsdale, NJ',
                     'publisher' => 'Erlbaum',
-                    'booktitle' => 'Consistency in Social Behavior: the Ontario Symposium',
+                    'booktitle' => 'Consistency in Social Behavior',
+                    'booksubtitle' => 'The Ontario Symposium',
                     'volume' => '2',
                     ]
             ],
@@ -13180,7 +13258,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Julio Ramos and Lizardo Herrera',
                     'address' => 'Santiago de Chile',
                     'publisher' => 'Universidad Central',
-                    'booktitle' => 'Droga, cultura y farmacolonialidad: la alteración narcográfica',
+                    'booktitle' => 'Droga, cultura y farmacolonialidad',
+                    'booksubtitle' => 'La alteración narcográfica',
                     ],
                     'char_encoding' => 'utf8leave',
             ],
@@ -13247,7 +13326,8 @@ class ExampleSeeder extends Seeder
                     'isbn' => '978-3-540-44355-1',
                     'author' => 'Courbin, Frédéric and Minniti, Dante',
                     'year' => '2002',
-                    'title' => 'Gravitational Lensing: An Astrophysical Tool',
+                    'title' => 'Gravitational Lensing',
+                    'subtitle' => 'An Astrophysical Tool',
                     'series' => 'Lecture Notes in Physics. Vol. 608',
                 ],
 					'char_encoding' => 'utf8leave',
@@ -13366,7 +13446,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'de Rham, G.',
-                    'title' => 'Differential manifolds: forms, currents, harmonic forms',
+                    'title' => 'Differential manifolds',
+                    'subtitle' => 'Forms, currents, harmonic forms',
 					'series' => 'Grundlehren der mathematischen Wissenschaften 266',
                     'year' => '1984',
                     'publisher' => 'Springer',
@@ -13489,7 +13570,8 @@ class ExampleSeeder extends Seeder
                     'doi' => 'https://orcid.org/0000-0001-7326-0725',
                     'author' => 'Ademosu, A.',
                     'year' => '2022',
-                    'title' => 'The impact of the financial system and its channels on SMEs\' access to financing: A Nigerian perspective',
+                    'title' => 'The impact of the financial system and its channels on SMEs\' access to financing',
+                    'subtitle' => 'A Nigerian perspective',
                     'school' => 'Georgia State University',
                     ]
             ],
@@ -13641,7 +13723,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Ziya Gökalp',
                     'year' => '1959',
-                    'title' => 'Turkish Nationalism and Western Civilization: Selected Essays of Ziya Gökalp',
+                    'title' => 'Turkish Nationalism and Western Civilization',
+                    'subtitle' => 'Selected Essays of Ziya Gökalp',
                     'translator' => 'Niyazi Berkes',
                     'publisher' => 'George Allen and Unwin',
                     'address' => 'London',
@@ -13713,7 +13796,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Graham, J. D. and Wiener, J. B.',
-                    'title' => 'Risk vs. Risk: Tradeoffs in Protecting Health and the Environment',
+                    'title' => 'Risk vs. Risk',
+                    'subtitle' => 'Tradeoffs in Protecting Health and the Environment',
                     'year' => '1995',
                     'publisher' => 'Harvard University Press',
                     ]
@@ -13756,7 +13840,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Aristoteles',
                     'year' => '2021',
                     'translator' => 'Andre Hardjana',
-                    'title' => 'The Art of Rhetoric by Aristotle: Retorika Aristoteles',
+                    'title' => 'The Art of Rhetoric by Aristotle',
+                    'subtitle' => 'Retorika Aristoteles',
                     'publisher' => 'Abhiseka Dipantara',
                     ]
             ],
@@ -14036,7 +14121,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Powell, John',
-                    'title' => 'How To Train Your Dragon: The Hidden World',
+                    'title' => 'How To Train Your Dragon',
+                    'subtitle' => 'The Hidden World',
                     'year' => '2023',
                     'address' => 'Folsom, CA',
                     'publisher' => 'Omni Music Publishing',
@@ -14048,7 +14134,8 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Heine, Erik',
-                    'title' => 'The Music of the How to Train Your Dragon Trilogy: A Guide to the Scores of John Powell',
+                    'title' => 'The Music of the How to Train Your Dragon Trilogy',
+                    'subtitle' => 'A Guide to the Scores of John Powell',
                     'year' => '2024',
                     'address' => 'Jefferson, NC',
                     'publisher' => 'McFarland & Company, Inc.',
@@ -14292,7 +14379,8 @@ class ExampleSeeder extends Seeder
                     'year' => '2021',
                     'publisher' => 'John Benjamins',
                     'address' => 'Amsterdam',
-                    'booktitle' => 'Building Categories in Interaction: Linguistic Resources at Work',
+                    'booktitle' => 'Building Categories in Interaction',
+                    'booksubtitle' => 'Linguistic Resources at Work',
 					'editor' => 'Caterina Mauri and Eugenio Goria and Ilaria Fiorentini',
                     ],
 					'char_encoding' => 'utf8leave',
@@ -14388,7 +14476,9 @@ class ExampleSeeder extends Seeder
                     'year' => '2001',
                     'title' => 'The history of organizational justice: The founders speak',
 					'editor' => 'R. Cropanzano',
-                    'booktitle' => 'Justice in the Workplace: From Theory to Practice (Vol. 2)',
+                    'booktitle' => 'Justice in the Workplace',
+                    'booksubtitle' => 'From Theory to Practice',
+                    'volume' => '2',
                     'publisher' => 'Lawrence Erlbaum Associates, Publishers',
                     ]
             ],
@@ -14498,7 +14588,8 @@ class ExampleSeeder extends Seeder
                     'year' => '2002',
                     'pages' => '839-81',
                     'editor' => 'Mathias, C. J.',
-                    'booktitle' => 'Autonomic failure: a textbook of clinical disorders of the autonomic nervous system',
+                    'booktitle' => 'Autonomic failure',
+                    'booksubtitle' => 'A textbook of clinical disorders of the autonomic nervous system',
                     'publisher' => 'Oxford University Press',
 					'address' => 'Oxford',
                     ]
@@ -14562,11 +14653,12 @@ class ExampleSeeder extends Seeder
             ],
             // Problem with title
             [
-                'source' => 'AMARAL, Carlos Eduardo Frazão do. \emph{Direitos políticos na Constituição de 1988}: Uma proposta de revisitação de seus pressupostos filosóficos, teóricos e dogmáticos, Tese de doutorado. São Paulo: USP, 2023.',
+                'source' => 'AMARAL, Carlos Eduardo Frazão do. Direitos políticos na Constituição de 1988: Uma proposta de revisitação de seus pressupostos filosóficos, teóricos e dogmáticos, Tese de doutorado. São Paulo: USP, 2023.',
                 'type' => 'phdthesis',
                 'bibtex' => [
                     'author' => 'Amaral, Carlos Eduardo Frazão do',
-                    'title' => 'Direitos políticos na Constituição de 1988: Uma proposta de revisitação de seus pressupostos filosóficos, teóricos e dogmáticos',
+                    'title' => 'Direitos políticos na Constituição de 1988',
+                    'subtitle' => 'Uma proposta de revisitação de seus pressupostos filosóficos, teóricos e dogmáticos',
                     'school' => 'USP',
                     'year' => '2023',
                     'note' => 'São Paulo',
@@ -14639,7 +14731,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Álvarez, Tomás Pietro',
                     'title' => 'Libertad religiosa y espacios públicos',
-                    'subtitle' => 'laicidad, pluralismo, símbolos',
+                    'subtitle' => 'Laicidad, pluralismo, símbolos',
                     'address' => 'Navarra',
                     'publisher' => 'Thomson Reuters',
                     'year' => '2010',

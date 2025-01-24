@@ -1151,6 +1151,10 @@ class Converter
 
             $title = trim($title, ' :');
             $title = Str::replaceEnd('[C]', '', $title);
+            if (Str::startsWith($title, '\textbf{') && Str::endsWith($title, '}')) {
+                $title = substr($title, 8, -1);
+            }
+            
             $this->setField($item, 'title', $title, 'setField 32');
         }
 
@@ -3997,6 +4001,13 @@ class Converter
                     $this->itemType = 'book';
                 }
 
+                if ($use == 'biblatex' && substr_count($booktitle, ': ') == 1) {
+                    $booksubtitle = mb_ucfirst(trim(Str::after($booktitle, ': ')));
+                    $booktitle = trim(Str::before($booktitle, ': '));
+                    $this->setField($item, 'booksubtitle', $booksubtitle, 'setField 113d');
+                    $this->setField($item, 'booktitle', $booktitle, 'setField 113e');
+                }
+
                 break;
 
             //////////////////////////////////////////
@@ -4346,6 +4357,14 @@ class Converter
                     if (!isset($item->address)) {
                         $warnings[] = "No place of publication identified.";
                     }
+        
+                }
+
+                if ($use == 'biblatex' && substr_count($title, ': ') == 1) {
+                    $subtitle = mb_ucfirst(trim(Str::after($title, ': ')));
+                    $title = trim(Str::before($title, ': '));
+                    $this->setField($item, 'subtitle', $subtitle, 'setField 153a');
+                    $this->setField($item, 'title', $title, 'setField 153b');
                 }
 
                 break;
@@ -4432,6 +4451,13 @@ class Converter
 
                 if (empty($item->school)) {
                     $warnings[] = "No school identified.";
+                }
+
+                if ($use == 'biblatex' && substr_count($title, ': ') == 1) {
+                    $subtitle = mb_ucfirst(trim(Str::after($title, ': ')));
+                    $title = trim(Str::before($title, ': '));
+                    $this->setField($item, 'subtitle', $subtitle, 'setField 160a');
+                    $this->setField($item, 'title', $title, 'setField 160b');
                 }
 
                 break;
