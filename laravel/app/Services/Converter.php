@@ -30,6 +30,7 @@ class Converter
     var $dictionaryNames;
     var $distinctiveJournalWordAbbreviations;
     var $editionWords;
+    var $editionNumbers;
     var $entryPrefixes;
     var $entrySuffixes;
     var $excludedWords;
@@ -119,6 +120,14 @@ class Converter
             'edição', 
             'édition', 
             'edición',
+        ];
+
+        $this->editionNumbers = [
+            '1st' => '1',
+            '1er' => '1',
+            'first' => '1',
+            '1º' => '1',
+            '1ª' => '1',
         ];
 
         ///////////
@@ -1028,7 +1037,7 @@ class Converter
             }
         } else {
             // If title has been found and ends in edition specification, take that out and put it in edition field
-            $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . ')[.,]?$/iJ';
+            $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . ')[.,]?$/iJu';
             if ($title && preg_match($editionRegExp, (string) $title, $matches)) {
                 $this->setField($item, 'edition', trim($matches['edition'], ',. '), 'setField 28');
                 $title = trim(Str::replaceLast($matches[0], '', $title));
@@ -1377,16 +1386,10 @@ class Converter
             $regExp22 .= $add . '\.';
         }
 
-//        $edPattern = '[ (}]([Ee]ds?\.|[Ee]ditors?|[Ee]dited by)';
-//dump($edPattern);
         $edPattern = '[ (}](' . $this->regExps->edsNoParensRegExp . '|' . $this->regExps->editedByRegExp . ')';
-//        $edPattern = '[ (}]' . $this->regExps->edsNoParensRegExp;
-//dump($edPattern);
+
         $regExpEnd1 = '|rev\.)' . $edPattern . ',/';
         $regExpEnd2 = '|rev\.), ?' . $edPattern . '/';
-
-        // $regExpEnd1 = '|rev\.)[ \(}](eds?\.|editors?|edited by),/i';
-        // $regExpEnd2 = '|rev\.), ?[ \(}](eds?\.|editors?|edited by)/i';
 
         $regExp11 .= $regExpEnd1;
         $regExp12 .= $regExpEnd2;
@@ -3982,6 +3985,14 @@ class Converter
                         $itemKind = 'book';
                         $this->verbose(['fieldName' => 'Item type', 'content' => 'changed to ' . $itemKind]);
                         $this->verbose('Both author and editor set, so for bibtex editor moved to note field.');
+
+                        if ($use == 'biblatex' && substr_count($title, ': ') == 1) {
+                            $subtitle = mb_ucfirst(trim(Str::after($title, ': ')));
+                            $title = trim(Str::before($title, ': '));
+                            $this->setField($item, 'subtitle', $subtitle, 'setField 113d');
+                            $this->setField($item, 'title', $title, 'setField 113e');
+                        }
+
                         if ($use == 'latex' && ! empty($item->author) && ! empty($item->editor)) {
                             $this->addToField($item, 'note', 'Edited by ' . $item->editor . '.');
                             unset($item->editor);
@@ -4001,11 +4012,25 @@ class Converter
                     $this->itemType = 'book';
                 }
 
-                if ($use == 'biblatex' && substr_count($booktitle, ': ') == 1) {
-                    $booksubtitle = mb_ucfirst(trim(Str::after($booktitle, ': ')));
-                    $booktitle = trim(Str::before($booktitle, ': '));
-                    $this->setField($item, 'booksubtitle', $booksubtitle, 'setField 113d');
-                    $this->setField($item, 'booktitle', $booktitle, 'setField 113e');
+                if ($use == 'biblatex') {
+                    // If title has been found and ends in edition specification, take that out and put it in edition field
+                    $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . '[.,]?$)/iJu';
+                    if ($booktitle && preg_match($editionRegExp, $booktitle, $matches)) {
+                        if (isset($matches['edition'])) {
+                            $edition = trim($matches['edition'], ',. ');
+                            if (Str::endsWith($edition, ['st', 'nd', 'rd', 'th'])) {
+                                $edition = substr($edition, 0, 1);
+                            }
+                            $this->setField($item, 'edition', $edition, 'setField 113g');
+                            $booktitle = trim(Str::replaceLast($matches['fullEdition'], '', $booktitle));
+                        }
+                    }
+                    if (substr_count($booktitle, ': ') == 1) {
+                        $booksubtitle = mb_ucfirst(trim(Str::after($booktitle, ': '), ', '));
+                        $booktitle = trim(Str::before($booktitle, ': '));
+                        $this->setField($item, 'booksubtitle', $booksubtitle, 'setField 113f');
+                        $this->setField($item, 'booktitle', $booktitle, 'setField 113g');
+                    }
                 }
 
                 break;
