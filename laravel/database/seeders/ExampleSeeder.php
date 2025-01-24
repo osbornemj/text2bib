@@ -14609,7 +14609,6 @@ class ExampleSeeder extends Seeder
                     'title' => 'Onde ficam as prisões mais superlotadas da América Latina',
                     'journal' => 'BBC News Brasil',
                     'month' => '10',
-                    'day' => '12',
                     'year' => '2021',
                     'date' => '2021-10-12',
                 ],

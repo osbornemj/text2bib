@@ -1717,6 +1717,9 @@ class Converter
             if ($containsThesis) {
                 $this->verbose("Item type case 14");
                 $itemKind = 'thesis';
+            } elseif ($hasFullDate) { // e.g. newspaper article
+                $this->verbose("Item type case 14a");
+                $itemKind = 'article';
             } elseif (($endsWithInReview || $containsMonth) && ! $hasDoi) {
                 $this->verbose("Item type case 15");
                 $itemKind = 'unpublished';
