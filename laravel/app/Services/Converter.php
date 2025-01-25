@@ -1019,7 +1019,8 @@ class Converter
             $result = $this->editionParser->extractEdition($title, false, true);
 
             if ($result) {
-                $this->setField($item, 'edition', trim($result['edition'], ',. '), 'setField 28');
+                $edition = trim($result['edition'], ',. ');
+                $this->setField($item, 'edition', $use == 'biblatex' ? $result['biblatexEdition'] : $edition, 'setField 28');
                 $title = $result['before'];
             }
 
@@ -1060,7 +1061,9 @@ class Converter
                     $remainder = str_replace($year, '', $remainder);
                 }
                 if ($edition) {
-                    $this->setField($item, 'edition', rtrim($edition, '., '), 'setField 30');
+                    $edition = rtrim($edition, '., ');
+                    $biblatexEdition = $result['editionNumber'] == 11 ? $result['fullEdition'] : $result['editionNumber'];
+                    $this->setField($item, 'edition', $use == 'biblatex' ? $biblatexEdition : $edition, 'setField 30');
                     $containsEdition = true;
                 }
                 if ($volume) {
@@ -2803,7 +2806,7 @@ class Converter
                         $result = $this->editionParser->extractEdition($rest, false, true);
 
                         if ($result) {
-                            $this->setField($item, 'edition', $result['edition'], 'setField 62a');
+                            $this->setField($item, 'edition', $use == 'biblatex' ? $result['biblatexEdition'] : $result['edition'], 'setField 62a');
                             $rest = $result['before'] . $result['after'];
                         }
 
@@ -3151,7 +3154,8 @@ class Converter
                                         $result = $this->editionParser->extractEdition($booktitle, false, true);
 
                                         if ($result) {
-                                            $this->setField($item, 'edition', trim($result['edition'], ',. '), 'setField 79d');
+                                            $edition = trim($result['edition'], ',. ');
+                                            $this->setField($item, 'edition', $use == 'biblatex' ? $result['biblatexEdition'] : $edition, 'setField 79d');
                                             $booktitle = $result['before'];
                                         }
 
@@ -3896,7 +3900,7 @@ class Converter
                     // If $remainder starts with edition, extract it
                     $result = $this->editionParser->extractEdition($remainder, true);
                     if ($result) {
-                        $this->setField($item, 'edition', $result['edition'], 'setField 107a');
+                        $this->setField($item, 'edition', $use == 'biblatex' ? $result['biblatexEdition'] : $result['edition'], 'setField 107a');
                         $remainder = trim($result['after']);
                     }
 
@@ -3924,12 +3928,12 @@ class Converter
                 }
 
                 if (! empty($item->publisher)) {
-                    // Check whether any edition info has been included in publisher
+                    // Check whether edition info has been included at end of publisher
                     $publisher = $item->publisher;
 
                     $result = $this->editionParser->extractEdition($publisher, false, true);
                     if ($result) {
-                        $this->setField($item, 'edition', $result['edition'], 'setField 112a');
+                        $this->setField($item, 'edition', $use == 'biblatex' ? $result['biblatexEdition'] : $result['edition'], 'setField 112a');
                         $this->setField($item, 'publisher', rtrim($result['before'], '., '), 'setField 112b');
                     }
 
@@ -4011,7 +4015,8 @@ class Converter
                 $result = $this->editionParser->extractEdition($booktitle, false, true);
 
                 if ($result) {
-                    $this->setField($item, 'edition', trim($result['edition'], ',. '), 'setField 113g');
+                    $edition = trim($result['edition'], ',. ');
+                    $this->setField($item, 'edition', $use == 'biblatex' ? $result['biblatexEdition'] : $edition, 'setField 113g');
                     $booktitle = $result['before'];
                     $this->setField($item, 'booktitle', rtrim($booktitle, '., '), 'setField 113h');
                 }
@@ -4082,28 +4087,40 @@ class Converter
                     $remainder = $matches['remains'];
                 } 
 
-                $remainingWords = explode(" ", $remainder);
-
                 // If remainder contains word 'edition', take previous word as the edition number or, if the previous word
                 // is 'revised' and the word before that is an ordinal, take the previous two words as the edition number
                 $this->verbose('Looking for edition');
-                foreach ($remainingWords as $key => $word) {
-                    if ($key && preg_match('/^' . $this->regExps->editionWordsRegExp . '$/iu', trim($word, ',. ()'))) {
-                        if (
-                            isset($remainingWords[$key-1])
-                            && in_array($remainingWords[$key-1], ['Revised', 'revised'])
-                            && isset($remainingWords[$key-2])
-                            && in_array($remainingWords[$key-2], $this->ordinals[$language])
-                           ) {
-                            $this->setField($item, 'edition', trim($remainingWords[$key - 2] . ' '. $remainingWords[$key - 1], ',. )('), 'setField 117');
-                            array_splice($remainingWords, $key - 2, 3);
-                        } else {
-                            $this->setField($item, 'edition', trim($remainingWords[$key - 1], ',. )('), 'setField 118');
-                            array_splice($remainingWords, $key - 1, 2);
-                        }
-                        break;
-                    }
+
+                $result = $this->editionParser->extractEdition($remainder);
+
+                if ($result) {
+                    $edition = trim($result['edition'], ',. ');
+                    $this->setField($item, 'edition', $use == 'biblatex' ? $result['biblatexEdition'] : $edition, 'setField 118');
+                    $remainder = $result['before'] . $result['after'];
                 }
+    
+                // foreach ($remainingWords as $key => $word) {
+                //     if ($key && preg_match('/^' . $this->regExps->editionWordsRegExp . '$/iu', trim($word, ',. ()'))) {
+                //         if (
+                //             isset($remainingWords[$key-1])
+                //             &&
+                //             in_array($remainingWords[$key-1], ['Revised', 'revised'])
+                //             && 
+                //             isset($remainingWords[$key-2])
+                //             && 
+                //             in_array($remainingWords[$key-2], $this->ordinals[$language])
+                //            ) {
+                //             $this->setField($item, 'edition', trim($remainingWords[$key - 2] . ' '. $remainingWords[$key - 1], ',. )('), 'setField 117');
+                //             array_splice($remainingWords, $key - 2, 3);
+                //         } else {
+                //             $this->setField($item, 'edition', trim($remainingWords[$key - 1], ',. )('), 'setField 118');
+                //             array_splice($remainingWords, $key - 1, 2);
+                //         }
+                //         break;
+                //     }
+                // }
+
+                $remainingWords = explode(" ", $remainder);
 
                 // 1 = volumeDesignation, 4 = volume, 6 = punc
                 // If remainder contains word 'volume', take next word to be volume number.  If
@@ -4111,7 +4128,6 @@ class Converter
                 $this->verbose('Looking for volume');
                 $done = false;
                 $newRemainder = null;
-                $remainder = implode(" ", $remainingWords);
                 $this->verbose('Remainder: ' . $remainder);
                 $origRemainder = $remainder;
                 $result = $this->removeAndReturn(

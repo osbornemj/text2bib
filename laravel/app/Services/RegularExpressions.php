@@ -17,7 +17,7 @@ class RegularExpressions
     var $edsRegExp;
 
     var $editionRegExp;
-    var $editionWordsRegExp;
+//    var $editionWordsRegExp;
 
     var $firstPublishedRegExp;
 
@@ -161,19 +161,19 @@ class RegularExpressions
             ],
         ];
 
-        $this->editionWordsRegExp = '(';
-        $editionWords = [];
-        $k = 0;
-        foreach ($editionWordsLocalized as $words) {
-            foreach ($words as $word) {
-                if (! in_array($word, $editionWords)) {
-                    $this->editionWordsRegExp .= ($k ? '|' : '') . $word;
-                }
-                $editionWords[] = $word;
-                $k = 1;
-            }
-        }
-        $this->editionWordsRegExp .= ')';
+        // $this->editionWordsRegExp = '(';
+        // $editionWords = [];
+        // $k = 0;
+        // foreach ($editionWordsLocalized as $words) {
+        //     foreach ($words as $word) {
+        //         if (! in_array($word, $editionWords)) {
+        //             $this->editionWordsRegExp .= ($k ? '|' : '') . $word;
+        //         }
+        //         $editionWords[] = $word;
+        //         $k = 1;
+        //     }
+        // }
+        // $this->editionWordsRegExp .= ')';
 
         $editionNumbers = [
             'en' => [
@@ -187,7 +187,13 @@ class RegularExpressions
                 8 => ['8th', 'eighth', 'eight', '8'],
                 9 => ['9th', 'ninth', '9'],
                 10 => ['10th', 'tenth', '10'],
-                11 => ['[1-9][1-9]th', '(?<!(1st|2nd|3rd|[4-9]th) )revised', '(1st|2nd|3rd|[4-9]th) revised']
+                11 => [
+                    '[1-9][1-9]th', 
+                    '(15|16|17|18|19|20)[0-9]{2}', 
+                    'rev\.', 
+                    '(?<!(1st|2nd|3rd|[4-9]th) )revised', 
+                    '(1st|2nd|3rd|[4-9]th)? revised',
+                ]
             ],
             'cz' => [
                 1 => ['1\.'],

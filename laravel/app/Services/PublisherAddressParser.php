@@ -47,7 +47,7 @@ class PublisherAddressParser
 
         $stringHasOnePeriod = false;
         // Exclude periods that end abbreviations
-        if (substr_count($string, '. ') == 1 && ! Str::contains($string, ['Pub.', 'Co.'])) {
+        if (substr_count($string, '. ') == 1 && ! Str::contains($string, ['Pub.', 'Co.', 'St.'])) {
             $stringHasOnePeriod = true;
         }
 

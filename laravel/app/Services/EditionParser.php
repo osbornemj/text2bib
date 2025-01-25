@@ -19,11 +19,11 @@ class EditionParser
         $beforePattern = $start ? '' : '(?P<before>.*)';
         $afterPattern = $end ? '' : '(?P<after>.*)';
 
-        $editionRegExp = '/^' . $beforePattern . '(\(' . $this->regExps->editionRegExp . '\)|' . $this->regExps->editionRegExp . '[.,]?)' . $afterPattern . '$/iJu';
+        $editionRegExp = '/^' . $beforePattern . '(\(' . $this->regExps->editionRegExp . '\)|([( ]|^)' . $this->regExps->editionRegExp . '[.,]?)' . $afterPattern . '$/iJu';
 
         if ($string && preg_match($editionRegExp, $string, $matches)) {
 
-            for ($i = 1; $i <= 10; $i++) {
+            for ($i = 1; $i <= 11; $i++) {
                 if ($matches['n' . $i]) {
                     $edition = $matches['n' . $i];
                     $editionNumber = $i;
@@ -33,7 +33,7 @@ class EditionParser
 
             return [
                 'edition' => $edition,
-                'editionNumber' => $editionNumber,
+                'biblatexEdition' => $editionNumber == 11 ? $matches['fullEdition'] : $editionNumber,
                 'before' => $matches['before'] ?? '',
                 'after' => $matches['after'] ?? ''
             ];

@@ -314,7 +314,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Exner, Jr., J. E. and Smith, Sr., A. B. and Biden, Jr., Xavier Y. and Jones, Jr., X. Y.',
                     'title' => 'The Rorschach',
                     'subtitle' => 'A comprehensive system',
-                    'edition' => '3rd',
+                    'edition' => '3',
                     'volume' => '1',
                     'year' => '1993',
                     'address' => 'New York',
@@ -1529,7 +1529,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'year' => '1987',
                     'title' => 'A handbook on stuttering',
-                    'edition' => '4th',
+                    'edition' => '4',
                     'author' => 'Bloodstein, O.',
                     'address' => 'Chicago, IL',
                     'publisher' => 'National Easter Seal Society',
@@ -1541,7 +1541,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'year' => '1987',
                     'title' => 'A handbook on stuttering',
-                    'edition' => '4th',
+                    'edition' => '4',
                     'author' => 'Bloodstein, O.',
                     'address' => 'Chicago, IL',
                     'publisher' => 'National Easter Seal Society',
@@ -1734,7 +1734,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'John B. Conway',
                     'series' => 'volume 96 in Graduate Texts in Mathematics',
                     'address' => 'New York',
-                    'edition' => 'Second',
+                    'edition' => '2',
                     'publisher' => 'Springer-Verlag',
                     ]
             ],[
@@ -2075,7 +2075,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'year' => '1997',
                     'title' => 'Inverse acoustic and electromagnetic scattering theory',
-                    'edition' => 'second',
+                    'edition' => '2',
                     'series' => 'Applied Mathematical Sciences vol 93',
                     'author' => 'D. Colton and R. Kress',
                     'publisher' => 'Springer',
@@ -2260,7 +2260,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'History, culture, and region in Southeast Asian perspectives',
                     'author' => 'Wolters, O. W.',
                     'address' => 'Ithaca, N. Y.',
-                    'edition' => 'rev',
+                    'edition' => 'rev. ed.',
                     'publisher' => 'Southeast Asia Program Publications, Cornell University',
                     ]
             ],
@@ -4266,7 +4266,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Maimonides, Moses',
                     'year' => '2012',
-                    'edition' => '2nd',
+                    'edition' => '2',
                     'title' => 'Moses Maimonides on Teshuvah',
                     'subtitle' => 'The Ways of Repentance. A New Translation and Commentary',
                     'translator' => 'Henry Abramson',
@@ -4686,10 +4686,9 @@ class ExampleSeeder extends Seeder
                     'title' => 'Scales, norms, and equivalent scores',
                     'editor' => 'R. L. Thorndike',
                     'booktitle' => 'Educational Measurement',
-                    'edition' => '2nd',
+                    'edition' => '2',
                     'publisher' => 'American Council on Education',
                     'address' => 'Washington, D. C.',
-                    'edition' => '2nd',
                     ]
             ],
             [
@@ -4704,7 +4703,7 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Das, S. and Dash, H. R.',
                     'publisher' => 'Elsevier',
                     'booktitle' => 'Microbial Biodegradation and Bioremediation',
-                    'edition' => 'Second',
+                    'edition' => '2',
                     'chapter' => '1',
                     ]
             ],
@@ -6278,7 +6277,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'address' => 'New York',
 					'publisher' => 'MacMillan',
-					'edition' => '1908',
+					'edition' => '1908 Edition',
                     'url' => 'https://oll.libertyfund.org/title/clark-the-distribution-of-wealth-a-theory-of-wages-interest-and-profits',
                     'author' => 'Clark, J. B.',
                     'year' => '1899',
@@ -6376,7 +6375,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Boschetti, A. a.',
                     'year' => '2018',
-                    'edition' => 'Third',
+                    'edition' => '3',
                     'title' => 'Python Data Science Essentials',
                     'publisher' => 'Packt Publishing',
                     'address' => 'BIRMINGHAM - MUMBAI',
@@ -7588,7 +7587,7 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Lange, N. A.',
                     'title' => 'Handbook of chemistry',
                     'year' => '1961',
-                    'edition' => '10th',
+                    'edition' => '10',
                     'publisher' => 'McGraw-Hill Book Co',
                     'address' => 'New York',
                     ]
@@ -7720,7 +7719,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2017',
                     'publisher' => 'Universidade de Coimbra',
                     'address' => 'Coimbra',
-                    'edition' => '3ª',
+                    'edition' => '3',
                     ],
 					'language' => 'pt',
 					'char_encoding' => 'utf8leave',
@@ -7762,7 +7761,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Mankiw, N. G.',
                     'title' => 'Principles of Microeconomics',
                     'year' => '2008',
-					'edition' => '5ª',
+					'edition' => '5',
                     'publisher' => 'South-Western Cengage Learning',
                     'address' => 'Mason, Ohio',
                     ],
@@ -8019,7 +8018,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Assessment as Learning',
                     'subtitle' => 'Using classroom assessment to maximize student learning',
                     'year' => '2013',
-                    'edition' => '2nd',
+                    'edition' => '2',
                     'publisher' => 'Corwin',
                     ]
             ],
@@ -8510,7 +8509,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Understanding Policy-Based Networking',
                     'publisher' => 'Wiley',
 					'address' => 'New York, NY',
-                    'edition' => '2nd',
+                    'edition' => '2',
                     ]
             ],
 			// name truncated, journal not detected 
@@ -8626,7 +8625,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1988',
                     'address' => 'Maryknoll, NY',
                     'publisher' => 'Orbis Books',
-                    'edition' => 'Revised',
+                    'edition' => 'Revised ed.',
                     ]
             ],
 			// detected as incollection
@@ -8690,7 +8689,7 @@ class ExampleSeeder extends Seeder
                     'url' => 'https://jhupbooks.press.jhu.edu/title/health-disparities-united-states',
                     'author' => 'Barr, D. A.',
                     'year' => '2019',
-                    'edition' => '3rd',
+                    'edition' => '3',
                     'title' => 'Health disparities in the United States',
                     'subtitle' => 'Social class, race, ethnicity, and health',
 					'publisher' => 'Johns Hopkins University Press',
@@ -8941,7 +8940,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Vehicle Routing Problems with Profits',
 					'booktitle' => 'Vehicle Routing',
                     'booksubtitle' => 'Problems, Methods, and Applications',
-                    'edition' => 'Second',
+                    'edition' => '2',
 					'editor' => 'Paolo Toth and Daniele Vigo',
                     'publisher' => 'Society for Industrial and Applied Mathematics',
                     'year' => '2014',
@@ -9270,7 +9269,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Cooper, John',
                     'title' => 'Body, Soul and Life Everlasting',
                     'year' => '2000',
-                    'edition' => '2nd Revised',
+                    'edition' => '2nd Revised Edition',
                     'address' => 'Grand Rapids',
                     'publisher' => 'Eerdmans',
                     ]
@@ -9966,7 +9965,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'American Psychiatric Association',
-                    'edition' => '5th',
+                    'edition' => '5',
                     'title' => 'Diagnostic and statistical manual of mental disorders',
                     'year' => '2013',
                     'publisher' => 'Am Psychiatric Publishing',
@@ -10017,7 +10016,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Calvin, John',
                     'title' => 'Institutes of the Christian Religion',
-                    'subtitle' => '1536 edition',
+                    'edition' => '1536 edition',
                     'year' => '1536',
                     'translator' => 'Ford Lewis Battles',
                     'address' => 'Grand Rapids',
@@ -10551,7 +10550,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'DNA-Binding Motifs in Gene Regulatory Proteins',
                     'year' => '2002',
                     'booktitle' => 'Molecular Biology of the Cell',
-                    'edition' => '4th',
+                    'edition' => '4',
                     'address' => 'New York',
                     'publisher' => 'Garland Science',
                     ]
@@ -10566,7 +10565,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2000',
                     'booktitle' => 'The Cell',
                     'booksubtitle' => 'A Molecular Approach',
-                    'edition' => '2nd',
+                    'edition' => '2',
                     'publisher' => 'Sinauer Associates',
                     'address' => 'Sunderland (MA)',
                     ]
@@ -10647,7 +10646,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Reverse Mission: From the Global South to Mainline Churches',
                     'year' => '2016',
                     'pages' => '91-103',
-                    'edition' => '2nd',
+                    'edition' => '2',
                     'editor' => 'David Goodhew',
                     'address' => 'London',
                     'publisher' => 'Routledge',
@@ -11123,7 +11122,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Albus, U.',
                     'year' => '2012',
                     'title' => 'Guide for the Care and Use of Laboratory Animals',
-                    'edition' => '8th',
+                    'edition' => '8',
                     'journal' => 'Laboratory Animals',
                     'volume' => '46',
                     'number' => '3',
@@ -13536,7 +13535,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Schmemann, Alexander',
                     'year' => '1975',
-                    'edition' => '2nd',
+                    'edition' => '2',
                     'title' => 'Introduction to Liturgical Theology',
                     'publisher' => 'St. Vladimir\'s Seminary Press',
                     'address' => 'Crestwood, NY',
@@ -14293,7 +14292,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '111-129',
                     'editor' => 'M. Schulte-Mecklenbeck and A. Kuehberger and J. G. Johnson',
                     'booktitle' => 'A Handbook of Process Tracing Methods',
-                    'edition' => '2nd',
+                    'edition' => '2',
                     'publisher' => 'Routledge',
                     ]
             ],
@@ -14447,7 +14446,7 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Ary, D. and Jacobs, L. C. and Sorensen, C. K. and Razavieh, A.',
                     'title' => 'Introduction to research in education',
-					'edition' => 'Eight',
+					'edition' => '8',
                     'year' => '2010',
                     'address' => 'Belmont, California',
                     'publisher' => 'Wadsworth Cengage Learning',
@@ -14544,7 +14543,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Introduction to the Theory of Quantum Information Processing',
                     'year' => '2013',
                     'series' => 'Graduate Texts in Physics',
-					'edition' => 'first',
+					'edition' => '1',
                     'address' => 'New York, NY',
                     'publisher' => 'Springer',
                     ]
@@ -14727,7 +14726,7 @@ class ExampleSeeder extends Seeder
                     'author' => 'Guedes, Névton',
                     'booktitle' => 'Comentários à Constituição do Brasil',
                     'editor' => 'Canotilho, J. J. and Mendes, Gilmar and Sarlet, Ingo W.',
-                    'edition' => '3ª',
+                    'edition' => '3',
                     'publisher' => 'Saraiva/Juspodivum',
                     'title' => 'Comentários ao art. 14',
                     'year' => '2023',

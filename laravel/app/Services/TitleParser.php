@@ -99,6 +99,8 @@ class TitleParser
             $result['titleDetails'] = $this->titleDetails;
             $result['editor'] = $editor;
             $result['translator'] = $translator;
+            $result['editionNumber'] = null;
+            $result['fullEdition'] = null;
     
             return $result;
         }
@@ -116,6 +118,8 @@ class TitleParser
                 $result['titleDetails'] = $this->titleDetails;
                 $result['editor'] = $editor;
                 $result['translator'] = $translator;
+                $result['editionNumber'] = null;
+                $result['fullEdition'] = null;
         
                 return $result;
             }
@@ -160,6 +164,8 @@ class TitleParser
                 $result['titleDetails'] = $this->titleDetails;
                 $result['editor'] = $editor;
                 $result['translator'] = $translator;
+                $result['editionNumber'] = null;
+                $result['fullEdition'] = null;
         
                 return $result;
             }
@@ -573,6 +579,7 @@ class TitleParser
                         if ($matches['n' . $i]) {
                             $edition = $matches['n' . $i];
                             $editionNumber = $i;
+                            $fullEdition = $matches['fullEdition'];
                             break;
                         }
                     }
@@ -836,6 +843,8 @@ class TitleParser
         $result['stringToNextPeriodOrComma'] = $stringToNextPeriodOrComma ?? '';
         $result['editor'] = $editor;
         $result['translator'] = $translator;
+        $result['editionNumber'] = $editionNumber ?? null;
+        $result['fullEdition'] = $fullEdition ?? null;
 
         return $result;
     }
