@@ -4254,13 +4254,14 @@ class Converter
                         $remainder = rtrim(substr($remainder, $length), '}');
                     }
 
-                    if (! empty($cityString)) {
-                        $remainderMinusPubInfo = preg_replace('/(.*)' . $cityString . '[.,:]?/', '$1', $remainder);
-                    }
+                    // First remove publisher, then address, in case address is part of publisher (Cambridge, Cambridge University Press)
                     if (! empty($publisherString)) {
                         // Replace *last* occurrence of $publisherString in $remainderMinusPubInfo
                         // (Deals with cases like "... Springer Series on ..., Springer, Berlin")
-                        $remainderMinusPubInfo = preg_replace('/(.*)' . $publisherString . '[.,]?/', '$1', $remainderMinusPubInfo);
+                        $remainderMinusPubInfo = preg_replace('/(.*)' . $publisherString . '[.,]?/', '$1', $remainder);
+                    }
+                    if (! empty($cityString)) {
+                        $remainderMinusPubInfo = preg_replace('/(.*)' . $cityString . '[.,:]?/', '$1', $remainderMinusPubInfo);
                     }
                     $remainderMinusPubInfo = trim($remainderMinusPubInfo, '., ');
 

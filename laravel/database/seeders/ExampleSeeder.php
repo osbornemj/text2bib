@@ -14785,6 +14785,18 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Liberty Fund',
                     ]
             ],
+            // text incorrectly identified as series
+            [
+                'source' => ' Spencer, H. (2009) \emph{First Principles}. Cambridge. Cambridge University Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'year' => '2009',
+                    'title' => 'First Principles',
+                    'author' => 'Spencer, H.',
+                    'address' => 'Cambridge',
+                    'publisher' => 'Cambridge University Press',
+                    ]
+            ],
             
 
             
