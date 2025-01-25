@@ -2766,7 +2766,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'Unskilled and unaware of it: How difficulties in recognizing one\'s own incompetence lead to inflated self-assessments',
                     'pages' => '1-70',
                     'publisher' => 'Academic Press',
-                    'booktitle' => 'Advances in Experimental Social Psychology (Vol. 41)',
+                    'booktitle' => 'Advances in Experimental Social Psychology',
+                    'volume' => '41',
                     ]
             ],
             [
@@ -4282,7 +4283,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'Annotation standards',
                     'pages' => '484-501',
                     'editor' => 'A. L{\"u}deling and M. Kyt{\"o}',
-                    'booktitle' => 'Corpus linguistics -- An international handbook (volume 1)',
+                    'booktitle' => 'Corpus linguistics -- An international handbook',
+                    'volume' => '1',
                     'publisher' => 'Walter de Gruyter',
                     ]
             ],
@@ -14747,8 +14749,44 @@ class ExampleSeeder extends Seeder
                 ],
                 'language' => 'es',
                 'char_encoding' => 'utf8leave',
-            ]
-
+            ],
+            // address-publisher problem
+            [
+                'source' => ' Burke, E. (1999) \emph{Reflections on the Revolution in France}. Indianapolis. Liberty Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'year' => '1999',
+                    'title' => 'Reflections on the Revolution in France',
+                    'author' => 'Burke, E.',
+                    'address' => 'Indianapolis',
+                    'publisher' => 'Liberty Press',
+                    ]
+            ],
+            // address-publisher problem
+            [
+                'source' => 'Hobbes, T. (1971) \emph{Leviathan}. Middlesex. Penguin Books. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'year' => '1971',
+                    'title' => 'Leviathan',
+                    'author' => 'Hobbes, T.',
+                    'address' => 'Middlesex',
+                    'publisher' => 'Penguin Books',
+                    ]
+            ],
+            // address-publisher problem
+            [
+                'source' => 'Humboldt, W. (1969) \emph{The Limits of State Action.} Indianapolis. Liberty Fund. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'year' => '1969',
+                    'title' => 'The Limits of State Action',
+                    'author' => 'Humboldt, W.',
+                    'address' => 'Indianapolis',
+                    'publisher' => 'Liberty Fund',
+                    ]
+            ],
+            
 
             
              

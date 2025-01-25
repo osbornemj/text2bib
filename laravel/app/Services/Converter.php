@@ -3963,7 +3963,7 @@ class Converter
                         }
                         $booktitle = preg_replace('/\[C\](?=\.)/', '', $booktitle);
 
-                        if (preg_match('/^(?P<booktitle>.*?)(' . $this->regExps->volumeRegExp . ')(?P<volume>\d{1,4})\.?$/', $booktitle, $matches)) {
+                        if (preg_match('/^(?P<booktitle>.*?)(\(?' . $this->regExps->volumeRegExp . ')(?P<volume>\d{1,4})\)?\.?$/', $booktitle, $matches)) {
                             if ($use == 'latex') {
                                 $this->setField($item, 'booktitle', trim($booktitle, ' ,;'), 'setField 113');
                             } else {
