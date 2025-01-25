@@ -131,7 +131,7 @@ class Dates
                     preg_match('/[ \(](?P<date>(?P<day>[0-9]{1,2})? ?(de )?(?P<month>' . $months . ') ?(de )?(?P<year>(' . $centuries . ')[0-9]{2}))/i', $string, $matches2, PREG_OFFSET_CAPTURE)
                     ||
                     // <day>/<monthNumber>/<year>
-                    preg_match('%[ \(](?P<date>(?P<day>[0-9]{1,2})/(?P<monthNumber>[0-9]{1,2})/(?P<year>(' . $centuries . ')[0-9]{2}))%i', $string, $matches2, PREG_OFFSET_CAPTURE)
+                    preg_match('%[ \(](?P<date>(?P<day>[0-9]{1,2})[/.](?P<monthNumber>[0-9]{1,2})[/.](?P<year>(' . $centuries . ')[0-9]{2}))%i', $string, $matches2, PREG_OFFSET_CAPTURE)
                     ||
                     // <year> followed by volume, number, pages
                     // volume, number, pages pattern may need to be relaxed

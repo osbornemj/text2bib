@@ -167,7 +167,6 @@ class TitleParser
 
         $containsPages = preg_match('/(\()?' . $this->regExps->pagesRegExp . '(\))?/', $remainder);
         $volumeWithDigitRegExp = '/^(' . $this->regExps->volumeRegExp . ') (\d)\.?\)?[.,]?$/i';
-        $editionRegExp = '/(^(?P<fullEdition>\(' . $this->editionRegExp . '\)|^' . $this->editionRegExp . '))(?P<remains>.*$)/iJ';
 
         // Go through the words in $remainder one at a time.
         foreach ($words as $key => $word) {
@@ -411,6 +410,9 @@ class TitleParser
                         if (! $translatorNext) {
                             $translatorNext = preg_match('/^\((?P<string>(?P<translator>[^)]+) ' . $this->regExps->translatorRegExp . ')\)(?P<remainder>.*)/', $remainder, $matches);
                         }
+                        if (! $translatorNext) {
+                            $translatorNext = preg_match('/^\(?' . $this->regExps->translatedByRegExp . '$/', $nextWord . ' ' . $nextButOneWord);
+                        }
                         if (isset($matches['string'])) {
                             if (preg_match('/^(' . $this->regExps->volumeRegExp . ')(?P<volume>[\dIVXL]+)[, ](?P<translator>.*?)' . $this->regExps->translatorRegExp . '$/', $matches['string'], $volumeMatches)) {
                                 if (isset($volumeMatches['volume'])) {
@@ -565,9 +567,16 @@ class TitleParser
 
                 // Upcoming edition specification
                 $testString = implode(' ', $remainingWords);
-
+                $editionRegExp = '/(^\(' . $this->regExps->editionRegExp . '\)|^' . $this->regExps->editionRegExp . ')(?P<remains>.*$)/iJu';
                 if (preg_match($editionRegExp, $testString, $matches)) {
-                    $edition = trim($matches['edition']);
+                    for ($i = 1; $i <= 11; $i++) {
+                        if ($matches['n' . $i]) {
+                            $edition = $matches['n' . $i];
+                            $editionNumber = $i;
+                            break;
+                        }
+                    }
+
                     $this->verbose('edition set to "' . $edition . '"');
                     $fullEdition = $matches['fullEdition'];
                     $this->verbose("Ending title, case 3b");

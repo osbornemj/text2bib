@@ -16,6 +16,9 @@ class RegularExpressions
     var $edsOptionalParensRegExp;
     var $edsRegExp;
 
+    var $editionRegExp;
+    var $editionWordsRegExp;
+
     var $firstPublishedRegExp;
 
     var $inRegExp;
@@ -92,6 +95,7 @@ class RegularExpressions
             '[Aa] cura di', // Italian
             '[Rr]ed\.',     // Polish
             '[Dd]ü\.',      // Turkish
+            '[Cc]oods\.',   // Portuguese(?)
         ];
 
         $editedByWords = [
@@ -127,6 +131,163 @@ class RegularExpressions
         $this->editedByRegExp = '(' . $editedByRx . ')';
 
         $this->editorStartRegExp = '/^[(\[]?(' . $editedByRx . '|' . $edsRx . ')/u';
+
+        //////////////
+        // Editions //
+        //////////////
+
+        // Words meaning edition; for each language, full word first, then abbreviations
+        $editionWordsLocalized = [
+            'en' => [
+                'edition', 'ed\.?', 'edn\.?', 
+            ],
+            'cz' => [
+                'vydání', 
+            ],
+            'fr' => [
+                'édition', 'ed\.?', 'edn\.?', 
+            ],
+            'es' => [
+                'edición', 'ed\.?', 'edn\.?', 
+            ],
+            'pt' => [
+                'edição', 'ed\.?', 
+            ],
+            'my' => [
+                'edition', 'ed\.?', 'edn\.?', 
+            ],
+            'nl' => [
+                'editie', 'ed\.?',
+            ],
+        ];
+
+        $this->editionWordsRegExp = '(';
+        $editionWords = [];
+        $k = 0;
+        foreach ($editionWordsLocalized as $words) {
+            foreach ($words as $word) {
+                if (! in_array($word, $editionWords)) {
+                    $this->editionWordsRegExp .= ($k ? '|' : '') . $word;
+                }
+                $editionWords[] = $word;
+                $k = 1;
+            }
+        }
+        $this->editionWordsRegExp .= ')';
+
+        $editionNumbers = [
+            'en' => [
+                1 => ['1st', 'first', '1'],
+                2 => ['2nd', 'second', '2'],
+                3 => ['3rd', 'third', '3'],
+                4 => ['4th', 'fourth', '4'],
+                5 => ['5th', 'fifth', '5'],
+                6 => ['6th', 'sixth', '6'],
+                7 => ['7th', 'seventh', '7'],
+                8 => ['8th', 'eighth', 'eight', '8'],
+                9 => ['9th', 'ninth', '9'],
+                10 => ['10th', 'tenth', '10'],
+                11 => ['[1-9][1-9]th', '(?<!(1st|2nd|3rd|[4-9]th) )revised', '(1st|2nd|3rd|[4-9]th) revised']
+            ],
+            'cz' => [
+                1 => ['1\.'],
+                2 => ['2\.'],
+                3 => ['3\.'],
+                4 => ['4\.'],
+                5 => ['5\.'],
+                6 => ['6\.'],
+                7 => ['7\.'],
+                8 => ['8\.'],
+                9 => ['9\.'],
+                10 => ['10\.'],
+            ],
+            'fr' => [
+                1 => ['1er', '1ère'],
+                2 => ['2e',],
+                3 => ['3e'],
+                4 => ['4e'],
+                5 => ['5e'],
+                6 => ['6e'],
+                7 => ['7e'],
+                8 => ['8e'],
+                9 => ['9e'],
+                10 => ['10e'],
+            ],
+            'es' => [
+                1 => ['1ra', '1º'],
+                2 => ['2da', '2º'],
+                3 => ['3ra', '3º'],
+                4 => ['4ra', '4º'],
+                5 => ['5ra', '5º'],
+                6 => ['6ra', '6º'],
+                7 => ['7ra', '7º'],
+                8 => ['8ra', '8º'],
+                9 => ['9ra', '9º'],
+                10 => ['10ra', '10º'],
+            ],
+            'pt' => [
+                1 => ['1º\.?'],
+                2 => ['2ª\.?'],
+                3 => ['3ª\.?'],
+                4 => ['4ª\.?'],
+                5 => ['5ª\.?'],
+                6 => ['6ª\.?'],
+                7 => ['7ª\.?'],
+                8 => ['8ª\.?'],
+                9 => ['9ª\.?'],
+                10 => ['10ª\.?'],
+            ],
+            'my' => [
+                1 => ['1st'],
+                2 => ['2nd'],
+                3 => ['3rd'],
+                4 => ['4th'],
+                5 => ['5th'],
+                6 => ['6th'],
+                7 => ['7th'],
+                8 => ['8th'],
+                9 => ['9th'],
+                10 => ['10th'],
+            ],
+            'nl' => [
+                1 => ['1e'],
+                2 => ['2e'],
+                3 => ['3e'],
+                4 => ['4e'],
+                5 => ['5e'],
+                6 => ['6e'],
+                7 => ['7e'],
+                8 => ['8e'],
+                9 => ['9e'],
+                10 => ['10e'],
+            ],
+        ];
+
+        // Strings are keyed to languages, but the language is ignored currently: a single regular expression
+        // is constructed from all the strings, with the following format:
+        // '(?P<fullEdition>(?P<edition>(?P<n-1>1st|first)|(?P<n-2>2nd|second)|...) (edition|ed|edn))' . 
+        // '|' . 
+        // '(?P<fullEdition>(?P<edition>(?P<n-1>1\.)|(?P<n-2>2\.)|...) (vydání))' . 
+        // '|'
+        // ...
+        $this->editionRegExp = '(?P<fullEdition>(?P<edition>';
+        foreach ($editionNumbers as $lang => $numbers) {
+            $this->editionRegExp .= ($lang != 'en' ? '|' : '');
+            foreach ($numbers as $number => $values) {
+                $this->editionRegExp .= ($number > 1 ? '|' : '(') . '(?P<n' . $number . '>';
+                foreach ($values as $i => $value) {
+                    $this->editionRegExp .= ($i ? '|' : '') . $value;
+                }
+                $this->editionRegExp .= ')';
+            }
+            $this->editionRegExp .= ') ?(';
+            $words = $editionWordsLocalized[$lang];
+            foreach ($words as $j => $word) {
+                $this->editionRegExp .= ($j ? '|' : '') . $word;
+            }
+            $this->editionRegExp .= ')';
+        }
+        $this->editionRegExp .= '))';
 
         /////////////////
         // Translators //

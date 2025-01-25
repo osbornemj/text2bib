@@ -29,8 +29,6 @@ class Converter
     var $detailLines;
     var $dictionaryNames;
     var $distinctiveJournalWordAbbreviations;
-    var $editionWords;
-    var $editionNumbers;
     var $entryPrefixes;
     var $entrySuffixes;
     var $excludedWords;
@@ -51,6 +49,7 @@ class Converter
     public Dates $dates;
     public ArticlePubInfoParser $articlePubInfoParser;
     public AuthorParser $authorParser;
+    public EditionParser $editionParser;
     public PublisherAddressParser $publisherAddressParser;
     public TitleParser $titleParser;
 
@@ -60,6 +59,7 @@ class Converter
     {
         $this->dates = new Dates();
         $this->authorParser = new AuthorParser();
+        $this->editionParser = new EditionParser();
         $this->articlePubInfoParser = new ArticlePubInfoParser();
         $this->publisherAddressParser = new PublisherAddressParser();
         $this->titleParser = new TitleParser();
@@ -94,7 +94,7 @@ class Converter
 
         $this->ordinals = [
             'en' =>
-                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', 'first', 'second', 'third', 'fourth','fifth', 'sixth', 'seventh', 'eighth', 'ninth'],
+                ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', 'first', 'second', 'third', 'fourth','fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'],
             'cz' =>
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'],
             'fr' =>
@@ -107,27 +107,6 @@ class Converter
                 ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'],
             'nl' =>
                 ['1e', '2e', '3e', '4e', '5e', '6e', '7e', '8e', '9e', '10e'],
-        ];
-
-        /////////////
-        // Edition //
-        /////////////
-
-        $this->editionWords = [
-            'edition', 
-            'ed', 
-            'edn', 
-            'edição', 
-            'édition', 
-            'edición',
-        ];
-
-        $this->editionNumbers = [
-            '1st' => '1',
-            '1er' => '1',
-            'first' => '1',
-            '1º' => '1',
-            '1ª' => '1',
         ];
 
         ///////////
@@ -1037,10 +1016,11 @@ class Converter
             }
         } else {
             // If title has been found and ends in edition specification, take that out and put it in edition field
-            $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . ')[.,]?$/iJu';
-            if ($title && preg_match($editionRegExp, (string) $title, $matches)) {
-                $this->setField($item, 'edition', trim($matches['edition'], ',. '), 'setField 28');
-                $title = trim(Str::replaceLast($matches[0], '', $title));
+            $result = $this->editionParser->extractEdition($title, false, true);
+
+            if ($result) {
+                $this->setField($item, 'edition', trim($result['edition'], ',. '), 'setField 28');
+                $title = $result['before'];
             }
 
             if (! $title) {
@@ -1080,7 +1060,7 @@ class Converter
                     $remainder = str_replace($year, '', $remainder);
                 }
                 if ($edition) {
-                    $this->setField($item, 'edition', $edition, 'setField 30');
+                    $this->setField($item, 'edition', rtrim($edition, '., '), 'setField 30');
                     $containsEdition = true;
                 }
                 if ($volume) {
@@ -1446,12 +1426,7 @@ class Converter
             $this->verbose("Contains number sign (\\#).");
         }
 
-        $regExp = '/(';
-        foreach ($this->ordinals[$language] as $i => $ordinal) {
-            $regExp .= ($i ? '|' : '') . $ordinal . '\.?';
-        }
-        $regExp .= ') ed(ition|ição)?(\.| )/i';
-        if (preg_match('/ ed(ition|ição)([,.:; )]|$)/i', $remainder) || preg_match($regExp, $remainder)) {
+        if (preg_match('/' . $this->regExps->editionRegExp . '/iJu', $remainder)) {
             $containsEdition = true;
         }
 
@@ -2783,7 +2758,6 @@ class Converter
                             $this->detailLines = array_merge($this->detailLines, $result['author_details']);
                         } else {
                             $this->verbose("Format is <booktitle> <editor> eds.");
-                            // Include edition in title (because no BibTeX field for edition for incollection)
                             $result = $this->titleParser->getTitleAndEditor($tempRemainderMinusEds, $language);
                             
                             $this->setField($item, 'booktitle', $result['title']);
@@ -2825,10 +2799,14 @@ class Converter
                         $booktitle = trim($matches['booktitle'], ', ');
                         // Authors and publication info
                         $rest = trim($matches['rest']);
-                        if (preg_match('/^(?P<before>.*)' . $this->editionRegExp . '(?P<after>.*)$/', $rest, $matches)) {
-                            $this->addToField($item, 'note', $matches['fullEdition']);
-                            $rest = $matches['before'] . $matches['after'];
+
+                        $result = $this->editionParser->extractEdition($rest, false, true);
+
+                        if ($result) {
+                            $this->setField($item, 'edition', $result['edition'], 'setField 62a');
+                            $rest = $result['before'] . $result['after'];
                         }
+
                         $isEditor = true;
                         $remainder = $rest;
 
@@ -3169,7 +3147,15 @@ class Converter
                                         }
                                     } else {
                                         $booktitle = $booktitleAndPubInfo;
-                                        $this->setField($item, 'booktitle', rtrim(trim($booktitle), '.'), 'setField 79d');
+
+                                        $result = $this->editionParser->extractEdition($booktitle, false, true);
+
+                                        if ($result) {
+                                            $this->setField($item, 'edition', trim($result['edition'], ',. '), 'setField 79d');
+                                            $booktitle = $result['before'];
+                                        }
+
+                                        $this->setField($item, 'booktitle', rtrim(trim($booktitle), '.'), 'setField 79e');
                                         $remainder = substr($string, 0, -2); // remove ' 1' appended to $string
                                     }
                                     $updateRemainder = false;
@@ -3906,6 +3892,14 @@ class Converter
                 if (empty($booktitle) && empty($item->booktitle)) {
                     $this->setField($item, 'booktitle', rtrim($remainder, ' ,:'), 'setField 107');
                 } elseif (empty($item->publisher) || empty($item->address)) {
+
+                    // If $remainder starts with edition, extract it
+                    $result = $this->editionParser->extractEdition($remainder, true);
+                    if ($result) {
+                        $this->setField($item, 'edition', $result['edition'], 'setField 107a');
+                        $remainder = trim($result['after']);
+                    }
+
                     if (! empty($item->publisher)) {
                         $this->setField($item, 'address', $remainder, 'setField 108');
                         $newRemainder = '';
@@ -3932,12 +3926,13 @@ class Converter
                 if (! empty($item->publisher)) {
                     // Check whether any edition info has been included in publisher
                     $publisher = $item->publisher;
-                    preg_match('/\(?' . $this->editionRegExp . '\)?/', $publisher, $matches);
-                    if (! empty($matches[0])) {
-                        $editionInfo = $matches[0];
-                        $item->publisher = trim(str_replace($editionInfo, '', $publisher), ' .');
+
+                    $result = $this->editionParser->extractEdition($publisher, false, true);
+                    if ($result) {
+                        $this->setField($item, 'edition', $result['edition'], 'setField 112a');
+                        $this->setField($item, 'publisher', rtrim($result['before'], '., '), 'setField 112b');
                     }
-                    $this->verbose(['fieldName' => 'Publisher', 'content' => $item->publisher]);
+
                 } else {
                     $warnings[] = "Publisher not found.";
                 }
@@ -4012,25 +4007,20 @@ class Converter
                     $this->itemType = 'book';
                 }
 
-                if ($use == 'biblatex') {
-                    // If title has been found and ends in edition specification, take that out and put it in edition field
-                    $editionRegExp = '/(\(' . $this->editionRegExp . '\)$|' . $this->editionRegExp . '[.,]?$)/iJu';
-                    if ($booktitle && preg_match($editionRegExp, $booktitle, $matches)) {
-                        if (isset($matches['edition'])) {
-                            $edition = trim($matches['edition'], ',. ');
-                            if (Str::endsWith($edition, ['st', 'nd', 'rd', 'th'])) {
-                                $edition = substr($edition, 0, 1);
-                            }
-                            $this->setField($item, 'edition', $edition, 'setField 113g');
-                            $booktitle = trim(Str::replaceLast($matches['fullEdition'], '', $booktitle));
-                        }
-                    }
-                    if (substr_count($booktitle, ': ') == 1) {
-                        $booksubtitle = mb_ucfirst(trim(Str::after($booktitle, ': '), ', '));
-                        $booktitle = trim(Str::before($booktitle, ': '));
-                        $this->setField($item, 'booksubtitle', $booksubtitle, 'setField 113f');
-                        $this->setField($item, 'booktitle', $booktitle, 'setField 113g');
-                    }
+                // If title has been found and ends in edition specification, take that out and put it in edition field
+                $result = $this->editionParser->extractEdition($booktitle, false, true);
+
+                if ($result) {
+                    $this->setField($item, 'edition', trim($result['edition'], ',. '), 'setField 113g');
+                    $booktitle = $result['before'];
+                    $this->setField($item, 'booktitle', rtrim($booktitle, '., '), 'setField 113h');
+                }
+    
+                if (substr_count($booktitle, ': ') == 1) {
+                    $booksubtitle = mb_ucfirst(trim(Str::after($booktitle, ': '), ', '));
+                    $booktitle = trim(Str::before($booktitle, ': '));
+                    $this->setField($item, 'booksubtitle', $booksubtitle, 'setField 113i');
+                    $this->setField($item, 'booktitle', $booktitle, 'setField 113j');
                 }
 
                 break;
@@ -4098,7 +4088,7 @@ class Converter
                 // is 'revised' and the word before that is an ordinal, take the previous two words as the edition number
                 $this->verbose('Looking for edition');
                 foreach ($remainingWords as $key => $word) {
-                    if ($key && in_array(mb_strtolower(trim($word, ',. ()')), $this->editionWords)) {
+                    if ($key && preg_match('/^' . $this->regExps->editionWordsRegExp . '$/iu', trim($word, ',. ()'))) {
                         if (
                             isset($remainingWords[$key-1])
                             && in_array($remainingWords[$key-1], ['Revised', 'revised'])
