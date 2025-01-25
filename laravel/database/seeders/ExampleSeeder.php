@@ -14720,7 +14720,7 @@ class ExampleSeeder extends Seeder
             ],
             // edition of incollection
             [
-                'source' => 'GUEDES, Névton. "Comentários ao art.14", in: CANOTILHO, J.J.; MENDES, Gilmar; SARLET, Ingo W. (coods.), \emph{Comentários à Constituição do Brasil}, 3ª ed., São Paulo: Saraiva/Juspodivum, 2023. ',
+                'source' => 'GUEDES, Névton. "Comentários ao art.14", in: CANOTILHO, J.J.; MENDES, Gilmar; SARLET, Ingo W. (coords.), \emph{Comentários à Constituição do Brasil}, 3ª ed., São Paulo: Saraiva/Juspodivum, 2023. ',
                 'type' => 'incollection',
                 'bibtex' => [
                     'address' => 'São Paulo',

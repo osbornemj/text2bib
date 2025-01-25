@@ -45,6 +45,12 @@ class PublisherAddressParser
             $string = trim($string, '.');
         }
 
+        $stringHasOnePeriod = false;
+        // Exclude periods that end abbreviations
+        if (substr_count($string, '. ') == 1 && ! Str::contains($string, ['Pub.', 'Co.'])) {
+            $stringHasOnePeriod = true;
+        }
+
         // If $string contains a single ':', take city to be preceding string and publisher to be
         // following string
         if (substr_count($string, ':') == 1) {
@@ -126,8 +132,14 @@ class PublisherAddressParser
                 $address = $stringAfterComma;
             }
             $remainder = '';
-        // else take publisher/city to be strings that match list above and report rest to be
-        // city/publisher
+        // else if string contains no colon but a single period, take city to be string before period and publisher to be 
+        // string after period
+        } elseif (! substr_count($string, ':') && $stringHasOnePeriod) {
+            $address = Str::before($string, '.');
+            $publisher = Str::after($string, '.');
+            $remainder = '';
+        // else take publisher/city to be string that matches item in database (passed to method as $publishers and $cities)
+        // and report rest to be city/publisher
         } else {
             $stringMinusPubInfo = $string;
             foreach ($publishers as $publisherFromList) {

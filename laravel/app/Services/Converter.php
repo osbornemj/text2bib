@@ -4339,13 +4339,6 @@ class Converter
                     );
 
                     if ($publisher) {
-                        // Code moved earlier
-                        // if (preg_match('/^(?P<publisher>[^,]+)(, (?P<remains>[0-9ivx +\[\]]+pp))?$/', $publisher, $matches)) {
-                        //     if (isset($matches['remains'])) {
-                        //         $this->setField($item, 'note', $matches['remains'] . '.', 'setField 149');
-                        //         $publisher = $matches['publisher'];
-                        //     }
-                        // }
                         $this->setField($item, 'publisher', trim($publisher, '();{} '), 'setField 150');
                     }
 

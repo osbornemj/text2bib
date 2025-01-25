@@ -95,7 +95,7 @@ class RegularExpressions
             '[Aa] cura di', // Italian
             '[Rr]ed\.',     // Polish
             '[Dd]ü\.',      // Turkish
-            '[Cc]oods\.',   // Portuguese(?)
+            '[Cc]oords?\.',   // Portuguese(?)
         ];
 
         $editedByWords = [
