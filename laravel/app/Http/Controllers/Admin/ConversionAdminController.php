@@ -225,6 +225,8 @@ class ConversionAdminController extends Controller
     {
         $searchString = request()->search_string;
         $cutoffDate = request()->cutoff_date;
+        $correctedByUser = request()->corrected_by_user;
+
         $searchTerms = explode(' ', $searchString);
 
         $outputs = Output::with('itemType')
@@ -234,21 +236,17 @@ class ConversionAdminController extends Controller
             $outputs = $outputs->where('created_at', '>', $cutoffDate);
         }
 
+        if ($correctedByUser) {
+            $outputs = $outputs->where('correctness', 2);
+        }
+
         foreach ($searchTerms as $searchTerm) {
             $outputs = $outputs->where('source', 'like', '%' . $searchTerm .'%');
         }
-        $outputs = $outputs->get();
+        $outputs = $outputs->paginate(50);
 
         $bstFields = config('constants.nonstandard_bst_fields');
 
-        return view('admin.conversions.showOutputs', compact('outputs', 'searchString', 'cutoffDate', 'bstFields'));
+        return view('admin.conversions.showOutputs', compact('outputs', 'searchString', 'cutoffDate', 'correctedByUser', 'bstFields'));
     }
-
-    public function correctedItems()
-    {
-        $outputs = collect([]);
-
-        return view('admin.conversions.showOutputs', compact('outputs'));
-    }
-
 }

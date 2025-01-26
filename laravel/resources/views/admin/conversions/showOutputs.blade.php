@@ -17,7 +17,7 @@
 
     <div class="px-4 sm:rounded-lg">
         <div class="mt-2">
-            {{ $outputs->count() }} matching {{ Str::plural('output', $outputs) }}
+            {{ $outputs->total() }} matching {{ Str::plural('output', $outputs) }}
         </div>
         @foreach ($outputs as $i => $output)
             <div class="items-center">
@@ -46,6 +46,9 @@
                 </div>
             </div>
         @endforeach
-    </div>
+        <div class="mt-2">
+            {{ $outputs->appends(Request::only(['search_string' => $searchString, 'corrected_by_user' => $correctedByUser, 'cutoff_date' => $cutoffDate]))->links() }}
+        </div>
+</div>
 
 </x-app-layout>
