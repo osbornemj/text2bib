@@ -243,7 +243,7 @@ class ConversionAdminController extends Controller
         foreach ($searchTerms as $searchTerm) {
             $outputs = $outputs->where('source', 'like', '%' . $searchTerm .'%');
         }
-        $outputs = $outputs->paginate(50);
+        $outputs = $outputs->orderByDesc('created_at')->paginate(50);
 
         $bstFields = config('constants.nonstandard_bst_fields');
 
