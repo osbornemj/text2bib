@@ -4545,6 +4545,23 @@ class Converter
             }
         }
 
+        // For biblatex, if series has been detected, remove number
+        if ($use == 'biblatex' && isset($item->series)) {
+            if (
+                preg_match('/^(' . $this->regExps->volumeRegExp . ') (?P<seriesNumber>\d{1,4})( of| in|,) (?P<seriesName>.*)$/', $item->series, $matches)
+                ||
+                preg_match('/^(?P<seriesName>.*)( ' . $this->regExps->volumeRegExp . ') (?P<seriesNumber>\d{1,4})$/', $item->series, $matches)
+                ||
+                preg_match('/^(?P<seriesName>.*) (?P<seriesNumber>\d{1,4})$/', $item->series, $matches)
+                ) 
+            {
+                if (isset($matches['seriesName']) && isset($matches['seriesNumber'])) {
+                    $this->setField($item, 'series', rtrim($matches['seriesName'], '., '), 'setField 25b');
+                    $this->setField($item, 'number', $matches['seriesNumber'], 'setField 25c');
+                }
+            }
+        }
+
         if (isset($item->note)) {
             $item->note = trim($item->note);
         }
