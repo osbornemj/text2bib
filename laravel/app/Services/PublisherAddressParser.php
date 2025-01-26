@@ -37,7 +37,7 @@ class PublisherAddressParser
         } 
 
         // Strings that occur in publishers' names and end in periods that are not sentence-ending
-        $periodExceptions = ['Inc.', 'St.', 'Univ.'];
+        $periodExceptions = ['Inc.', 'St.', 'Univ.', 'Pub.', 'Co.'];
 
         $containsPublisher = $containsCity = false;
         $string = trim($string, ' (),');
@@ -47,7 +47,7 @@ class PublisherAddressParser
 
         $stringHasOnePeriod = false;
         // Exclude periods that end abbreviations
-        if (substr_count($string, '. ') == 1 && ! Str::contains($string, ['Pub.', 'Co.', 'St.'])) {
+        if (substr_count($string, '. ') == 1 && ! Str::contains($string, $periodExceptions)) {
             $stringHasOnePeriod = true;
         }
 
