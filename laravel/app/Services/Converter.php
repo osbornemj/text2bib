@@ -34,6 +34,7 @@ class Converter
     var $excludedWords;
     var $itemType;
     var $names;
+    var $onlinePhrases;
     var $ordinals;
     var $publishers;
     var $journalWordAbbreviations;
@@ -120,6 +121,8 @@ class Converter
         // These string are removed from the end of an entry.
         // (If "[J]" means the item is a journal article, that info could be used.)
         $this->entrySuffixes = ["\\", "[J].", "[J]"];
+
+        $this->onlinePhrases = '(online|en ligne|internet)';
     }
 
     ///////////////////////////////////////////////////
@@ -496,7 +499,7 @@ class Converter
         // # Extract url and access date //
         ///////////////////////////////////
 
-        $remainder = preg_replace('/ ?[\(\[](online|en ligne|internet)[\)\]]/i', '', $remainder, 1, $replacementCount);
+        $remainder = preg_replace('/ ?[\(\[]' . $this->onlinePhrases . '[\)\]]/i', '', $remainder, 1, $replacementCount);
         $onlineFlag = $replacementCount > 0;
 
         $patterns = [
@@ -4509,10 +4512,14 @@ class Converter
             } elseif ($itemKind == 'online') {
                 if (
                     preg_match('/^[\p{L} ]*$/u', $remainder) 
-                    && (! $titleEndsInPeriod || ! $allWordsInitialCaps) 
-                    && ! $remainderEndsInColon
-                    && $titleStyle != 'quoted'
-                    && (! isset($item->author) || trim($item->author, '{}') != $remainder)
+                    &&
+                    (! $titleEndsInPeriod || ! $allWordsInitialCaps) 
+                    && 
+                    ! $remainderEndsInColon
+                    && 
+                    $titleStyle != 'quoted'
+                    && 
+                    (! isset($item->author) || trim($item->author, '{}') != $remainder)
                    ) {
                     // If remainder is all letters and spaces, assume it is part of title,
                     // which must have been ended prematurely.

@@ -239,7 +239,16 @@ class ConversionAdminController extends Controller
         }
         $outputs = $outputs->get();
 
-        return view('admin.conversions.showOutputs', compact('outputs', 'searchString', 'cutoffDate'));
+        $bstFields = config('constants.nonstandard_bst_fields');
+
+        return view('admin.conversions.showOutputs', compact('outputs', 'searchString', 'cutoffDate', 'bstFields'));
+    }
+
+    public function correctedItems()
+    {
+        $outputs = collect([]);
+
+        return view('admin.conversions.showOutputs', compact('outputs'));
     }
 
 }

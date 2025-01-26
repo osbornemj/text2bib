@@ -39,6 +39,11 @@
                     Conversions
                 </x-link>
             </p>
+            <p>
+                <x-link :href="route('admin.correctedItems')" :active="request()->routeIs('admin.correctedItems')">
+                    Items corrected by users
+                </x-link>
+            </p>
 
             <h3 class="font-semibold text-l mt-2">
                 Information in database tables used by conversion algorithm
