@@ -19,6 +19,7 @@ use App\Traits\AddLabels;
 
 use App\Services\Converter;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\RedirectResponse;
 
 class ConversionAdminController extends Controller
 {
@@ -78,9 +79,13 @@ class ConversionAdminController extends Controller
         );
     }
 
-    public function destroy(Conversion $conversion)
+    public function destroy(int $id): RedirectResponse
     {
-        $conversion->delete();
+        $conversion = Conversion::find($id);
+        
+        if($conversion) {
+            $conversion->delete();
+        }
 
         return back();
     }

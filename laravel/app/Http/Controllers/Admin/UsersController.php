@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class UsersController extends Controller
@@ -39,7 +40,7 @@ class UsersController extends Controller
         return view('admin.users.index', compact('users', 'searchString', 'sortBy'));
     }
 
-    public function destroy($id)
+    public function destroy($id): RedirectResponse
     {
         $user = User::find($id);
         
