@@ -230,7 +230,7 @@ class ConversionAdminController extends Controller
         $searchTerms = explode(' ', $searchString);
 
         $outputs = Output::with('itemType')
-            ->with('conversion');
+            ->with('conversion.user');
 
         if ($cutoffDate) {
             $outputs = $outputs->where('created_at', '>', $cutoffDate);
