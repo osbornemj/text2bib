@@ -241,7 +241,7 @@ class ConversionAdminController extends Controller
         }
 
         foreach ($searchTerms as $searchTerm) {
-            $outputs = $outputs->where('source', 'like', '%' . $searchTerm .'%');
+            $outputs = $outputs->where('source', 'like', '%' . $searchTerm . '%');
         }
         $outputs = $outputs->orderByDesc('created_at')->paginate(50);
 
