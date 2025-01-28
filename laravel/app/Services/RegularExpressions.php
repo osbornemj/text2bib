@@ -302,7 +302,7 @@ class RegularExpressions
         $translatorWords = [
             '[Tt]ranslators?',
             '[Tt]rans\.(?! by)',
-            '[Tt]rad\.',
+            '[Tt]rad\.(?! by)',
             '[Tt]r\.(?! by)',
             'Çev\.',      // Turkish
         ];
