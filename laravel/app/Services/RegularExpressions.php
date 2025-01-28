@@ -319,7 +319,7 @@ class RegularExpressions
             '[Tt]ransl?\. by',
             '[Tt]r\.(?! by)',
             '[Tt]r\.? by',
-            '[Tt]raducción de',       // Spanish
+            '[Tt]rad(\.|ucción) de',  // Spanish
             '[Tt]raducido por',       // Spanish
             'Übersetzt von',          // German
             'Übersetzung von',        // German

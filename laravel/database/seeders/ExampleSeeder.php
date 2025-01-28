@@ -14815,6 +14815,20 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Cambridge University Press',
                     ]
             ],
+            // translator missed
+            [
+                'source' => 'Sienkiewicz, Enrique. 1921. Liliana; El torero; Yanko «el músico»; Sueño profético. Trad. de N. Tasin. Madrid: Calpe. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Madrid',
+                    'author' => 'Sienkiewicz, Enrique',
+                    'publisher' => 'Calpe',
+                    'title' => 'Liliana; El torero; Yanko ``el músico\'\'; Sueño profético',
+                    'year' => '1921',
+					'translator' => 'N. Tasin',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
             
 
             
