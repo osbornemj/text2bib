@@ -105,7 +105,7 @@ trait AuthorPatterns
         $periodOrColonOrCommaYear = '(\. |' . $colon . '|' . $commaYearOrBareWords . ')';
         $periodOrColonOrCommaYearOrBareWords = '(\. |' . $colon . '|; |' . $commaYearOrBareWords . ')';
         $periodOrColonOrCommaYearOrCommaNotJr = '(\. |' . $colon . '|; |' . $commaYearOrBareWords . '|, ' . $notJr . ')';
-        $periodNotAndOrColonOrCommaYear = '(\.,? ' . $notAnd . '|' . $colon . '|' . $commaYearOrBareWords . ')';
+        $periodNotAndOrColonOrCommaYear = '(\. ' . $notAnd . '|\.,? ' . $notAndOrLetter . '|' . $colon . '|' . $commaYearOrBareWords . ')';
         $periodNotAndOrColonOrCommaYearNotCommaLetter = '(\.,? ' . $notAndOrLetter . '|' . $colon . '|' . $commaYearOrBareWords . ')';
         $periodNotAndOrCommaYear = '(\. ' . $notAnd . '|' . $commaYearOrBareWords . ')';
         // 'and' includes 'et', so $notAnd covers 'et al' also
@@ -266,14 +266,15 @@ trait AuthorPatterns
             ///////////////
             
             // 18. Smith AB, Jones CD[:\.]
-            // The notCommaLetter restriction is so that a string like
+            // The restriction in $periodNotAndOrColonOrCommaYear that '.,' cannot be followed by ' \p{Lu}' is so that a string like
             // Hu, L, Geng, S., Li, Y., Cheng. S., Fu, X., Yue, X. and Han, X.
             // which has a typo --- no period after first L --- is not truncated after Geng, S.
             [
                 'name1' => $lastNameRegExp . ',? \p{Lu}{1,3}',
                 'end1' => ', ', 
                 //'end2' => '(: |\. ' . $notAnd . ')', 
-                'end2' => $periodNotAndOrColonOrCommaYearNotCommaLetter,
+                //'end2' => $periodNotAndOrColonOrCommaYearNotCommaLetter,
+                'end2' => $periodNotAndOrColonOrCommaYear,
                 'end3' => null, 
                 'initials' => true
             ],

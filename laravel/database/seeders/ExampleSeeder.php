@@ -5863,19 +5863,20 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Proceedings of the 2022 ACM Conference on Fairness, Accountability, and Transparency',
                     ]
             ],
-            // journal included in title
+            // journal included in title (note that u umlaut in source is in NFD form)
             [
                 'source' => 'Bonadonna P, Zanotti R, Müller U. Mastocytosis and insect venom allergy. Curr Opin Allergy Clin Immunol. 2010;10:347–353. doi: 10.1097/ACI.0b013e32833b280c ',
                 'type' => 'article',
                 'bibtex' => [
                     'doi' => '10.1097/ACI.0b013e32833b280c',
-                    'author' => 'Bonadonna, P. and Zanotti, R. and Müller, U.',
+                    'author' => 'Bonadonna, P. and Zanotti, R. and Müller, U.',
                     'year' => '2010',
                     'volume' => '10',
                     'pages' => '347-353',
                     'title' => 'Mastocytosis and insect venom allergy',
                     'journal' => 'Curr Opin Allergy Clin Immunol',
-                    ]
+                ],
+                'char_encoding' => 'utf8leave',
             ],
             // Authors ended early
             [
@@ -14829,8 +14830,68 @@ class ExampleSeeder extends Seeder
                 ],
                 'char_encoding' => 'utf8leave',
             ],
+			// why do authors not match a pattern (2-author version of pattern 0?)
+			[
+                'source' => '1: Hidalgo J, Baez AA. Natural Disasters. Crit Care Clin. 2019 Oct;35(4):591-607. doi: 10.1016/j.ccc.2019.05.001. Epub 2019 Jul 15. PMID: 31445607. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Hidalgo, J. and Baez, A. A.',
+                    'doi' => '10.1016/j.ccc.2019.05.001',
+                    'journal' => 'Crit Care Clin',
+                    'month' => '10',
+                    'note' => 'PMID: 31445607. Epub 2019 Jul 15.',
+                    'number' => '4',
+                    'pages' => '591-607',
+                    'title' => 'Natural Disasters',
+                    'volume' => '35',
+                    'year' => '2019',
+                    ]
+            ],
+			// Author pattern
+            // The problem here is that the e-acute is in NFD (decomposed) form.  The convertEntry method now converts
+            // the entry text to NFC (composed) form before proceeding.  The difficulty with NFD is that \p{L} in a preg_match
+            // does not detect it --- you need \p{L}\p{M}, so that the the 'combining mark' is allowed.
+			[
+                'source' => 'Fallén, C.F. 1823. Phytomyzides et Ochtidiae Sveciae. Lundae [= Lund]: Berlingianis.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Fallén, C. F.',
+                    'year' => '1823',
+                    'title' => 'Phytomyzides et Ochtidiae Sveciae',
+                    'publisher' => 'Berlingianis',
+                    'address' => 'Lundae [= Lund]',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// author pattern: same problem as previous case: in the source the encoding is NFD.
+			[
+                'source' => 'Marshall, S.A. & Roháček, J. 2003. Podiomitra, a new genus of Homalomitrinae from Costa Rica. Proceedings of the Entomological Society of Washington 105: 708–714.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Marshall, S. A. and Roháček, J.',
+                    'year' => '2003',
+                    'title' => 'Podiomitra, a new genus of Homalomitrinae from Costa Rica',
+                    'journal' => 'Proceedings of the Entomological Society of Washington',
+                    'volume' => '105',
+                    'pages' => '708-714',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+            // why do extracted authors match pattern 7?
+			[
+                'source' => '925. Shaikin, D. N., Abutalip, D. O., & Bekmatova, A. Zh. (2021). Sustainable economic development of agritourism based on the example of the North Kazakhstan region. Bulletin of the National Academy of Sciences of the Republic of Kazakhstan, 2, 123-134. https://doi.org/10.46666/2021-2.2708-9991.09 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.46666/2021-2.2708-9991.09',
+                    'author' => 'Shaikin, D. N. and Abutalip, D. O. and Bekmatova, A.',
+                    'title' => 'Zh',
+                    'year' => '2021',
+                    'journal' => 'Sustainable economic development of agritourism based on the example of the North Kazakhstan region. Bulletin of the National Academy of Sciences of the Republic of Kazakhstan',
+                    'volume' => '2',
+                    'pages' => '123-134',
+                    ]
+            ],
             
-
             
              
             

@@ -434,7 +434,7 @@ trait Utilities
      * @param $style: 'bold' or 'italics'
      * @param $before: the string preceding the styled text; null if none 
      * @param $after: the string following the styled text; null if none 
-     * @param $remains: $before rtrimmed of ' .,' concatenated with $after ltrimmed to ' .,'
+     * @param $remains: $before rtrimmed of ' .,' concatenated with $after ltrimmed of ' .,'
      * return bold substring
      */
     private function getStyledText(string $string, bool $start, string $style, string|null &$before, string|null &$after, string|null &$remains): string|bool
@@ -443,14 +443,14 @@ trait Utilities
         $before = $after = null;
         $remains = $string;
 
-        $bracketLevel = 0;
+        $braceLevel = 0;
         if ($this->containsFontStyle($string, $start, $style, $position, $codeLength)) {
             for ($j = $position + $codeLength; $j < strlen($string); $j++) {
                 if ($string[$j] == '{') {
-                    $bracketLevel++;
+                    $braceLevel++;
                 } elseif ($string[$j] == '}') {
-                    if ($bracketLevel) {
-                        $bracketLevel--;
+                    if ($braceLevel) {
+                        $braceLevel--;
                     } else {
                         break;
                     }

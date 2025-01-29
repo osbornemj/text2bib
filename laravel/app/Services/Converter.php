@@ -177,6 +177,9 @@ class Converter
     // $language, $charEncoding: if set, overrides values in $conversion (used when admin converts examples)
     public function convertEntry(string $rawEntry, Conversion $conversion, string|null $language = null, string|null $charEncoding = null, string|null $use = null, $previousAuthor = null): array|null
     {
+        // Convert encoding (utf8) to NFC (composed), in case it is NFD (decomposed)
+        $rawEntry = \Normalizer::normalize($rawEntry, \Normalizer::FORM_C);
+
         $warnings = $notices = $infos = [];
         $this->detailLines = [];
         $this->itemType = null;
