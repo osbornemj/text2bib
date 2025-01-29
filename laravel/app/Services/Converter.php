@@ -4392,7 +4392,7 @@ class Converter
                 }
 
                 if ($use == 'biblatex' && substr_count($title, ': ') == 1) {
-                    $subtitle = mb_ucfirst(trim(Str::after($title, ': ')));
+                    $subtitle = mb_ucfirst(trim(Str::after($title, ': '), ','));
                     $title = trim(Str::before($title, ': '));
                     $this->setField($item, 'subtitle', $subtitle, 'setField 153a');
                     $this->setField($item, 'title', $title, 'setField 153b');
