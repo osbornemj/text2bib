@@ -2,11 +2,9 @@
 
     <div class="px-4">
 
-        {{--
         <div class="bg-blue-200 text-blue-800 m-4 p-2">
-            A bug introduced in a standard package I am using made it impossible to register as a user from 2024.12.11 until I implemented a workaround on 2024.12.13.  If you tried to register during that period and got an error, please try again.
+            From about 2025.1.28 23:00 UTC to 2025.1.29 14:20 UTC the mail server was not operational.  If you tried to register during that period and failed to get a confirmation message, please try again.
         </div>
-        --}}
         
         <p class="my-4">
             This site allows you to convert a text file of references to a <x-link href="https://economics.utoronto.ca/osborne/latex/BIBTEX.HTM" target="_blank">BibTeX file</x-link>.  It is maintained by <x-link href="https://economics.utoronto.ca/osborne" target="_blank">Martin J. Osborne</x-link>.
