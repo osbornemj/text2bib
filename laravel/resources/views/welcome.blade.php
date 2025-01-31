@@ -3,7 +3,7 @@
     <div class="px-4">
 
         <div class="bg-blue-200 text-blue-800 m-4 p-2">
-            From about 2025.1.28 23:00 UTC to 2025.1.29 14:20 UTC the mail server was not operational.  If you tried to register during that period and failed to get a confirmation message, please try again.
+            This site will be down from around 16:00 to 20:00 UTC on 2025.2.1 for maintenance.
         </div>
         
         <p class="my-4">
