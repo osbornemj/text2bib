@@ -18,12 +18,12 @@ class Comment extends Model
 
     public function thread(): BelongsTo
     {
-        return $this->belongsTo(Thread:: class);
+        return $this->belongsTo(Thread::class);
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User:: class);
+        return $this->belongsTo(User::class);
     }
 
     public function requiredResponse(): HasOne
