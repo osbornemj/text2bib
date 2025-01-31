@@ -12,6 +12,6 @@ class ItemType extends Model
     public $timestamps = false;
 
     protected $casts = [
-        'fields' => 'array'
+        'fields' => 'array',
     ];
 }

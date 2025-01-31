@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
-
 use Illuminate\Support\Facades\Storage;
 
 class Conversion extends Model
@@ -65,7 +64,7 @@ class Conversion extends Model
         parent::boot();
 
         self::deleting(function (Conversion $conversion) {
-            Storage::disk('public')->delete('files/' . $conversion->user_id . '-' . $conversion->user_file_id . '-source.txt');
+            Storage::disk('public')->delete('files/'.$conversion->user_id.'-'.$conversion->user_file_id.'-source.txt');
         });
     }
 }

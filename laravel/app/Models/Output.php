@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Output extends Model
@@ -24,16 +23,16 @@ class Output extends Model
 
     public function conversion(): BelongsTo
     {
-        return $this->belongsTo(Conversion:: class);
+        return $this->belongsTo(Conversion::class);
     }
 
     public function itemType(): BelongsTo
     {
-        return $this->belongsTo(ItemType:: class);
+        return $this->belongsTo(ItemType::class);
     }
 
     public function origItemType(): BelongsTo
     {
-        return $this->belongsTo(ItemType:: class, 'orig_item_type_id', 'id');
+        return $this->belongsTo(ItemType::class, 'orig_item_type_id', 'id');
     }
 }

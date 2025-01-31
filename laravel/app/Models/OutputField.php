@@ -16,6 +16,6 @@ class OutputField extends Model
 
     public function itemField(): BelongsTo
     {
-        return $this->belongsTo(ItemField:: class);
+        return $this->belongsTo(ItemField::class);
     }
 }

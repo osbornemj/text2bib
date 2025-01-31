@@ -15,5 +15,4 @@ class JournalWordAbbreviation extends Model
     {
         return $this->belongsTo(Output::class);
     }
-
 }

@@ -15,14 +15,14 @@ class Example extends Model
 
     public function fields(): HasMany
     {
-        return $this->hasMany(ExampleField:: class);
+        return $this->hasMany(ExampleField::class);
     }
 
     public function bibtexFields(): stdClass
     {
-        $output = new \stdClass();
+        $output = new \stdClass;
         foreach ($this->fields as $field) {
-            $output->{$field->name} = $field->content; 
+            $output->{$field->name} = $field->content;
         }
 
         return $output;

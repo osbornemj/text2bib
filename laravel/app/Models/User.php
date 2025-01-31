@@ -54,9 +54,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function fullName(bool $lastNameFirst = false): string
     {
         if ($lastNameFirst) {
-            return ($this->last_name != '*' ? $this->last_name . ', ' : '') . $this->first_name . ($this->middle_name ? ' ' . $this->middle_name : '');
+            return ($this->last_name != '*' ? $this->last_name.', ' : '').$this->first_name.($this->middle_name ? ' '.$this->middle_name : '');
         } else {
-            return $this->first_name . ' ' . ($this->middle_name ? $this->middle_name . ' ' : '') . ($this->last_name != '*' ? $this->last_name : '');
+            return $this->first_name.' '.($this->middle_name ? $this->middle_name.' ' : '').($this->last_name != '*' ? $this->last_name : '');
         }
     }
 
@@ -69,6 +69,4 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(RequiredResponse::class);
     }
-
-
 }

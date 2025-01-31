@@ -17,14 +17,14 @@ class Thread extends Model
 
     public function comments(): HasMany
     {
-        return $this->hasMany(Comment:: class);
+        return $this->hasMany(Comment::class);
     }
 
     public function latestComment()
     {
         return $this->hasOne(Comment::class)->latestOfMany();
     }
-    
+
     // public function poster()
     // {
     //     return $this->belongsTo(User::class, 'user_id');

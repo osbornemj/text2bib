@@ -18,7 +18,7 @@ class ErrorReport extends Model
 
     public function output(): BelongsTo
     {
-        return $this->belongsTo(Output:: class);
+        return $this->belongsTo(Output::class);
     }
 
     public function errorReportComments(): HasMany
