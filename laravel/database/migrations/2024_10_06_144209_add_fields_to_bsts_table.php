@@ -25,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('bsts', function (Blueprint $table) {
-            $table->dropColumn(['type', 'style_required', 'ctan']);            
+            $table->dropColumn(['type', 'style_required', 'ctan']);
             $table->boolean('natbib')->default(false)->after('name');
         });
     }

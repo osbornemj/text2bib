@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('type');
             $table->timestamps();
         });
-        
+
         Schema::create('example_fields', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('example_id')->references('id')->on('examples')->cascadeOnDelete()->cascadeOnUpdate();            
+            $table->foreignId('example_id')->references('id')->on('examples')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('name');
             $table->text('content');
 
