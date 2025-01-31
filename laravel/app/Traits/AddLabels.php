@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Traits;
 
-use Str;
-
 use App\Models\Conversion;
+use Str;
 
 trait AddLabels
 {
@@ -22,7 +22,7 @@ trait AddLabels
                 // if $baseLabel already used, add a suffix to it
                 if (in_array($baseLabel, $baseLabels)) {
                     $values = array_count_values($baseLabels);
-                    $label .= '-' . $values[$baseLabel];
+                    $label .= '-'.$values[$baseLabel];
                 }
 
                 $baseLabels[] = $baseLabel;
@@ -40,9 +40,9 @@ trait AddLabels
         $label = '';
 
         if (isset($item->author) && $item->author) {
-            $authors = explode(" and ", $item->author);
+            $authors = explode(' and ', $item->author);
         } elseif (isset($item->editor)) {
-            $authors = explode(" and ", $item->editor);
+            $authors = explode(' and ', $item->editor);
         } else {
             $authors = [];
         }
@@ -52,7 +52,7 @@ trait AddLabels
                 if ($conversion->language == 'my') {
                     $authorLetters = $author;
                 } else {
-                    //$authorLetters = $this->onlyLetters(Str::ascii($author));
+                    // $authorLetters = $this->onlyLetters(Str::ascii($author));
                     $authorLetters = $this->onlyLetters($author);
                 }
                 // Position of (first) comma
@@ -63,7 +63,7 @@ trait AddLabels
                     if ($conversion->label_style == 'short') {
                         $label .= mb_substr($authorLetters, 0, 1) ?? '';
                     } elseif ($conversion->label_style == 'long-kebab') {
-                        $label .= mb_substr($authorLetters, 0, $commaPos) . '-';
+                        $label .= mb_substr($authorLetters, 0, $commaPos).'-';
                     } else {
                         $label .= mb_substr($authorLetters, 0, $commaPos);
                     }
@@ -72,7 +72,7 @@ trait AddLabels
                         // Take first letter after first space ('John Smith' => 'S')
                         $label .= mb_substr($authorLetters, $spacePos + 1, 1);
                     } elseif ($conversion->label_style == 'long-kebab') {
-                        $label .= trim(mb_substr($authorLetters, $spacePos + 1), ' ') . '-';
+                        $label .= trim(mb_substr($authorLetters, $spacePos + 1), ' ').'-';
                     } else {
                         // Take letters after first space ('John Smith' => 'Smith')
                         $label .= trim(mb_substr($authorLetters, $spacePos + 1), ' ');
@@ -88,7 +88,7 @@ trait AddLabels
         }
 
         if ($conversion->label_style == 'short') {
-            $label = mb_strtolower($label) . mb_substr($year, 2, 2);
+            $label = mb_strtolower($label).mb_substr($year, 2, 2);
         } elseif ($conversion->label_style == 'gs') {
             $firstAuthor = count($authors) ? $authors[0] : 'none';
 
@@ -98,7 +98,7 @@ trait AddLabels
                     $label = mb_strtolower($firstAuthor);
                 } else {
                     $r = strrpos($firstAuthor, ' ');
-                    $label = mb_strtolower(substr($firstAuthor, $r+1));
+                    $label = mb_strtolower(substr($firstAuthor, $r + 1));
                 }
             } else {
                 // last name is segment up to comma
@@ -107,9 +107,9 @@ trait AddLabels
             $label .= $year;
             $title = $item->title ?? '';
             if (Str::startsWith($title, ['A ', 'The ', 'On ', 'An '])) {
-                $title = Str::after($title, ' ');   
+                $title = Str::after($title, ' ');
             }
-            
+
             $firstTitleWord = Str::before($title, ' ');
 
             $label .= mb_strtolower($this->onlyLetters($firstTitleWord));
@@ -129,26 +129,26 @@ trait AddLabels
         if ($string == null) {
             $string = '';
         }
-        return preg_replace("/[^\p{L},\s]+/u", "", $string);
+
+        return preg_replace("/[^\p{L},\s]+/u", '', $string);
     }
 
     public function translateFrom($string, $language)
     {
         if ($language == 'my') {
             // Burmese numerals
-            $string = str_replace("\xE1\x81\x80", "0", $string);
-            $string = str_replace("\xE1\x81\x81", "1", $string);
-            $string = str_replace("\xE1\x81\x82", "2", $string);
-            $string = str_replace("\xE1\x81\x83", "3", $string);
-            $string = str_replace("\xE1\x81\x84", "4", $string);
-            $string = str_replace("\xE1\x81\x85", "5", $string);
-            $string = str_replace("\xE1\x81\x86", "6", $string);
-            $string = str_replace("\xE1\x81\x87", "7", $string);
-            $string = str_replace("\xE1\x81\x88", "8", $string);
-            $string = str_replace("\xE1\x81\x89", "9", $string);
+            $string = str_replace("\xE1\x81\x80", '0', $string);
+            $string = str_replace("\xE1\x81\x81", '1', $string);
+            $string = str_replace("\xE1\x81\x82", '2', $string);
+            $string = str_replace("\xE1\x81\x83", '3', $string);
+            $string = str_replace("\xE1\x81\x84", '4', $string);
+            $string = str_replace("\xE1\x81\x85", '5', $string);
+            $string = str_replace("\xE1\x81\x86", '6', $string);
+            $string = str_replace("\xE1\x81\x87", '7', $string);
+            $string = str_replace("\xE1\x81\x88", '8', $string);
+            $string = str_replace("\xE1\x81\x89", '9', $string);
         }
 
         return $string;
     }
-    
 }

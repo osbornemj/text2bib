@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Traits;
 
 trait Stopwords
 {
     // Taken, with some deletions, from https://github.com/voku/stop-words
-    var $stopwords = [
+    public $stopwords = [
         'about',
         'above',
         'above',
