@@ -22,7 +22,7 @@ class UpdateExcludedWordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'word' => 'required'
+            'word' => 'required',
         ];
     }
 }

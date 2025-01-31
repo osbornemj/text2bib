@@ -23,7 +23,7 @@ class StoreThreadRequest extends FormRequest
     {
         return [
             'title' => 'required',
-            'content' => 'required'
+            'content' => 'required',
         ];
     }
 }
