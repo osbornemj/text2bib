@@ -116,9 +116,9 @@ trait AuthorPatterns
 
         $authorRegExps = [
 
-            // ///////////////////////
+            /////////////////////////
             // THREE OR MORE NAMES //
-            // ///////////////////////
+            /////////////////////////
 
             // 0. Smith,? AB, Jones,? CD, Gonzalez,? JD(: |\. | followed by <paren> or <quote> or <digit>)
             [
@@ -262,9 +262,9 @@ trait AuthorPatterns
                 'end3' => $periodNotAndOrCommaYear,
             ],
 
-            // /////////////
+            ///////////////
             // TWO NAMES //
-            // /////////////
+            ///////////////
 
             // 18. Smith AB, Jones CD[:\.]
             // The restriction in $periodNotAndOrColonOrCommaYear that '.,' cannot be followed by ' \p{Lu}' is so that a string like
@@ -364,9 +364,9 @@ trait AuthorPatterns
                 'end3' => null,
             ],
 
-            // ////////////
+            //////////////
             // ONE NAME //
-            // ////////////
+            //////////////
 
             // 29. Smith AB(period not and or colon or comma year)
             // [must be at least two initials, otherwise could be start of name --- e.g. Smith A. Jones]

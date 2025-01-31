@@ -14891,6 +14891,21 @@ class ExampleSeeder extends Seeder
                     'pages' => '123-134',
                     ]
             ],
+            // author string
+            [
+                'source' => 'FÓRUM BRASILEIRO DE SEGURANÇA PÚBLICA. \emph{18º Anuário Brasileiro de Segurança Pública}. São Paulo: FBSP, 2024. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'year' => '2024',
+                    'title' => '18º Anuário Brasileiro de Segurança Pública',
+                    'author' => 'Fórum Brasileiro de Segurança Pública',
+                    'address' => 'São Paulo',
+                    'publisher' => 'FBSP',
+                    ],
+                    'char_encoding' => 'utf8leave',
+                    'language' => 'pt',
+            ]
+                        
             
             
              
