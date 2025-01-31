@@ -7,8 +7,11 @@ use Livewire\Component;
 class JournalCheck extends Component
 {
     public $journal;
+
     public $checked;
+
     public $currentPage;
+
     public $type;
 
     public function check($value, $currentPage)
@@ -17,9 +20,9 @@ class JournalCheck extends Component
         $this->journal->save();
 
         if ($this->type == 'checked') {
-            return redirect()->to('/admin/journals?page=' . $currentPage);
+            return redirect()->to('/admin/journals?page='.$currentPage);
         } else {
-            return redirect()->to('/admin/uncheckedJournals?page=' . $currentPage);
+            return redirect()->to('/admin/uncheckedJournals?page='.$currentPage);
         }
     }
 
@@ -34,10 +37,9 @@ class JournalCheck extends Component
         $this->journal->delete();
 
         if ($this->type == 'checked') {
-            return redirect()->to('/admin/journals?page=' . $currentPage);
+            return redirect()->to('/admin/journals?page='.$currentPage);
         } else {
-            return redirect()->to('/admin/uncheckedJournals?page=' . $currentPage);
+            return redirect()->to('/admin/uncheckedJournals?page='.$currentPage);
         }
     }
-
 }

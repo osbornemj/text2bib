@@ -2,27 +2,27 @@
 
 namespace App\Livewire;
 
-use Illuminate\Support\Facades\Auth;
-
 use App\Models\Comment;
 use App\Models\RequiredResponse;
 use App\Models\Thread;
 use App\Models\User;
-
 use App\Notifications\CommentPosted;
 use App\Notifications\CommentResponsePosted;
-
-use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Rule;
+use Livewire\Component;
 
 class Comments extends Component
 {
-    #[Rule('required', message: 'Please enter a comment')]    
+    #[Rule('required', message: 'Please enter a comment')]
     public $comment;
 
     public $comments;
+
     public $thread;
+
     public $opUser;
+
     public $type;
 
     public function mount()
@@ -69,5 +69,4 @@ class Comments extends Component
         $this->comment = '';
         $this->comments = $this->comments->push($comment);
     }
-
 }

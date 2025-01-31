@@ -2,14 +2,15 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-
 use App\Models\RequiredResponse;
+use Livewire\Component;
 
 class RequireResponse extends Component
 {
     public $comment;
+
     public $userId;
+
     public $type;
 
     public function submit($userId, $commentId)
@@ -25,5 +26,4 @@ class RequireResponse extends Component
     {
         RequiredResponse::destroy($id);
     }
-
 }

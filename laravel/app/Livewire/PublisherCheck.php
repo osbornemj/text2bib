@@ -7,7 +7,9 @@ use Livewire\Component;
 class PublisherCheck extends Component
 {
     public $publisher;
+
     public $currentPage;
+
     public $type;
 
     public function check($value, $currentPage)
@@ -16,9 +18,9 @@ class PublisherCheck extends Component
         $this->publisher->save();
 
         if ($this->type == 'checked') {
-            return redirect()->to('/admin/publishers?page=' . $currentPage);
+            return redirect()->to('/admin/publishers?page='.$currentPage);
         } else {
-            return redirect()->to('/admin/uncheckedPublishers?page=' . $currentPage);
+            return redirect()->to('/admin/uncheckedPublishers?page='.$currentPage);
         }
     }
 
@@ -33,10 +35,9 @@ class PublisherCheck extends Component
         $this->publisher->delete();
 
         if ($this->type == 'checked') {
-            return redirect()->to('/admin/publishers?page=' . $currentPage);
+            return redirect()->to('/admin/publishers?page='.$currentPage);
         } else {
-            return redirect()->to('/admin/uncheckedPublishers?page=' . $currentPage);
+            return redirect()->to('/admin/uncheckedPublishers?page='.$currentPage);
         }
     }
-
 }

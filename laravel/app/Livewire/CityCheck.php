@@ -7,7 +7,9 @@ use Livewire\Component;
 class CityCheck extends Component
 {
     public $city;
+
     public $currentPage;
+
     public $type;
 
     public function check($value, $currentPage)
@@ -16,9 +18,9 @@ class CityCheck extends Component
         $this->city->save();
 
         if ($this->type == 'checked') {
-            return redirect()->to('/admin/cities?page=' . $currentPage);
+            return redirect()->to('/admin/cities?page='.$currentPage);
         } else {
-            return redirect()->to('/admin/uncheckedCities?page=' . $currentPage);
+            return redirect()->to('/admin/uncheckedCities?page='.$currentPage);
         }
     }
 
@@ -33,10 +35,9 @@ class CityCheck extends Component
         $this->city->delete();
 
         if ($this->type == 'checked') {
-            return redirect()->to('/admin/cities?page=' . $currentPage);
+            return redirect()->to('/admin/cities?page='.$currentPage);
         } else {
-            return redirect()->to('/admin/uncheckedCities?page=' . $currentPage);
+            return redirect()->to('/admin/uncheckedCities?page='.$currentPage);
         }
     }
-
 }

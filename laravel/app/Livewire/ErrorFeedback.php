@@ -2,25 +2,28 @@
 
 namespace App\Livewire;
 
-use Illuminate\Support\Facades\Auth;
-
 use App\Models\ErrorReport;
 use App\Models\ErrorReportComment;
 use App\Models\RequiredResponse;
 use App\Models\User;
 use App\Notifications\ErrorReportCommentPosted;
-use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Rule;
+use Livewire\Component;
 
 class ErrorFeedback extends Component
 {
-    #[Rule('required', message: 'Please enter a comment')]    
+    #[Rule('required', message: 'Please enter a comment')]
     public $comment;
 
     public $comments;
+
     public $errorReportId;
+
     public $opUser;
+
     public $type;
+
     public $userIsAdmin;
 
     public function mount()
@@ -57,7 +60,7 @@ class ErrorFeedback extends Component
         $errorReport = ErrorReport::find($this->errorReportId);
         $errorReport->update(['status' => 1]);
         $errorReport->touch();
-        
+
         $reportUser = $errorReport->output->conversion->user;
         if ($reportUser->id != $user->id) {
             $reportUser->notify(new ErrorReportCommentPosted($errorReport, $reportUser));

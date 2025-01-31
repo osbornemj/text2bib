@@ -2,85 +2,129 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-
-//use App\Livewire\Forms\ShowConvertedItemForm;
-
-use Illuminate\Support\Facades\Auth;
-
 use App\Models\City;
+// use App\Livewire\Forms\ShowConvertedItemForm;
+
 use App\Models\ErrorReport;
 use App\Models\ErrorReportComment;
 use App\Models\ItemType;
 use App\Models\Journal;
+use App\Models\JournalWordAbbreviation;
 use App\Models\Output;
 use App\Models\Publisher;
-use App\Models\JournalWordAbbreviation;
 use App\Models\User;
-
 use App\Notifications\ErrorReportPosted;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class ShowConvertedItem extends Component
 {
-//    public ShowConvertedItemForm $form;
+    //    public ShowConvertedItemForm $form;
 
-    public $address;       
-    public $annote;       
-    public $archiveprefix; 
+    public $address;
+
+    public $annote;
+
+    public $archiveprefix;
+
     public $author;
-    public $booktitle;     
-    public $chapter;       
-    public $date;           
-    public $doi;           
-    public $edition;       
-    public $editor;        
-    public $eprint;  
-    public $howpublished;      
+
+    public $booktitle;
+
+    public $chapter;
+
+    public $date;
+
+    public $doi;
+
+    public $edition;
+
+    public $editor;
+
+    public $eprint;
+
+    public $howpublished;
+
     public $institution;
-    public $isbn;          
-    public $issn;          
+
+    public $isbn;
+
+    public $issn;
+
     public $journal;
-    public $key;       
-    public $month;         
-    public $note;          
-    public $number;        
-    public $oclc;         
-    public $organization;  
-    public $pages;         
-    public $pagetotal;         
-    public $publisher;     
-    public $school;        
-    public $series;        
-    public $title;         
-    public $translator;        
-    public $type;          
-    public $url;           
-    public $urldate;       
-    public $volume;        
-    public $year;          
+
+    public $key;
+
+    public $month;
+
+    public $note;
+
+    public $number;
+
+    public $oclc;
+
+    public $organization;
+
+    public $pages;
+
+    public $pagetotal;
+
+    public $publisher;
+
+    public $school;
+
+    public $series;
+
+    public $title;
+
+    public $translator;
+
+    public $type;
+
+    public $url;
+
+    public $urldate;
+
+    public $volume;
+
+    public $year;
 
     public $postReport = false;
 
     public $comment;
 
     public $convertedItem;
+
     public $outputId;
+
     public $itemTypeOptions;
+
     public $itemTypes;
+
     public $fields;
+
     public $origFields;
+
     public $crossrefFields;
+
     public $errorReport;
+
     public $language;
 
     public $itemTypeId;
 
     public $displayState;
+
     public $status;
+
     public $correctness;
+
     public $correctionExists;
+
     public $priorReportExists;
+
     public $correctionsEnabled;
+
     public $source = 'conversion';
 
     public function mount()
@@ -90,7 +134,7 @@ class ShowConvertedItem extends Component
         }
 
         // There is no itemType if the user is viewing an item for which she chose
-        // the result reported by Crossref and the item type that Crossref reported 
+        // the result reported by Crossref and the item type that Crossref reported
         // is not one of the item types that text2bib detects (for example, it is @inbook).
         $itemType = $this->itemTypes->where('id', $this->convertedItem['item_type_id'])->first();
         $this->itemTypeId = $itemType?->id;
@@ -135,7 +179,7 @@ class ShowConvertedItem extends Component
         /*
         if ($errorReport) {
             $this->form->reportTitle = $errorReport->title;
-            $this->correctionExists = true;    
+            $this->correctionExists = true;
             $this->priorReportExists = true;
             $errorReportCommentByOtherExists = ErrorReportComment::where('error_report_id', $errorReport->id)
                 ->where('user_id', '!=', Auth::user()->id)
@@ -178,9 +222,9 @@ class ShowConvertedItem extends Component
             unset($this->convertedItem['item']->$field);
             $this->$field = '';
         } else {
-           $item[$field] = $this->convertedItem['crossref_item']->$field;
-           $this->$field = $this->convertedItem['crossref_item']->$field;
-           $this->convertedItem['item']->$field = $item[$field];
+            $item[$field] = $this->convertedItem['crossref_item']->$field;
+            $this->$field = $this->convertedItem['crossref_item']->$field;
+            $this->convertedItem['item']->$field = $item[$field];
         }
 
         // Update entry in database
@@ -211,7 +255,7 @@ class ShowConvertedItem extends Component
     public function setItemSource($itemSource)
     {
         $output = Output::find($this->outputId);
-        
+
         if ($itemSource == 'crossref') {
             $item = (object) $output->crossref_item;
             $item_type_id = $output->crossref_item_type_id;
@@ -237,7 +281,7 @@ class ShowConvertedItem extends Component
             $this->itemTypeOptions[99] = $item_type_name;
             $this->itemTypeId = 99;
         }
-        //dd($this->itemTypeOptions);
+        // dd($this->itemTypeOptions);
 
         foreach ($this->fields as $field) {
             $this->$field = $this->convertedItem['item']->$field ?? '';
@@ -284,27 +328,28 @@ class ShowConvertedItem extends Component
             }
             if (preg_match_all('/(^| )(?P<word>[A-Z][a-z]+)\./', $journalName, $matches)) {
                 if (isset($matches['word'])) {
-                    foreach ($matches['word'] as $word)
-                    JournalWordAbbreviation::firstOrCreate(
-                        ['word' => $word],
-                        ['output_id' => $output->id]
-                    );
+                    foreach ($matches['word'] as $word) {
+                        JournalWordAbbreviation::firstOrCreate(
+                            ['word' => $word],
+                            ['output_id' => $output->id]
+                        );
+                    }
                 }
             }
         } else {
             if ($output->itemType && in_array($output->itemType->name, ['book', 'incollection'])) {
                 if (isset(($output->item)['publisher'])) {
                     $publisherName = ($output->item)['publisher'];
-                    if (!Publisher::where('name', $publisherName)->exists()) {
-                        $publisher = new Publisher();
+                    if (! Publisher::where('name', $publisherName)->exists()) {
+                        $publisher = new Publisher;
                         $publisher->name = substr($publisherName, 0, 255);
                         $publisher->save();
                     }
                 }
                 if (isset(($output->item)['address'])) {
                     $cityName = ($output->item)['address'];
-                    if (!City::where('name', $cityName)->exists()) {
-                        $city = new City();
+                    if (! City::where('name', $cityName)->exists()) {
+                        $city = new City;
                         $city->name = substr($cityName, 0, 255);
                         $city->save();
                     }
@@ -326,20 +371,20 @@ class ShowConvertedItem extends Component
                 if ((isset($output->item[$field]) && isset($this->$field) && $output->item[$field] != $this->$field)
                         ||
                         (! isset($output->item[$field]) && ! empty($this->$field))
-                    ) {
+                ) {
                     $changes = true;
                     break;
                 }
             }
         }
-        
+
         $errorReport = ErrorReport::where('output_id', $output->id)->orderBy('created_at', 'asc')->first();
         $errorReportComment = $errorReport ? ErrorReportComment::where('error_report_id', $errorReport->id)->first() : null;
         $this->priorReportExists = $errorReport ? true : false;
-        if (! $changes 
-                && $errorReport 
-                && (($errorReportComment && $errorReportComment->comment_text != $this->comment) 
-                    || (!$errorReportComment && $this->comment))) {
+        if (! $changes
+                && $errorReport
+                && (($errorReportComment && $errorReportComment->comment_text != $this->comment)
+                    || (! $errorReportComment && $this->comment))) {
             $changes = true;
         }
 
@@ -370,7 +415,7 @@ class ShowConvertedItem extends Component
                 foreach ($this->fields as $field) {
                     $this->$field = $inputs[$field];
                     $item[$field] = $inputs[$field];
-                    $this->convertedItem['item']->$field = $inputs[$field];                    
+                    $this->convertedItem['item']->$field = $inputs[$field];
                 }
             } else {
                 // Restrict to fields relevant to the item_type
@@ -379,10 +424,10 @@ class ShowConvertedItem extends Component
                         $this->$field = $content;
                         if (! empty($content)) {
                             $item[$field] = $content;
-                            $this->convertedItem['item']->$field = $content;                    
+                            $this->convertedItem['item']->$field = $content;
                         } else {
                             unset($this->convertedItem['item']->$field);
-                        }                    
+                        }
                     }
                 }
             }
@@ -406,7 +451,7 @@ class ShowConvertedItem extends Component
                 if ($this->priorReportExists) {
                     if ($this->comment) {
                         $errorReportComment->update([
-                            'comment_text' => $this->comment
+                            'comment_text' => $this->comment,
                         ]);
                     } elseif ($errorReportComment) {
                         $errorReportComment->delete();

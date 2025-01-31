@@ -2,14 +2,15 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-
 use App\Enums\FeedbackThreadStatus;
+use Livewire\Component;
 
 class ThreadStatus extends Component
 {
     public $statusOptions;
+
     public $status;
+
     public $thread;
 
     public function mount()

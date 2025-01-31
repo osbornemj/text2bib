@@ -7,6 +7,7 @@ use Livewire\Component;
 class JournalWordAbbreviationCheck extends Component
 {
     public $journalWordAbbreviation;
+
     public $type;
 
     public function check($value, $type)
@@ -14,7 +15,7 @@ class JournalWordAbbreviationCheck extends Component
         $this->journalWordAbbreviation->checked = $value;
         $this->journalWordAbbreviation->save();
 
-        return redirect()->to('/admin/' . ($type == 'unchecked' ? 'uncheckedJ' : 'j') . 'ournalWordAbbreviations');
+        return redirect()->to('/admin/'.($type == 'unchecked' ? 'uncheckedJ' : 'j').'ournalWordAbbreviations');
     }
 
     public function distinctive($value)
@@ -26,7 +27,7 @@ class JournalWordAbbreviationCheck extends Component
     public function delete($type)
     {
         $this->journalWordAbbreviation->delete();
-        return redirect()->to('/admin/' . ($type == 'unchecked' ? 'uncheckedJ' : 'j') . 'ournalWordAbbreviations');
-    }
 
+        return redirect()->to('/admin/'.($type == 'unchecked' ? 'uncheckedJ' : 'j').'ournalWordAbbreviations');
+    }
 }

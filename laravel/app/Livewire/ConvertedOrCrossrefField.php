@@ -2,16 +2,18 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-
 use App\Models\Output;
+use Livewire\Component;
 
 class ConvertedOrCrossrefField extends Component
 {
     public $convertedItem;
+
     public $outputId;
+
     public $field;
-    public $fieldSource = "conversion";
+
+    public $fieldSource = 'conversion';
 
     public function setFieldSource()
     {

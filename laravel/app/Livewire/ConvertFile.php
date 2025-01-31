@@ -2,13 +2,7 @@
 
 namespace App\Livewire;
 
-use Livewire\WithFileUploads;
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-
-use Illuminate\Support\Str;
-
+use App\Livewire\Forms\ConvertFileForm;
 use App\Models\Bst;
 use App\Models\Conversion;
 use App\Models\CrossrefBibtex;
@@ -17,61 +11,82 @@ use App\Models\Output;
 use App\Models\UserFile;
 use App\Models\UserSetting;
 use App\Models\Version;
-
-use App\Traits\AddLabels;
-
-use Livewire\Component;
-
-use App\Livewire\Forms\ConvertFileForm;
-
 use App\Services\Converter;
 use App\Services\Crossref;
+use App\Traits\AddLabels;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class ConvertFile extends Component
 {
-    use WithFileUploads;
-
     use AddLabels;
+    use WithFileUploads;
 
     public ConvertFileForm $uploadForm;
 
     private Converter $converter;
+
     private Crossref $crossref;
 
     public $conversionExists = false;
+
     public $conversionCount;
+
     public $version;
+
     public $crossrefQuota;
+
     public $crossrefQuotaRemaining;
+
     public $crossrefQueryCount;
+
     public $retrievedFromCrossrefCount;
+
     public $retrievedFromCacheCount;
 
     public $convertedItems;
+
     public $conversionId;
+
     public $outputId;
+
     public $includeSource;
+
     public $reportType;
+
     public $conversion;
 
     public $itemTypeOptions;
+
     public $itemTypes;
 
     public $entry = null;
+
     public $itemSeparatorError = false;
+
     public $unknownEncodingEntries = [];
+
     public $fileError = null;
+
     public $notUtf8;
+
     public $convertedEncodingCount;
+
     public $useOptions;
+
     public $bstName;
+
     public $bstFields;
+
     public $languages;
 
     public function boot()
     {
-        $this->converter = new Converter();
-        $this->crossref = new Crossref();
+        $this->converter = new Converter;
+        $this->crossref = new Crossref;
     }
 
     public function mount()
@@ -90,7 +105,7 @@ class ConvertFile extends Component
         $this->bstFields = config('constants.nonstandard_bst_fields');
 
         $this->languages = config('constants.languages');
- 
+
         $defaults = [
             'use' => '',
             'other_use' => '',
@@ -125,7 +140,7 @@ class ConvertFile extends Component
             'other' => 'Other (enter in text box)',
         ];
 
-        /** @var \App\Models\User $user **/
+        /** @var \App\Models\User $user * */
         $user = Auth::user();
         $this->conversionCount = $user->conversions->count();
         $this->version = Version::latest()->first()->created_at;
@@ -153,10 +168,10 @@ class ConvertFile extends Component
     }
     */
 
-    public function submit(bool $redo = false)//: void
+    public function submit(bool $redo = false)// : void
     {
         // When a user clicks the link to resubmit a file on the page item-separator-error.blade.php,
-        // *first* the form on the page file-upload-form.blade.php is submitted, *then* the form on the 
+        // *first* the form on the page file-upload-form.blade.php is submitted, *then* the form on the
         // page item-separator-error.blade.php, with $redo = true, is submitted.  (Why does that happen?)
         // Thus in the case that the item-separator-error page is reached, the existing Conversion
         // (and with it the associated file) is deleted.  When the button on the item-separator-error
@@ -170,7 +185,7 @@ class ConvertFile extends Component
 
         $file = $this->uploadForm->file;
 
-        /** @var \App\Models\User $user **/
+        /** @var \App\Models\User $user * */
         $user = Auth::user();
 
         // Write file to user_files table
@@ -185,7 +200,7 @@ class ConvertFile extends Component
         // Store file
         $file->storeAs(
             'files',
-            $user->id . '-' . $sourceFile->id . '-source.txt',
+            $user->id.'-'.$sourceFile->id.'-source.txt',
             'public',
         );
 
@@ -194,7 +209,7 @@ class ConvertFile extends Component
 
         if ($settingValues['bstName']) {
             $bst = Bst::firstOrCreate([
-                'name' => $settingValues['bstName']
+                'name' => $settingValues['bstName'],
             ]);
 
             $settingValues['bst_id'] = $bst->id;
@@ -210,7 +225,7 @@ class ConvertFile extends Component
         }
 
         if ($this->uploadForm->save_settings) {
-            $userSetting = UserSetting::firstOrNew( 
+            $userSetting = UserSetting::firstOrNew(
                 ['user_id' => $user->id]
             );
             $userSetting->fill($settingValues);
@@ -236,15 +251,15 @@ class ConvertFile extends Component
         $this->conversionId = $conversion->id;
 
         // Get content of the file that the user uploaded
-        $filestring = Storage::disk('public')->get('files/' . $user->id . '-' . $conversion->user_file_id . '-source.txt');
+        $filestring = Storage::disk('public')->get('files/'.$user->id.'-'.$conversion->user_file_id.'-source.txt');
 
         $sourceFile->update(['sha1_hash' => sha1($filestring)]);
 
         $previousUserFile = UserFile::where('user_id', $user->id)
-                ->where('sha1_hash', $sourceFile->sha1_hash)
-                ->where('created_at', '<', $sourceFile->created_at)
-                ->latest()
-                ->first();
+            ->where('sha1_hash', $sourceFile->sha1_hash)
+            ->where('created_at', '<', $sourceFile->created_at)
+            ->latest()
+            ->first();
 
         if ($previousUserFile && ! $user->is_admin) {
             $previousConversion = Conversion::where('user_file_id', $previousUserFile->id)->first();
@@ -264,7 +279,8 @@ class ConvertFile extends Component
                 $previousConversion->version == $conversion->version->toDateTimeString()
             ) {
                 $conversion->delete();
-                return redirect('showConversion/' . $previousConversion->id . '/1');
+
+                return redirect('showConversion/'.$previousConversion->id.'/1');
             }
         }
 
@@ -275,7 +291,7 @@ class ConvertFile extends Component
         $filestring = str_replace('\end{bibliography}', '', $filestring);
 
         // Remove this string from file --- BOM (byte order mark) if at start of file, otherwise zero width no-break space
-        $filestring = str_replace("\xEF\xBB\xBF", " ", $filestring);
+        $filestring = str_replace("\xEF\xBB\xBF", ' ', $filestring);
 
         if (Str::contains($filestring, ['@article', '@book', '@incollection', '@inproceedings', '@unpublished', '@online', '@techreport', '@phdthesis', '@mastersthesis', '@misc'])) {
             $this->fileError = 'bibtex';
@@ -294,14 +310,13 @@ class ConvertFile extends Component
             // Create array of entries
             $entries = explode($entrySeparator, $filestring);
 
-
             if (count($entries) > 5) {
                 $conversion->update(['report_type' => 'standard']);
             }
 
             // Remove empty entries and entries that are "\n"; last condition eliminates stray lines with short text
             // (has to exclude ones with strlen == 1 to clean up BOM)
-            $entries = array_filter($entries, fn($value) => ! empty($value) && $value != "\n" && strlen($value) > 10);
+            $entries = array_filter($entries, fn ($value) => ! empty($value) && $value != "\n" && strlen($value) > 10);
 
             $this->itemSeparatorError = false;
             $this->unknownEncodingEntries = [];
@@ -322,7 +337,7 @@ class ConvertFile extends Component
                     } elseif ($encodings[$i] != 'UTF-8') {
                         // Need to convert to UTF-8 because Livewire uses json encoding
                         // (and will crash if non-utf-8 string is passed to it)
-                        $entries[$i] = mb_convert_encoding($entry, "UTF-8");
+                        $entries[$i] = mb_convert_encoding($entry, 'UTF-8');
                         $this->unknownEncodingEntries[] = $entries[$i];
                     }
                 }
@@ -350,7 +365,7 @@ class ConvertFile extends Component
         foreach ($entries as $j => $entry) {
             // Some files start with \u{FEFF}, but this character is now converted to space earlier in this method
             if ($entry) {
-                // $convertedEntries is array with components 
+                // $convertedEntries is array with components
                 // 'source', 'item', 'itemType', 'label', 'warnings', 'notices', 'details', 'scholarTitle'.
                 // 'label' (which depends on whole set of converted items) is updated later
                 $convertedEntry = $this->converter->convertEntry($entry, $conversion, null, null, null, $previousAuthor);
@@ -399,7 +414,7 @@ class ConvertFile extends Component
                             $doi = isset($data->message->items[0]) ? $data->message->items[0]->DOI : null;
                         } else {
                             $doi = null;
-                            $convItem['notices'][] = "Item not found in Crossref database";
+                            $convItem['notices'][] = 'Item not found in Crossref database';
                         }
                     }
 
@@ -411,11 +426,11 @@ class ConvertFile extends Component
                             $this->retrievedFromCacheCount++;
                             $crossrefSource = 'database';
                             $convItem['crossref_item_type'] = $crossrefBibtex->item_type;
-                            $crossrefItemType = ItemType::where('name', $convItem['crossref_item_type'])->first();                            
+                            $crossrefItemType = ItemType::where('name', $convItem['crossref_item_type'])->first();
                             $convItem['crossref_item_type_id'] = $crossrefItemType->id ?? null;
                             $convItem['crossref_item_label'] = null;
                             $convItem['crossref_item'] = (object) $crossrefBibtex->item;
-                            $convItem['infos'][] = "Item retrieved from Crossref cache";
+                            $convItem['infos'][] = 'Item retrieved from Crossref cache';
                         } elseif ($this->crossrefQuotaRemaining > 0 && isset($convItem['item']->title)) {
                             $crossrefSource = 'crossref';
                             $encodedDoi = urlencode($doi);
@@ -432,19 +447,19 @@ class ConvertFile extends Component
                                         'item_type' => $result['crossref_item_type'],
                                         'item' => $result['crossref_fields'],
                                     ]);
-        
+
                                     $crossrefItemType = ItemType::where('name', $result['crossref_item_type'])->first();
-        
+
                                     $convItem['crossref_item_type'] = $result['crossref_item_type'];
                                     // crossref item type id is null if crossref assigns an item type not in the list
                                     // of item types detected by Converter
                                     $convItem['crossref_item_type_id'] = $crossrefItemType->id ?? null;
                                     $convItem['crossref_item_label'] = $result['crossref_item_label'];
                                     $convItem['crossref_item'] = $result['crossref_fields'];
-                                    $convItem['infos'][] = "Item found in Crossref database";
+                                    $convItem['infos'][] = 'Item found in Crossref database';
                                 }
                             } else {
-                                $convItem['notices'][] = "Item not found in Crossref database";
+                                $convItem['notices'][] = 'Item not found in Crossref database';
                             }
                         }
                     }
@@ -466,7 +481,7 @@ class ConvertFile extends Component
                 $conversion->update([
                     'crossref_count' => $this->crossrefQueryCount,
                     'crossref_cache_count' => $this->retrievedFromCacheCount,
-                    'crossref_quota_remaining' => $this->crossrefQuotaRemaining
+                    'crossref_quota_remaining' => $this->crossrefQuotaRemaining,
                 ]);
 
                 $convItem['item_type_id'] = $itemTypes->where('name', $convItem['itemType'])->first()->id;
@@ -511,12 +526,12 @@ class ConvertFile extends Component
      */
     public function mb_detect_encoding_in_order(string $string, array $encodings): string|false
     {
-        foreach($encodings as $enc) {
+        foreach ($encodings as $enc) {
             if (mb_check_encoding($string, $enc)) {
                 return $enc;
             }
         }
+
         return false;
     }
-
 }

@@ -2,17 +2,19 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-
 use App\Models\Output;
+use Livewire\Component;
 
 class CrossrefField extends Component
 {
     #[Reactive]
     public $convertedItem;
+
     public $outputId;
+
     #[Reactive]
     public $field;
+
     public $checked = false;
 
     public function addCrossrefField()
@@ -36,9 +38,9 @@ class CrossrefField extends Component
     public function render()
     {
         return view('livewire.crossref-field',
-        [
-            'convertedItem' => $this->convertedItem,
-            'field' => $this->field, 
-        ]);
+            [
+                'convertedItem' => $this->convertedItem,
+                'field' => $this->field,
+            ]);
     }
 }

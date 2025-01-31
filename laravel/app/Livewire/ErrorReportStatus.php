@@ -2,14 +2,15 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-
 use App\Enums\ReportStatus;
+use Livewire\Component;
 
 class ErrorReportStatus extends Component
 {
     public $statusOptions;
+
     public $status;
+
     public $errorReport;
 
     public function mount()

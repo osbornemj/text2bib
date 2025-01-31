@@ -2,27 +2,29 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-
 use App\Livewire\Forms\ErrorReportForm;
-
 use App\Models\ItemField;
 use App\Models\ItemType;
 use App\Models\Output;
 use App\Models\OutputField;
+use Livewire\Component;
 
 class ErrorReport extends Component
 {
     public ErrorReportForm $form;
 
     public $output;
+
     public $outputId;
+
     public $itemTypeOptions;
+
     public $fields;
 
     public $itemTypeId;
 
     public $displayState;
+
     public $status;
 
     public function mount()
@@ -71,7 +73,7 @@ class ErrorReport extends Component
             }
         }
 
-        if (!$changes) {
+        if (! $changes) {
             $this->status = 'noChange';
             $this->displayState = 'block';
         } else {
@@ -83,7 +85,7 @@ class ErrorReport extends Component
             }
 
             $inputs = $this->form->except('comment');
-            
+
             // Restrict to fields relevant to the item_type
             $itemType = ItemType::find($this->itemTypeId);
             $i = 0;
