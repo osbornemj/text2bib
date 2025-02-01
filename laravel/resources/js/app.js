@@ -13,3 +13,11 @@ window.Chart = Chart;
 //window.Alpine = Alpine;
 
 //Alpine.start();
+
+import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
+
+// Drag-and-drop sorting
+import sort from '@alpinejs/sort'
+Alpine.plugin(sort) 
+ 
+Livewire.start()

@@ -39,7 +39,7 @@
             <ul>
                 @foreach ($itemTypes as $itemType)
                     <li>
-                        {{ $itemType->name }}
+                        <x-link href="{{ url('/admin/itemTypes/' . $itemType->id . '/edit') }}">{{ $itemType->name }}</x-link>
                         <ul class="ml-4">
                             @foreach ($itemType->fields as $itemField)
                                 <li>

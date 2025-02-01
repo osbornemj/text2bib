@@ -68,7 +68,7 @@ class ItemTypesController extends Controller
      */
     public function edit(ItemType $itemType): View
     {
-        return view('admin.ItemTypes.edit')
+        return view('admin.itemTypes.edit')
                         ->with('itemType', $itemType);
     }
 
