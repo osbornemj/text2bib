@@ -2,9 +2,11 @@
 
     <div class="px-4">
 
+        {{--
         <div class="bg-blue-200 text-blue-800 m-4 p-2">
             This site will be down from around 16:00 to 20:00 UTC on 2025.2.1 for maintenance.
         </div>
+        --}}
         
         <p class="my-4">
             This site allows you to convert a text file of references to a <x-link href="https://economics.utoronto.ca/osborne/latex/BIBTEX.HTM" target="_blank">BibTeX file</x-link>.  It is maintained by <x-link href="https://economics.utoronto.ca/osborne" target="_blank">Martin J. Osborne</x-link>.
