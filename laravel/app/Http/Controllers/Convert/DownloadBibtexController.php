@@ -45,15 +45,26 @@ class DownloadBibtexController extends Controller
                 $prologue .= $cr . $cr;
                 fwrite($handle, $prologue);
                 foreach ($outputs as $output) {
-                    $itemTypeName = $output->itemType ? $output->itemType->name : $output->crossref_item_type;
+                    $itemType = $output->itemType;
+                    $itemTypeName = $itemType ? $itemType->name : $output->crossref_item_type;
                     $item = '';
                     if ($includeSource) {
                         $item .= '% ' . $output->source . $cr;
                     }
                     $item .= '@' . $itemTypeName . '{' . $output->label . ',' . $cr;
-                    foreach ($output->item as $name => $content) {
-                        $item .= '  ' . $name . ' = {' . $content . '},' . $cr;
+
+                    // Include fields in order they are given in itemType
+                    $fields = $itemType->fields;
+                    foreach ($fields as $field) {
+                        if (isset($output->item[$field])) {
+                           $item .= '  ' . $field . ' = {' . $output->item[$field] . '},' . $cr;
+                        }
                     }
+
+                    // foreach ($output->item as $name => $content) {
+                    //     $item .= '  ' . $name . ' = {' . $content . '},' . $cr;
+                    // }
+                    
                     $item .= '}' . $cr . $cr;
                 
                     fwrite($handle, $item);

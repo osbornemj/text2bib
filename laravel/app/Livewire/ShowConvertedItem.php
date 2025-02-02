@@ -19,7 +19,7 @@ use Livewire\Component;
 
 class ShowConvertedItem extends Component
 {
-    //    public ShowConvertedItemForm $form;
+    // public ShowConvertedItemForm $form;
 
     public $address;
 
@@ -28,6 +28,8 @@ class ShowConvertedItem extends Component
     public $archiveprefix;
 
     public $author;
+
+    public $booksubtitle;
 
     public $booktitle;
 
@@ -74,6 +76,8 @@ class ShowConvertedItem extends Component
     public $school;
 
     public $series;
+
+    public $subtitle;
 
     public $title;
 
@@ -150,8 +154,9 @@ class ShowConvertedItem extends Component
             $this->origFields = $itemType->fields;
         }
 
+        // Used in form for editing an item
         foreach ($this->fields as $field) {
-            $this->$field = $this->convertedItem['item']->$field ?? '';
+           $this->$field = $this->convertedItem['item']->$field ?? '';
         }
 
         if (isset($this->convertedItem['crossref_item_type'])) {
@@ -368,9 +373,10 @@ class ShowConvertedItem extends Component
             $changes = true;
         } else {
             foreach ($this->fields as $field) {
-                if ((isset($output->item[$field]) && isset($this->$field) && $output->item[$field] != $this->$field)
-                        ||
-                        (! isset($output->item[$field]) && ! empty($this->$field))
+                if (
+                    (isset($output->item[$field]) && isset($this->$field) && $output->item[$field] != $this->$field)
+                    ||
+                    (! isset($output->item[$field]) && ! empty($this->$field))
                 ) {
                     $changes = true;
                     break;
