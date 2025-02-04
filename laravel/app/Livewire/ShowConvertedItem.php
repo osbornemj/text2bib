@@ -299,7 +299,13 @@ class ShowConvertedItem extends Component
             $inputs = $this->except('comment');
             $this->fields = $inputs['crossrefFields'];
         } else {
-            $this->fields = ItemType::find($this->itemTypeId)->fields;
+            $newFields = ItemType::find($this->itemTypeId)->fields;
+            foreach ($this->fields as $field) {
+                if (! in_array($field, $newFields)) {
+                    $this->note .= ($this->note ? ' ' : '') . $this->$field;
+                }
+            }
+            $this->fields = $newFields;
         }
 
         $this->displayState = 'block';

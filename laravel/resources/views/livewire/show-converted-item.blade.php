@@ -206,6 +206,7 @@
                     @endphp
                     <x-input-label for="itemTypeId" value="Item type"/>
                     <x-select-input id="itemTypeId" name="itemTypeId" class="block mt-1 w-full" :options="$itemTypeOptions" :selected="$selected" wire:model.change="itemTypeId" />
+                    When you choose a new type, the content of fields that do not exist for the new type is moved to the Note field.
                 </div>
 
                 @foreach ($fields as $field)
