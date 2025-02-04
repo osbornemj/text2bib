@@ -196,6 +196,8 @@ class Converter
         $use = $use ?: $conversion->use;
         $bst = $conversion->bst;
 
+        $allowSubtitle = true;
+
         //////////////////////
         // # Clean up entry //
         //////////////////////
@@ -2335,6 +2337,17 @@ class Converter
                         $after = $matches['after'] ?? '';
                     }
                 }
+
+                // If $after consists of ":" followed by a string of at least 20 characters without punctuation and then . or ,
+                // take that to be the name of the volume and suppress subtitle
+                if (preg_match('/^(?P<start>: [\p{L} ]{20,})[.,](?P<end>.*)$/u', $after, $matches)) {
+                    if (isset($matches['start'])) {
+                        $booktitle .= $matches['start'];
+                        $after = $matches['end'];
+                        $allowSubtitle = false;
+                    }
+                }
+
                 $after = ltrim($after, ".,' ");
                 $newRemainder = $remainder = $before . $after;
                 $booktitle = rtrim($booktitle, ', ');
@@ -2700,8 +2713,17 @@ class Converter
                                         if (! str_contains($booktitle, $cityString)) {
                                             $this->setField($item, 'address', $cityString, 'setField 60');
                                         }
-                                        $this->setField($item, 'publisher', $publisherString, 'setField 61');
-                                        $newRemainder = '';
+                                        if ($publisherString) {
+                                            $this->setField($item, 'publisher', $publisherString, 'setField 61');
+                                            $newRemainder = '';
+                                        } elseif (! $booktitle) {
+                                            $remainder = $tempRemainder;
+                                            $newRemainder = $remainder;
+                                        }
+                                        if ($booktitle == $newRemainder) {
+                                            $newRemainder = '';
+                                        }
+                                        //dd($newRemainder, $remainder, $tempRemainder, $booktitle);
                                     }
 
                                     // Otherwise leave it to rest of code to figure out whether there is an editor, and
@@ -4027,7 +4049,7 @@ class Converter
                     $this->setField($item, 'booktitle', rtrim($booktitle, '., '), 'setField 113h');
                 }
     
-                if (substr_count($booktitle, ': ') == 1) {
+                if (substr_count($booktitle, ': ') == 1 && $allowSubtitle) {
                     $booksubtitle = mb_ucfirst(trim(Str::after($booktitle, ': '), ', '));
                     $booktitle = trim(Str::before($booktitle, ': '));
                     $this->setField($item, 'booksubtitle', $booksubtitle, 'setField 113i');

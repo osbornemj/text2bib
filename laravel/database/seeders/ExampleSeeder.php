@@ -14901,10 +14901,26 @@ class ExampleSeeder extends Seeder
                     'author' => 'Fórum Brasileiro de Segurança Pública',
                     'address' => 'São Paulo',
                     'publisher' => 'FBSP',
-                    ],
-                    'char_encoding' => 'utf8leave',
-                    'language' => 'pt',
-            ]
+                ],
+                'char_encoding' => 'utf8leave',
+                'language' => 'pt',
+            ],
+            // Some text gets lost
+            [
+                'source' => ' Mauss, M. (1974) `Catégories Collectives de Pensée et Libertè\'. In: \emph{Oeuvres.} Vol. 2: Représentations Collectives et Diversité des Civilizations, Paris. Les Éditions de Minuit. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'year' => '1974',
+                    'title' => 'Catégories Collectives de Pensée et Libertè',
+                    'author' => 'Mauss, M.',
+                    'address' => 'Paris',
+                    'booktitle' => 'Oeuvres. Vol. 2: Représentations Collectives et Diversité des Civilizations',
+                    'publisher' => 'Les Éditions de Minuit',
+                ],
+                'char_encoding' => 'utf8leave',
+                'language' => 'fr',
+            ],
+            
                         
             
             
