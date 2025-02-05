@@ -286,7 +286,6 @@ class ShowConvertedItem extends Component
             $this->itemTypeOptions[99] = $item_type_name;
             $this->itemTypeId = 99;
         }
-        // dd($this->itemTypeOptions);
 
         foreach ($this->fields as $field) {
             $this->$field = $this->convertedItem['item']->$field ?? '';

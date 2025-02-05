@@ -96,7 +96,7 @@
                 {{ '}' }}
 
                 <div class="mt-2">
-                    <x-radio-input wire:model="source" wire:click="setItemSource('conversion')" value="conversion" class="peer/t2b" />
+                    <x-radio-input wire:model="source" name="source" wire:click="setItemSource('conversion')" value="conversion" class="peer/t2b" />
                     &nbsp;
                     <code>{{ '@' }}{{ $convertedItem['orig_item_type'] }}</code>{{ '{' }}{{ $convertedItem['label'] }},
                     <ul class="ml-10">
@@ -112,7 +112,7 @@
                 </div>
 
                 <div class="mt-2">
-                    <x-radio-input wire:model="source" wire:click="setItemSource('crossref')" value="crossref" class="peer/cr" />
+                    <x-radio-input wire:model="source" name="source" wire:click="setItemSource('crossref')" value="crossref" class="peer/cr" />
                     &nbsp;
                     <code>{{ '@' }}{{ $convertedItem['crossref_item_type'] }}</code>{{ '{' }}{{ $convertedItem['label'] }},
                     <ul class="ml-10">
