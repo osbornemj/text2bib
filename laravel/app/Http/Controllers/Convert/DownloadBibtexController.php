@@ -46,6 +46,8 @@ class DownloadBibtexController extends Controller
                 fwrite($handle, $prologue);
                 foreach ($outputs as $output) {
                     $itemType = $output->itemType;
+                    // If $itemType is not set, then item_type_id is null because user has chosen
+                    // a Crossref-reported item, with a type not among the ones detected by text2bib
                     $itemTypeName = $itemType ? $itemType->name : $output->crossref_item_type;
                     $item = '';
                     if ($includeSource) {
@@ -53,17 +55,19 @@ class DownloadBibtexController extends Controller
                     }
                     $item .= '@' . $itemTypeName . '{' . $output->label . ',' . $cr;
 
-                    // Include fields in order they are given in itemType
-                    $fields = $itemType->fields;
-                    foreach ($fields as $field) {
-                        if (isset($output->item[$field])) {
-                           $item .= '  ' . $field . ' = {' . $output->item[$field] . '},' . $cr;
+                    // Include fields in order they are given in itemType, if itemType is defined
+                    if ($itemType) {
+                        $fields = $itemType->fields;
+                        foreach ($fields as $field) {
+                            if (isset($output->item[$field])) {
+                            $item .= '  ' . $field . ' = {' . $output->item[$field] . '},' . $cr;
+                            }
+                        }
+                    } else {
+                        foreach ($output->item as $name => $content) {
+                            $item .= '  ' . $name . ' = {' . $content . '},' . $cr;
                         }
                     }
-
-                    // foreach ($output->item as $name => $content) {
-                    //     $item .= '  ' . $name . ' = {' . $content . '},' . $cr;
-                    // }
                     
                     $item .= '}' . $cr . $cr;
                 

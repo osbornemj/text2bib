@@ -300,6 +300,7 @@ class ShowConvertedItem extends Component
             $this->fields = $inputs['crossrefFields'];
         } else {
             $newFields = ItemType::find($this->itemTypeId)->fields;
+            // Write fields not available in new type to Note field
             foreach ($this->fields as $field) {
                 if (! in_array($field, $newFields)) {
                     $this->note .= ($this->note ? ' ' : '') . $this->$field;
