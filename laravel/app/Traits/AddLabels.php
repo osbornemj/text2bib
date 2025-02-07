@@ -22,6 +22,7 @@ trait AddLabels
                 // if $baseLabel already used, add a suffix to it
                 if (in_array($baseLabel, $baseLabels)) {
                     $values = array_count_values($baseLabels);
+                    //dump($baseLabel, $baseLabels, $values);
                     $label .= '-'.$values[$baseLabel];
                 }
 
@@ -59,23 +60,36 @@ trait AddLabels
                 $commaPos = mb_strpos($authorLetters, ',');
                 // Position of last space
                 $spacePos = mb_strrpos($authorLetters, ' ');
-                if ($commaPos !== false || $spacePos === false) {
+                if ($commaPos !== false) {
                     if ($conversion->label_style == 'short') {
-                        $label .= mb_substr($authorLetters, 0, 1) ?? '';
+                        $label .= mb_substr($authorLetters, 0, 1) ?? '??';
                     } elseif ($conversion->label_style == 'long-kebab') {
-                        $label .= mb_substr($authorLetters, 0, $commaPos).'-';
+                        $label .= (mb_substr($authorLetters, 0, $commaPos) ?: '??').'-';
                     } else {
-                        $label .= mb_substr($authorLetters, 0, $commaPos);
+                        $label .= mb_substr($authorLetters, 0, $commaPos) ?: '??';
                     }
-                } else {
+                } elseif ($spacePos !== false) {
                     if ($conversion->label_style == 'short') {
                         // Take first letter after first space ('John Smith' => 'S')
                         $label .= mb_substr($authorLetters, $spacePos + 1, 1);
                     } elseif ($conversion->label_style == 'long-kebab') {
+                        // Take letters after first space and append - ('John Smith' => 'Smith-')
                         $label .= trim(mb_substr($authorLetters, $spacePos + 1), ' ').'-';
                     } else {
                         // Take letters after first space ('John Smith' => 'Smith')
                         $label .= trim(mb_substr($authorLetters, $spacePos + 1), ' ');
+                    }
+                } else {
+                    // No comma or space
+                    if ($conversion->label_style == 'short') {
+                        // Take first letter 
+                        $label .= mb_substr($authorLetters, 0, 1) ?? '??';
+                    } elseif ($conversion->label_style == 'long-kebab') {
+                        // Take letters in author and append - ('John Smith' => 'Smith-')
+                        $label .= $authorLetters.'-';
+                    } else {
+                        // Take letters in author
+                        $label .= $authorLetters;
                     }
                 }
             }

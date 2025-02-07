@@ -14920,17 +14920,15 @@ class ExampleSeeder extends Seeder
                 'char_encoding' => 'utf8leave',
                 'language' => 'fr',
             ],
-			// part of title disappears
-			[
-                'source' => 'Brown, P. (2013). The Rise of Western Christendom: Triumph and Diversity, A.D. 200-1000. New York: Wiley-Blackwell. ',
-                'type' => 'book',
+            // year missed
+            [
+                'source' => 'AI@Meta. Llama 3 model card, 2024a. URL https://github.com/meta-llama/llama3/blob/main/MODEL_CARD.md. ',
+                'type' => 'online',
                 'bibtex' => [
-                    'author' => 'Brown, P.',
-                    'year' => '2013',
-                    'title' => 'The Rise of Western Christendom',
-					'subtitle' => 'Triumph and Diversity, A.D. 200-1000',
-                    'publisher' => 'Wiley-Blackwell',
-                    'address' => 'New York',
+                    'url' => 'https://github.com/meta-llama/llama3/blob/main/MODEL_CARD.md',
+                    'year' => '2024',
+                    'title' => 'Llama 3 model card',
+                    'author' => 'AI@Meta',
                     ]
             ],
             

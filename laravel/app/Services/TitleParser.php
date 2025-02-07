@@ -174,8 +174,14 @@ class TitleParser
         $containsPages = preg_match('/(\()?' . $this->regExps->pagesRegExp . '(\))?/', $remainder);
         $volumeWithDigitRegExp = '/^(' . $this->regExps->volumeRegExp . ') (\d)\.?\)?[.,]?$/i';
 
+        $skip = 0;
         // Go through the words in $remainder one at a time.
         foreach ($words as $key => $word) {
+            if ($skip) {
+                $skip--;
+                continue;
+            }
+
             if (substr($word, 0, 1) == '"') {
                 $word = '``' . substr($word, 1);
             }
@@ -192,6 +198,24 @@ class TitleParser
 
             array_shift($remainingWords);
             $remainder = ltrim(implode(' ', $remainingWords), '/');
+
+            // // Unsuccessful attempt to deal with date range preceded or followed by A. D. or B. C. in a title.
+            // if (
+            //     preg_match('/^(?P<dateRange>(A\. D\.|B\. C\.) \d{3,4}--?\d{3,4})[.,](?P<rest>.*)$/', $remainder, $matches)
+            //     ||
+            //     preg_match('/^(?P<dateRange>\d{3,4}--?\d{3,4} (A\. D\.|B\. C\.))[.,](?P<rest>.*)$/', $remainder, $matches)
+            //     )
+            //     {
+            //     if (isset($matches['dateRange'])) {
+            //         $initialWords[] = $word;
+            //         $initialWords = array_merge($initialWords, explode(' ', $matches['dateRange']));
+            //         $remainder = trim($matches['rest']);
+            //         $remainingWords = explode(' ', $remainder);
+            //         $this->verbose('Date range with A. D. or B. C. detected, so added to title');
+            //         $skip = 3;
+            //         continue;
+            //     }
+            // }
 
             // If $word is one of the italic codes ending in a space and previous word ends in some punctuation, OR
             // word is '//' (used as separator in some references (Russian?)), stop and form title
@@ -460,6 +484,11 @@ class TitleParser
                         $remainder = $matches['remainder'] ?? '';
                     }
 
+                    // dump($word);
+                    // if ($word == 'New' && preg_match('/^(?P<city>\p{Lu}[\p{L} ]+): /u', $remainder, $matches)) {
+                    //     dd($matches);
+                    // }
+
                     if (
                         $this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || $upcomingJournalAndPubInfo
@@ -511,7 +540,7 @@ class TitleParser
                            )
                         // address [city in db]: publisher
                         || (
-                            preg_match('/^(?P<city>\p{Lu}\p{Ll}+): /u', $remainder, $matches) 
+                            preg_match('/^(?P<city>\p{Lu}[\p{L} ]+): /u', $remainder, $matches) 
                             &&
                             in_array(trim($matches['city']), $cities)
                            )
