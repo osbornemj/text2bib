@@ -174,13 +174,13 @@ class TitleParser
         $containsPages = preg_match('/(\()?' . $this->regExps->pagesRegExp . '(\))?/', $remainder);
         $volumeWithDigitRegExp = '/^(' . $this->regExps->volumeRegExp . ') (\d)\.?\)?[.,]?$/i';
 
-        $skip = 0;
+        // $skip = 0;
         // Go through the words in $remainder one at a time.
         foreach ($words as $key => $word) {
-            if ($skip) {
-                $skip--;
-                continue;
-            }
+            // if ($skip) {
+            //     $skip--;
+            //     continue;
+            // }
 
             if (substr($word, 0, 1) == '"') {
                 $word = '``' . substr($word, 1);
@@ -528,7 +528,7 @@ class TitleParser
                         // pages (e.g. within book)
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
-                        || preg_match('/^' . $this->yearRegExp . '(\.|$)/', $remainder)
+                        || preg_match('/^' . $this->yearRegExp . '[a-z]?(\.|$)/', $remainder)
                         // editor next
                         || preg_match('/^' . $this->regExps->edsOptionalParensRegExp . ' /', $remainder)
                         || preg_match('/^' . $this->regExps->editedByRegExp . ' /', $remainder)

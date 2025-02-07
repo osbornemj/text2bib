@@ -523,7 +523,7 @@ class Converter
             // \href{<url>}{<note>}
             '%' . $urlRegExp . '{(?P<note>.*)}\.?$%i',
             // <url> <note>
-            '%(url: ?)?' . $urlRegExp . '(?P<note>.*)$%i',
+            '%(url( |:|: ))?' . $urlRegExp . '(?P<note>.*)$%i',
         ];
 
         foreach ($patterns as $pattern) {
