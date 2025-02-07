@@ -33,6 +33,7 @@ class Converter
     var $entrySuffixes;
     var $excludedWords;
     var $itemType;
+    var $journalWords;
     var $names;
     var $onlinePhrases;
     var $ordinals;
@@ -123,6 +124,8 @@ class Converter
         $this->entrySuffixes = ["\\", "[J].", "[J]"];
 
         $this->onlinePhrases = '(online|en ligne|internet)';
+
+        $this->journalWords = [' journal ', 'jurnal', 'frontiers in ', 'annals of ', ' bulletin'];
     }
 
     ///////////////////////////////////////////////////
@@ -787,7 +790,7 @@ class Converter
         $wordString = mb_strtolower(' ' . implode(' ', $words));
 
         // Internationalize?
-        if (Str::contains($wordString, [' journal ', 'frontiers in ', 'annals of ', ' bulletin'])) {
+        if (Str::contains($wordString, $this->journalWords)) {
             $containsJournalName = true;
         }
 

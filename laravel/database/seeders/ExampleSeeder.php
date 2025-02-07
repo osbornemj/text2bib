@@ -14931,6 +14931,19 @@ class ExampleSeeder extends Seeder
                     'author' => 'AI@Meta',
                     ]
             ],
+			// some fields not matched
+			[
+                'source' => 'Aprizawati, A., Satria, B., & Putra, A. (2024). Pengadaan Alat Dan Sosialisasi Alat Keselamatan Pelayaran Bagi Nelayan Tradisional Desa Muntai. Tanjak: Jurnal Pengabdian Kepada Masyarakat, 5(1). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Aprizawati, A. and Satria, B. and Putra, A.',
+                    'journal' => 'Tanjak: Jurnal Pengabdian Kepada Masyarakat',
+                    'number' => '1',
+                    'title' => 'Pengadaan Alat Dan Sosialisasi Alat Keselamatan Pelayaran Bagi Nelayan Tradisional Desa Muntai',
+                    'volume' => '5',
+                    'year' => '2024',
+                    ]
+            ],
             
                         
             
