@@ -2950,9 +2950,9 @@ class Converter
                             }
                             // The following code is logical, but causes items that are processed correctly by later code to be processed
                             // incorrectly here.
-                            // if (isset($matches['address']) && isset($matches['publisher'])) {
-                            //     $remainder = $beforeEds . ' ' . trim($matches['string'], ": ");
-                            // }
+                            if (isset($matches['address']) && isset($matches['publisher'])) {
+                                $remainder = $beforeEds . ' ' . trim($matches['string'], ": ");
+                            }
                             if (isset($matches['addressOrPublisher'])) {
                                 $addressOrPublisher = $matches['addressOrPublisher'];
                                 if (in_array($addressOrPublisher, $this->cities)) {
@@ -3831,13 +3831,13 @@ class Converter
                                 $this->setField($item, 'publisher', trim($matches['publisher'], ' .'), 'setField 102');
                                 $this->verbose('booktitle case 14a');
                                 $remainder = '';
-                            } elseif (preg_match('/^(?P<booktitle>[^.]+)\. \. (?P<address>.*): (?P<publisher>[^:.,]*)$/', $remainder, $matches)) {
+                            } elseif (! isset($item->address) && ! isset($item->publisher) && preg_match('/^(?P<booktitle>[^.]+)\. \. (?P<address>.*): (?P<publisher>[^:.,]*)$/', $remainder, $matches)) {
                                 $this->setField($item, 'booktitle', trim($matches['booktitle'], ',. '), 'setField 103');
                                 $this->setField($item, 'address', trim($matches['address'], ',. '), 'setField 104');
                                 $this->setField($item, 'publisher', trim($matches['publisher'], ',. '), 'setField 105');
                                 $this->verbose('booktitle case 14b');
                                 $remainder = '';
-                            } elseif (preg_match('/^(?P<booktitle>.*) (?P<address>[^ ]*): (?P<publisher>[^:.,]*)$/', $remainder, $matches)) {
+                            } elseif (! isset($item->address) && ! isset($item->publisher) && preg_match('/^(?P<booktitle>.*) (?P<address>[^ ]*): (?P<publisher>[^:.,]*)$/', $remainder, $matches)) {
                                 $booktitle = $matches['booktitle'];
                                 $this->setField($item, 'booktitle', trim($booktitle, ',. '), 'setField 106a');
                                 $this->setField($item, 'address', trim($matches['address'], '()'), 'setField 106b');
@@ -3845,7 +3845,7 @@ class Converter
                                 $this->verbose('booktitle case 14c');
                                 $remainder = '';
                             // $remainder is <booktitle>, <publisher> [with no commas or periods in booktitle or publisher]
-                            } elseif (preg_match('/^(?P<booktitle>[^,.]*), (?P<publisher>[^,.]*)$/', $remainder, $matches)) {
+                            } elseif (! isset($item->publisher) && preg_match('/^(?P<booktitle>[^,.]*), (?P<publisher>[^,.]*)$/', $remainder, $matches)) {
                                 $booktitle = $matches['booktitle'];
                                 if (isset($item->publisher)) {
                                     $this->setField($item, 'booktitle', $remainder, 'setField 106d');
@@ -3925,7 +3925,8 @@ class Converter
 
                 //if ($itemKind == 'inproceedings' && empty($booktitle) && empty($item->booktitle)) {
                 if (empty($booktitle) && empty($item->booktitle)) {
-                    $this->setField($item, 'booktitle', rtrim($remainder, ' ,:'), 'setField 107');
+                    $booktitle = rtrim($remainder, ' ,:');
+                    $this->setField($item, 'booktitle', $booktitle, 'setField 107');
                 } elseif (empty($item->publisher) || empty($item->address)) {
 
                     // If $remainder starts with edition, extract it

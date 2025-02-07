@@ -8475,7 +8475,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'plWordNet 4.1--a Linguistically Motivated, Corpus-based Bilingual Resource',
                     'pages' => '352-362',
                     'editor' => 'Fellbaum, C. and Vossen, P. and Rudnicka, E. and Maziarz, M. and Piasecki, M.',
-                    'booktitle' => 'Proceedings of the 10th Global WordNet Conference: July 23-27, 2019, Wrocław (Poland)',
+                    'booktitle' => 'Proceedings of the 10th Global WordNet Conference',
+                    'booksubtitle' => 'July 23-27, 2019, Wrocław (Poland)',
 					'publisher' => 'Oficyna Wydawnicza Politechniki Wrocławskiej',
 					'address' => 'Wrocław',
                     ],
@@ -14942,6 +14943,22 @@ class ExampleSeeder extends Seeder
                     'title' => 'Pengadaan Alat Dan Sosialisasi Alat Keselamatan Pelayaran Bagi Nelayan Tradisional Desa Muntai',
                     'volume' => '5',
                     'year' => '2024',
+                    ]
+            ],
+			// wrong colon used to separate address and publisher
+			[
+                'source' => 'Berman, M. (1996). Falling towers: City life under urbicide. In D. Campbell (ed), Geography and Identity: Exploring and Living Geopolitics of Identity (pp. 172-192). Washington: Maisonneuve. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Berman, M.',
+                    'year' => '1996',
+                    'title' => 'Falling towers: City life under urbicide',
+                    'pages' => '172-192',
+                    'address' => 'Washington',
+                    'publisher' => 'Maisonneuve',
+                    'editor' => 'D. Campbell',
+                    'booktitle' => 'Geography and Identity',
+                    'booksubtitle' => 'Exploring and Living Geopolitics of Identity',
                     ]
             ],
             
