@@ -405,8 +405,8 @@ class TitleParser
                             // journal name followed by more specific publication info, year first, allowing issue number and page
                             // numbers to be preceded by letters.
                             || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? ' . $this->yearRegExp . ',? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->regExps->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $this->regExps->pagesRegExp . '\.? ?$/u', $remainder)
-                            // journal name (no commas) followed by comma, volume, number (and possible page numbers).
-                            || preg_match('/^\p{Lu}[\p{L} &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:( ] ?(' . $this->regExps->numberRegExp . ')?[0-9, \-p\.():\/]*$/u', $remainderMinusArticle)
+                            // journal name (no commas) followed possibly by comma, then volume (possibly styled), number (possibly styled) (and possible page numbers).
+                            || preg_match('/^\p{Lu}[\p{L} &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, ?|: ?| \()(' . $this->regExps->numberAndCodesRegExp . ')?[0-9, \-p.():\/{}]*$/u', $remainderMinusArticle)
                             // $word ends in period && journal name (can include commma), pub info ('}' after volume # for \textbf{ (in $volumeAndCodesRegExp))
                             || (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L}, &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:( ] ?(' . $this->regExps->numberRegExp . ')?[0-9, \-p\.():\/]*$/u', $remainderMinusArticle))
                             || (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L}, &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->regExps->numberRegExp . ')?\([0-9]{2,4}\)/u', $remainderMinusArticle))

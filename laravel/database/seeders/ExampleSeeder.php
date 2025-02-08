@@ -15036,7 +15036,20 @@ class ExampleSeeder extends Seeder
                 ],
                 'language' => 'pt',
                 'char_encoding' => 'utf8leave',
-            ]
+            ],
+			// journal missed
+			[
+                'source' => '\bibitem[G-Li]{G-Li} R. Gaburro and W. R. B. Lionheart, Recovering Riemannian metrics in monotone families from boundary data, Inverse Problems \textbf{25} (\textbf{4}) (2009). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'R. Gaburro and W. R. B. Lionheart',
+                    'journal' => 'Inverse Problems',
+                    'number' => '4',
+                    'title' => 'Recovering Riemannian metrics in monotone families from boundary data',
+                    'volume' => '25',
+                    'year' => '2009',
+                    ]
+            ],
             
             
                         

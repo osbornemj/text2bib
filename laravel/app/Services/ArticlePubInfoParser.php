@@ -283,6 +283,11 @@ class ArticlePubInfoParser
                     $this->verbose('[p3c] note: ' . $item->note);
                 }
                 $remainder = '';
+            } elseif (preg_match('/^\((\\\(textbf|textit){)?(?P<number>\d{1,4})}?\)$/', $remainder, $matches)) {
+                // Something like (\textbf{23}) or (23).
+                $this->setField($item, 'number', $matches['number'], 'getVolumeAndNumberForArticle 3c');
+                $numberInParens = true;
+                $remainder = '';
             }
         } else {
             // $item->number can be a range (e.g. '6-7')

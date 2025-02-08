@@ -30,6 +30,7 @@ class RegularExpressions
     var $issnRegExps;
 
     var $numberRegExp;
+    var $numberAndCodesRegExp;
 
     var $oclcLabelRegExp;
     var $oclcNumberRegExp;
@@ -422,6 +423,7 @@ class RegularExpressions
 
         // number words
         $this->numberRegExp = $numberRegExp;
+        $this->numberAndCodesRegExp = $numberRegExp . '|{\\\bf |\\\textbf{|\\\textit{|\*';
         
         ////////////
         // Volume //
