@@ -88,7 +88,7 @@ class ArticlePubInfoParser
                     || (isset($words[$key+1]) && Str::contains($words[$key+1], range('1', '9'))) // next word contains a digit
                     || (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}:?$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
                     || preg_match('/^(' . $this->monthsRegExp[$language] . ')( [0-9]{1,2})?[\-.,;]/', $remainder) // <month> or <month day> next
-                    || preg_match('/^(' . $this->numberRegExp . ') /', $remainder) // followed by number info
+                    || preg_match('/^(' . $this->regExps->numberRegExp . ')/u', $remainder) // followed by number info
                     || preg_match('/^(\(?(' . $this->regExps->volumeRegExp . ')) /', $remainder) // followed by volume info
                     || preg_match($this->regExps->startPagesRegExp, ltrim($remainder, '( ')) // followed by pages info
                     || preg_match('/^' . $this->articleRegExp . '/i', $remainder) // followed by article info
@@ -157,11 +157,11 @@ class ArticlePubInfoParser
         // }? at end is because $volumeAndCodesRegExp includes \textbf{
         $volumeRx = '('. $this->regExps->volumeAndCodesRegExp . ')?(?P<vol>' . $numberRange . ')}?';
         $volumeWithRomanRx = '('. $this->regExps->volumeAndCodesRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')}?';
-        $numberRx = '('. $this->numberRegExp . ')?(?P<num>' . $numberRangeWithSlash . ')';
+        $numberRx = '('. $this->regExps->numberRegExp . ')?(?P<num>' . $numberRangeWithSlash . ')';
         //$volumeWordRx = '('. $volumeAndCodesRegExp . ')(?P<vol>' . $numberRange . ')';
         // Letter in front of volume is allowed only if preceded by "vol(ume)" and is single number
         $volumeWordLetterRx = '('. $this->regExps->volumeAndCodesRegExp . ')(?P<vol>' . $letterNumber . ')';
-        $numberWordRx = '('. $this->numberRegExp . ')(?P<num>' . $numberRangeWithSlash . ')';
+        $numberWordRx = '('. $this->regExps->numberRegExp . ')(?P<num>' . $numberRangeWithSlash . ')';
         $pagesRx = '(?P<pageWord>'. $pageWordsRegExp . ')?(?P<pp>' . $letterNumberRange . ')';
         $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?[(\[]\(?|\* ?\()';
         $punc2 = '([)\]]?[ :] ?|[)\]]?\)?, ?| ?: ?)';
@@ -203,6 +203,12 @@ class ArticlePubInfoParser
                $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 9');
                $remainder = '';
                $result = true;
+        // e.g. Number 6, 41-75$
+        } elseif (preg_match('/^' . $numberWordRx . $punc1 . $pagesRx . '$/J', $remainder, $matches)) {
+            $this->setField($item, 'number', str_replace(['---', '--'], '-', $matches['num']), 'getVolumeNumberPagesForArticle 10');
+            $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 11');
+            $remainder = '';
+            $result = true;
         } elseif (! $start) {
             // If none of the common patterns fits, fall back on approach that first looks for a page range then
             // uses the method getVolumeAndNumberForArticle to figure out the volume and number, if any
@@ -315,7 +321,7 @@ class ArticlePubInfoParser
                     $remainder = trim(str_replace($matches[0], '', $remainder));
                     // Does a number follow the volume?
                     // The /? allows a format 125/6 for volume/number
-                    preg_match('%^\(?(?P<numberDesignation>' . $this->numberRegExp . ')?[ /]?(?P<number>([0-9]{1,20}[a-zA-Z]*)([-\/][1-9][0-9]{0,6})?)\)?%', $remainder, $matches);
+                    preg_match('%^\(?(?P<numberDesignation>' . $this->regExps->numberRegExp . ')?[ /]?(?P<number>([0-9]{1,20}[a-zA-Z]*)([-\/][1-9][0-9]{0,6})?)\)?%', $remainder, $matches);
                     if (isset($matches['number'])) {
                         $number = $matches['number'];
                         $this->setField($item, 'number', $number, 'getVolumeAndNumberForArticle 18');
@@ -327,7 +333,7 @@ class ArticlePubInfoParser
                     $take = $drop = 0;
                 } else {
                     // A letter or sequence of letters is permitted after an issue number
-                    $numberOfMatches = preg_match('%(' . $this->regExps->volumeAndCodesRegExp . '|[^0-9]|^)(?P<volume>([1-9][0-9]{0,3}|[IVXL]{1,3}))(?P<punc1> ?, |\(| | \(|\.|:|;|/)(?P<numberDesignation>' . $this->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)([/-][1-9][0-9]{0,6})?)\)?%', $remainder, $matches, PREG_OFFSET_CAPTURE);
+                    $numberOfMatches = preg_match('%(' . $this->regExps->volumeAndCodesRegExp . '|[^0-9]|^)(?P<volume>([1-9][0-9]{0,3}|[IVXL]{1,3}))(?P<punc1> ?, |\(| | \(|\.|:|;|/)(?P<numberDesignation>' . $this->regExps->numberRegExp . ')? ?(?P<number>([0-9]{1,20}[a-zA-Z]*)([/-][1-9][0-9]{0,6})?)\)?%', $remainder, $matches, PREG_OFFSET_CAPTURE);
                     $numberInParens = isset($matches['punc1']) && in_array($matches['punc1'][0], ['(', ' (']);
 
                     if ($numberOfMatches) {
@@ -373,7 +379,7 @@ class ArticlePubInfoParser
                                     if (empty($item->volume)) {
                                         $this->setField($item, 'volume', $matches[1], 'getVolumeAndNumberForArticle 12');
                                     }
-                                } elseif (preg_match('/^(' . $this->numberRegExp . ')(?P<number>[0-9]{1,4})(?P<remains>.*)$/', $remainder, $matches)) {
+                                } elseif (preg_match('/^(' . $this->regExps->numberRegExp . ')(?P<number>[0-9]{1,4})(?P<remains>.*)$/', $remainder, $matches)) {
                                     if ($matches['number']) {
                                         $this->setField($item, 'number', $matches['number'], 'getVolumeAndNumberForArticle 12b');
                                         $this->addToField($item, 'note', trim($matches['remains'], '., '), 'getVolumeAndNumberForArticle 12c');

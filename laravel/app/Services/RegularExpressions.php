@@ -29,6 +29,8 @@ class RegularExpressions
     var $isbnNumberRegExp;
     var $issnRegExps;
 
+    var $numberRegExp;
+
     var $oclcLabelRegExp;
     var $oclcNumberRegExp;
 
@@ -391,6 +393,35 @@ class RegularExpressions
         // page range, page word before is optional
         $this->pagesRegExp = $pagesRegExp;
 
+        ////////////
+        // Number //
+        ////////////
+
+        // (°|º) cannot be replaced by [°º].  Don't know why.
+        // Note that "Issues" cannot be followed by "in" --- because "issues in" could be part of journal name
+        $numberWords = [
+            '[Nn][Oo]s?( ?\.:?| ?:| ) ?',
+            '[Nn]úm\.:? ?',
+            '[Nn]umbers? ?',
+            '[Nn] ?\. ',
+            '№\.? ?',
+            '[Nn]\.? ?(°|º) ?',
+            '[Ii]ssue(: ?| )',
+            '[Ii]ssues(?! [Ii]n) ?',
+            'Issue no\. ?',
+            'Iss: ',
+            'Heft ',                  // German
+            'Broj ',                  // Bosnian
+        ];
+
+        $numberRegExp = '';
+        foreach ($numberWords as $i => $numberWord) {
+            $numberRegExp .= ($i ? '|' : '') . $numberWord;
+        }
+
+        // number words
+        $this->numberRegExp = $numberRegExp;
+        
         ////////////
         // Volume //
         ////////////

@@ -48,10 +48,6 @@ trait Utilities
 
     public $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted for publication in|^accepted( at)?|^to appear in|^à paraître';
 
-    // (°|º) cannot be replaced by [°º].  Don't know why.
-    // Note that "Issues" cannot be followed by "in" --- because "issues in" could be part of journal name
-    public $numberRegExp = '[Nn][Oo]s? ?\.?:? ?|[Nn]úm\.:? ?|[Nn]umbers? ?|[Nn] ?\. |№\.? ?|[Nn]\.? ?(°|º) ?|[Ii]ssues?:? ?(?! in)|Issue no. ?|Iss: |Heft ';
-
     public $workingPaperRegExp = '(preprint|arXiv preprint|bioRxiv|working paper|texto para discussão|discussion paper|'
         .'technical report|tech\. report|report no\.|'
         .'research paper|mimeo|unpublished paper|unpublished manuscript|manuscript|'

@@ -14968,6 +14968,21 @@ class ExampleSeeder extends Seeder
                     'booksubtitle' => 'Exploring and Living Geopolitics of Identity',
                     ]
             ],
+			// "Broj" means "number" in Bosnian
+			[
+                'source' => 'Abadžić Hodžić, A. (2014). Danas u Arhitekturi nema vizionara. Sarajevske Sveske, Broj 43-44, 49-77. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Abadžić Hodžić, A.',
+                    'year' => '2014',
+                    'title' => 'Danas u Arhitekturi nema vizionara',
+                    'journal' => 'Sarajevske Sveske',
+                    'number' => '43-44',
+                    'pages' => '49-77',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+            
             
                         
             
