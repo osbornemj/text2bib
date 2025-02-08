@@ -504,7 +504,7 @@ class TitleParser
                            )
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->regExps->startPagesRegExp, $remainder)
-                        || preg_match('/^' . $this->regExps->inRegExp . ':? (`|``|\'|\'\'|"' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
+                        || preg_match('/^' . $this->regExps->inRegExp . ':? (`|``|\'|\'\'|"|' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
                         || preg_match('/^(Journal |Annals |Proc(eedings)? |Bulletin )/', $remainder)
                         || preg_match('/^\(?(' . $this->regExps->volumeRegExp . ') /', $remainder)
                         || (

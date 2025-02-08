@@ -1096,6 +1096,25 @@ class Converter
                     if (! Str::endsWith($translator, 'et al.')) {
                         $translator = trim($result['translator'], '.,& ');
                     }
+
+                    $translatorConversion = $this->authorParser->convertToAuthors(
+                        explode(' ', $translator), 
+                        $trash1, 
+                        $trash2, 
+                        $trash3, 
+                        $trash4, 
+                        $trash5, 
+                        $isEditor, 
+                        $isTranslator, 
+                        $this->cities, 
+                        $this->dictionaryNames, 
+                        false, 
+                        'authors', 
+                        $language
+                    );
+
+                    $translator = trim($translatorConversion['authorstring']);
+                    
                     if ($use != 'latex' || ($bst && $bst->translator)) {
                         $this->setField($item, 'translator', $translator, 'setField 38');
                     } else {
@@ -2431,6 +2450,31 @@ class Converter
                     $remainder = '';
                 }
 
+                // $remainder is (<editors>, Eds.)
+                if (preg_match('/^\((?P<editor>[^()]+), ' . $this->regExps->edsNoParensRegExp . '\)$/u', $remainder, $matches)) {
+                    if (isset($matches['editor'])) {
+                        $editorConversion = $this->authorParser->convertToAuthors(
+                            explode(' ', $matches['editor']), 
+                            $trash1, 
+                            $trash2, 
+                            $trash3, 
+                            $trash4, 
+                            $trash5, 
+                            $isEditor, 
+                            $isTranslator, 
+                            $this->cities, 
+                            $this->dictionaryNames, 
+                            false, 
+                            'editors', 
+                            $language
+                        );
+
+                        $editor = trim($editorConversion['authorstring']);
+                        $this->setField($item, 'editor', $editor, 'setField 69a');
+                    }
+                    $remainder = '';
+                }
+
                 if (! $booktitle) {
                     // $remainder is <booktitle>, <address>: <publisher>.
                     if (preg_match('/^(?P<booktitle>' . $booktitleRegExp . '), (?P<address>' . $addressRegExp . '): ?(?P<publisher>' . $publisherRegExp . ')\.?$/u', $remainder, $matches)) {
@@ -2758,7 +2802,6 @@ class Converter
                                         if ($booktitle == $newRemainder) {
                                             $newRemainder = '';
                                         }
-                                        //dd($newRemainder, $remainder, $tempRemainder, $booktitle);
                                     }
 
                                     // Otherwise leave it to rest of code to figure out whether there is an editor, and
@@ -2949,11 +2992,7 @@ class Converter
                         // This case is dealt with in detail in the next code block.
                         $eds = $matches[0];
                         $beforeEds = Str::before($remainder, $eds);
-                        // Logically, the following line, with $beforeEds, is correct.  But it produces a lot of incorrect
-                        // conversions.
                         $wordsBeforeEds = explode(' ', $beforeEds);
-                        //dd($wordsBeforeEds);
-                        //$wordsBeforeEds = explode(' ', $before);
                         $afterEds = rtrim(Str::after($remainder, $eds), '; ');
                         $setRemainder = false;
 

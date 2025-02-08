@@ -7836,7 +7836,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'The Practice of Conceptual History',
                     'subtitle' => 'Timing History, Spacing Concepts',
                     'year' => '2002',
-                    'translator' => 'Todd Samuel Presner et al.',
+                    'translator' => 'Todd Samuel Presner and others',
                     'address' => 'Stanford',
                     'publisher' => 'Stanford University Press',
                     ]
@@ -13663,7 +13663,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1997',
                     'address' => 'Madrid',
                     'publisher' => 'Arco/Libros',
-                    'translator' => 'Ma del C. Bobes y J. Maestro'
+                    'translator' => 'Ma del C. Bobes and J. Maestro'
                     ]
             ],
             [
@@ -13919,7 +13919,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Felsefeye Giriş',
                     'year' => '2017',
                     'publisher' => 'Alfa Basım Yayım Dağıtım',
-					'translator' => 'K. Cankoçak, & M. A. Arslan',
+					'translator' => 'K. Cankoçak and M. A. Arslan',
                     ],
 					'char_encoding' => 'utf8leave',
             ],
@@ -14981,6 +14981,32 @@ class ExampleSeeder extends Seeder
                     'pages' => '49-77',
                 ],
                 'char_encoding' => 'utf8leave',
+            ],
+			// translator names not converted to bibtex format
+			[
+                'source' => 'Alberti, L. B. (1988). De re aedificatoria. (J. Rykwert, N. Leach, & R. Tavernor, Trans.) Cambridge: MIT Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Alberti, L. B.',
+                    'year' => '1988',
+                    'translator' => 'J. Rykwert and N. Leach and R. Tavernor',
+                    'title' => 'De re aedificatoria',
+                    'publisher' => 'MIT Press',
+                    'address' => 'Cambridge',
+                    ]
+            ],
+			// booktitle missed
+			[
+                'source' => '\bibitem[Adatia and Saleh (2009)]{Adatia:Saleh:2009} Adatia, A., and Saleh, A. K. Md. E. (2009). Estimation of quantiles of uniform distribution using generalized ranked-set sampling. In \textit{Ranked Set Sampling} (M. Ahmad, M. Hanif, \& H. A. Muttlak, Eds.), 139–143. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Adatia, A. and Saleh, A. K. Md. E.',
+                    'booktitle' => 'Ranked Set Sampling',
+                    'editor' => 'M. Ahmad and M. Hanif and H. A. Muttlak',
+                    'pages' => '139-143',
+                    'title' => 'Estimation of quantiles of uniform distribution using generalized ranked-set sampling',
+                    'year' => '2009',
+                    ]
             ],
             
             
