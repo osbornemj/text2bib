@@ -15008,6 +15008,35 @@ class ExampleSeeder extends Seeder
                     'year' => '2009',
                     ]
             ],
+            //
+            [
+                'source' => 'MONTESQUIEU, Charles de Secondat. Do espírito das leis. Tradução Roberto Leal Ferreira. Martin Claret, 2014.',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Montesquieu, Charles de Secondat',
+                    'title' => 'Do espírito das leis',
+                    'translator' => 'Roberto Leal Ferreira',
+                    'publisher' => 'Martin Claret',
+                    'year' => '2014',
+                ],
+                'language' => 'pt',
+                'char_encoding' => 'utf8leave',
+            ],
+            // series
+            [
+                'source' => 'POPPER, Karl. \emph{A Lógica da Investigação Científica}, Coleção Os Pensadores, São Paulo: Abril Cultural, 1980.',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Popper, Karl',
+                    'title' => 'A Lógica da Investigação Científica',
+                    'series' => 'Coleção Os Pensadores',
+                    'address' => 'São Paulo',
+                    'publisher' => 'Abril Cultural',
+                    'year' => '1980',
+                ],
+                'language' => 'pt',
+                'char_encoding' => 'utf8leave',
+            ]
             
             
                         

@@ -1011,6 +1011,15 @@ class Converter
             $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $titleStyle);
             $this->verbose('Title is ' . ($titleStyle == 'none' ? 'not styled' : 'styled (' . $titleStyle . ')'));
             $newRemainder = $before . ($after ? ltrim($after, "., ") : '');
+
+            // If title is styled and is followed by series, put it in series field.
+            // This should happen only for a book, but at this point we don't know the type of the item.
+            if ($title && preg_match('/^(?P<before>[^.,]+)[.,](?P<after>.*)$/', $newRemainder, $matches)) {
+                if ($matches['before'] && preg_match('/' . $this->regExps->seriesRegExp . '/', $matches['before'], $seriesMatches)) {
+                    $this->setField($item, 'series', trim($matches['before']), 'setField 30a');
+                    $newRemainder = $matches['after'] ?? '';
+                }
+            }
         }
 
         // Custom format for Burmese
@@ -1133,6 +1142,7 @@ class Converter
             $newRemainder = rtrim($newRemainder, ' .(');
             $remainder = $newRemainder;
 
+            // If $title contains period and string after period contains series word, put that string in the series field
             if (preg_match('/^(?P<before>[^.]*)\.(?P<after>.*)$/', $title, $matches)) {
                 $beforePeriod = $matches['before'];
                 $afterPeriod = $matches['after'];

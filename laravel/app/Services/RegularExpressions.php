@@ -306,6 +306,7 @@ class RegularExpressions
             '[Tt]rans\.(?! by)',
             '[Tt]rad\.(?! by)',
             '[Tt]r\.(?! by)',
+            'Tradução',   // Portuguese
             'Çev\.',      // Turkish
         ];
 
@@ -554,7 +555,7 @@ class RegularExpressions
         ////////////
 
         $seriesPhrases = [
-            '(?<![Tt]ime )[Ss]eries',
+            '(?<![Tt]ime[ \-])[Ss]eries',
             '[Ll]ecture [Nn]otes',
             'Graduate [Tt]exts',
             'Graduate Studies',
@@ -562,6 +563,7 @@ class RegularExpressions
             'Monographs',
             'Pure and Applied Mathematics',
             'Tracts',
+            'Coleção',
         ];
 
         $this->seriesRegExp = '';
