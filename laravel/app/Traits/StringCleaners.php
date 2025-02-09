@@ -58,6 +58,8 @@ trait StringCleaners
             "\xE2\x80\x8E" => '',
             // Remove zero width joiner
             "\xE2\x80\x8D" => '',
+            // Remove zero width nonjoiner
+            "\xE2\x80\x8C" => '',
             // Replace zero-width non-breaking space with regular space
             // Change is now made when file is uploaded
             // "\xEF\xBB\xBF" => " ",

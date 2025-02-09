@@ -15050,6 +15050,35 @@ class ExampleSeeder extends Seeder
                     'year' => '2009',
                     ]
             ],
+			// journal missed
+			[
+                'source' => '\bibitem[G-La-U1]{G-La-U1} A. Greenleaf,  M. Lassas, and G. Uhlmann, Anisotropic conductivities that cannot be detected by EIT, Physiological measurement \textbf{24} (\textbf{2}) (2003), 413. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'A. Greenleaf and M. Lassas and G. Uhlmann',
+                    'journal' => 'Physiological measurement',
+                    'number' => '2',
+                    'pages' => '413',
+                    'title' => 'Anisotropic conductivities that cannot be detected by EIT',
+                    'volume' => '24',
+                    'year' => '2003',
+                    ]
+            ],
+			// journal missed
+			[
+                'source' => 'Edsberg Møllgaard, P., Lehmann, S., & Alessandretti, L. (2021). Understanding components of mobility during the COVID-19 pandemic. Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences, 380(2214). https://doi.org/10.1098/rsta.2021.0118 ‌ ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Edsberg Møllgaard, P. and Lehmann, S. and Alessandretti, L.',
+                    'doi' => '10.1098/rsta.2021.0118',
+                    'journal' => 'Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences',
+                    'number' => '2214',
+                    'title' => 'Understanding components of mobility during the COVID-19 pandemic',
+                    'volume' => '380',
+                    'year' => '2021',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
             
             
                         

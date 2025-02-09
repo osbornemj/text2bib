@@ -33,7 +33,6 @@ class Converter
     var $entrySuffixes;
     var $excludedWords;
     var $itemType;
-    var $journalWords;
     var $names;
     var $onlinePhrases;
     var $ordinals;
@@ -124,8 +123,6 @@ class Converter
         $this->entrySuffixes = ["\\", "[J].", "[J]"];
 
         $this->onlinePhrases = '(online|en ligne|internet)';
-
-        $this->journalWords = [' journal ', 'jurnal', 'frontiers in ', 'annals of ', ' bulletin'];
     }
 
     ///////////////////////////////////////////////////

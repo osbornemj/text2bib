@@ -38,6 +38,8 @@ trait Utilities
         '{\\bfseries ',
     ];
 
+    public $journalWords = ['journal', 'jurnal', 'frontiers in', 'annals of', 'bulletin', 'Philosophical Transactions'];
+
     public $articleRegExp = 'art(icle|\.) (id |no\.? ?)?[0-9]*';
 
     public $yearRegExp = '(18|19|20)[0-9]{2}';

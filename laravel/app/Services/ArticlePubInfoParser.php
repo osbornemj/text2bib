@@ -127,7 +127,6 @@ class ArticlePubInfoParser
     // '---' shouldn't be used in page range, but might be used by mistake
     public function getVolumeNumberPagesForArticle(string &$remainder, object &$item, string $language, string $pagesRegExp, string $pageWordsRegExp, string $volumeAndCodesRegExp, bool $start = false): array
     {
-        //$volumeAndCodesRegExp = '[Vv]olume ?|[Vv]ols? ?\.? ?|VOL ?\.? ?|[Vv]\. |{\\\bf |\\\textbf{|\\\textit{|\*';
         $this->pubInfoDetails = [];
 
         $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
@@ -157,7 +156,8 @@ class ArticlePubInfoParser
         // }? at end is because $volumeAndCodesRegExp includes \textbf{
         $volumeRx = '('. $this->regExps->volumeAndCodesRegExp . ')?(?P<vol>' . $numberRange . ')}?';
         $volumeWithRomanRx = '('. $this->regExps->volumeAndCodesRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')}?';
-        $numberRx = '('. $this->regExps->numberRegExp . ')?(?P<num>' . $numberRangeWithSlash . ')';
+        // Number, like volume, may have \textbf or \textit etc. (less likely, but possible)
+        $numberRx = '('. $this->regExps->numberAndCodesRegExp . ')?(?P<num>' . $numberRangeWithSlash . ')}?';
         //$volumeWordRx = '('. $volumeAndCodesRegExp . ')(?P<vol>' . $numberRange . ')';
         // Letter in front of volume is allowed only if preceded by "vol(ume)" and is single number
         $volumeWordLetterRx = '('. $this->regExps->volumeAndCodesRegExp . ')(?P<vol>' . $letterNumber . ')';

@@ -711,6 +711,7 @@ class TitleParser
                             && ! $this->isProceedings($remainder)
                             && strlen($remainder) > strlen($stringToNextPeriodOrComma) + ($containsPages ? 37 : 30)
                             && ! $upcomingYear
+                            && ! Str::startsWith($remainder, $this->journalWords)
                             ) {
                         $this->verbose("Not ending title, case 2 (next word is '" . $nextWord . "', and string to next period or comma is '" . $stringToNextPeriodOrComma . "')");
                     // else if working paper string occurs later in remainder,
