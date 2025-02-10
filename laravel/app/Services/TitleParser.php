@@ -7,6 +7,7 @@ use App\Traits\Countries;
 use App\Traits\Utilities;
 
 use App\Services\RegularExpressions;
+use SebastianBergmann\Type\FalseType;
 
 class TitleParser
 {
@@ -392,21 +393,34 @@ class TitleParser
                             // similar, but requires some punctuation or space between volume and page numbers, but allows a single
                             // page --- does not require a page range.
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, |: | )([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->regExps->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $this->regExps->pageRegExp . '\.? ?$/u', $remainder) 
-                            // journal name followed by year and publication info, allowing issue number and page
+                            // journal name, year, volume, number, pages allowing issue number and page
                             // numbers to be preceded by letters and issue number to have / or - in it.
                             || preg_match('/^\p{Lu}[\p{L} &()\-]+[,.]? (' . $this->dates->monthsRegExp[$language] . ')? ?' . $this->yearRegExp . '[,;]? ?(' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->regExps->numberRegExp . ')?(supp )?[A-Z]?[0-9\/\-]{0,4}\)?[:,]? ?' . $this->regExps->pagesRegExp . '\.? ?$/u', $remainder)
-                            // year followed by journal name and publication info, allowing issue number and page
+                            // year, journal name, volume, number, pages, allowing issue number and page
                             // numbers to be preceded by letters and issue number to have / or - in it.
                             // Note that this case allows a single page or a page range.
                             || preg_match('/^' . $this->yearRegExp . ',? \p{Lu}[\p{L} &()\-]+[,.]? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->regExps->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $this->regExps->pageRegExp . '\.? ?$/u', $remainder)
-                            // journal name followed by more specific publication info, year at end, allowing issue number and page
+                            // journal name, volume, number, pages, year, allowing issue number and page
                             // numbers to be preceded by letters.
                             || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->regExps->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $this->regExps->pagesRegExp . '(, |. |.)(\(?' . $this->yearRegExp . '\)?)$/u', $remainder) 
-                            // journal name followed by more specific publication info, year first, allowing issue number and page
+                            // journal name, year, volume, number, pages, allowing issue number and page
                             // numbers to be preceded by letters.
                             || preg_match('/^\p{Lu}[\p{L} &()]+[,.]? ' . $this->yearRegExp . ',? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->regExps->numberRegExp . ')?[A-Z]?[0-9\/]{1,4}\)?,? ' . $this->regExps->pagesRegExp . '\.? ?$/u', $remainder)
-                            // journal name (no commas) followed possibly by comma, then volume (possibly styled), number (possibly styled) (and possible page numbers).
-                            || preg_match('/^\p{Lu}[\p{L} &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, ?|: ?| \()(' . $this->regExps->numberAndCodesRegExp . ')?[0-9, \-p.():\/{}]*$/u', $remainderMinusArticle)
+                            // journal name (no commas) followed possibly by comma, then volume (possibly styled), number (possibly styled) (and possibly page numbers).  The "Sul" accommodates an issue called "Suppl 1" and page numbers starting with S
+                            || preg_match('/^\p{Lu}[\p{L} &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?(, ?|: ?| \()(' . $this->regExps->numberAndCodesRegExp . ')?[0-9, \-p.():\/{}Sul]*$/u', $remainderMinusArticle)
+                            // journal name that can contain commas and periods, but every period must be preceded by an uppercase letter
+                            // (to allow names like "Current Psychology (New Brunswick, N. J.)"); the first comma must come near the end of
+                            // the name (to allow strings like "N. J.", but not longer strings that themselves could be the journal name)
+                            ||
+                            (
+                                preg_match('/^(?P<journal>(?:[\p{L}\-() ]*|[\p{L}\-(), ]*[A-Z]\.)*[\p{L}\-() ]*), [\d(),\- ]{5,}$/', $remainderMinusArticle, $matches)
+                                &&
+                                (
+                                    strpos($matches['journal'], ',') === false
+                                    ||
+                                    strlen(Str::after($matches['journal'], ',')) < 10
+                                )
+                            )
                             // $word ends in period && journal name (can include commma), pub info ('}' after volume # for \textbf{ (in $volumeAndCodesRegExp))
                             || (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L}, &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:( ] ?(' . $this->regExps->numberRegExp . ')?[0-9, \-p\.():\/]*$/u', $remainderMinusArticle))
                             || (Str::endsWith($word, ['.']) && preg_match('/^\p{Lu}[\p{L}, &]+,? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?(' . $this->regExps->numberRegExp . ')?\([0-9]{2,4}\)/u', $remainderMinusArticle))

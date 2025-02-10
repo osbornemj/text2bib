@@ -405,7 +405,7 @@ class RegularExpressions
             '[Nn][Oo]s?( ?\.:?| ?:| ) ?',
             '[Nn]úm\.:? ?',
             '[Nn]umbers? ?',
-            '[Nn] ?\. ',
+            '[Nn] ?\. (?=\d)',       // must be followed by digit
             '№\.? ?',
             '[Nn]\.? ?(°|º) ?',
             '[Ii]ssue(: ?| )',
@@ -449,8 +449,8 @@ class RegularExpressions
 
         // volume words, with optional space after each one
         $this->volumeRegExp = $volumeRegExp;
-        $this->volumeAndCodesRegExp = $volumeRegExp . '|{\\\bf |\\\textbf{|\\\textit{|\*';
-        $this->volumeWithNumberRegExp = '(' . $this->volumeRegExp . ') ?(\\textit\{|\\textbf\{)?[1-9][0-9]{0,4}';
+        $this->volumeAndCodesRegExp = $volumeRegExp . '|{\\\bf |\\\textbf{|\\\textit{|\\\emph{|\*';
+        $this->volumeWithNumberRegExp = '(' . $this->volumeRegExp . ') ?(\\\textit\{|\\\textbf\{|\\\emph\{)?[1-9][0-9]{0,4}';
     
         $this->volumeNumberPagesRegExp = '/(' . $this->volumeRegExp . ')?[0-9]{1,4} ?(' . $this->numberRegExp . ')?[ \(][0-9]{1,4}[ \)]:? ?(' . $this->pageRegExp . ')/u';
 
@@ -465,7 +465,7 @@ class RegularExpressions
             '[Tt]esis',
             '[Tt]hèse',
             '[Tt]ese',
-            '{Tt]ezi',
+            '[Tt]ezi',
             '[Dd]issertation',
             '[Dd]iss\.',
             '[Dd]issertação',

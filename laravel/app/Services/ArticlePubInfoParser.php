@@ -127,6 +127,8 @@ class ArticlePubInfoParser
     // '---' shouldn't be used in page range, but might be used by mistake
     public function getVolumeNumberPagesForArticle(string &$remainder, object &$item, string $language, string $pagesRegExp, string $pageWordsRegExp, string $volumeAndCodesRegExp, bool $start = false): array
     {
+        $issuePrefixes = 'Suppl ';
+
         $this->pubInfoDetails = [];
 
         $remainder = trim($this->regularizeSpaces($remainder), ' ;.,\'');
@@ -148,7 +150,7 @@ class ArticlePubInfoParser
         $pageNumberESuffix = '(\.e[0-9]{1,3})';
         // slash is permitted in range of issues (e.g. '1/2'), but not for volume, because '12/3' is interepreted to mean
         // volume 12 number 3
-        $numberRangeWithSlash = $number . '(( ?--?-? ?|_|\/)' . $number . $pageNumberESuffix . '?)?( ?\(?(' . $months . ')([-\/](' . $months . '))?' . '( ' . $this->yearRegExp . ')?' . '\)?)?';
+        $numberRangeWithSlash = '(' . $issuePrefixes . ')?' . $number . '(( ?--?-? ?|_|\/)' . $number . $pageNumberESuffix . '?)?( ?\(?(' . $months . ')([-\/](' . $months . '))?' . '( ' . $this->yearRegExp . ')?' . '\)?)?';
         //$monthRange = '\(?(?P<month1>' . $months . ')(-(?P<month2>' . $months . '))?\)?';
         // Ð is for non-utf8 encoding of en-dash(?)
         $letterNumberRange = $letterNumber . '(( ?--?-? ?|_|\?)' . $letterNumber . $pageNumberESuffix . '?)?';

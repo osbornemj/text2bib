@@ -15079,6 +15079,87 @@ class ExampleSeeder extends Seeder
                 ],
                 'char_encoding' => 'utf8leave',
             ],
+			// journal missed because of string in parens
+			[
+                'source' => 'Adamczyk K. (2017). Voluntary and Involuntary Singlehood and Young Adults\' Mental Health: an Investigation of Mediating Role of Romantic Loneliness. Current Psychology (New Brunswick, N.J.), 36(4), 888–904. https://doi.org/10.1007/s12144-016-9478-3 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Adamczyk, K.',
+                    'doi' => '10.1007/s12144-016-9478-3',
+                    'journal' => 'Current Psychology (New Brunswick, N. J.)',
+                    'number' => '4',
+                    'pages' => '888-904',
+                    'title' => 'Voluntary and Involuntary Singlehood and Young Adults\' Mental Health: an Investigation of Mediating Role of Romantic Loneliness',
+                    'volume' => '36',
+                    'year' => '2017',
+                    ]
+            ],
+			// journal included in title
+			[
+                'source' => 'Dworkin RH, Johnson RW, Breuer J, Gnann JW, Levin MJ, Backonja M, Betts RF, Gershon AA, Haanpaa ML, McKendrick MW, et al: Recommendations for the management of herpes zoster. Clin Infect Dis 44 (Suppl 1): S1-S26, 2007.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Dworkin, R. H. and Johnson, R. W. and Breuer, J. and Gnann, J. W. and Levin, M. J. and Backonja, M. and Betts, R. F. and Gershon, A. A. and Haanpaa, M. L. and McKendrick, M. W. and others',
+                    'title' => 'Recommendations for the management of herpes zoster',
+					'journal' => 'Clin Infect Dis',
+					'volume' => '44',
+					'number' => 'Suppl 1',
+					'pages' => 'S1-S26',
+                    'year' => '2007',
+                    ]
+            ],
+			// publisher, address not detected
+			[
+                'source' => 'Irvine, Christopher. 2013. The Cross and Creation in Christian Liturgy and Art, London: SPCK. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Irvine, Christopher',
+                    'title' => 'The Cross and Creation in Christian Liturgy and Art',
+                    'year' => '2013',
+                    'address' => 'London',
+                    'publisher' => 'SPCK',
+                    ]
+            ],
+			// volume uses \emph
+			[
+                'source' => '\bibitem{Zvezd1983} Zvezdin A., \& Popkov F. (1983). Contribution to the nonlinear theory of magnetostatic spin waves. \emph{Sov. Phys. JETP.}, \emph{84}(2), 606. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Zvezdin, A. and Popkov, F.',
+                    'title' => 'Contribution to the nonlinear theory of magnetostatic spin waves',
+                    'journal' => 'Sov. Phys. JETP',
+                    'year' => '1983',
+                    'volume' => '84',
+                    'number' => '2',
+                    'pages' => '606',
+                    ]
+            ],
+			// recognize that vs. is an abbreviation
+			[
+                'source' => 'Soudani, H., Kanoulas, E., & Hasibi, F. (2024). Fine Tuning vs. Retrieval Augmented Generation for Less Popular Knowledge. https://doi.org/10.48550/arXiv.2403.01432  ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'doi' => '10.48550/arXiv.2403.01432',
+                    'author' => 'Soudani, H. and Kanoulas, E. and Hasibi, F.',
+                    'year' => '2024',
+                    'title' => 'Fine Tuning vs. Retrieval Augmented Generation for Less Popular Knowledge',
+                    ]
+            ],
+			// author/editor not detected?
+			[
+                'source' => 'Dunea, George, ed. 2023. ‘Pierre Charles Louis of the Numerical Method - Hektoen International’. Hektoen International: A Journal of Medical Humanities 16, no. 1 (Winter 2023). https://hekint.org/2023/01/13/pierre-charles-louis-of-the-numerical-method/. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'editor' => 'Dunea, George',
+                    'title' => 'Pierre Charles Louis of the Numerical Method - Hektoen International',
+                    'journal' => 'Hektoen International: A Journal of Medical Humanities',
+                    'year' => '2023',
+                    'volume' => '16',
+                    'number' => '1',
+                    'url' => 'https://hekint.org/2023/01/13/pierre-charles-louis-of-the-numerical-method/',
+                    'note' => 'Winter 2023',
+                    ]
+            ],
             
             
                         
