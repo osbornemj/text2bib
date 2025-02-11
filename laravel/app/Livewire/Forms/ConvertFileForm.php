@@ -9,7 +9,7 @@ class ConvertFileForm extends Form
 {
     #[Rule('required', message: 'Please select a file to upload')]
     #[Rule('max:100', message: 'The size of your file exceeds the maximum allowed, 100K')]
-    #[Rule('mimes:txt', message: 'Your file is not plain text')]
+    #[Rule('mimetypes:text/plain,text/x-tex', message: 'Your file is not plain text')]
     public $file;
 
     #[Rule('required', message: 'Please choose one of the options')]
