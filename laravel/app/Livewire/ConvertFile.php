@@ -486,6 +486,12 @@ class ConvertFile extends Component
 
                 $convItem['item_type_id'] = $itemTypes->where('name', $convItem['itemType'])->first()->id;
 
+                // Following doesn't avoid the error
+                // Unable to encode attribute [item] for model [App\Models\Output] to JSON: Malformed UTF-8 characters, possibly incorrectly encoded.
+                // because, it seems, there is another issue, although no error is reported
+                // (the conversion appears not to start)
+                // $convertedItem = json_encode($convItem['item'], JSON_INVALID_UTF8_SUBSTITUTE);
+                // $originalItem = json_encode($convItem['item'], JSON_INVALID_UTF8_SUBSTITUTE);
                 $output = Output::create([
                     'source' => $convItem['source'],
                     'detected_encoding' => $encodings[$i],
@@ -494,7 +500,9 @@ class ConvertFile extends Component
                     'orig_item_type_id' => $convItem['item_type_id'],
                     'label' => $convItem['label'],
                     'item' => $convItem['item'],
+                    //'item' => $convertedItem,
                     'orig_item' => $convItem['item'],
+                    //'orig_item' => $originalItem,
                     'crossref_item_type' => $convItem['crossref_item_type'] ?? null,
                     'crossref_item_type_id' => $convItem['crossref_item_type_id'] ?? null,
                     'crossref_item_label' => $convItem['crossref_item_label'] ?? null,

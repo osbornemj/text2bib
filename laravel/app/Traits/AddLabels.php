@@ -144,7 +144,11 @@ trait AddLabels
             $string = '';
         }
 
-        return preg_replace("/[^\p{L},\s]+/u", '', $string);
+        $result = preg_replace("/[^\p{L},\s]+/u", '', $string);
+        if ($result == null) {
+            $result = '';
+        }
+        return $result;
     }
 
     public function translateFrom($string, $language)
