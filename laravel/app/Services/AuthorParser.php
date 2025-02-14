@@ -38,7 +38,7 @@ class AuthorParser
 
         $this->vonNames = VonName::all()->pluck('name')->toArray();
 
-        $this->nameSuffixes = ['Jr', 'Sr', 'III'];
+        $this->nameSuffixes = ['Jr', 'Sr', 'III', 'Filho', 'Neto'];
 
         $this->andWords = [
             'and', 
@@ -346,13 +346,18 @@ class AuthorParser
 
         $remainingWords = $words;
 
+        $nameComponentUpperCase = [];
+
         foreach ($words as $i => $word) {
             if ($skip) {
                 $skip = false;
                 continue;
             }
 
+            $nameComponentUpperCase[$i] = false;
+
             $wordEndsName = false;
+            $nameSuffixNoComma = false;
             if (substr($word, -1) == ';') {
                 $word = substr($word, 0, -1) . ',';
                 $wordEndsName = true;
@@ -508,7 +513,7 @@ class AuthorParser
                     $this->verbose("String indicating editors (e.g. 'eds') detected, so ending name string");
                 }
                 // Under some conditions (von name?), $fullName has already been added to $authorstring.
-                if (!Str::endsWith($authorstring, $fullName)) {
+                if (! Str::endsWith($authorstring, $fullName)) {
                     $this->addToAuthorString(1, $authorstring, $this->formatAuthor($fullName));
                 }
                 break;  // exit from foreach
@@ -518,7 +523,11 @@ class AuthorParser
                 $this->verbose('[convertToAuthors 3]');
                 // Word is 'and' or equivalent, and if it is "et" it is not followed by "al".
                 $hasAnd = $prevWordAnd = true;
-                $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName) . ' and');
+                $formattedAuthor = $this->formatAuthor($fullName);
+                if ($formattedAuthor && substr($authorstring, -1) != ' ' && substr($formattedAuthor, 0, 1) != ' ') {
+                    $formattedAuthor = ' ' . $formattedAuthor;
+                }
+                $this->addToAuthorString(2, $authorstring, $formattedAuthor . ' and');
                 $fullName = '';
                 $namePart = 0;
                 $this->verbose("\$namePart set to 0");
@@ -526,7 +535,7 @@ class AuthorParser
                 $reason = 'Word is "and" or equivalent';
             } elseif (rtrim($word, '.') == 'others') {
                 $this->verbose('[convertToAuthors 3a]');
-                $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName) . ' others');
+                $this->addToAuthorString(30, $authorstring, $this->formatAuthor($fullName) . ' others');
                 $remainder = implode(" ", $remainingWords);
                 $done = true;
             } elseif (in_array($word, ['et', 'et.'])) {
@@ -720,7 +729,7 @@ class AuthorParser
                     // On encounting a von name, namepart is not incremented, which is
                     // wrong if Werner is a first name.
                     $hasAnd = $prevWordAnd = true;
-                    $this->addToAuthorString(2, $authorstring, $this->formatAuthor($fullName . ' ' . $word));
+                    $this->addToAuthorString(31, $authorstring, $this->formatAuthor($fullName . ' ' . $word));
                     $fullName = '';
                     $namePart = 0;
                     $this->verbose("\$namePart set to 0");
@@ -795,6 +804,7 @@ class AuthorParser
                     // If part of name is all uppercase and 3 or more letters long, convert it to mb_ucfirst(mb_strtolower())
                     // For component with 1 or 2 letters, assume it's initials and leave it uc (to be processed by formatAuthor)
                     if (strlen($name) > 2 && mb_strtoupper($name) == $name && strpos($name, '.') === false) {
+                        $nameComponentUpperCase[$i] = true;
                         $nameComponent = mb_ucfirst(mb_strtolower($name));
                         // Simpler version of following code, without check for hyphen, produces strange result ---
                         // the *next* word has a period replaced by a comma
@@ -855,7 +865,20 @@ class AuthorParser
                 // 2023.8.2: trimRightBrace removed to deal with conversion of example containing name Oblo{\v z}insk{\' y}
                 // However, it must have been included here for a reason, so probably it should be included under
                 // some conditions.
-                if (in_array(rtrim($word, '.,'), $this->nameSuffixes)) {
+                if (
+                    in_array(rtrim($word, '.,'), $this->nameSuffixes)
+                    ||
+                    (
+                        isset($nameComponentUpperCase[$i-1]) 
+                        &&
+                        $nameComponentUpperCase[$i-1] 
+                        && 
+                        in_array(rtrim($word, '.,'), array_map('strtoupper', $this->nameSuffixes))
+                    )
+                   ) {
+                    if ($word != 'III,') {
+                        $word = mb_ucfirst(mb_strtolower($word));
+                    }
                     $this->verbose('[convertToAuthors 20]');
                     $fullName = $this->formatAuthor($fullName);
                     $nWords = explode(' ', trim($fullName, ' '));
@@ -870,7 +893,7 @@ class AuthorParser
                     } else {
                         // Put Jr. or Sr. in right place for BibTeX: format is lastName, Jr., firstName OR lastName Jr., firstName.
                         // Assume last name is single word that is followed by a comma (which covers both
-                        // firstName lastName, Jr. and lastName, firstName, Jr.
+                        // firstName lastName, Jr. and lastName, firstName, Jr.)
                         $this->verbose('[convertToAuthors 22]');
                         $fullName = ' ';
                         // Put Jr. after the last name
@@ -914,7 +937,11 @@ class AuthorParser
                         break;
                     }
 
-                    $this->verbose('Name with Jr., Sr., or III; fullName: ' . $fullName);
+                    if (strpos(substr($fullName, 0, -1), ',') === false) {
+                        $nameSuffixNoComma = true;
+                    }
+
+                    $this->verbose('Name with suffix (Jr., Sr., ...); fullName: ' . $fullName);
                 } else {
                     $this->verbose('[convertToAuthors 23]');
                     // Don't rtrim '}' because it could be part of the name: e.g. Oblo{\v z}insk{\' y}.
@@ -992,8 +1019,11 @@ class AuthorParser
                     if (Str::endsWith($word, ',') && ! $prevWordHasComma) {
                         $fullName .= ',';
                     }
+                    if (Str::endsWith($fullName, ',,')) {
+                        $fullName = substr($fullName, 0, -1);
+                    }
                     $fullName = $fullName . ' ' . rtrim($nextWord, ',. ');
-                    $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName));
+                    $this->addToAuthorString(9, $authorstring, $this->formatAuthor($fullName, $nameSuffixNoComma));
                     $case = 7;
                 } elseif (
                     // stop if ...
@@ -1221,7 +1251,7 @@ class AuthorParser
      * In particular, change Smith AB to Smith, A. B. and A.B. SMITH to A. B. Smith and SMITH Ann to SMITH, Ann
      * $nameString is a FULL name (e.g. first and last or first middle last)
      */
-    public function formatAuthor(string $nameString, bool $initials = false): string
+    public function formatAuthor(string $nameString, bool $initials = false, bool $nameSuffixNoComma = false): string
     {
         $this->verbose(['text' => 'formatAuthor: argument ', 'words' => [$nameString]]);
 

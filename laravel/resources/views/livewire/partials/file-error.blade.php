@@ -8,7 +8,7 @@
             <p>
                 The file you uploaded appears to be a 
                 @if ($fileError == 'bibtex')
-                    BibTeX file.
+                    BibTeX file.  (It contains at least one entry in BibTeX format.)
                 @elseif ($fileError == 'bbl-natbib')
                     bbl file created by natbib.
                 @elseif ($fileError == 'bibliographic-export')
@@ -16,7 +16,7 @@
                 @endif
                 This system converts text references to BibTeX format.  It does not process 
                 @if ($fileError == 'bibtex')
-                    BibTeX files.
+                    BibTeX files (or files for which some entries are in BibTeX format).
                 @elseif ($fileError == 'bbl-natbib')
                     bbl files created by natbib.
                 @elseif ($fileError == 'bibliographic-export')

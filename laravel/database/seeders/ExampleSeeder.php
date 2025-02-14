@@ -15160,10 +15160,35 @@ class ExampleSeeder extends Seeder
                     'note' => 'Winter 2023',
                     ]
             ],
-            
-            
-                        
-            
+            // problem with name with suffix
+            [
+                'source' => 'DELMANTO JR., Roberto. \emph{Liberdade e Prisão no Processo Penal: as Modalidades de Prisão Provisória e seu Prazo de Duração}. São Paulo: Saraiva, 2019.',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Delmanto Jr., Roberto',
+                    'title' => 'Liberdade e Prisão no Processo Penal',
+                    'subtitle' => 'As Modalidades de Prisão Provisória e seu Prazo de Duração',
+                    'year' => '2019',
+                    'address' =>  'São Paulo',
+                    'publisher' => 'Saraiva',
+                ],
+                'language' => 'pt',
+                'char_encoding' => 'utf8leave',
+            ],
+            // same
+            [
+                'source' => 'FERREIRA FILHO, Manoel G. \emph{Curso de Direito Constitucional}. Rio de Janeiro: Forense, 2022.',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ferreira Filho, Manoel G.',
+                    'title' => 'Curso de Direito Constitucional',
+                    'year' => '2022',
+                    'address' => 'Rio de Janeiro',
+                    'publisher' => 'Forense',
+                ],
+                'language' => 'pt',
+                'char_encoding' => 'utf8leave',
+            ]
             
              
             
