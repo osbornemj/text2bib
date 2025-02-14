@@ -1965,7 +1965,7 @@ class Converter
                 } elseif (! $journalNameMissingButHasVolume) {
                     // If journal name not found and previously assigned title contains a single period, assume
                     // title precedes period and journal name follows period.
-                    if (preg_match('/^(?P<before>[^.]+)\.(?P<after>[^.]+)$/', $item->title, $matches)) {
+                    if (isset($item->title) && preg_match('/^(?P<before>[^.]+)\.(?P<after>[^.]+)$/', $item->title, $matches)) {
                         $this->setField($item, 'title', $matches['before'], 'setField 50');
                         $this->setField($item, 'journal', $matches['after'], 'setField 51');
                         $remainder = '';
