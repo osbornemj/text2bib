@@ -67,7 +67,7 @@ class IndexController extends Controller
     {
         $conversion = Conversion::find($conversionId);
 
-        if (!$conversion || $conversion->user_id != Auth::id()) {
+        if (! $conversion || $conversion->user_id != Auth::id()) {
             abort(403);
         }
 

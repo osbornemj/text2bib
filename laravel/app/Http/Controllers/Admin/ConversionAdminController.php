@@ -53,6 +53,12 @@ class ConversionAdminController extends Controller
 
     public function showConversion(int $conversionId, int $page): View
     {
+        $conversion = Conversion::find($conversionId);
+
+        if (! $conversion) {
+            abort(403);
+        }
+
         $outputs = Output::where('conversion_id', $conversionId)
                     ->with('itemType')
                     ->orderBy('seq')
@@ -61,8 +67,6 @@ class ConversionAdminController extends Controller
         $authorPatternCount = $outputs->whereNotNull('author_pattern')->count();
         $outputCount = $outputs->count();
         $authorPatternPercent = $outputCount ? 100 * $authorPatternCount / $outputCount : 0;
-
-        $conversion = Conversion::find($conversionId);
 
         $bstFields = config('constants.nonstandard_bst_fields');
 
