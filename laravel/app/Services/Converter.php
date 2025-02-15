@@ -1692,13 +1692,20 @@ class Converter
             }
         } elseif (
                 ($containsPageRange || $containsInteriorVolume)
-                && ($containsNumberOutsidePages || $containsMonth)
-                && ! $containsProceedings
-                && ! $containsPublisher
-                && ! $containsCity
-                && ! $endsAddressPublisher
-                && ! $containsIsbn
-                && ! $containsSeries
+                &&
+                ($containsNumberOutsidePages || $containsMonth)
+                && 
+                ! $containsProceedings
+                && 
+                ! $containsPublisher
+                && 
+                ! $containsCity
+                && 
+                ! $endsAddressPublisher
+                && 
+                ! $containsIsbn
+                && 
+                ! $containsSeries
                 ) {
             $this->verbose("Item type case 6");
             $itemKind = 'article';
@@ -1748,12 +1755,21 @@ class Converter
             } elseif ($pubInfoEndsWithForthcoming || $pubInfoStartsWithForthcoming) {
                 $this->verbose("Item type case 16");
                 $itemKind = 'article';
-            } elseif (! $containsEdition 
-                && (
-                    $titleStyle == 'quoted'
-                    || $yearIsForthcoming
-                    || ($allWordsInitialCaps && ($hasFullDate || $containsUrlAccessInfo))
-                   )) {  //  
+            } elseif (
+                ! $containsEdition 
+                &&
+                (
+                    ($titleStyle == 'quoted' && $containsNumber) // $containsNumber: volume, issue, or page numbers have to be present
+                    ||
+                    $yearIsForthcoming
+                    ||
+                    (
+                        $allWordsInitialCaps
+                        &&
+                        ($hasFullDate || $containsUrlAccessInfo)
+                    )
+                )
+                ) {  //  
                 // If $allWordsInitialCaps, $remainder could be journal/newspaper name (although there are no page numbers etc.)
                 $this->verbose("Item type case 17a");
                 $itemKind = 'article';
@@ -3003,6 +3019,7 @@ class Converter
                         $afterEds = rtrim(Str::after($remainder, $eds), '; ');
                         $setRemainder = false;
 
+                        $this->verbose('$afterEds: '.$afterEds);
                         // Remove address and publisher, if present, and if match one of these patterns
                         if (
                             preg_match('/^(?P<string>[^(]+) \((?P<address>[^:]+): (?P<publisher>[^)0-9]+)( (?P<year>' . $this->yearRegExp . '))?\)$/', $afterEds, $matches)

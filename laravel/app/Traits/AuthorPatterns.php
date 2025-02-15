@@ -73,6 +73,7 @@ trait AuthorPatterns
         // Spaces between initials are added before an item is processed, so "A.B." doesn't need to be matched
         $initialsLastName = '('.$initialRegExp.' ){1,4}'.$lastNameRegExp;
         $lastNameInitials = $lastNameRegExp.',?( '.$initialRegExp.'){1,4}';
+        $lastNameInitialsInParens = $lastNameRegExp.' \(( ?'.$initialRegExp.'){1,4}\)';
         $lastNameInitialsPeriod = $lastNameRegExp.',?( '.$initialPeriodRegExp.'){1,4}';
         $firstNameInitialsLastName = $otherNameRegExp.' ('.$initialRegExp.' )?'.$lastNameRegExp;
         $lastNameFirstNameInitials = $lastNameRegExp.', '.$otherNameRegExp.'( '.$initialRegExp.')?';
@@ -87,11 +88,11 @@ trait AuthorPatterns
         $notAndOrLetter = '(?!'.$andRegExp.'|\p{Lu})';
 
         // When used for Editors, ending with colon can be a problem if it is used in address: publisher
-        // Having '(' as a terminator is in appropriate for an entry like
+        // Having '(' as a terminator is inappropriate for an entry like
         // "Douglas Hedley, The Iconic Imagination (New York: Bloomsbury, 2016)."
         // because "The Iconic Imagination" gets interpreted as a second author.
         // $commaYear = ',? (?=[(\[`"\'\d])';
-        $commaYear = ',? (?=(([(\[](\d|ed|tran|n\.))|[`"\'\d]))';
+        $commaYear = ',? (?=(([(\[]?(\d|ed|dir|tran|n\.))|[`"\'\d]))';
         // Requirement of lowercase after the first word for 4 bare words is to avoid terminating an author string like the following one
         // too early (after Hamilton SA):
         // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T
@@ -261,6 +262,13 @@ trait AuthorPatterns
                 'end2' => '[,;] '.$notAnd,
                 'end3' => $periodNotAndOrCommaYear,
             ],
+            // 18. Smith (J. A.), Jones (A. B.),? and Gonzalez (J.)(colon or comma year)
+            [
+                'name1' => $lastNameInitialsInParens,
+                'end1' => ', '.$notAnd,
+                'end2' => ',? '.$andRegExp.' ',
+                'end3' => $colonOrCommaYearOrBareWords,
+            ],
 
             ///////////////
             // TWO NAMES //
@@ -363,6 +371,13 @@ trait AuthorPatterns
                 'end2' => $periodOrColonOrCommaYearOrCommaNotJr,
                 'end3' => null,
             ],
+            // 29. Smith (J. A.) and Jones (A. B.)(colon or comma year)
+            [
+                'name1' => $lastNameInitialsInParens,
+                'end1' => ' '.$andRegExp.' ',
+                'end2' => $colonOrCommaYearOrBareWords,
+                'end3' => null,
+            ],
 
             //////////////
             // ONE NAME //
@@ -420,12 +435,19 @@ trait AuthorPatterns
                 'end2' => null,
                 'end3' => null,
             ],
+            // 35. Smith (J. A.)(colon or comma year)
+            [
+                'name1' => $lastNameInitialsInParens,
+                'end1' => $colonOrCommaYearOrBareWords,
+                'end2' => null,
+                'end3' => null,
+            ],
 
             // ///////////////////
             // ONE NAME et al. //
             // ///////////////////
 
-            // 35. J. A. Smith et.? al.? OR Jane A. Smith,? et.? al.?
+            // 36. J. A. Smith et.? al.? OR Jane A. Smith,? et.? al.?
             [
                 'name1' => '('.$initialsLastName.'|'.$firstNameInitialsLastName.')',
                 'end1' => $etal,
@@ -433,7 +455,7 @@ trait AuthorPatterns
                 'end3' => null,
                 'etal' => true,
             ],
-            // 36. Smith,? A.,? et al. OR Smith, Jane A.,? et.? al.?
+            // 37. Smith,? A.,? et al. OR Smith, Jane A.,? et.? al.?
             [
                 'name1' => '('.$lastNameInitials.'|'.$lastNameRegExp.', '.$otherNameRegExp.'( \p{Lu})?)',
                 'end1' => $etal,

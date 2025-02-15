@@ -73,6 +73,15 @@ class Dates
                 $year = $matches0['year'];
             }
             return $year;
+        // ends in (2020) [1830] OR 2020 [1830] not preceded by any digit
+        } elseif (! $start && preg_match('/^(?P<before>[^\d]*)(?P<year>\(?[\[(]?(' . $centuries . ')[0-9]{2}\)?[\])]? [\[(]?(' . $centuries . ')[0-9]{2}[\])]?)(?P<after>.*)$/i', $remains, $matches0)) {
+            $remains = trim($matches0['before']).' '.trim($matches0['after'], ') ');
+            if ($matches0['year'][0] == '(') {
+                $year = substr($matches0['year'], 1);
+            } else {
+                $year = $matches0['year'];
+            }
+            return $year;
         }
 
         if ($allowMonth) {

@@ -15188,7 +15188,78 @@ class ExampleSeeder extends Seeder
                 ],
                 'language' => 'pt',
                 'char_encoding' => 'utf8leave',
-            ]
+            ],
+			// initials in parens
+			[
+                'source' => 'Bautier (R.-H.) et Maillard (F.), « Un dénombrement des feux, des individus et des fortunes dans deux villages du Fenouillèdes en 1306 », Bulletin philologique et historique, 1965, p. 309-328. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bautier, R.-H. and Maillard, F.',
+					'title' => 'Un dénombrement des feux, des individus et des fortunes dans deux villages du Fenouillèdes en 1306',
+                    'year' => '1965',
+                    'journal' => 'Bulletin philologique et historique',
+                    'pages' => '309-328',
+                    ],
+					'language' => 'fr',
+					'char_encoding' => 'utf8leave',
+            ],
+            // initials in parens
+			[
+                'source' => 'Laharie-Van Elsuwé (M.), « Les révisions de feux en Gascogne orientale aux XIVe et XVe siècles », Annales du Midi, 1970, p. 349-358. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Laharie-Van Elsuwé, M.',
+                    'title' => 'Les révisions de feux en Gascogne orientale aux XIVe et XVe siècles',
+                    'year' => '1970',
+                    'journal' => 'Annales du Midi',
+                    'pages' => '349-358',
+                    ],
+					'language' => 'fr',
+					'char_encoding' => 'utf8leave',
+            ],
+			// initials in parens
+			[
+                'source' => 'Dupâquier (J.) dir., Histoire de la population française, I, Des origines à la Renaissance, Paris, 1995 [1988]. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'editor' => 'Dupâquier, J.',
+                    'title' => 'Histoire de la population française, I, Des origines à la Renaissance',
+                    'year' => '1995 [1988]',
+                    'address' => 'Paris',
+                    ],
+					'language' => 'fr',
+					'char_encoding' => 'utf8leave',
+            ],
+			// initials in parens
+			[
+                'source' => 'Dupâquier (J.) et Le Roy Ladurie (E.), « Quatre-vingts villages (XIIIe-XXe siècle) », Annales ESC, 1969, p. 424-433. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Dupâquier, J. and Le Roy Ladurie, E.',
+					'title' => 'Quatre-vingts villages (XIIIe-XXe siècle)',
+                    'year' => '1969',
+                    'journal' => 'Annales ESC',
+                    'pages' => '424-433',
+                    ],
+					'language' => 'fr',
+					'char_encoding' => 'utf8leave',
+            ],
+			// initials in parens
+			[
+                'source' => 'Larguier (G.), « Disettes en Languedoc au XIVe siècle : faut-il reconsidérer partiellement la relation population/subsistances ? », in Bourin (M.), Drendel (J.) et Menant (F.) dir., Les disettes dans la conjoncture de 1300 en Méditerranée occidentale, École Française de Rome, 2011, p. 247-261. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Larguier, G.',
+                    'title' => 'Disettes en Languedoc au XIVe siècle : faut-il reconsidérer partiellement la relation population/subsistances ?',
+                    'year' => '2011',
+                    'pages' => '247-261',
+                    'publisher' => 'École Française de Rome',
+                    'editor' => 'Bourin, M. and Drendel, J. and Menant, F.',
+                    'booktitle' => 'Les disettes dans la conjoncture de 1300 en Méditerranée occidentale',
+                    ],
+					'language' => 'fr',
+					'char_encoding' => 'utf8leave',
+            ],
             
              
             

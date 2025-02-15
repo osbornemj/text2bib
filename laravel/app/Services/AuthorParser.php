@@ -1309,6 +1309,12 @@ class AuthorParser
 
         foreach ($names as $i => $name) {
             $lettersOnlyName = preg_replace("/[^\p{L}]/u", '', $name);
+
+            // If $name is in parens, remove the parens
+            if (preg_match('/^\((?P<string>[^)]+)\)$/', $name, $matches)) {
+                $name = $matches['string'];
+            }
+
             if ($i) {
                 $fName .= ' ';
             }
