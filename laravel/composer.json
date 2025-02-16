@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.2",
-        "icehouse-ventures/laravel-chartjs": "^1.0",
+        "icehouse-ventures/laravel-chartjs": "^4.0",
         "laravel/breeze": "^2.0",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
