@@ -15300,6 +15300,33 @@ class ExampleSeeder extends Seeder
                     'title' => 'Markets, Rights and Power -- in Australian Social Policy',
                     ]
             ],
+            // author format
+            [
+                'source' => 'Gartland.D., Riggs.E., Muyeen.S., et al. 2019. What factors are associated with resilient outcomes in children exposed to social adversity? BMJ Open 9:e024870',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Gartland, D. and Riggs, E. and Muyeen, S. and others',
+                    'year' => '2019',
+                    'title' => 'What factors are associated with resilient outcomes in children exposed to social adversity?',
+                    'journal' => 'BMJ Open',
+                    'volume' => '9',
+                    'note' => 'Article e024870',
+                    ]
+            ],
+            // author format
+            [
+                'source' => 'Harking.A., McNamara.J., Daly.A., Tanton.R. 2009. Child Social Exclusion: An Updated Index From the 2006 Census. Australian Journal of Labour Economics. Vol 12. No 1. 41 – 64. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Harking, A. and McNamara, J. and Daly, A. and Tanton, R.',
+                    'pages' => '41-64',
+                    'volume' => '12',
+                    'title' => 'Child Social Exclusion: An Updated Index From the 2006 Census',
+                    'journal' => 'Australian Journal of Labour Economics',
+                    'number' => '1',
+                    'year' => '2009',
+                    ]
+            ],
 			
             
              

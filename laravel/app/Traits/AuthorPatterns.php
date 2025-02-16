@@ -270,12 +270,27 @@ trait AuthorPatterns
                 'end2' => ',? '.$andRegExp.' ',
                 'end3' => $colonOrCommaYearOrBareWords,
             ],
+            // 19. Smith.J.?, Jones.A.?, Gonzalez.J.? (colon or comma year)
+            [
+                'name1' => $lastNameDotInitials,
+                'end1' => ', ',
+                'end2' => ',?( '.$andRegExp.')? ',
+                'end3' => $colonOrCommaYearOrBareWords,
+            ],
+            // 20. Smith.J.?, Jones.A.?, Gonzalez.J.? et al. (colon or comma year)
+            [
+                'name1' => $lastNameDotInitials,
+                'end1' => ', ',
+                'end2' => ',?( '.$andRegExp.')? ',
+                'end3' => $etal.$colonOrCommaYearOrBareWords,
+                'etal' => true,
+            ],
 
             ///////////////
             // TWO NAMES //
             ///////////////
 
-            // 18. Smith AB, Jones CD[:\.]
+            // 21. Smith AB, Jones CD[:\.]
             // The restriction in $periodNotAndOrColonOrCommaYear that '.,' cannot be followed by ' \p{Lu}' is so that a string like
             // Hu, L, Geng, S., Li, Y., Cheng. S., Fu, X., Yue, X. and Han, X.
             // which has a typo --- no period after first L --- is not truncated after Geng, S.
@@ -288,7 +303,7 @@ trait AuthorPatterns
                 'end3' => null,
                 'initials' => true,
             ],
-            // 19. Smith A. B.[,;] Jones C. D.:
+            // 22. Smith A. B.[,;] Jones C. D.:
             [
                 'name1' => $lastNameInitials,
                 'end1' => '[,;] ',
@@ -296,7 +311,7 @@ trait AuthorPatterns
                 'end2' => $colonOrCommaYear,
                 'end3' => null,
             ],
-            // 20. Smith A. B.[,;] Jones C. D.(: | followed by <paren> or <quote> or <digit> or 4 bare words (no punctuation)
+            // 23. Smith A. B.[,;] Jones C. D.(: | followed by <paren> or <quote> or <digit> or 4 bare words (no punctuation)
             [
                 'name1' => $lastNameInitialsPeriod,
                 'end1' => '[,;] ',
@@ -304,7 +319,7 @@ trait AuthorPatterns
                 'end2' => $colonOrCommaYearOrBareWords,
                 'end3' => null,
             ],
-            // 21. Smith AB and Gonzalez JD(: |\. |, | followed by <paren> or <quote> or <digit>)
+            // 24. Smith AB and Gonzalez JD(: |\. |, | followed by <paren> or <quote> or <digit>)
             [
                 'name1' => $lastNameRegExp.' \p{Lu}{1,3}',
                 'end1' => ' '.$andRegExp.' ',
@@ -313,7 +328,7 @@ trait AuthorPatterns
                 'end3' => null,
                 'initials' => true,
             ],
-            // 22. A. B. Smith and C. D. Jones[\., ]
+            // 25. A. B. Smith and C. D. Jones[\., ]
             [
                 'name1' => $initialsLastName,
                 'end1' => ',? '.$andRegExp.' ',
@@ -321,7 +336,7 @@ trait AuthorPatterns
                 'end2' => $periodOrColonOrCommaYearOrCommaNotJr,
                 'end3' => null,
             ],
-            // 23. Smith, J\.? and Jones, A
+            // 26. Smith, J\.? and Jones, A
             // end2 cannot be period, because then 'Smith, Jane and Maria J. Gonzalez' would be terminated at the J,
             [
                 'name1' => $lastNameInitials,
@@ -330,7 +345,7 @@ trait AuthorPatterns
                 'end2' => $colonOrCommaYearOrBareWords,
                 'end3' => null,
             ],
-            // 24. Smith, J\.? and A\.? Jones[:\.,]
+            // 27. Smith, J\.? and A\.? Jones[:\.,]
             [
                 'name1' => $lastNameInitials,
                 'name2' => $initialsLastName,
@@ -339,7 +354,7 @@ trait AuthorPatterns
                 'end2' => $periodOrColonOrCommaYearOrCommaNotJr,
                 'end3' => null,
             ],
-            // 25. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.]
+            // 28. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.]
             [
                 'name1' => $lastNameFirstNameInitials,
                 'name2' => $firstNameInitialsLastName,
@@ -349,14 +364,14 @@ trait AuthorPatterns
                 'end2' => $periodOrColonOrCommaYearOrBareWords,
                 'end3' => null,
             ],
-            // 26. Jane (A. )?Smith[,;] Susan (B. )?Jones(period or colon or comma year)
+            // 29. Jane (A. )?Smith[,;] Susan (B. )?Jones(period or colon or comma year)
             [
                 'name1' => $firstNameInitialsLastName,
                 'end1' => '[,;] '.$notAnd,
                 'end2' => $periodOrColonOrCommaYearOrBareWords,
                 'end3' => null,
             ],
-            // 27. Jane (A. )?Smith and Susan (B. )?Jones[,.]
+            // 30. Jane (A. )?Smith and Susan (B. )?Jones[,.]
             [
                 'name1' => $firstNameInitialsLastName,
                 'end1' => ',? '.$andRegExp.' ',
@@ -364,7 +379,7 @@ trait AuthorPatterns
                 'end2' => $periodOrColonOrCommaYearOrCommaNotJr,
                 'end3' => null,
             ],
-            // 28. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.]
+            // 31. Smith, Jane( J\.?)? and Jones, Susan( K\.?)?[,.]
             [
                 'name1' => $lastNameFirstNameInitials,
                 'end1' => ',? '.$andRegExp.' ',
@@ -372,14 +387,14 @@ trait AuthorPatterns
                 'end2' => $periodOrColonOrCommaYearOrCommaNotJr,
                 'end3' => null,
             ],
-            // 29. Smith (J. A.) and Jones (A. B.)(colon or comma year)
+            // 32. Smith (J. A.) and Jones (A. B.)(colon or comma year)
             [
                 'name1' => $lastNameInitialsInParens,
                 'end1' => ' '.$andRegExp.' ',
                 'end2' => $colonOrCommaYearOrBareWords,
                 'end3' => null,
             ],
-            // 36. Smith.J.? (colon or comma year)
+            // 33. Smith.J.? (colon or comma year)
             [
                 'name1' => $lastNameDotInitials,
                 'end1' => ', ',
@@ -391,7 +406,7 @@ trait AuthorPatterns
             // ONE NAME //
             //////////////
 
-            // 29. Smith AB(period not and or colon or comma year)
+            // 34. Smith AB(period not and or colon or comma year)
             // [must be at least two initials, otherwise could be start of name --- e.g. Smith A. Jones]
             [
                 'name1' => $lastNameRegExp.' \p{Lu}{2,3}',
@@ -400,14 +415,14 @@ trait AuthorPatterns
                 'end3' => null,
                 'initials' => true,
             ],
-            // 30. Smith J. A.(colon or comma year)
+            // 35. Smith J. A.(colon or comma year)
             [
                 'name1' => $lastNameInitials,
                 'end1' => $colonOrCommaYearOrBareWords,
                 'end2' => null,
                 'end3' => null,
             ],
-            // 31. Smith, Jane( J)?(period or colon or comma year or bare words)
+            // 36. Smith, Jane( J)?(period or colon or comma year or bare words)
             // (Note that need to exclude
             // Jane Smith, Susan A. Jones, Elizabeth Gonzalez, ...
             // with "Jane Smith" being interpreted as a last name.)
@@ -422,35 +437,35 @@ trait AuthorPatterns
                 'end2' => null,
                 'end3' => null,
             ],
-            // 32. J. A. Smith(period or colon or comma year)
+            // 37. J. A. Smith(period or colon or comma year)
             [
                 'name1' => $initialsLastName,
                 'end1' => $periodOrColonOrCommaYearOrBareWords,
                 'end2' => null,
                 'end3' => null,
             ],
-            // 33. Jane A. Smith(period or colon or comma year)
+            // 38. Jane A. Smith(period or colon or comma year)
             [
                 'name1' => $firstNameInitialsLastName,
                 'end1' => $periodOrColonOrCommaYearOrBareWords,
                 'end2' => null,
                 'end3' => null,
             ],
-            // 34. SMITH, Jane.
+            // 39. SMITH, Jane.
             [
                 'name1' => $ucNameRegExp.',? '.$otherNameRegExp,
                 'end1' => $periodOrColonOrCommaYearOrBareWords,
                 'end2' => null,
                 'end3' => null,
             ],
-            // 35. Smith (J. A.)(colon or comma year)
+            // 40. Smith (J. A.)(colon or comma year)
             [
                 'name1' => $lastNameInitialsInParens,
                 'end1' => $colonOrCommaYearOrBareWords,
                 'end2' => null,
                 'end3' => null,
             ],
-            // 36. Smith.J.? (colon or comma year)
+            // 41. Smith.J.? (colon or comma year)
             [
                 'name1' => $lastNameDotInitials,
                 'end1' => $colonOrCommaYearOrBareWords,
@@ -458,11 +473,11 @@ trait AuthorPatterns
                 'end3' => null,
             ],
 
-            // ///////////////////
+            /////////////////////
             // ONE NAME et al. //
-            // ///////////////////
+            /////////////////////
 
-            // 36. J. A. Smith et.? al.? OR Jane A. Smith,? et.? al.?
+            // 42. J. A. Smith et.? al.? OR Jane A. Smith,? et.? al.?
             [
                 'name1' => '('.$initialsLastName.'|'.$firstNameInitialsLastName.')',
                 'end1' => $etal,
@@ -470,7 +485,7 @@ trait AuthorPatterns
                 'end3' => null,
                 'etal' => true,
             ],
-            // 37. Smith,? A.,? et al. OR Smith, Jane A.,? et.? al.?
+            // 43. Smith,? A.,? et al. OR Smith, Jane A.,? et.? al.?
             [
                 'name1' => '('.$lastNameInitials.'|'.$lastNameRegExp.', '.$otherNameRegExp.'( \p{Lu})?)',
                 'end1' => $etal,

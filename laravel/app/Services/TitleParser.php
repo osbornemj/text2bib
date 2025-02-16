@@ -810,7 +810,8 @@ class TitleParser
                             $this->verbose("Not ending title, case 7b");
                         } elseif (
                             isset($remainderFollowingNextPeriodOrComma) 
-                            && preg_match('/^\p{Lu}\p{Ll}+: \p{Lu}\p{Ll}+$/u', trim($remainderFollowingNextPeriodOrComma, '. '))
+                            && 
+                            preg_match('/^\p{Lu}\p{Ll}+: \p{Lu}\p{Ll}+$/u', trim($remainderFollowingNextPeriodOrComma, '. '))
                             ) {
                             // one-word address: one-word publisher follow next period.  (Could intervening sentence be series in this case?)
                             $this->verbose("Not ending title, case 7c (word '" . $word ."'): <address>: <publisher> follow next comma or period");
