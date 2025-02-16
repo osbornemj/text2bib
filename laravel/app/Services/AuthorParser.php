@@ -1265,6 +1265,12 @@ class AuthorParser
             return trim($nameString, ' .');
         }
 
+        // If format of $nameString is "Smith. J.", remove the period after the last name
+        if (preg_match('/^(?P<last>\p{Lu}\p{L}+)\.(?P<remainder> \p{Lu}\.?)$/', $nameString, $matches)) {
+            $nameString = $matches['last'] . $matches['remainder'];
+        }
+
+
         $nameString = str_replace('..', '.', $nameString);
         if (! str_contains($nameString, '{')) {
             $nameString = rtrim($nameString, '}');
@@ -1284,6 +1290,7 @@ class AuthorParser
             $lettersOnlyName = preg_replace("/[^\p{L}]/u", '', $name);
             $initialsStart = (mb_strtoupper($lettersOnlyName) == $lettersOnlyName 
                     && strlen($lettersOnlyName) <= $initialsMaxStringLength) ? min([$k, $initialsStart]) : count($namesRaw);
+
             // Ignore $name that is '.' or ',' (a typo)
             if (! in_array($name, ['.', ','])) {
                 $names[] = $name;
@@ -1364,8 +1371,9 @@ class AuthorParser
                     }
                 }
 
-            // If name is ALL uppercase and contains no period, translate uppercase component to an u.c. first letter and the rest l.c.
-            // (Contains no period to deal with name H.-J., which should not be convered to H.-j.)
+            // If name is ALL uppercase and either contains no period or has a period but not at the end,
+            // translate uppercase component to an u.c. first letter and the rest l.c.
+            // (Contains no period to deal with name "H.-J.", which should not be convered to "H.-j".)
             } elseif (
                 mb_strtoupper($lettersOnlyName) == $lettersOnlyName
                 &&

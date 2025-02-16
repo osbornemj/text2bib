@@ -15260,6 +15260,47 @@ class ExampleSeeder extends Seeder
 					'language' => 'fr',
 					'char_encoding' => 'utf8leave',
             ],
+			// author format (conversion 20258)
+			[
+                'source' => 'Goodman.D., Mann.S. 2010. Reorganization or Political Smokescreen: The Incremental and Temporary Use of At-Will Employment in Mississippi State Government. Public Personnel Management. Vol 39. No 3. 183-209. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Goodman, D. and Mann, S.',
+                    'year' => '2010',
+                    'title' => 'Reorganization or Political Smokescreen: The Incremental and Temporary Use of At-Will Employment in Mississippi State Government',
+					'journal' => 'Public Personnel Management',
+                    'pages' => '183-209',
+                    'volume' => '39',
+                    'number' => '3',
+                    ]
+            ],
+			// author format
+			[
+                'source' => 'Kim.S. 2010. Position Islands on the Career Sea: An Evaluation of the Open Competitive Position System in Korea. Public Personnel Management. Vol 39. No 3. 243-258. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kim, S.',
+                    'year' => '2010',
+                    'title' => 'Position Islands on the Career Sea: An Evaluation of the Open Competitive Position System in Korea',
+					'journal' => 'Public Personnel Management',
+                    'pages' => '243-258',
+                    'volume' => '39',
+                    'number' => '3',
+                    ]
+            ],
+			// author format
+			[
+                'source' => 'Meagher.G, Goodwin.S. (Ed) 2015. Markets, Rights and Power – in Australian Social Policy. Sydney. Sydney University Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'editor' => 'Meagher, G. and Goodwin, S.',
+                    'year' => '2015',
+                    'publisher' => 'Sydney University Press',
+                    'address' => 'Sydney',
+                    'title' => 'Markets, Rights and Power -- in Australian Social Policy',
+                    ]
+            ],
+			
             
              
             

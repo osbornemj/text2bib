@@ -74,6 +74,7 @@ trait AuthorPatterns
         $initialsLastName = '('.$initialRegExp.' ){1,4}'.$lastNameRegExp;
         $lastNameInitials = $lastNameRegExp.',?( '.$initialRegExp.'){1,4}';
         $lastNameInitialsInParens = $lastNameRegExp.' \(( ?'.$initialRegExp.'){1,4}\)';
+        $lastNameDotInitials = $lastNameRegExp.'\. ('.$initialRegExp.'\.?){1,4}';
         $lastNameInitialsPeriod = $lastNameRegExp.',?( '.$initialPeriodRegExp.'){1,4}';
         $firstNameInitialsLastName = $otherNameRegExp.' ('.$initialRegExp.' )?'.$lastNameRegExp;
         $lastNameFirstNameInitials = $lastNameRegExp.', '.$otherNameRegExp.'( '.$initialRegExp.')?';
@@ -92,7 +93,7 @@ trait AuthorPatterns
         // "Douglas Hedley, The Iconic Imagination (New York: Bloomsbury, 2016)."
         // because "The Iconic Imagination" gets interpreted as a second author.
         // $commaYear = ',? (?=[(\[`"\'\d])';
-        $commaYear = ',? (?=(([(\[]?(\d|ed|dir|tran|n\.))|[`"\'\d]))';
+        $commaYear = ',? (?=(([(\[]?(\d|[Ee]d(s|\.|\)| )|[Dd]ir(s|\.|\)| )|[Tt]ran|n\.))|[`"\'\d]))';
         // Requirement of lowercase after the first word for 4 bare words is to avoid terminating an author string like the following one
         // too early (after Hamilton SA):
         // George JN, Raskob GE, Shah SR, Rizvi MA, Hamilton SA, Osborne S and Vondracek T
@@ -378,6 +379,13 @@ trait AuthorPatterns
                 'end2' => $colonOrCommaYearOrBareWords,
                 'end3' => null,
             ],
+            // 36. Smith.J.? (colon or comma year)
+            [
+                'name1' => $lastNameDotInitials,
+                'end1' => ', ',
+                'end2' => $colonOrCommaYearOrBareWords,
+                'end3' => null,
+            ],
 
             //////////////
             // ONE NAME //
@@ -438,6 +446,13 @@ trait AuthorPatterns
             // 35. Smith (J. A.)(colon or comma year)
             [
                 'name1' => $lastNameInitialsInParens,
+                'end1' => $colonOrCommaYearOrBareWords,
+                'end2' => null,
+                'end3' => null,
+            ],
+            // 36. Smith.J.? (colon or comma year)
+            [
+                'name1' => $lastNameDotInitials,
                 'end1' => $colonOrCommaYearOrBareWords,
                 'end2' => null,
                 'end3' => null,
