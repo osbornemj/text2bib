@@ -2,9 +2,9 @@
 
     <div class="px-4">
 
-        <div class="bg-blue-200 text-blue-800 m-4 p-2">
+        {{-- <div class="bg-blue-200 text-blue-800 m-4 p-2">
             From around 22:30 on 2025.2.16 to 01:30 on 2025.2.17 UTC, attempts to register generated an error.  If you tried to register during this period, please try again.
-        </div>
+        </div> --}}
         
         <p class="my-4">
             This site allows you to convert a text file of references to a <x-link href="https://economics.utoronto.ca/osborne/latex/BIBTEX.HTM" target="_blank">BibTeX file</x-link>.  It is maintained by <x-link href="https://economics.utoronto.ca/osborne" target="_blank">Martin J. Osborne</x-link>.
