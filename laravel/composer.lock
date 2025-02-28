@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "brick/math",
-            "version": "0.12.2",
+            "version": "0.12.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brick/math.git",
-                "reference": "901eddb1e45a8e0f689302e40af871c181ecbe40"
+                "reference": "866551da34e9a618e64a819ee1e01c20d8a588ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brick/math/zipball/901eddb1e45a8e0f689302e40af871c181ecbe40",
-                "reference": "901eddb1e45a8e0f689302e40af871c181ecbe40",
+                "url": "https://api.github.com/repos/brick/math/zipball/866551da34e9a618e64a819ee1e01c20d8a588ba",
+                "reference": "866551da34e9a618e64a819ee1e01c20d8a588ba",
                 "shasum": ""
             },
             "require": {
@@ -56,7 +56,7 @@
             ],
             "support": {
                 "issues": "https://github.com/brick/math/issues",
-                "source": "https://github.com/brick/math/tree/0.12.2"
+                "source": "https://github.com/brick/math/tree/0.12.3"
             },
             "funding": [
                 {
@@ -64,7 +64,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-26T10:21:45+00:00"
+            "time": "2025-02-28T13:11:00+00:00"
         },
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -1056,28 +1056,28 @@
         },
         {
             "name": "icehouse-ventures/laravel-chartjs",
-            "version": "v4.1",
+            "version": "v4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/icehouse-ventures/laravel-chartjs.git",
-                "reference": "4557ac7a1d7d5ce8fd8413809a18647aaa367197"
+                "reference": "47bf2beece9d820367f57dada46ac9bd4c406761"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/icehouse-ventures/laravel-chartjs/zipball/4557ac7a1d7d5ce8fd8413809a18647aaa367197",
-                "reference": "4557ac7a1d7d5ce8fd8413809a18647aaa367197",
+                "url": "https://api.github.com/repos/icehouse-ventures/laravel-chartjs/zipball/47bf2beece9d820367f57dada46ac9bd4c406761",
+                "reference": "47bf2beece9d820367f57dada46ac9bd4c406761",
                 "shasum": ""
             },
             "require": {
-                "illuminate/support": "^5.1|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/support": "^5.1|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
                 "php": ">=5.6.4"
             },
             "require-dev": {
                 "laravel/pint": "^1.13",
-                "orchestra/testbench": "^8.19",
-                "pestphp/pest": "^2.30",
-                "pestphp/pest-plugin-laravel": "^2.2",
-                "phpstan/phpstan": "^1.10"
+                "orchestra/testbench": "^8.19|^10.0",
+                "pestphp/pest": "^2.30|^3.7",
+                "pestphp/pest-plugin-laravel": "^2.2|^3.1",
+                "phpstan/phpstan": "^1.10|^2.1"
             },
             "type": "library",
             "extra": {
@@ -1115,9 +1115,9 @@
             ],
             "support": {
                 "issues": "https://github.com/icehouse-ventures/laravel-chartjs/issues",
-                "source": "https://github.com/icehouse-ventures/laravel-chartjs/tree/v4.1"
+                "source": "https://github.com/icehouse-ventures/laravel-chartjs/tree/v4.2"
             },
-            "time": "2024-09-14T21:15:39+00:00"
+            "time": "2025-02-28T20:04:46+00:00"
         },
         {
             "name": "laravel/breeze",
