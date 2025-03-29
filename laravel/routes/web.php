@@ -46,6 +46,9 @@ Route::controller(IndexController::class)->group(function () {
 
 Route::controller(StatisticsController::class)->group(function () {
     Route::get('/statistics', 'index')->name('statistics');
+    Route::get('/statsBibtex', 'bibtex')->name('statsBibtex');
+    Route::get('/statsLanguages', 'languages')->name('statsLanguages');
+    Route::get('/statsCrossref', 'crossref')->name('statsCrossref');
 });
 
 Route::controller(BstFileController::class)->group(function () {

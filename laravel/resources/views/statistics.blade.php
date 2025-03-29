@@ -96,4 +96,17 @@
         </div>
     </div>
 
+    <div class="mx-4 mt-4 font-semibold">
+        <x-link href="{{ url('statsBibtex') }}">BibTeX style file usage</x-link>
+        &nbsp;&bull;&nbsp;
+        <x-link href="{{ url('statsLanguages') }}">Language selection</x-link>
+        &nbsp;&bull;&nbsp;
+        <x-link href="{{ url('statsCrossref') }}">Crossref usage</x-link>
+    </div>
+
+    <div class="mx-4 mt-4 font-semibold">
+        &nbsp;
+    </div>
+
+
 </x-app-layout>

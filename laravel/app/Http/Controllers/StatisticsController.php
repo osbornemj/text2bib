@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 
+use App\Models\Bst;
 use App\Models\Conversion;
 use App\Models\ItemType;
 use App\Models\Output;
@@ -11,10 +12,11 @@ use App\Models\Statistic;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class StatisticsController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $userCount = User::count();
         $conversionCount = Conversion::count();
@@ -246,5 +248,16 @@ class StatisticsController extends Controller
                 'itemTypeCounts',
             )
         );
+    }
+
+    public function bibtex(): View
+    {
+        $bsts = Bst::leftJoin('conversions', 'bsts.id', '=', 'conversions.bst_id')
+            ->select('bsts.name', DB::raw('COUNT(DISTINCT conversions.user_id) as user_count'))
+            ->groupBy('bsts.id', 'bsts.name')
+            ->orderByDesc('user_count')
+            ->get();
+
+        return view('statsBibtex', compact('bsts'));
     }
 }
