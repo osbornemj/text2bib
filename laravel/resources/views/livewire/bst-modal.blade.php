@@ -10,9 +10,6 @@
                 <div class="mb-0">
                     @include('index.partials.bstProperties')
                 </div>
-                @if ($bst->available && $bst->checked)
-                    <img src="/images/{{ $bst->name }}-sample.png" class="w-full md:w-4/5">
-                @endif
                 <button wire:click="$set('showModal', false)" class="mt-2 px-2 py-2 bg-blue-500 text-white rounded">Close</button>
             </div>
         </div>
