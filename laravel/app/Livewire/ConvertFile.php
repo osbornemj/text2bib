@@ -77,7 +77,7 @@ class ConvertFile extends Component
 
     public $useOptions;
 
-    public $bstName;
+    public $bstOptions;
 
     public $bstFields;
 
@@ -93,13 +93,11 @@ class ConvertFile extends Component
     {
         $userSettings = UserSetting::where('user_id', Auth::id())->first();
 
-        if ($userSettings && $userSettings->bst_id) {
-            $bst = Bst::find($userSettings->bst_id);
-            $bstId = $bst->id;
-            $bstName = $bst ? $bst->name : '';
-        } else {
-            $bstId = null;
-            $bstName = '';
+        $bsts = Bst::orderBy('name')->get();
+
+        $this->bstOptions = ['' => 'Choose one'];
+        foreach ($bsts as $bst) {
+            $this->bstOptions[$bst->id] = $bst->name;
         }
 
         $this->bstFields = config('constants.nonstandard_bst_fields');
@@ -109,7 +107,7 @@ class ConvertFile extends Component
         $defaults = [
             'use' => '',
             'other_use' => '',
-            'bst_id' => $bstId,
+            'bst_id' => '',
             'item_separator' => 'line',
             'language' => 'en',
             'label_style' => 'short',
@@ -126,7 +124,6 @@ class ConvertFile extends Component
         foreach ($defaults as $setting => $default) {
             $this->uploadForm->$setting = $userSettings ? $userSettings->$setting : $default;
         }
-        $this->uploadForm->bstName = $bstName;
 
         $this->crossrefQuota = config('constants.crossref_quota');
 
@@ -204,18 +201,24 @@ class ConvertFile extends Component
             'public',
         );
 
+        if ($this->uploadForm->bst_name && $this->uploadForm->bst_url) {
+            $bst = Bst::where('name', $this->uploadForm->bst_name)->first();
+            // If in fact a bst with the name entered by the user is on file, use that bst
+            if ($bst && $bst->checked) {
+                $this->uploadForm->bst_id = $bst->id;
+            } elseif (!$bst) {
+                $bst = Bst::create(
+                    ['name' => $this->uploadForm->bst_name, 'file_url' => $this->uploadForm->bst_url]
+                );
+            }
+        }
+
         // Get settings and save them if requested
         $settingValues = $this->uploadForm->except('file');
 
-        if ($settingValues['bstName']) {
-            $bst = Bst::firstOrCreate([
-                'name' => $settingValues['bstName'],
-            ]);
-
-            $settingValues['bst_id'] = $bst->id;
+        if ($settingValues['bst_id']) {
+            $settingValues['bst_id'] = $this->uploadForm->bst_id;
         }
-
-        unset($settingValues['bstName']);
 
         if ($settingValues['use'] != 'other') {
             $settingValues['other_use'] = '';
@@ -223,6 +226,9 @@ class ConvertFile extends Component
         if ($settingValues['use'] != 'latex') {
             $settingValues['bst_id'] = null;
         }
+
+        unset($settingValues['bst_name']);
+        unset($settingValues['bst_url']);
 
         if ($this->uploadForm->save_settings) {
             $userSetting = UserSetting::firstOrNew(

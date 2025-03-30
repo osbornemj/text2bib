@@ -69,12 +69,22 @@
             <x-value-label for="{{ $key }}" class="peer-checked/{{ $key }}:text-blue-600 ml-1" :value="$option" />
             @if ($key == 'latex')
                 <div class="hidden peer-checked/latex:block ml-6 -mb-6">
-                    Enter the name of the BibTeX style file you will use (the argument of <code>\bibliographystyle</code> in your document):
+                    Select the <x-link href="{{ url('bsts') }}" target="_blank">BibTeX style file</x-link> you will use (the argument of <code>\bibliographystyle</code> in your document):
                     <br/>
-                    <x-text-input type="text" class="w-48 mt-1" wire:model="uploadForm.bstName" maxlength="255" />
-                    &nbsp;&nbsp;&nbsp;
-                    <x-link href="{{ url('bsts') }}" target="_blank">Information</x-link> (opens in new tab/window)
-                    <x-input-error :messages="$errors->get('uploadForm.bstName')" class="mt-0 mb-1" />
+                    <x-select-input :options="$bstOptions" wire:model="uploadForm.bst_id" class="block mt-1" :value="old('bst_id')" />
+                    <div x-data="{ open: false }">
+                        If the BibTeX style file you use is not on the list, choose one from the list that has similar properties.  If your  style file is publicly available, <button type="button" x-on:click="open = ! open" class="text-blue-800 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">click here</button> to enter its details, so that I can add it to the list for future use.
+                     
+                        <div x-show="open">
+                            <x-text-input type="text" class="w-60 mt-1" wire:model="uploadForm.bst_name" placeholder="Name of BibTeX style file" maxlength="255" />
+                            <x-input-error :messages="$errors->get('uploadForm.bst_name')" class="mt-0 mb-1" />
+                            <x-text-input type="url" class="w-full mt-1" wire:model="uploadForm.bst_url" placeholder="URL of BibTeX style file" maxlength="255" />
+                            <x-input-error :messages="$errors->get('uploadForm.bst_url')" class="mt-0 mb-1" />
+                        </div>
+                    </div>
+                    
+
+                    <x-input-error :messages="$errors->get('uploadForm.bst_id')" class="mt-0 mb-1" />
                 </div>
             @endif
             <br/>

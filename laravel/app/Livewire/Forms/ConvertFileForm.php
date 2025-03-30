@@ -16,9 +16,18 @@ class ConvertFileForm extends Form
     #[Rule('in:latex,biblatex,zotero-word,mendeley,refworks,endnote,other', message: 'The value of this field must be "latex", "biblatex", "zotero-word", "mendeley", "refworks", "endnote", or "other"')]
     public $use;
 
-    #[Rule('required_if:use,latex', message: 'Please enter the name of the BibTeX style file you will use')]
+    #[Rule('required_if:use,latex', message: 'Please select the BibTeX style file you will use')]
+    public $bst_id;
+
     #[Rule('regex:/^[a-z0-9\-]+$/i', message: 'The name you have entered is not a valid name for a style file.  Enter the argument of the \bibliographystyle command in your document.')]
-    public $bstName;
+    #[Rule('nullable', message: '')]
+    #[Rule('required_with:bst_url', message: 'Please enter the name of your BibTeX style file')]
+    public $bst_name;
+
+    #[Rule('url', message: 'Please enter a valid url for your BibTeX style file')]
+    #[Rule('nullable', message: '')]
+    #[Rule('required_with:bst_name', message: 'Please enter a url at which your BibTeX style file is available')]
+    public $bst_url;
 
     #[Rule('required_if:use,other', message: 'Please describe how you will use the BibTeX file')]
     public $other_use;
