@@ -27,7 +27,7 @@
                             Do not use Crossref
                         @endif
                     </td>
-                    <td class="px-2 text-center">{{ $datum->crossref_count }}</td>
+                    <td class="px-2 text-center">{{ number_format($datum->crossref_count) }}</td>
                 </tr>
               @endforeach
             </tbody>
