@@ -271,4 +271,13 @@ class StatisticsController extends Controller
 
         return view('statsLanguages', compact('data'));
     }
+
+    public function crossref(): View
+    {
+        $data = Conversion::select('use_crossref', DB::raw('use_crossref, COUNT(*) as crossref_count'))
+            ->groupBy('use_crossref')
+            ->get();
+
+        return view('statsCrossref', compact('data'));
+    }
 }

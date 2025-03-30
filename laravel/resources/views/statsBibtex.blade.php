@@ -4,6 +4,9 @@
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('BibTeX style file usage') }}
         </h2>
+        <p>
+            <x-link href="{{ url('statistics') }}">Main statistics page</x-link>
+        </p>
     </x-slot>
 
     <div class="mx-4 mt-2 font-semibold">
