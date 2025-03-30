@@ -93,7 +93,7 @@ class ConvertFile extends Component
     {
         $userSettings = UserSetting::where('user_id', Auth::id())->first();
 
-        $bsts = Bst::where('checked', 1)->orderBy('name')->get();
+        $bsts = Bst::where('checked', 1)->where('available', 1)->orderBy('name')->get();
 
         $this->bstOptions = ['' => 'Choose one'];
         foreach ($bsts as $bst) {
