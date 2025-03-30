@@ -8,7 +8,13 @@
 
     <div class="mx-4 mt-2 font-semibold">
         <p>
-            The number in each row is the number of users who have specified that BibTeX style file when performing one or more conversions.
+            Each row gives the name of a BibTeX style file and the number of users who have specified that file when performing one or more conversions.
+        </p>
+    </div>
+
+    <div class="mx-4 mt-2 flex justify-center">
+        <p>
+            {{ $bsts->count() }} bst files found
         </p>
     </div>
 
@@ -22,10 +28,12 @@
             </thead>
             <tbody>
               @foreach ($bsts as $bst) 
-              <tr>
-                <td class="px-2">{{ $bst->name }}</td>
-                <td class="px-2 text-center">{{ $bst->user_count }}</td>
-              </tr>
+                <tr>
+                    <td class="px-2">
+                        <x-link href="{{ url('bsts#' . $bst->name) }}">{{ $bst->name }}</x-link>
+                    </td>
+                    <td class="px-2 text-center">{{ $bst->user_count }}</td>
+                </tr>
               @endforeach
             </tbody>
         </table>
