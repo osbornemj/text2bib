@@ -35,7 +35,7 @@
                     <td class="px-2">
                         {{ $datum->language }}
                     </td>
-                    <td class="px-2 text-center">{{ $datum->user_count }}</td>
+                    <td class="px-2 text-center">{{ number_format($datum->user_count) }}</td>
                 </tr>
               @endforeach
             </tbody>

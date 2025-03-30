@@ -35,7 +35,7 @@
                     <td class="px-2">
                         {{ $bst->name }}
                     </td>
-                    <td class="px-2 text-center">{{ $bst->user_count }}</td>
+                    <td class="px-2 text-center">{{ number_format($bst->user_count) }}</td>
                 </tr>
               @endforeach
             </tbody>
