@@ -5,7 +5,7 @@
 
     @if ($showModal)
         <div wire:click.away="$set('showModal', false)" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center" wire:loading.remove>
-            <div class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 p-2 rounded-lg shadow-lg w-1/2">
+            <div class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 p-2 mx-4 rounded-lg shadow-lg">
                 <h2 class="text-xl font-bold mb-4">{{ $bst->name }}</h2>
                 <div class="mb-0">
                     @include('index.partials.bstProperties')
