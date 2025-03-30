@@ -253,7 +253,7 @@ class StatisticsController extends Controller
     public function bibtex(): View
     {
         $bsts = Bst::join('conversions', 'bsts.id', '=', 'conversions.bst_id')
-            ->select('bsts.name', DB::raw('COUNT(DISTINCT conversions.user_id) as user_count'))
+            ->select('bsts.id', 'bsts.name', DB::raw('COUNT(DISTINCT conversions.user_id) as user_count'))
             ->where('bsts.available', 1)
             ->groupBy('bsts.id', 'bsts.name')
             ->orderByDesc('user_count')

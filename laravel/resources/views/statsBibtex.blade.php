@@ -30,18 +30,18 @@
               </tr>
             </thead>
             <tbody>
-              @foreach ($bsts as $bst) 
+                @foreach ($bsts as $bst)
                 <tr>
                     <td class="px-2">
-                        {{ $bst->name }}
+                        <livewire:bst-modal :bst="$bst"/>
                     </td>
                     <td class="px-2 text-center">{{ number_format($bst->user_count) }}</td>
                 </tr>
-              @endforeach
+                @endforeach
+                
             </tbody>
         </table>
+        
     </div>
-
-
 
  </x-app-layout>
