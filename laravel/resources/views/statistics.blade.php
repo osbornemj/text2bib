@@ -23,7 +23,7 @@
         </x-list>
     </div>
 
-    <div class="mx-4 mt-2">
+    <div class="mx-4 mt-2 border p-2">
         <p>
             Last 90 days by day: &nbsp;
             <x-link href="{{ url('#users') }}">Users</x-link>
@@ -51,7 +51,6 @@
             &nbsp;&bull;&nbsp;
             <x-link href="{{ url('statsCrossref') }}">Crossref usage</x-link>
         </p>
-    
     </div>
 
     <h2 class="mx-4 mt-2 font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
