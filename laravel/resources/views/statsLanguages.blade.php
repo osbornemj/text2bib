@@ -14,7 +14,7 @@
 
     <div class="mx-4 mt-2 flex justify-center">
         <p>
-            {{ $bsts->count() }} bst files found
+            {{ $data->count() }} languages found
         </p>
     </div>
 
@@ -22,17 +22,17 @@
         <table class="table-auto">
             <thead>
               <tr>
-                <th class="px-2">bst filename</th>
+                <th class="px-2">Language</th>
                 <th class="px-2">User count</th>
               </tr>
             </thead>
             <tbody>
-              @foreach ($bsts as $bst) 
+              @foreach ($data as $datum) 
                 <tr>
                     <td class="px-2">
-                        {{ $bst->name }}
+                        {{ $datum->language }}
                     </td>
-                    <td class="px-2 text-center">{{ $bst->user_count }}</td>
+                    <td class="px-2 text-center">{{ $datum->user_count }}</td>
                 </tr>
               @endforeach
             </tbody>

@@ -261,4 +261,14 @@ class StatisticsController extends Controller
 
         return view('statsBibtex', compact('bsts'));
     }
+
+    public function languages(): View
+    {
+        $data = Conversion::select('language', DB::raw('COUNT(DISTINCT user_id) as user_count'))
+            ->groupBy('language')
+            ->orderByDesc('user_count')
+            ->get();
+
+        return view('statsLanguages', compact('data'));
+    }
 }

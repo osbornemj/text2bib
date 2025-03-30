@@ -66,7 +66,6 @@
                         @foreach ($bsts as $bst)
                         <li>
                             <div x-data="{ open: false }">
-                                <a name="{{ $bst->name }}"></a>
                                 <x-button-link x-on:click="open = ! open">{{ $bst->name }}</x-button-link>
                                 <div x-show="open" class="mb-2">
                                     <div class="mb-0">
