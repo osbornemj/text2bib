@@ -15327,7 +15327,57 @@ class ExampleSeeder extends Seeder
                     'year' => '2009',
                     ]
             ],
-			
+            [
+                'source' => 'Claussen, C. & Lucas, J.A.W. 1988. Zur Kenntnis der Schwebfliegenfauna der Insel Kreta mit der Beschreibung von Eumerus minotaurus sp. n. (Diptera, Syrphidae). Entomofauna 9(5): 133-168 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Claussen, C. and Lucas, J. A. W.',
+                    'journal' => 'Entomofauna',
+                    'number' => '5',
+                    'pages' => '133-168',
+                    'title' => 'Zur Kenntnis der Schwebfliegenfauna der Insel Kreta mit der Beschreibung von Eumerus minotaurus sp. n. (Diptera, Syrphidae)',
+                    'volume' => '9',
+                    'year' => '1988',
+                    ]
+            ],
+            [
+                'source' => 'Maibach, A. & Goeldlin de Tiefenau, P. 1995. Chrysogaster rondanii sp. n. from Western and Central Europe (Diptera: Syrphidae). Mitteilungen der Schweizerischen Entomologischen Gesellschaft 68: 459-464 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Maibach, A. and Goeldlin de Tiefenau, P.',
+                    'journal' => 'Mitteilungen der Schweizerischen Entomologischen Gesellschaft',
+                    'pages' => '459-464',
+                    'title' => 'Chrysogaster rondanii sp. n. from Western and Central Europe (Diptera: Syrphidae)',
+                    'volume' => '68',
+                    'year' => '1995',
+                    ]
+            ],
+            [
+                'source' => 'Marcos-Garcia, M. A. & Rojo, S. 1994. Paragus Hyalopteri n. sp. an aphidophagous Hoverfly (Dipt. : Syrphidae) attacking the mealy plum Aphid (Hom. : Aphididae). Entomophaga 39(1): 99-106 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Marcos-Garcia, M. A. and Rojo, S.',
+                    'journal' => 'Entomophaga',
+                    'number' => '1',
+                    'pages' => '99-106',
+                    'title' => 'Paragus Hyalopteri n. sp. an aphidophagous Hoverfly (Dipt. : Syrphidae) attacking the mealy plum Aphid (Hom. : Aphididae)',
+                    'volume' => '39',
+                    'year' => '1994',
+                    ]
+            ],            			
+            [
+                'source' => 'Marcos-Garcia, M. A. & Rojo, S. 1994. Paragus Hyalopteri nov. spec. an aphidophagous Hoverfly (Dipt. : Syrphidae) attacking the mealy plum Aphid (Hom. : Aphididae). Entomophaga 39(1): 99-106 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Marcos-Garcia, M. A. and Rojo, S.',
+                    'journal' => 'Entomophaga',
+                    'number' => '1',
+                    'pages' => '99-106',
+                    'title' => 'Paragus Hyalopteri nov. spec. an aphidophagous Hoverfly (Dipt. : Syrphidae) attacking the mealy plum Aphid (Hom. : Aphididae)',
+                    'volume' => '39',
+                    'year' => '1994',
+                    ]
+            ],            			
             
              
             

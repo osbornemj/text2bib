@@ -175,6 +175,7 @@ class TitleParser
         $containsPages = preg_match('/(\()?' . $this->regExps->pagesRegExp . '(\))?/', $remainder);
         $volumeWithDigitRegExp = '/^(' . $this->regExps->volumeRegExp . ') (\d)\.?\)?[.,]?$/i';
 
+        $parensLevel = 0;
         // $skip = 0;
         // Go through the words in $remainder one at a time.
         foreach ($words as $key => $word) {
@@ -182,6 +183,14 @@ class TitleParser
             //     $skip--;
             //     continue;
             // }
+
+            if (substr($word, 0, 1) == '(' && strpos($word, ')') === false) {
+                $parensLevel++;
+                $this->verbose("Parens level changed to " . $parensLevel . " (word \"" . $word . "\")");
+            } elseif (strpos($word, '(') === false && strpos($word, ')') !== false) {
+                $parensLevel--;
+                $this->verbose("Parens level changed to " . $parensLevel . " (word \"" . $word . "\")");
+            }
 
             if (substr($word, 0, 1) == '"') {
                 $word = '``' . substr($word, 1);
@@ -637,20 +646,31 @@ class TitleParser
 
                 // If end of title has not been detected and word ends in period-equivalent or comma
                 if (
-                    Str::endsWith($word, ['.', '!', '?', ','])
+                    (Str::endsWith($word, ['.', '!', '?', ',']) && $parensLevel == 0)
                     ) {
                         $this->verbose('$stringToNextPeriodOrComma: ' . $stringToNextPeriodOrComma);
                         $this->verbose('$wordAfterNextCommaOrPeriod: ' . $wordAfterNextCommaOrPeriod);
                         $this->verbose('$stringToNextPeriod: ' . $stringToNextPeriod);
                     // if first character of next word is lowercase letter and does not end in period
                     // OR $word and $nextWord are A. and D. or B. and C.
-                    // OR following string starts with a part designation, continue, skipping next word,
+                    // OR following string starts with a part designation,
+                    // continue, skipping next word,
                     // s.l. (sine loco) is used for citation for which address of publisher is unknown
                     if (
                         $nextWord 
                         &&
                         (
-                            (ctype_alpha($nextWord[0]) && mb_strtolower($nextWord[0]) == $nextWord[0] && substr($nextWord, -1) != '.' && rtrim($nextWord, ':') != 'in' && ! Str::startsWith($nextWord, 's.l.'))
+                            (
+                                ctype_alpha($nextWord[0])
+                                &&
+                                mb_strtolower($nextWord[0]) == $nextWord[0]
+                                &&
+                                substr($nextWord, -1) != '.'
+                                &&
+                                rtrim($nextWord, ':') != 'in'
+                                &&
+                                ! Str::startsWith($nextWord, 's.l.')
+                            )
                             || 
                             ($word == 'A.' && $nextWord == 'D.')
                             || 
@@ -665,6 +685,14 @@ class TitleParser
                     ) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
                         $skipNextWord = true;
+                    } elseif (
+                        ($word == 'sp.' && $nextWord == 'n.')
+                        ||
+                        ($word == 'n.' && $nextWord == 'sp.')
+                        ||
+                        ($word == 'nov.' && $nextWord == 'spec.')
+                    ) {
+                        $this->verbose("Not ending title, case 1a (word is " . $word . ")");
                     } elseif 
                         (
                             $nextWord 

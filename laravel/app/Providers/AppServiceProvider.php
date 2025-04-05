@@ -7,7 +7,11 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Collection;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
+use Illuminate\Database\Eloquent\Model;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -51,5 +55,10 @@ class AppServiceProvider extends ServiceProvider
                 ]
             );
         });
+
+        // Generates errors on n+1 problems etc.
+        Model::shouldBeStrict(! $this->app->isProduction());
+        // Disallow re-seeding database in production
+        DB::prohibitDestructiveCommands($this->app->isProduction());
     }
 }
