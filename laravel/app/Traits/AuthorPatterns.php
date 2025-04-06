@@ -2,8 +2,12 @@
 
 namespace App\Traits;
 
+use App\Services\RegularExpressions;
+
 trait AuthorPatterns
 {
+    private RegularExpressions $regExps;
+
     /* AUTHOR PATTERNS
     *
     * If end2 = end3 = null:
@@ -39,6 +43,8 @@ trait AuthorPatterns
     */
     private function authorPatterns(): array
     {
+        $abbreviationsUsedAsInitials = $this->regExps->abbreviationsUsedAsInitials;
+
         $vonNameRegExp = '(';
         foreach ($this->vonNames as $i => $vonName) {
             $vonNameRegExp .= ($i ? '|' : '').$vonName;
@@ -66,7 +72,6 @@ trait AuthorPatterns
         $otherNameRegExp = '(?=[^ ]*\p{Ll})'.$nameSegment;
         // Uppercase name
         $ucNameRegExp = '\p{Lu}+( \p{Lu}+)?';
-        $abbreviationsUsedAsInitials = '(Ch|Mª|Wm|Yu)';
         $initialRegExp = '((\p{Lu}|'.$abbreviationsUsedAsInitials.')\.?|\p{Lu}\.?-\p{Lu}\.?)';
         $initialPeriodRegExp = '((\p{Lu}|'.$abbreviationsUsedAsInitials.')\.|\p{Lu}\.-\p{Lu}\.)';
 

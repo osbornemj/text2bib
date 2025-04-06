@@ -7,8 +7,9 @@
 
     <div class="ml-4 max-w-7xl space-y-6">
         <div class="mt-0">
-            <h3 class="font-bold text-sky-800 dark:text-sky-600">{{ $errorReport->title }}</h3>
+            {{-- <h3 class="font-bold text-sky-800 dark:text-sky-600">{{ $errorReport->title }}</h3>
             <p>
+            --}}
                 Submitted by {{ $errorReport->output->conversion->user->fullName() }} {{ $errorReport->created_at }}
             </p>
             <p>

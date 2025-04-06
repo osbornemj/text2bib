@@ -21,7 +21,7 @@ class ErrorReportController extends Controller
 
     public function index(string $sortBy = 'status'): View
     {
-        $errorReports = ErrorReport::with('output');
+        $errorReports = ErrorReport::with('output.conversion.user');
 
         if ($sortBy == 'latest') {
             $errorReports = $errorReports->orderByDesc('updated_at');
@@ -29,10 +29,11 @@ class ErrorReportController extends Controller
             $errorReports = ErrorReport::join('outputs', 'outputs.id', '=', 'error_reports.output_id')
                 ->join('conversions', 'conversions.id', '=', 'outputs.conversion_id')
                 ->join('users', 'users.id', '=', 'conversions.user_id')
+                ->with('output.conversion.user')
                 ->orderBy('users.last_name')
                 ->orderBy('users.first_name');
         } elseif ($sortBy == 'status') {
-            $errorReports = ErrorReport::orderBy('status')->orderByDesc('updated_at');
+            $errorReports = $errorReports->orderBy('status')->orderByDesc('updated_at');
         }
 
         $errorReports = $errorReports->paginate(50);

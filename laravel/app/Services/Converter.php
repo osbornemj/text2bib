@@ -1155,11 +1155,16 @@ class Converter
                 $title = substr($title, 0, -2); 
             }
 
-            // The - is in case it is used as a separator
             if (! $titleEndsInPeriod) {
                 $titleEndsInPeriod = substr($title, -1) == '.';
             }
-            $title = rtrim($title, ' .,-');
+            // The - is in case it is used as a separator
+            $title = rtrim($title, ' ,-');
+
+            if (! preg_match('/' . $this->regExps->twoPartTitleAbbreviationsRegExp . '$/', $title)) {
+                $title = rtrim($title, '.');
+            }
+
             // Remove '[J]' at end of title (what does it mean?)
             if (preg_match('/\[(J|A)\]$/', $title)) {
                 $title = substr($title, 0, -3);

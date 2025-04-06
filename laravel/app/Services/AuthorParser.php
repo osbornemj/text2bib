@@ -1329,6 +1329,12 @@ class AuthorParser
             //     $initialPassed = true;
             // }
 
+            $isAbbreviationUsedAsInitial = false;
+
+            // Exclude Yu because it is a complete name by itself
+            if (preg_match('/' . $this->regExps->abbreviationsUsedAsInitials . '/', $name) && ! in_array($name, ['Yu.', 'Yu'])) {
+                $isAbbreviationUsedAsInitial = true;
+            }
             // If name (all components) is not ALL uppercase, there are fewer than 3 letters
             // in $name or a comma has occurred and there are fewer than 4 letters, and all letters in the name are uppercase, assume $name
             // is initials.  Put periods and spaces as appropriate.
@@ -1337,7 +1343,7 @@ class AuthorParser
                 &&
                 (strlen($lettersOnlyName) < 3 || ($commaPassed && ($initials || strlen($lettersOnlyName) < 4)))
                 &&
-                mb_strtoupper($lettersOnlyName) == $lettersOnlyName
+                (mb_strtoupper($lettersOnlyName) == $lettersOnlyName || $isAbbreviationUsedAsInitial)
                 &&
                 $lettersOnlyName != 'III'
                ) {
@@ -1352,6 +1358,8 @@ class AuthorParser
                 } elseif (preg_match('/^\\\\\S\{[a-zA-Z]\}$/', $name)) {  // e.g. \'{A}
                     $fName .= $name . '.';
                 } elseif (preg_match('/^\\\\\S[a-zA-Z]$/', $name)) {  // e.g. \'A
+                    $fName .= $name . '.';
+                } elseif ($isAbbreviationUsedAsInitial) {
                     $fName .= $name . '.';
                 } else {
                     $chars = mb_str_split($name);

@@ -14891,10 +14891,10 @@ class ExampleSeeder extends Seeder
                 'type' => 'article',
                 'bibtex' => [
                     'doi' => '10.46666/2021-2.2708-9991.09',
-                    'author' => 'Shaikin, D. N. and Abutalip, D. O. and Bekmatova, A.',
-                    'title' => 'Zh',
+                    'author' => 'Shaikin, D. N. and Abutalip, D. O. and Bekmatova, A. Zh.',
+                    'title' => 'Sustainable economic development of agritourism based on the example of the North Kazakhstan region',
                     'year' => '2021',
-                    'journal' => 'Sustainable economic development of agritourism based on the example of the North Kazakhstan region. Bulletin of the National Academy of Sciences of the Republic of Kazakhstan',
+                    'journal' => 'Bulletin of the National Academy of Sciences of the Republic of Kazakhstan',
                     'volume' => '2',
                     'pages' => '123-134',
                     ]
@@ -15378,7 +15378,30 @@ class ExampleSeeder extends Seeder
                     'year' => '1994',
                     ]
             ],            			
-            
+            [
+                'source' => 'Vujic. 1997. The gunus Pipizella (Diptera, Syrphidae) on the Balkan Peninsula and description of Pipizella zloti sp. n. Dipterists Digest 4: 51-60 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'year' => '1997',
+                    'pages' => '51-60',
+                    'title' => 'The gunus Pipizella (Diptera, Syrphidae) on the Balkan Peninsula and description of Pipizella zloti sp. n.',
+                    'author' => 'Vujic',
+                    'volume' => '4',
+                    'journal' => 'Dipterists Digest',
+                    ]
+            ],
+            [
+                'source' => 'Marcos-Garcia, M.A. 1983. Desription of Metasyrphus lucasi sp.n. Nouv. Rev. Ent. 13: 113-116  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'year' => '1983',
+                    'pages' => '113-116',
+                    'title' => 'Desription of Metasyrphus lucasi sp.n.',
+                    'author' => 'Marcos-Garcia, M. A.',
+                    'volume' => '13',
+                    'journal' => 'Nouv. Rev. Ent.',
+                    ]
+            ],         
              
             
         ];

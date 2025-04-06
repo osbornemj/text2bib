@@ -201,7 +201,7 @@ class TitleParser
 
             if (Str::startsWith($word, '//')) {
                 $this->verbose("Ending title, case 1a");
-                $title = rtrim(implode(' ', $initialWords), ',:;.');
+                $title = rtrim(implode(' ', $initialWords), ',:;');
                 $remainder = ltrim(implode(' ', $remainingWords), '/');
                 break;
             }
@@ -239,7 +239,7 @@ class TitleParser
                     $word == '//'
                 ) {
                 $this->verbose("Ending title, case 1b");
-                $title = rtrim(implode(' ', $initialWords), ',:;.');
+                $title = rtrim(implode(' ', $initialWords), ',:;');
                 break;
             }
 
@@ -254,7 +254,7 @@ class TitleParser
             // volume is next
             if (preg_match('/^(' . $this->regExps->volumeRegExp . ') [0-9]/', $remainder)) {
                 $this->verbose("Ending title, case 1d");
-                $title = rtrim(implode(' ', $initialWords), ',:;.');
+                $title = rtrim(implode(' ', $initialWords), ',:;');
                 break;
             }
 
@@ -267,7 +267,7 @@ class TitleParser
                 $nextWord = $nextWord == null ? '' : trim($nextWord);
 
                 if (empty($nextWord)) {
-                    $title = rtrim(implode(' ', $initialWords), ',:;.');
+                    $title = rtrim(implode(' ', $initialWords), ',:;');
                     break;
                 }
 
@@ -347,7 +347,7 @@ class TitleParser
 
                 if ($journalPubInfoNext) {
                     $this->verbose("Ending title, case 2a (journal pub info next, with no journal name)");
-                    $title = rtrim(implode(' ', $initialWords), ',:;.');
+                    $title = rtrim(implode(' ', $initialWords), ',:;');
                     $isArticle = true;
                     break;
                 }
@@ -596,7 +596,8 @@ class TitleParser
                         || preg_match('/^[(\[\-]? ?' . $this->regExps->thesisRegExp . '/', $remainder)
                         ) {
                         $this->verbose("Ending title, case 2 (word '" . $word . "')");
-                        $title = rtrim(implode(' ', $initialWords), ',:;.');
+                        $title = rtrim(implode(' ', $initialWords), ',:;');
+                        //$title = $this->fixFinalPeriod($title);
                         if (preg_match('/^Journal /', $remainder)) {
                             $isArticle = true;
                         }
@@ -686,11 +687,10 @@ class TitleParser
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
                         $skipNextWord = true;
                     } elseif (
-                        ($word == 'sp.' && $nextWord == 'n.')
+                        preg_match('/' . $this->regExps->twoPartTitleAbbreviationsRegExp . '/', $word . ' ' . $remainder)
                         ||
-                        ($word == 'n.' && $nextWord == 'sp.')
-                        ||
-                        ($word == 'nov.' && $nextWord == 'spec.')
+                        // $word ends in period, next word starts with '(', and next character is letter
+                        (substr($word, -1) == '.' && substr($nextWord, 0, 1) == '(' && ctype_alpha(substr($nextWord, 1, 2)))
                     ) {
                         $this->verbose("Not ending title, case 1a (word is " . $word . ")");
                     } elseif 
@@ -761,7 +761,7 @@ class TitleParser
                         // if no intervening punctuation, end title
                         if (!Str::contains($matches[1], ['.', ',', ':'])) {
                             $this->verbose("Ending title, case 5");
-                            $title = rtrim(Str::before($originalRemainder, $matches[0]), '., ');
+                            $title = rtrim(Str::before($originalRemainder, $matches[0]), ', ');
                             break;
                         // otherwise keep going
                         } else {
@@ -875,7 +875,7 @@ class TitleParser
                         } else {
                             // otherwise assume the punctuation ends the title.
                             $this->verbose("Ending title, case 6b (word '" . $word ."')");
-                            $title = rtrim(implode(' ', $initialWords), '.,');
+                            $title = rtrim(implode(' ', $initialWords), ',');
                             break;
                         }
                     }
@@ -886,7 +886,7 @@ class TitleParser
                         $isArticle = true;
                         $this->verbose('Followed by journal name and publication info, so classified as article');
                         $this->verbose("Ending title, case 7 (word '" . $word ."')");
-                        $title = rtrim(implode(' ', $initialWords), '.,');
+                        $title = rtrim(implode(' ', $initialWords), ',');
                         break;
                 }
                 }
@@ -994,5 +994,4 @@ class TitleParser
             'editor' => null,
         ];
     }
-
 }

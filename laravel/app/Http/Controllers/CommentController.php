@@ -21,7 +21,7 @@ class CommentController extends Controller
     public function index(string $sortBy = 'status'): View
     {
         if ($sortBy == 'latest') {
-            $threads = Thread::orderByDesc('updated_at');
+            $threads = Thread::with('comments')->orderByDesc('updated_at');
         } elseif ($sortBy == 'title') {
             $threads = Thread::orderBy('title');
         } elseif ($sortBy == 'poster') {
@@ -35,7 +35,7 @@ class CommentController extends Controller
             ->orderBy('users.last_name')
             ->orderBy('users.first_name');
         } elseif ($sortBy == 'status') {
-            $threads = Thread::orderBy('status')->orderByDesc('updated_at');
+            $threads = Thread::with('comments')->orderBy('status')->orderByDesc('updated_at');
         }
 
         $threads = $threads->paginate(50);

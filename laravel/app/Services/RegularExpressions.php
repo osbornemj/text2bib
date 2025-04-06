@@ -54,6 +54,8 @@ class RegularExpressions
     var $translatedByRegExp;
     var $translatorRegExp;
 
+    var $twoPartTitleAbbreviationsRegExp;
+
     var $unpublishedRegExp;
 
     var $volumeRegExp;
@@ -679,9 +681,30 @@ class RegularExpressions
         // Other //
         ///////////
 
+        $twoPartTitleAbbreviations = [
+            ['comb\.', 'nov\.'],
+            ['n\.', 'sp\.'],
+            ['nov\.', 'sp\.'],
+            ['nov\.', 'spec\.'],
+            ['sp\.', 'n\.'],
+            ['sp\.', 'nov\.'],
+            ['spec\.', 'nov\.'],
+            ['stat\.', 'n\.'],
+            ['stat\.', 'nov\.'],
+            ['stat\.', 'rest\.'],
+        ];
+
+        $twoPartTitleAbbreviationsRegExp = '';
+        foreach ($twoPartTitleAbbreviations as $i => $twoPartTitleAbbreviation) {
+            $twoPartTitleAbbreviationsRegExp .= ($i ? '|' : '') . $twoPartTitleAbbreviation[0] . ' ?' . $twoPartTitleAbbreviation[1] . ',?';
+        }
+
+        $this->twoPartTitleAbbreviationsRegExp = '(' . $twoPartTitleAbbreviationsRegExp . ')';
+
         // Other languages?
         $this->inReviewRegExp = '[Ii]n [Rr]eview';
- 
+        $this->abbreviationsUsedAsInitials = '(Ch|Mª|Wm|Yu|Zh)';  // including Yu is problematic because it is also a comoplete name
+
         $this->oclcLabelRegExp = 'OCLC:? ';
         $this->oclcNumberRegExp = '[0-9]+';
    }
