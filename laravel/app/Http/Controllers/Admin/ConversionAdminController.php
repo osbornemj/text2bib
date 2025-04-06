@@ -45,6 +45,7 @@ class ConversionAdminController extends Controller
 
         $conversions = $conversions
             ->with('user')
+            ->with('bst')
             ->withCount('outputs')
             ->paginate(50);
 
@@ -234,6 +235,7 @@ class ConversionAdminController extends Controller
         $searchTerms = explode(' ', $searchString);
 
         $outputs = Output::with('itemType')
+            ->with('conversion.bst')
             ->with('conversion.user');
 
         if ($cutoffDate) {
