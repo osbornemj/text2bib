@@ -132,7 +132,8 @@ trait Utilities
     {
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
         // return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, $this->andWords) || $string == 'with';
-        return in_array(mb_strtolower($string), $this->andWords) || $string == 'with';
+        //return in_array(mb_strtolower($string), $this->andWords) || $string == 'with';
+        return in_array($string, $this->andWords) || in_array($string, array_map('mb_strtoupper', $this->andWords)) || $string == 'with';
     }
 
     /**

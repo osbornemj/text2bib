@@ -5,6 +5,8 @@ use App\Traits\Utilities;
 
 class RegularExpressions
 {
+    var $abbreviationsUsedAsInitials;
+
     var $accessedRegExp1;
     var $retrievedFromRegExp1;
     var $retrievedFromRegExp2;
@@ -17,7 +19,6 @@ class RegularExpressions
     var $edsRegExp;
 
     var $editionRegExp;
-//    var $editionWordsRegExp;
 
     var $firstPublishedRegExp;
 
