@@ -8,7 +8,7 @@
         wire:ignore.self 
         @click.self="$wire.set('showModal', false)"
         @keydown.window.escape="$wire.set('showModal', false)">
-            <div class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 p-2 mx-4 rounded-lg shadow-lg">
+            <div class="max-w-4xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 w-xl p-2 mx-4 rounded-lg shadow-lg">
                 <h2 class="text-xl font-bold mb-4">{{ $bst->name }}</h2>
                 <div class="mb-0">
                     @include('index.partials.bstProperties')
