@@ -230,9 +230,12 @@ class Converter
         $entry = $this->cleanText($entry);
         $entry = $this->regularizeSpaces($entry);
 
-        if ($charEncoding == 'utf8') {
-            $entry = $this->utf8ToTeX($entry);
-        }
+        // Conversion from utf8 to TeX if user requests it is now at end
+        // If entry has TeX for accented chars, would be better to convert them to utf8 now (and
+        // then convert back at the end if necessary)?
+        // if ($charEncoding == 'utf8') {
+        //     $entry = $this->utf8ToTeX($entry);
+        // }
         
         if ($language == 'my') {
             $entry = $this->burmeseNumeralsToDigits($entry);
@@ -4110,7 +4113,7 @@ class Converter
                                 $this->setField($item, 'volume', $volume, 'setField `179');
                             }
                         } else {
-                            $this->setField($item, 'booktitle', trim($booktitle, ' ,;'), 'setField 180');
+                            $this->setField($item, 'booktitle', trim($booktitle, ' ,;_'), 'setField 180');
                         }
                     } else {
                         // Change item type to book
@@ -4785,6 +4788,12 @@ class Converter
                 $item->$name = $this->digitsToBurmeseNumerals($field);
             }
             $item->language = 'Burmese';
+        }
+
+        if ($charEncoding == 'utf8') {
+            foreach ($item as $name => $field) {
+                $item->$name = $this->utf8ToTeX($field);
+            }
         }
 
         $returner = [

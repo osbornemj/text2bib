@@ -1270,7 +1270,6 @@ class AuthorParser
             $nameString = $matches['last'] . $matches['remainder'];
         }
 
-
         $nameString = str_replace('..', '.', $nameString);
         if (! str_contains($nameString, '{')) {
             $nameString = rtrim($nameString, '}');
@@ -1364,7 +1363,8 @@ class AuthorParser
                 } else {
                     $chars = mb_str_split($name);
                     foreach ($chars as $j => $char) {
-                        if (ctype_alpha($char)) {
+                        //if (ctype_alpha($char)) {
+                        if (preg_match('/^\p{L}$/u', $char)) {
                             if ($j >= count($chars) - 1 || $chars[$j + 1] != '.') {
                                 $fName .= $char . '.';
                                 if (count($chars) > $j + 1 && $chars[$j+1] != '-') {
@@ -1627,13 +1627,15 @@ class AuthorParser
             // Names are in dictionary with initial u.c. letter, so convert word to l.c. to exclude them as regular words
             $lcword = mb_strtolower($word);
 
-            if (($this->isAnd($word) && ! $ignoreAnd) || $this->isInitials(($word))) {
+            if (($this->isAnd($word) && ! $ignoreAnd) || $this->isInitials($word)) {
                 $score++;
             } elseif (
                 // not using isAnd here, because that allows "with"
-                    ($word != 'and' || ! $ignoreAnd) &&
+                    ($word != 'and' || ! $ignoreAnd)
+                    &&
 //                    ((isset($word[0]) && mb_strtoupper($word[0]) == $word[0]) || in_array($word, $this->vonNames)) &&
-                    ! $this->isInitials($word) &&
+                    ! $this->isInitials($word)
+                    &&
                     ! in_array($word, $dictionaryNames)
                 ) {
                 $wordsToCheck[] = $lcword;
@@ -1667,7 +1669,6 @@ class AuthorParser
     /**
      * isNotName: determine if $word1 and $word2 might be names: starts with u.c. letter or is a von name
      * or "d'" and is not an initial
-     * @param $words array
      */
     public function isNotName(string $word1, string $word2): bool
     {

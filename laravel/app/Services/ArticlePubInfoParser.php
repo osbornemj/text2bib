@@ -157,7 +157,7 @@ class ArticlePubInfoParser
         $numberRangeWithRoman = $numberWithRoman . '((--?-?|_)' . $numberWithRoman . ')?';
         // }? at end is because $volumeAndCodesRegExp includes \textbf{
         $volumeRx = '('. $this->regExps->volumeAndCodesRegExp . ')?(?P<vol>' . $numberRange . ')}?';
-        $volumeWithRomanRx = '('. $this->regExps->volumeAndCodesRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')}?';
+        $volumeWithRomanRx = '('. $this->regExps->volumeAndCodesRegExp . ')?(?P<vol>' . $numberRangeWithRoman . ')[}_]?';
         // Number, like volume, may have \textbf or \textit etc. (less likely, but possible)
         $numberRx = '('. $this->regExps->numberAndCodesRegExp . ')?(?P<num>' . $numberRangeWithSlash . ')}?';
         //$volumeWordRx = '('. $volumeAndCodesRegExp . ')(?P<vol>' . $numberRange . ')';

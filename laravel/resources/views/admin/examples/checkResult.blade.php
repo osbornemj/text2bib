@@ -12,7 +12,7 @@
             {{ $i }}: {{ $authorPatternCount }}@if ($loop->last).@else, @endif
         @endforeach
         Total: {{ array_sum($authorPatternCounts)}}
-        <p>
+        <div class="my-2">
         @if ($allCorrect && $detailsIfCorrect == 'hide') 
             <span class="bg-green-600">All correct</span> ({{ $exampleCount }} {{ Str::plural('item', $exampleCount) }})
         @else
@@ -85,5 +85,6 @@
                 </div>
             @endforeach
         @endif
+        </div>
     </div>
 </x-app-layout>

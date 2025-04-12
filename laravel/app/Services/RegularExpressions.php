@@ -452,7 +452,7 @@ class RegularExpressions
 
         // volume words, with optional space after each one
         $this->volumeRegExp = $volumeRegExp;
-        $this->volumeAndCodesRegExp = $volumeRegExp . '|{\\\bf |\\\textbf{|\\\textit{|\\\emph{|\*';
+        $this->volumeAndCodesRegExp = $volumeRegExp . '|{\\\bf |\\\textbf{|\\\textit{|\\\emph{|\*|_';
         $this->volumeWithNumberRegExp = '(' . $this->volumeRegExp . ') ?(\\\textit\{|\\\textbf\{|\\\emph\{)?[1-9][0-9]{0,4}';
     
         $this->volumeNumberPagesRegExp = '/(' . $this->volumeRegExp . ')?[0-9]{1,4} ?(' . $this->numberRegExp . ')?[ \(][0-9]{1,4}[ \)]:? ?(' . $this->pageRegExp . ')/u';

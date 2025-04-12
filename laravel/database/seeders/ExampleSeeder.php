@@ -5165,6 +5165,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '16',
                     'doi' => '10.5430/ijhe.v11n5p153',
                     'url' => 'https://doi.org/10.5430/ijhe.v11n5p153',
+                    'note' => 'doi:10.5430/ijhe.v11n5p153',
                     ]
             ],
             // doi not correctly identified, because of nonstandard URL
@@ -11296,8 +11297,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'online',
                 'bibtex' => [
                     'author' => 'Reevell, P. and Stukalova, T.',
-                    'title' => 'Russia Shuts Down Human Rights Group That Recorded Stalin-Era Crimes',
-                    'note' => 'ABC News',
+                    'title' => 'Russia Shuts Down Human Rights Group That Recorded Stalin-Era Crimes, ABC News',
                     'year' => '2021',
                     'month' => '12',
                     'urldate' => '2021-12-28',
@@ -14177,18 +14177,6 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'McFarland & Company, Inc.',
                     ]
             ],
-            //
-            [
-                'source' => '	Dan Suciu, Semistructured Data and XML, in Handbook of Massive Data Sets, 2002, Volume 4 ISBN : 978-1-4613-4882-5 ',
-                'type' => 'incollection',
-                'bibtex' => [
-                    'author' => 'Dan Suciu',
-                    'title' => 'Semistructured Data and XML',
-                    'isbn' => '978-1-4613-4882-5',
-                    'booktitle' => 'Handbook of Massive Data Sets, Volume 4',
-                    'year' => '2002',
-                    ]
-            ],
 			// author pattern 7 truncates last name
 			[
                 'source' => 'Davis, R., Duane, G., Kenny, S. T., Cerrone, F., Guzik, M. W., Babu, R. P., Casey, E., and O’Connor, K. E.: High cell density cultivation of Pseudomonas putida KT2440 using glucose without the need for oxygen enriched air supply. Biotechnol. Bioeng., 112, 725–733 (2015). ',
@@ -15402,6 +15390,48 @@ class ExampleSeeder extends Seeder
                     'journal' => 'Nouv. Rev. Ent.',
                     ]
             ],         
+			// volume with _
+			[
+                'source' => ' Berners-Lee, T., Hendler, J., & Lassila, O. (2001). The Semantic Web. _Scientific American_, _284_(5), 34–43. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Berners-Lee, T. and Hendler, J. and Lassila, O.',
+                    'year' => '2001',
+                    'title' => 'The Semantic Web',
+                    'journal' => 'Scientific American',
+                    'pages' => '34-43',
+                    'volume' => '284',
+					'number' => '5',
+                    ]
+            ],
+			// booktitle with _
+			[
+                'source' => 'Tanon, T. P., Vrandecic, D., Schaffert, S., Steiner, T., & Pintscher, L. (2018). From Freebase to Wikidata: The Great Migration. In _Proceedings of the 27th International Conference on World Wide Web_ (pp. 1419–1428). ACM.  ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Tanon, T. P. and Vrandecic, D. and Schaffert, S. and Steiner, T. and Pintscher, L.',
+                    'year' => '2018',
+                    'title' => 'From Freebase to Wikidata: The Great Migration',
+                    'pages' => '1419-1428',
+                    'publisher' => 'ACM',
+                    'booktitle' => 'Proceedings of the 27th International Conference on World Wide Web',
+                    ]
+            ],
+			// should be author pattern?
+			[
+                'source' => 'Sabou, M., Bill, S., Elsiddieg, A., Kärger, P., Kastner, M., & Eisenmann, F. (2020). Semantic web cyber-physical systems: A cross-domain perspective. _Semantic Web_, _11_(1), 115–124.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Sabou, M. and Bill, S. and Elsiddieg, A. and Kärger, P. and Kastner, M. and Eisenmann, F.',
+                    'year' => '2020',
+                    'title' => 'Semantic web cyber-physical systems: A cross-domain perspective',
+                    'journal' => 'Semantic Web',
+                    'pages' => '115-124',
+                    'volume' => '11',
+					'number' => '1',
+                ],
+				'char_encoding' => 'utf8leave',
+            ],
              
             
         ];
