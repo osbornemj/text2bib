@@ -8180,7 +8180,7 @@ class ExampleSeeder extends Seeder
                     'address' => 'Bergamo',
                     'publisher' => 'Junior',
                     'isbn' => '9788884349538',
-                    'pagetotal' => '160 pp.',
+                    'pagetotal' => '160',
                     'note' => '€ 24.00',
                     ],
                     'char_encoding' => 'utf8leave',
@@ -12292,7 +12292,7 @@ class ExampleSeeder extends Seeder
                     'year' => '1832',
                     'title' => 'Expedition scientifique de Moree. Section des sciences physiques zoologie. Deuxieme section---des animaux articules [Vol. 3, part 1]',
                     'publisher' => 'F. G. Levrault',
-					'pagetotal' => '400 pp.',
+					'pagetotal' => '400',
                     'address' => 'Paris',
                     ]
             ],
@@ -12306,7 +12306,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Catalogue of {I}ndian insects. Part 27---Isoptera',
                     'publisher' => 'Government of India Press',
                     'address' => 'Delhi',
-					'pagetotal' => '[4] + 94 pp.'
+					'pagetotal' => '[4] + 94'
                     ]
             ],
 			// address and publisher not detected
@@ -12858,7 +12858,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2020',
                     'publisher' => 'Department of Fisheries',
                     'address' => 'Bangladesh',
-                    'pagetotal' => '81 pp.',
+                    'pagetotal' => '81',
                     ]
             ],
 			// word "symposium" used for proceedings
@@ -15432,8 +15432,32 @@ class ExampleSeeder extends Seeder
                 ],
 				'char_encoding' => 'utf8leave',
             ],
-             
-            
+            // misclassified as article because of presence of digits?
+            [
+                'source' => 'Bookstein, F.L. 1991. Morphometric tools for landmark data. Cambridge University Press, New York, 435 p. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'New York',
+                    'author' => 'Bookstein, F. L.',
+                    'pagetotal' => '435',
+                    'publisher' => 'Cambridge University Press',
+                    'title' => 'Morphometric tools for landmark data',
+                    'year' => '1991',
+                    ]
+            ],
+            // pagetotal & address, publisher
+            [
+                'source' => 'Miller, S.A., 1889, North American Geology and Palaeontology for the Use of Amateurs, Students, and Scientists: Cincinnati, Ohio, Western Methodist Book Concern, 664 p. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Cincinnati, Ohio',
+                    'author' => 'Miller, S. A.',
+                    'pagetotal' => '664',
+                    'publisher' => 'Western Methodist Book Concern',
+                    'title' => 'North {A}merican Geology and Palaeontology for the Use of Amateurs, Students, and Scientists',
+                    'year' => '1889',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');

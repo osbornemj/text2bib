@@ -961,9 +961,10 @@ class Converter
         $pageCount = null;
         // pp cannot be followed by digit, because string could be "vol 10 pp. 20-30".  (Period after (pp?pgs) has to be optional, but 
         // then need it also in the (?! expression.)
-        if (preg_match('/^(?P<before>.*?)(,? (?P<pageCount>[0-9ivx +\[\]]+(pp|pgs)\.?(?!\.? [1-9])))(?P<after>.*?)$/', $remainder, $matches)) {
+        if (preg_match('/^(?P<before>.*?)(,? (?P<pageCount>[0-9ivx +\[\]]+((pp|pgs)\.?|p\.)(?!\.? [1-9])))(?P<after>.*?)$/', $remainder, $matches)) {
             $pageCount = $matches['pageCount'] ?? null;
             $remainder = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
+            $this->verbose("Page count found: " . $pageCount);
         }
 
         $remainder = trim($remainder, '.},;/ ');
@@ -4689,7 +4690,9 @@ class Converter
 
         if ($pageCount) {
             if ($use == 'biblatex' && in_array($itemKind, ['book', 'phdthesis', 'mastersthesis'])) {
-                $this->setField($item, 'pagetotal', $pageCount, 'setField 246');
+                preg_match('/^(?P<pageCountNumber>[\d +\[\]]+)[^\d]*$/', $pageCount, $matches);
+                $pageCountNumber = trim($matches['pageCountNumber']) ?: $pageCount;
+                $this->setField($item, 'pagetotal', $pageCountNumber, 'setField 246');
             } else {
                 $this->addToField($item, 'note', $pageCount, 'addToField 21');
                 $this->verbose('Adding page count to note field.');
