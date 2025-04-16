@@ -507,11 +507,6 @@ class TitleParser
                         $remainder = $matches['remainder'] ?? '';
                     }
 
-                    // dump($word);
-                    // if ($word == 'New' && preg_match('/^(?P<city>\p{Lu}[\p{L} ]+): /u', $remainder, $matches)) {
-                    //     dd($matches);
-                    // }
-
                     if (
                         $this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || $upcomingJournalAndPubInfo
@@ -577,7 +572,7 @@ class TitleParser
                         || preg_match('/^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?, (?P<city>\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?, \p{Lu}{2})(, ' . $this->yearRegExp . ')?$/u', $remainder, $matches) 
                         // [,.] <address>: <publisher>(, <year>)?$ OR (<address>: <publisher>(, <year>)?)
                         // Note that ',' is allowed in address and '.' and '&' are allowed in publisher.
-                        //  May need to put a limit on length of publisher part?
+                        // May need to put a limit on length of publisher part?
                         || (
                             (Str::endsWith($word, '.') || Str::endsWith($word, ',') || $nextWord[0] == '(')
                             &&

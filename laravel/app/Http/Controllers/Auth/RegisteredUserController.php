@@ -49,7 +49,7 @@ class RegisteredUserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'source' => ['required', 'string', 'in:webSearch,youtube,friend,otherSite,other'],
+            'source' => ['required', 'string', 'in:webSearch,youtube,friend,chatGPT,otherSite,other'],
             'source_other_site' => ['required_if:source,otherSite', 'url', 'nullable'],
             'source_other' => ['required_if:source,other'],
         ], [
