@@ -13,7 +13,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.2",
-        "tigitz/php-spellchecker": "^0.7.0"
+        "tigitz/php-spellchecker": "^0.8.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",
