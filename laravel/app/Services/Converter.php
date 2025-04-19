@@ -2585,6 +2585,38 @@ class Converter
                             $this->setField($item, 'publisher', $matches['publisher'], 'setField 81');
                         }
                         $remainder = '';
+                    // $remainder is <editor> Ed., <booktitle>[no :,.]: <address>[commas allowed], <publisher>[only letters and spaces].
+                    } elseif (preg_match('/^(?P<editor>.{5,80}) ' . $this->regExps->edsNoParensRegExp . ', (?P<booktitle>[^:,.]*): (?P<address>[\p{L}, ]{3,40}), (?P<publisher>[\p{L} ]{5,40})$/u', $remainder, $matches)) {
+                        if (isset($matches['editor'])) {
+                            $result = $this->authorParser->convertToAuthors(
+                                explode(' ', $matches['editor']), 
+                                $remainder, 
+                                $trash, 
+                                $month, 
+                                $day, 
+                                $date, 
+                                $isEditor, 
+                                $isTranslator, 
+                                $this->cities, 
+                                $this->dictionaryNames, 
+                                false, 
+                                'editors', 
+                                $language
+                            );
+                            if ($result) {
+                                $this->setField($item, 'editor', trim($result['authorstring']), 'setField 82');
+                                if (isset($matches['booktitle'])) {
+                                    $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 83');
+                                }
+                                if (isset($matches['address'])) {
+                                    $this->setField($item, 'address', $matches['address'], 'setField 84');
+                                }
+                                if (isset($matches['publisher'])) {
+                                    $this->setField($item, 'publisher', $matches['publisher'], 'setField 85');
+                                }
+                                $remainder = '';
+                            }
+                        }
                     // $remainder is <editor> Ed., <booktitle>, <publisher>, <address>.
                     } elseif (preg_match('/^(?P<editor>.{5,80}) ' . $this->regExps->edsNoParensRegExp . ', (?P<booktitle>[^,.]*), (?P<publisher>[\p{L} ]{3,40}), (?P<address>[\p{L}, ]{5,40})$/u', $remainder, $matches)) {
                         if (isset($matches['editor'])) {

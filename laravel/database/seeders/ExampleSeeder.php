@@ -15511,6 +15511,34 @@ class ExampleSeeder extends Seeder
                     'year' => '2021',
                     ]
             ],
+            // title ended early
+            [
+                'source' => 'Ludvigsen, R., Westrop, S.R., and Kindle, C.H., 1989, Sunwaptan (Upper Cambrian) trilobites of the Cow Head Group, western Newfoundland, Canada: Palaeontographica Canadiana, v. 6, p. 1-175. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Ludvigsen, R. and Westrop, S. R. and Kindle, C. H.',
+                    'journal' => 'Palaeontographica Canadiana',
+                    'pages' => '1-175',
+                    'title' => 'Sunwaptan (Upper Cambrian) trilobites of the Cow Head Group, western Newfoundland, Canada',
+                    'volume' => '6',
+                    'year' => '1989',
+                    ]
+            ],
+            // title includes part of address
+            [
+                'source' => 'Kowalewski, M., and Bambach, R.K., 2003, The limits of paleontological resolution, in Harries, P.J., ed., High Resolution Approaches in Stratigraphic Paleontology: Dordrecht, The Netherlands, Kluwer Academic Publishers, p. 1-48. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'address' => 'Dordrecht, The Netherlands',
+                    'author' => 'Kowalewski, M. and Bambach, R. K.',
+                    'booktitle' => 'High Resolution Approaches in Stratigraphic Paleontology',
+                    'editor' => 'Harries, P. J.',
+                    'pages' => '1-48',
+                    'publisher' => 'Kluwer Academic Publishers',
+                    'title' => 'The limits of paleontological resolution',
+                    'year' => '2003',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');
