@@ -15484,6 +15484,19 @@ class ExampleSeeder extends Seeder
                     'year' => '1954',
                     ]
             ],
+            // part of title included in journal name
+            [
+                'source' => 'Bell, W.C., Feniak, O.W., and Kurtz, V.E., 1952, Trilobites of the Franconia Formation, southern Minnesota: Journal of Paleontology, v. 26, p. 175-198. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bell, W. C. and Feniak, O. W. and Kurtz, V. E.',
+                    'journal' => 'Journal of Paleontology',
+                    'pages' => '175-198',
+                    'title' => 'Trilobites of the Franconia Formation, southern Minnesota',
+                    'volume' => '26',
+                    'year' => '1952',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');

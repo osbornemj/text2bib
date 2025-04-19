@@ -381,6 +381,8 @@ class TitleParser
                     $remainder = ltrim($remainder, '{ ');
 
                     if (
+                        // Some styles use a colon to separate the title from the publication information,
+                        // and removing the next condition does not affect the conversion of any other item.
                         // ! Str::endsWith($word, ':')
                         // &&
                         (
@@ -388,7 +390,7 @@ class TitleParser
                             preg_match('/^(SIAM (J\.|Journal)|IEEE Transactions|ACM Transactions)/', $remainder)
                             // 1- or 2-word journal name followed by numbers, 'p', '.', ' ', and '-' (pub info)
                             || preg_match('/^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?,? [0-9, \-p\.]*$/u', $remainder)
-                            || in_array('Journal', $wordsToNextPeriodOrComma)
+                            || (in_array('Journal', $wordsToNextPeriodOrComma) && ! preg_match('/^[a-z]/', $remainder))
                             || preg_match('/^(Revue|Jurnal) /', $remainder)
                             // journal name, pub info ('}' after volume # for \textbf{ (in $volumeAndCodesRegExp))
                             // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
