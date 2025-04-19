@@ -436,7 +436,7 @@ class RegularExpressions
             '[Vv]olumes?', // English, Portuguese
             '[Vv]ols?\.?',
             'VOL\.?',
-            '[Vv]\.',
+            '[Vv]\.(?! ?\d{1,2}\.\d)',  // exclude version number, of form v. 2.3
             '[Tt]omos?',   // Spanish
             '[Tt]omes?',   // French
             '[Bb]ände',    // German (plural)

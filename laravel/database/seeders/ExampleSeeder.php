@@ -15497,6 +15497,20 @@ class ExampleSeeder extends Seeder
                     'year' => '1952',
                     ]
             ],
+            // title ended early
+            [
+                'source' => 'Baken, E.K., Collyer, M.L., Kaliontzopoulou, A., and Adams, D.C., 2021, gmShiny and geomorph v.4.0: new graphical interface and enhanced analytics for a comprehensive morphometric experience: Methods in Ecology and Evolution, v. 12, p. 2355–2363. https://doi.org/10.1111/2041-210X.13723. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Baken, E. K. and Collyer, M. L. and Kaliontzopoulou, A. and Adams, D. C.',
+                    'journal' => 'Methods in Ecology and Evolution',
+                    'doi' => '10.1111/2041-210X.13723',
+                    'pages' => '2355-2363',
+                    'title' => 'gmShiny and geomorph v. 4.0: new graphical interface and enhanced analytics for a comprehensive morphometric experience',
+                    'volume' => '12',
+                    'year' => '2021',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');
