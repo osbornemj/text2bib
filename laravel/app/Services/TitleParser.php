@@ -376,6 +376,15 @@ class TitleParser
                         || 
                         ($nextWord && $nextWord == '-')
                     )
+                    &&
+                    // if $word is followed by comma, and then a country name followed by ":", add $word to title
+                    ! (
+                        substr($word, -1) == ','
+                        &&
+                        substr($nextWord, -1) == ':'
+                        &&
+                        in_array(substr($nextWord, 0, -1), $this->countries)
+                    )
                    ) {
                     $remainderMinusArticle = preg_replace('/[\( ][Aa]rticle /', '', $remainder);
                     $remainder = ltrim($remainder, '{ ');
