@@ -15471,6 +15471,19 @@ class ExampleSeeder extends Seeder
                     'year' => '1990',
                     ]
             ],
+            // journal name included in title
+            [
+                'source' => 'Berg, R.R., 1954, Franconia Formation of Minnesota and Wisconsin: Geological Society of America Bulletin, v. 65, p. 857-882. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Berg, R. R.',
+                    'journal' => 'Geological Society of America Bulletin',
+                    'pages' => '857-882',
+                    'title' => 'Franconia Formation of Minnesota and Wisconsin',
+                    'volume' => '65',
+                    'year' => '1954',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');

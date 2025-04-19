@@ -381,8 +381,8 @@ class TitleParser
                     $remainder = ltrim($remainder, '{ ');
 
                     if (
-                        ! Str::endsWith($word, ':')
-                        &&
+                        // ! Str::endsWith($word, ':')
+                        // &&
                         (
                             // e.g. SIAM J. ... (Don't generalize too much, because 'J.' can be an editor's initial.)
                             preg_match('/^(SIAM (J\.|Journal)|IEEE Transactions|ACM Transactions)/', $remainder)
