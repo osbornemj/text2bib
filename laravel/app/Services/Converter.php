@@ -4464,7 +4464,7 @@ class Converter
                             // If item is a book, $cityString and $publisherString are set, and existing title is followed by comma
                             // in $entry, string preceding $cityString
                             // and $publisherString must be part of title (which must have been ended prematurely). 
-                            if ($itemKind == 'book' && ! empty($cityString) && !empty($publisherString)) {
+                            if ($itemKind == 'book' && ! empty($cityString) && ! empty($publisherString)) {
                                 $afterTitle = Str::after($entry, $item->title ?? '');
                                 if ($afterTitle[0] == ',') {
                                     $beforeCity = Str::before($remainder, $cityString);

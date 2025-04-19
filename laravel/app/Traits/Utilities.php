@@ -523,7 +523,7 @@ trait Utilities
         $begin = $start ? '/^' : '/';
         $end = $finish ? '$/u' : '/u';
 
-        $addressPublisherRegExp = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-.,\' ]{0,50})';
+        $addressPublisherRegExp = '(?P<address>[\p{L},. ]{0,25}): ?(?P<publisher>[\p{L}&\-.,\' ]{0,45})';
 
         if ($allowYear) {
             // permit "?" after year (e.g. "[2023?]").

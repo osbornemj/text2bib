@@ -26,6 +26,19 @@ class PublisherAddressParser
      */
     public function extractPublisherAndAddress(string $string, string|null &$address, string|null &$publisher, string|null $cityString, string|null $publisherString, array $cities, array $publishers): string
     {
+        // If $string starts with $cityString, followed by comma and then letters and spaces, take latter to be publisher
+        if (
+            empty($publisherString)
+            && 
+            ! empty($cityString) 
+            && 
+            preg_match('/^' . $cityString . ', (?P<publisher>\p{Lu}[\p{L} ]+)$/', $string, $matches)
+           ) {
+            $publisher = $matches['publisher'];
+            $address = $cityString;
+            return '';
+        }
+
         // If, after removing $publisherString and $cityString, only punctuation remains, set those strings to be
         // publisher and address
         $newString = Str::remove([$publisherString, $cityString], $string);
