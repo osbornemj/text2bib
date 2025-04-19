@@ -15458,12 +15458,56 @@ class ExampleSeeder extends Seeder
                     'year' => '1889',
                     ]
             ],
+            // title not extracted correctly
+            [
+                'source' => 'Fortey, R.A., 1990, Ontogeny, hypostome attachment and trilobite classification: Palaeontology, v. 33, p. 529-576. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Fortey, R. A.',
+                    'journal' => 'Palaeontology',
+                    'pages' => '529-576',
+                    'title' => 'Ontogeny, hypostome attachment and trilobite classification',
+                    'volume' => '33',
+                    'year' => '1990',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');
         DB::statement('ALTER TABLE examples AUTO_INCREMENT 1');
         DB::statement('ALTER TABLE example_fields AUTO_INCREMENT 1');
 
+        // Following code based on
+        // https://www.youtube.com/watch?v=gEfethzjLrA
+
+        $j = 1;
+        foreach ($examples as $i => $example) {
+          $exs[] = [
+            'id' => $i+1,
+            'source' => $example['source'],
+            'type' => $example['type'],
+            'language' => $example['language'] ?? 'en',
+            'char_encoding' => $example['char_encoding'] ?? 'utf8',
+            'use' => $example['use'] ?? 'biblatex',
+          ];
+          foreach ($example['bibtex'] as $key => $value) {
+            $exFields[] = [
+               'id' => $j,
+               'example_id' => $i+1,
+               'name' => $key,
+               'content' => $value
+            ];
+            $j++;
+          }
+        }
+        foreach (array_chunk($exs, 1000) as $chunk) {
+           Example::insert($chunk);
+        }
+        foreach (array_chunk($exFields, 1000) as $chunk) {
+           ExampleField::insert($chunk);
+        }
+
+        /*        
         foreach ($examples as $example) {
             $ex = Example::create([
                 'source' => $example['source'],
@@ -15480,5 +15524,6 @@ class ExampleSeeder extends Seeder
                 ]);
             }
         }
+        */
     }
 }

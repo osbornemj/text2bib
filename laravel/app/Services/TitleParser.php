@@ -518,7 +518,17 @@ class TitleParser
                         || (
                             (Str::endsWith(rtrim($word, "'\""), [',', '.']) || Str::startsWith(rtrim($nextWord, "'\""), ['(']))
                             &&
-                            ($upcomingVolumePageYear || $upcomingVolumeNumber || $upcomingArticlePubInfo || $upcomingBookVolume || $upcomingVolumeCount)
+                            (
+                                ($upcomingVolumePageYear && ! preg_match('/^[a-z]/', $remainder))
+                                || 
+                                $upcomingVolumeNumber 
+                                || 
+                                $upcomingArticlePubInfo 
+                                || 
+                                $upcomingBookVolume 
+                                || 
+                                $upcomingVolumeCount
+                            )
                            )
                         || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
                         || preg_match($this->regExps->startPagesRegExp, $remainder)
