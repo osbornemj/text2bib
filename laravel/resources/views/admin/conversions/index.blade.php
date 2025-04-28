@@ -69,7 +69,6 @@
                             {{ __('Delete') }}
                         </x-danger-button>
                     </form>
-                    <br/>
                     <div class="ml-4">
                         @if ($conversion->version)
                             v. {{ $conversion->version }}
