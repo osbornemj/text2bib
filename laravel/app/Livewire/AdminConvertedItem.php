@@ -15,6 +15,8 @@ class AdminConvertedItem extends Component
 
     public $originalItem;
 
+    public $originalItemSet;
+
     public $crossrefItem;
 
     public function mount()
@@ -33,6 +35,8 @@ class AdminConvertedItem extends Component
         } else {
             $fields = $this->output->itemType ? $this->output->itemType->fields : [];
         }
+
+        $this->originalItemSet = $this->output->orig_item ? true : false;
 
         foreach ($fields as $field) {
             if (isset($this->output->item[$field])) {

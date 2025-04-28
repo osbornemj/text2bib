@@ -106,7 +106,7 @@
                 <div class="ml-6">
                     <code>{{ $name }}</code> = {{ '{' }}{{ $content }}{{ '}' }},
                 </div>
-                @if (! isset($originalItem[$name]) || $originalItem[$name] != $convertedItem[$name])
+                @if ($originalItemSet && (! isset($originalItem[$name]) || $originalItem[$name] != $convertedItem[$name]))
                     <div class="ml-10">
                         original: 
                         @if (! isset($originalItem[$name]))
