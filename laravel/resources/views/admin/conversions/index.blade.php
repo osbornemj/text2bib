@@ -69,6 +69,9 @@
                             {{ __('Delete') }}
                         </x-danger-button>
                     </form>
+                    <div class="inline-flex">
+                        <livewire:conversion-usability :conversion="$conversion" />
+                    </div>
                     <div class="ml-4">
                         @if ($conversion->version)
                             v. {{ $conversion->version }}
