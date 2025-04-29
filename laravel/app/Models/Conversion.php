@@ -49,6 +49,11 @@ class Conversion extends Model
         return $this->hasMany(Output::class);
     }
 
+    public function firstOutput(): Output|null
+    {
+        return $this->hasMany(Output::class)->first();
+    }
+
     public function correctnessCounts(): Collection
     {
         return $this->hasMany(Output::class)->pluck('correctness')->countBy()->sortKeys();

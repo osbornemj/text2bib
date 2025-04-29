@@ -100,6 +100,9 @@
                             @endif
                         @endif
                     </div>
+                    <div class="ml-4">
+                        {{ $conversion->firstOutput()?->source }}
+                    </div>
                     @if ($conversion->examined_at)
                         <div class="ml-4">
                         <span class="text-black bg-emerald-500 px-2 text-sm uppercase rounded">Examined {{ $conversion->examined_at }}</span>
