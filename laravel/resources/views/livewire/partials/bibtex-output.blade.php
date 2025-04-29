@@ -8,6 +8,20 @@
             <p>
                 <x-link href="{{ url('downloadBibtex/' . $conversionId) }}">Download BibTeX file</x-link>
             </p>
+
+            @if (count($invalidItems))
+            <div class="mt-4 border-b">
+                The following {{ Str::plural('item', $invalidItems) }} in your file @if (count($invalidItems) > 1) are @else is @endif invalid, and were not converted.  (Every item must contain at least one author, a title, and publication information, and cannot exceed 1,000 characters in length.)
+                <ul class="my-4">
+                    @foreach($invalidItems as $invalidItem)
+                    <li class="ml-4 mb-2">
+                        {{ $invalidItem['source'] }}
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
             <div class="mt-4">
                 <p>
                     {{ count($convertedItems) }} {{ Str::plural('item', $convertedItems) }} converted
@@ -30,6 +44,7 @@
                     @include('index.partials.settings')
                 </p>
             </div>
+
             <ul>
                 @foreach ($convertedItems as $outputId => $convertedItem)
                 <a name="{{ $outputId }}"></a>

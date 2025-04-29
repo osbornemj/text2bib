@@ -49,6 +49,8 @@ class ConvertFile extends Component
 
     public $convertedItems;
 
+    public $invalidItems;
+
     public $conversionId;
 
     public $outputId;
@@ -367,18 +369,23 @@ class ConvertFile extends Component
         }
 
         $convertedEntries = [];
+        $invalidItems = [];
         $previousAuthor = null;
         foreach ($entries as $j => $entry) {
             // Some files start with \u{FEFF}, but this character is now converted to space earlier in this method
             if ($entry) {
-                // $convertedEntries is array with components
-                // 'source', 'item', 'itemType', 'label', 'warnings', 'notices', 'details', 'scholarTitle'.
-                // 'label' (which depends on whole set of converted items) is updated later
-                $convertedEntry = $this->converter->convertEntry($entry, $conversion, null, null, null, $previousAuthor);
-                $previousAuthor = $convertedEntry['item']->author ?? null;
-                $convertedEntry['detected_encoding'] = $encodings[$j];
-                if ($convertedEntry) {
-                    $convertedEntries[$j] = $convertedEntry;
+                if (strlen($entry) < 35 || strlen($entry) > 1000 || substr_count(trim($entry), ' ') < 4) {
+                    $invalidItems[] = ['source' => $entry];
+                } else {
+                    // $convertedEntries is array with components
+                    // 'source', 'item', 'itemType', 'label', 'warnings', 'notices', 'details', 'scholarTitle'.
+                    // 'label' (which depends on whole set of converted items) is updated later
+                    $convertedEntry = $this->converter->convertEntry($entry, $conversion, null, null, null, $previousAuthor);
+                    $previousAuthor = $convertedEntry['item']->author ?? null;
+                    $convertedEntry['detected_encoding'] = $encodings[$j];
+                    if ($convertedEntry) {
+                        $convertedEntries[$j] = $convertedEntry;
+                    }
                 }
             }
         }
@@ -529,6 +536,7 @@ class ConvertFile extends Component
         $this->conversion = $conversion;
 
         $this->convertedItems = $convertedItems;
+        $this->invalidItems = $invalidItems;
         $this->includeSource = $conversion->include_source;
         $this->reportType = $conversion->report_type;
         $this->itemTypes = $itemTypes;
