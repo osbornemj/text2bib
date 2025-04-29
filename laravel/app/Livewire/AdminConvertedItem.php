@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\City;
 use App\Models\Journal;
+use App\Models\Output;
 use App\Models\Publisher;
 use Livewire\Component;
 
@@ -63,6 +64,12 @@ class AdminConvertedItem extends Component
         if ($value == 1) {
             $this->insertPublisherJournalCity($this->output);
         }
+    }
+
+    public function delete()
+    {
+        Output::find($this->output->id)->delete();
+        $this->output = null;
     }
 
     private function insertPublisherJournalCity($output)

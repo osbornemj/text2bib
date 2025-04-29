@@ -48,8 +48,6 @@
                 <div class="mt-4">
                     <li>
                         {{ $convertedItem['source'] }}
-                        <br/>
-
                         <div>
                             <livewire:show-converted-item 
                                     :convertedItem="$convertedItem" 

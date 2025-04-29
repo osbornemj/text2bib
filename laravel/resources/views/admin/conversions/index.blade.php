@@ -72,7 +72,7 @@
                     <div class="inline-flex">
                         <livewire:conversion-usability :conversion="$conversion" />
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-4 dark:text-slate-400">
                         @if ($conversion->version)
                             v. {{ $conversion->version }}
                         @endif
