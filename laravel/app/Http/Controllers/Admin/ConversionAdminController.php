@@ -27,6 +27,9 @@ class ConversionAdminController extends Controller
 
     private Converter $converter;
 
+    public $userRatings = ['' => '', 0 => 'unrated', 1 => 'correct', -1 => 'incorrect', 2 => 'corrected'];
+    public $adminRatings = ['' => '', 0 => 'unrated', 1 => 'correct', -1 => 'incorrect'];
+
     public function __construct()
     {
         $this->converter = new Converter;
@@ -49,7 +52,10 @@ class ConversionAdminController extends Controller
             ->withCount('outputs')
             ->paginate(50);
 
-        return view('admin.conversions.index', compact('conversions', 'user'));
+        $userRatings = $this->userRatings;
+        $adminRatings = $this->adminRatings;
+
+        return view('admin.conversions.index', compact('conversions', 'user', 'userRatings', 'adminRatings'));
     }
 
     public function showConversion(int $conversionId, int $page): View
@@ -230,7 +236,8 @@ class ConversionAdminController extends Controller
     {
         $searchString = request()->search_string;
         $cutoffDate = request()->cutoff_date;
-        $correctedByUser = request()->corrected_by_user;
+        $correctness = request()->correctness;
+        $admin_correctness = request()->admin_correctness;
 
         $searchTerms = explode(' ', $searchString);
 
@@ -242,8 +249,12 @@ class ConversionAdminController extends Controller
             $outputs = $outputs->where('created_at', '>', $cutoffDate);
         }
 
-        if ($correctedByUser) {
-            $outputs = $outputs->where('correctness', 2);
+        if ($correctness) {
+            $outputs = $outputs->where('correctness', $correctness);
+        }
+
+        if ($admin_correctness) {
+            $outputs = $outputs->where('admin_correctness', $admin_correctness);
         }
 
         foreach ($searchTerms as $searchTerm) {
@@ -253,6 +264,12 @@ class ConversionAdminController extends Controller
 
         $bstFields = config('constants.nonstandard_bst_fields');
 
-        return view('admin.conversions.showOutputs', compact('outputs', 'searchString', 'cutoffDate', 'correctedByUser', 'bstFields'));
+        $userRatings = $this->userRatings;
+        $adminRatings = $this->adminRatings;
+
+        $selectedCorrectness[$correctness] = 1;
+        $selectedAdminCorrectness[$admin_correctness] = 1;
+
+        return view('admin.conversions.showOutputs', compact('outputs', 'searchString', 'cutoffDate', 'selectedCorrectness', 'selectedAdminCorrectness', 'bstFields', 'userRatings', 'adminRatings'));
     }
 }

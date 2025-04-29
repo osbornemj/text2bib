@@ -19,7 +19,7 @@
         @include('admin.conversions.searchForm')
     </div>
 
-    <div class="sm:px-0 lg:px-0">
+    <div class="sm:px-0 lg:px-0 mb-4 pb-6">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
             <ul>
             @foreach ($conversions as $conversion)

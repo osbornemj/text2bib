@@ -47,8 +47,8 @@
             </div>
         @endforeach
         <div class="mt-2">
-            {{ $outputs->appends(Request::only(['search_string' => $searchString, 'corrected_by_user' => $correctedByUser, 'cutoff_date' => $cutoffDate]))->links() }}
+            {{ $outputs->appends(Request::only(['search_string' => $searchString, 'selectedCorrectness' => $selectedCorrectness, 'selectedAdminCorrectness' => $selectedAdminCorrectness, 'cutoff_date' => $cutoffDate]))->links() }}
         </div>
-</div>
+    </div>
 
 </x-app-layout>
