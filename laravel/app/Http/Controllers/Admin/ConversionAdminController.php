@@ -47,7 +47,7 @@ class ConversionAdminController extends Controller
         }
 
         $numberPerPage = 50;
-        if ($style == 'bare') {
+        if ($style == 'compact') {
             $numberPerPage = 10;
         }
 
