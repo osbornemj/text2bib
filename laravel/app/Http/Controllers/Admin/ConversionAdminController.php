@@ -63,10 +63,10 @@ class ConversionAdminController extends Controller
         $selectedCorrectness = [];
         $selectedAdminCorrectness = [];
 
-        return view('admin.conversions.index', compact('conversions', 'user', 'userRatings', 'adminRatings', 'selectedCorrectness', 'selectedAdminCorrectness', 'style'));
+        return view('admin.conversions.index', compact('conversions', 'user', 'userId', 'userRatings', 'adminRatings', 'selectedCorrectness', 'selectedAdminCorrectness', 'style'));
     }
 
-    public function showConversion(int $conversionId, int $page): View
+    public function showConversion(int $conversionId, int $userId, string $style, int $page): View
     {
         $conversion = Conversion::find($conversionId);
 
@@ -89,6 +89,8 @@ class ConversionAdminController extends Controller
             compact(
                 'outputs', 
                 'conversion', 
+                'userId',
+                'style',
                 'page', 
                 'authorPatternCount', 
                 'authorPatternPercent', 

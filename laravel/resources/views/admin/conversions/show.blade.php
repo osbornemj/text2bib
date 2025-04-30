@@ -2,9 +2,9 @@
 
     <div class="sm:px-0 pt-4 space-y-6">
         <div class="px-4 pt-0 sm:rounded-lg">
-                All conversions: <x-link href="{{ url('admin/conversions?page=' . $page . '#' . $conversion->id) }}">current page</x-link>
+                All conversions: <x-link href="{{ url('admin/conversions/' . $userId . '/' . $style . '?page=' . $page . '#' . $conversion->id) }}">current page</x-link>
                 &nbsp;&bull;&nbsp;
-                <x-link href="{{ url('admin/conversions') }}">first page</x-link>
+                <x-link href="{{ url('admin/conversions/' . $userId . '/' . $style) }}">first page</x-link>
         </div>
     </div>
 

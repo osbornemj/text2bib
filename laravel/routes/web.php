@@ -152,7 +152,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     });
 
     Route::controller(ConversionAdminController::class)->group(function () {
-        Route::get('/admin/showConversion/{conversionId}/{page}', 'showConversion')->name('admin.showConversion');
+        Route::get('/admin/showConversion/{conversionId}/{userId}/{style}/{page}', 'showConversion')->name('admin.showConversion');
         Route::get('/admin/convert/{fileId}/{itemSeparator?}', 'convert')->name('admin.convert');
         Route::get('/admin/conversions/{userId?}/{style?}', 'index')->name('admin.conversions');
         Route::get('/admin/formatExample/{outputId}', 'formatExample')->name('admin.formatExample');

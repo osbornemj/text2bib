@@ -29,7 +29,7 @@
             @foreach ($conversions as $conversion)
                 <li>
                     <a name="{{ $conversion->id }}"></a>
-                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/' . $conversions->currentPage()) }}">{{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}</x-link>
+                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/' . $userId . '/' . $style . '/' . $conversions->currentPage()) }}">{{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}</x-link>
                     &nbsp;&bull;&nbsp;
                     @if ($conversion->user)
                         <x-link href="{{ url('/admin/conversions/' . $conversion->user->id) }}">{{ $conversion->user->fullName() }}</x-link>
