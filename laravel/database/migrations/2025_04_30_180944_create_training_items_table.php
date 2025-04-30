@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('training_items', function (Blueprint $table) {
             $table->id();
             $table->text('source');
+            $table->string('language', 2)->nullable();
             $table->string('type')->nullable();
             $table->json('item')->nullable();
         });
