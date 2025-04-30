@@ -1,25 +1,29 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl leading-tight">
-            Conversions
-        </h2>
-        @if ($user)
-        <p>
-            by {{ $user->fullName() }}
-            &nbsp;&bull;&nbsp;
-            <x-link href="{{ url('/admin/conversions') }}">Show all</x-link>
-        </p>
-        @endif
-        <p>
-            {{ $conversions->total() }} found
-        </p>
-    </x-slot>
+    @if ($style == 'normal')
+        <x-slot name="header">
+            <h2 class="font-semibold text-xl leading-tight">
+                Conversions
+            </h2>
+            @if ($user)
+            <p>
+                by {{ $user->fullName() }}
+                &nbsp;&bull;&nbsp;
+                <x-link href="{{ url('/admin/conversions') }}">Show all</x-link>
+            </p>
+            @endif
+            <p>
+                {{ $conversions->total() }} found
+            </p>
+        </x-slot>
+    @endif
 
-    <div class="m-4 -mt-2">
-        @include('admin.conversions.searchForm')
-    </div>
+    @if ($style == 'normal')
+        <div class="m-4 -mt-2">
+            @include('admin.conversions.searchForm')
+        </div>
+    @endif
 
-    <div class="sm:px-0 lg:px-0 mb-4 pb-6">
+    <div class="sm:px-0 lg:px-0 mb-4 mt-2 pb-6">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
             <ul>
             @foreach ($conversions as $conversion)
@@ -72,37 +76,39 @@
                     <div class="inline-flex">
                         <livewire:conversion-usability :conversion="$conversion" />
                     </div>
-                    <div class="ml-4 dark:text-slate-400">
-                        @if ($conversion->version)
-                        v. {{ $conversion->version }}
-                        @endif
-                        @if ($conversion->use)
-                            &nbsp;&bull;&nbsp;
-                            use: 
-                            {{ $conversion->use }}
-                            @if ($conversion->use == 'latex')
-                                @if ($conversion->bst)
-                                    (<code>{{ $conversion->bst->name }}</code>)
+                    @if ($style == 'normal')
+                        <div class="ml-4 dark:text-slate-400">
+                            @if ($conversion->version)
+                            v. {{ $conversion->version }}
+                            @endif
+                            @if ($conversion->use)
+                                &nbsp;&bull;&nbsp;
+                                use: 
+                                {{ $conversion->use }}
+                                @if ($conversion->use == 'latex')
+                                    @if ($conversion->bst)
+                                        (<code>{{ $conversion->bst->name }}</code>)
+                                    @endif
+                                @elseif ($conversion->use == 'other')
+                                    ({{ $conversion->other_use }})
                                 @endif
-                            @elseif ($conversion->use == 'other')
-                                ({{ $conversion->other_use }})
                             @endif
-                        @endif
-                        @if ($conversion->crossref_count || $conversion->crossref_cache_count || $conversion->crossref_quota_remaining)
-                            @if ($conversion->crossref_count)
-                                &nbsp;&bull;&nbsp;
-                                <span class="text-yellow-600">crossref {{ $conversion->crossref_count }}</span>
+                            @if ($conversion->crossref_count || $conversion->crossref_cache_count || $conversion->crossref_quota_remaining)
+                                @if ($conversion->crossref_count)
+                                    &nbsp;&bull;&nbsp;
+                                    <span class="text-yellow-600">crossref {{ $conversion->crossref_count }}</span>
+                                @endif
+                                @if ($conversion->crossref_cache_count)
+                                    &nbsp;&bull;&nbsp;
+                                    cache {{ $conversion->crossref_cache_count }}
+                                @endif
+                                @if ($conversion->crossref_quota_remaining)
+                                    &nbsp;&bull;&nbsp;
+                                    quota remaining {{ $conversion->crossref_quota_remaining }}
+                                @endif
                             @endif
-                            @if ($conversion->crossref_cache_count)
-                                &nbsp;&bull;&nbsp;
-                                cache {{ $conversion->crossref_cache_count }}
-                            @endif
-                            @if ($conversion->crossref_quota_remaining)
-                                &nbsp;&bull;&nbsp;
-                                quota remaining {{ $conversion->crossref_quota_remaining }}
-                            @endif
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                     <div class="ml-4">
                         {{ $conversion->firstOutput()?->source }}
                     </div>

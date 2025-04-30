@@ -38,6 +38,9 @@
                 <x-link :href="route('admin.conversions')" :active="request()->routeIs('admin.conversions')">
                     Conversions
                 </x-link>
+                (<x-link href="{{ url('admin/conversions/0/bare') }}">
+                    for checking
+                </x-link>)
             </p>
 
             <h3 class="font-semibold text-l mt-2">

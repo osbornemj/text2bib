@@ -35,7 +35,7 @@ class ConversionAdminController extends Controller
         $this->converter = new Converter;
     }
 
-    public function index(int $userId = 0): View
+    public function index(int $userId = 0, string $style = 'normal'): View
     {
         $conversions = Conversion::orderByDesc('created_at');
 
@@ -46,11 +46,16 @@ class ConversionAdminController extends Controller
             $user = User::find($userId);
         }
 
+        $numberPerPage = 50;
+        if ($style == 'bare') {
+            $numberPerPage = 10;
+        }
+
         $conversions = $conversions
             ->with('user')
             ->with('bst')
             ->withCount('outputs')
-            ->paginate(50);
+            ->paginate($numberPerPage);
 
         $userRatings = $this->userRatings;
         $adminRatings = $this->adminRatings;
@@ -58,7 +63,7 @@ class ConversionAdminController extends Controller
         $selectedCorrectness = [];
         $selectedAdminCorrectness = [];
 
-        return view('admin.conversions.index', compact('conversions', 'user', 'userRatings', 'adminRatings', 'selectedCorrectness', 'selectedAdminCorrectness'));
+        return view('admin.conversions.index', compact('conversions', 'user', 'userRatings', 'adminRatings', 'selectedCorrectness', 'selectedAdminCorrectness', 'style'));
     }
 
     public function showConversion(int $conversionId, int $page): View
