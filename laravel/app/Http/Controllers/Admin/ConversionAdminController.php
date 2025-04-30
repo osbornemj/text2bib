@@ -55,7 +55,10 @@ class ConversionAdminController extends Controller
         $userRatings = $this->userRatings;
         $adminRatings = $this->adminRatings;
 
-        return view('admin.conversions.index', compact('conversions', 'user', 'userRatings', 'adminRatings'));
+        $selectedCorrectness = [];
+        $selectedAdminCorrectness = [];
+
+        return view('admin.conversions.index', compact('conversions', 'user', 'userRatings', 'adminRatings', 'selectedCorrectness', 'selectedAdminCorrectness'));
     }
 
     public function showConversion(int $conversionId, int $page): View
