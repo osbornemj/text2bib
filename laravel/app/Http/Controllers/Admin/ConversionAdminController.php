@@ -241,6 +241,7 @@ class ConversionAdminController extends Controller
         $cutoffDate = request()->cutoff_date;
         $correctness = request()->correctness;
         $admin_correctness = request()->admin_correctness;
+        $exclude_crossref = request()->exclude_crossref;
 
         $searchTerms = explode(' ', $searchString);
 
@@ -260,6 +261,10 @@ class ConversionAdminController extends Controller
             $outputs = $outputs->where('admin_correctness', $admin_correctness);
         }
 
+        if ($exclude_crossref) {
+            $outputs = $outputs->whereNull('crossref_item');
+        }
+
         foreach ($searchTerms as $searchTerm) {
             $outputs = $outputs->where('source', 'like', '%' . $searchTerm . '%');
         }
@@ -273,6 +278,6 @@ class ConversionAdminController extends Controller
         $selectedCorrectness[$correctness] = 1;
         $selectedAdminCorrectness[$admin_correctness] = 1;
 
-        return view('admin.conversions.showOutputs', compact('outputs', 'searchString', 'cutoffDate', 'selectedCorrectness', 'selectedAdminCorrectness', 'bstFields', 'userRatings', 'adminRatings'));
+        return view('admin.conversions.showOutputs', compact('outputs', 'searchString', 'cutoffDate', 'selectedCorrectness', 'selectedAdminCorrectness', 'exclude_crossref', 'bstFields', 'userRatings', 'adminRatings'));
     }
 }

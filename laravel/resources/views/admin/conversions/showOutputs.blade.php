@@ -17,7 +17,7 @@
 
     <div class="px-4 sm:rounded-lg">
         <div class="mt-2">
-            {{ $outputs->total() }} matching {{ Str::plural('output', $outputs) }}
+            {{ number_format($outputs->total()) }} matching {{ Str::plural('output', $outputs) }}
         </div>
         @foreach ($outputs as $i => $output)
             <div class="items-center">
@@ -47,7 +47,7 @@
             </div>
         @endforeach
         <div class="mt-2">
-            {{ $outputs->appends(Request::only(['search_string' => $searchString, 'selectedCorrectness' => $selectedCorrectness, 'selectedAdminCorrectness' => $selectedAdminCorrectness, 'cutoff_date' => $cutoffDate]))->links() }}
+            {{ $outputs->appends(Request::only(['search_string' => $searchString, 'selectedCorrectness' => $selectedCorrectness, 'selectedAdminCorrectness' => $selectedAdminCorrectness, 'exlude_crossref' => $exclude_crossref, 'cutoff_date' => $cutoffDate]))->links() }}
         </div>
     </div>
 

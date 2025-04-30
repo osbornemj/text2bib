@@ -19,6 +19,10 @@
         <x-input-label for="cutoff_date" :value="__('Created since')" class="mt-1 mb-1 mx-2"/>
         <x-text-input id="cutoff_date" name="cutoff_date" value="{{ $cutoffDate ?? '' }}" class="block mt-1" type="date" />
     </div>
+    <div class="inline-flex">
+        <x-input-label for="exclude_crossref" :value="__('Exclude crossref?')" class="mt-1 mb-1 mx-2"/>
+        <x-checkbox-input id="exclude_crossref" name="exclude_crossref" value="1" :checked="$exclude_crossref ?? false" class="block mt-1" />
+    </div>
     <div>
         <div class="flex">
             <x-primary-button class="mt-1 py-0">
