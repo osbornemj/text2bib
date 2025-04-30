@@ -91,7 +91,7 @@
                         @if ($conversion->crossref_count || $conversion->crossref_cache_count || $conversion->crossref_quota_remaining)
                             @if ($conversion->crossref_count)
                                 &nbsp;&bull;&nbsp;
-                                <span class="text-yellow">{{ $conversion->crossref_count }}</span>
+                                <span class="text-yellow">crossref {{ $conversion->crossref_count }}</span>
                             @endif
                             @if ($conversion->crossref_cache_count)
                                 &nbsp;&bull;&nbsp;
