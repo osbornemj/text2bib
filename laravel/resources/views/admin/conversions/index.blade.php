@@ -74,7 +74,7 @@
                     </div>
                     <div class="ml-4 dark:text-slate-400">
                         @if ($conversion->version)
-                            v. {{ $conversion->version }}
+                        v. {{ $conversion->version }}
                         @endif
                         @if ($conversion->use)
                             &nbsp;&bull;&nbsp;
@@ -91,7 +91,7 @@
                         @if ($conversion->crossref_count || $conversion->crossref_cache_count || $conversion->crossref_quota_remaining)
                             @if ($conversion->crossref_count)
                                 &nbsp;&bull;&nbsp;
-                                <span class="text-yellow">crossref {{ $conversion->crossref_count }}</span>
+                                <span class="text-yellow-600">crossref {{ $conversion->crossref_count }}</span>
                             @endif
                             @if ($conversion->crossref_cache_count)
                                 &nbsp;&bull;&nbsp;
