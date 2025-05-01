@@ -32,6 +32,23 @@ class TrainingItemsController extends Controller
 
     public function clean()
     {
+        TrainingItem::chunk(10000, function ($trainingItems) {
+            foreach ($trainingItems as $trainingItem) {
+                if (
+                    strlen($trainingItem->source) < 35 
+                    ||
+                    strlen($trainingItem->source) > 1000 
+                    ||
+                    substr_count($trainingItem->source, ' ') < 4
+                    ||
+                    preg_match('/^[_-]{2,}[.,]?/', $trainingItem->source)
+                   ) {
+                    $trainingItem->delete();
+                }
+            }
+        });
+
+        /*
         $trainingItems = TrainingItem::select('id', 'source')->get();
 
         foreach ($trainingItems as $trainingItem) {
@@ -47,6 +64,7 @@ class TrainingItemsController extends Controller
                 $trainingItem->delete();
             }
         }
+        */
 
         return back();
     }
