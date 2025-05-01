@@ -23,6 +23,10 @@
         </div>
     @endif
 
+    <div class="m-4">
+        For each conversion, the first item is shown.  Click on the item count to see all items.
+    </div>
+
     <div class="sm:px-0 lg:px-0 mb-4 mt-2 pb-6">
         <div class="px-4 sm:px-4 pt-0 sm:pt-0 sm:rounded-lg">
             <ul>
@@ -110,7 +114,9 @@
                         </div>
                     @endif
                     <div class="ml-4">
-                        {{ $conversion->firstOutput()?->source }}
+                        <div class="inline-flex">
+                            <livewire:conversion-first-item :conversion="$conversion" />
+                        </div>
                     </div>
                     @if ($conversion->examined_at)
                         <div class="ml-4">
