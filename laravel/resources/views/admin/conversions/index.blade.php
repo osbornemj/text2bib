@@ -113,11 +113,13 @@
                             @endif
                         </div>
                     @endif
-                    <div class="ml-4">
-                        <div class="inline-flex">
-                            <livewire:conversion-first-item :conversion="$conversion" />
+                    @if ($conversion->outputs_count)
+                        <div class="ml-4">
+                            <div class="inline-flex">
+                                <livewire:conversion-first-item :conversion="$conversion" />
+                            </div>
                         </div>
-                    </div>
+                    @endif
                     @if ($conversion->examined_at)
                         <div class="ml-4">
                         <span class="text-black bg-emerald-500 px-2 text-sm uppercase rounded">Examined {{ $conversion->examined_at }}</span>
