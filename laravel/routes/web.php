@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\JournalsController;
 use App\Http\Controllers\Admin\NamesController;
 use App\Http\Controllers\Admin\PublishersController;
 use App\Http\Controllers\Admin\JournalWordAbbreviationsController;
+use App\Http\Controllers\Admin\TrainingItemsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\VonNamesController;
 
@@ -181,6 +182,12 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::controller(ExampleCheckController::class)->group(function () {
         Route::get('/admin/runExampleCheck/{reportType?}/{language?}/{detailsIfCorrect?}/{id?}/{charEncoding?}', 'runExampleCheck')->name('admin.examples.runCheck');
         Route::post('/admin/runExampleCheck', 'runExampleCheck')->name('admin.examples.runCheck');
+    });
+
+    Route::controller(TrainingItemsController::class)->group(function () {
+        Route::get('/admin/trainingItems', 'index')->name('admin.trainingItems.index');
+        Route::get('/admin/trainingItems/convert', 'convert')->name('admin.trainingItems.convert');
+        Route::get('/admin/trainingItems/clean', 'clean')->name('admin.trainingItems.clean');
     });
 
     Route::controller(UsersController::class)->group(function () {

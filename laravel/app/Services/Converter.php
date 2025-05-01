@@ -2368,7 +2368,7 @@ class Converter
                     $warnings[] = "Pages not found.";
                 }
 
-                if ($result && Str::startsWith($result['after'], ')')) {
+                if ($result && is_array($result) && Str::startsWith($result['after'], ')')) {
                     $remainder = $result['before'] . $result['after'];
                 }
 

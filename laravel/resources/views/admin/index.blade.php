@@ -22,7 +22,12 @@
             </p>
             <p>
                 <x-link :href="route('examples.index')" :active="request()->routeIs('examples.index')">
-                    View, check, and edit examples.
+                    View, check, and edit examples
+                </x-link>
+            </p>
+            <p>
+                <x-link :href="route('admin.trainingItems.index')">
+                    Training data
                 </x-link>
             </p>
 
