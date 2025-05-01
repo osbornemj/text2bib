@@ -8,8 +8,7 @@
     <div class="sm:px-0 lg:px-0 space-y-6 mt-2">
         <div class="p-0 sm:p-0 px-4 sm:px-4 sm:rounded-lg">
             <p>
-                <x-link href="/admin/trainingItems/clean">Clean all training sources</x-link>
-            </p>
+                <x-link href="/admin/trainingItems/clean">Clean all training sources</x-link> (delete items for which <code>source</code> is shorter than 35 characters, longer than 1,000 characters, has 3 or fewer spaces, or starts with at least two dashes or underscores)
             <p>
                 <x-link href="/admin/trainingItems/convert">Convert all training sources</x-link>
             </p>

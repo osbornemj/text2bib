@@ -48,24 +48,6 @@ class TrainingItemsController extends Controller
             }
         });
 
-        /*
-        $trainingItems = TrainingItem::select('id', 'source')->get();
-
-        foreach ($trainingItems as $trainingItem) {
-            if (
-                strlen($trainingItem->source) < 35 
-                ||
-                strlen($trainingItem->source) > 1000 
-                ||
-                substr_count($trainingItem->source, ' ') < 4
-                ||
-                preg_match('/^[_-]{2,}[.,]?/', $trainingItem->source)
-               ) {
-                $trainingItem->delete();
-            }
-        }
-        */
-
         return back();
     }
 
@@ -73,6 +55,7 @@ class TrainingItemsController extends Controller
     {
         $trainingItems = TrainingItem::select('id', 'source', 'language')->get();
         $conversion = new Conversion;
+        // Needs to be chunked. Also accumulate converted items and then write them in chunks? (as for ExampleSeeder)
         foreach ($trainingItems as $trainingItem) {
             $output = $this->converter->convertEntry($trainingItem->source, $conversion, $trainingItem->language, 'utf8leave', 'biblatex', null);
             // If get JSON encoding error, delete $trainingItem
