@@ -15539,6 +15539,22 @@ class ExampleSeeder extends Seeder
                     'year' => '2003',
                     ]
             ],
+            [
+                'source' => '1、Bray F, Laversanne M, Sung H, Ferlay J, Siegel RL, Soerjomataram I, Jemal A. Global cancer statistics 2022: GLOBOCAN estimates of incidence and mortality worldwide for 36 cancers in 185 countries. CA Cancer J Clin. 2024 May-Jun;74(3):229-263. doi: 10.3322/caac.21834. Epub 2024 Apr 4. PMID: 38572751. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'PMID: 38572751. Epub 2024 Apr 4.',
+                    'doi' => '10.3322/caac.21834',
+                    'author' => 'Bray, F. and Laversanne, M. and Sung, H. and Ferlay, J. and Siegel, R. L. and Soerjomataram, I. and Jemal, A.',
+                    'title' => 'Global cancer statistics 2022: GLOBOCAN estimates of incidence and mortality worldwide for 36 cancers in 185 countries',
+                    'year' => '2024',
+                    'month' => 'May--June',
+                    'journal' => 'CA Cancer J Clin',
+                    'pages' => '229-263',
+                    'volume' => '74',
+                    'number' => '3',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');

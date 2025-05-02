@@ -272,7 +272,7 @@ class Converter
             }
 
             // Remove numbers and other symbols at start of entry, like '6.' or '[14]'.
-            $entry = ltrim($entry, ' .0123456789[]()|*+:^');
+            $entry = ltrim($entry, ' .0123456789[]()|*+:^?、');
 
             // If entry starts with '\bibitem [abc] {<label>}', get <label> and remove '\bibitem' and arguments.
             if (preg_match('/^\\\bibitem *(\[[^\]]*\])? *{(?P<label>[^}]*)}(?P<entry>.*)$/', $entry, $matches)) {
