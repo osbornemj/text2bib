@@ -68,7 +68,10 @@ class ConversionAdminController extends Controller
                         ->where('source', 'not like', 'von %')
                         ->where('source', 'not like', 'ter %')
                         ->where('source', 'not like', 'de %')
+                        ->where('source', 'not like', 'da %')
+                        ->where('source', 'not like', 'do %')
                         ->where('source', 'not like', 'd\'%')
+                        ->where('source', 'not like', 'ten %')
                         ->where('source', 'not like', 'del %');
                 })
                 ->where('usable', 1)
