@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use DB;
+
 use App\Http\Controllers\Controller;
 use Illuminate\View\View;
 
@@ -9,6 +11,7 @@ use App\Models\Conversion;
 use App\Models\TrainingItem;
 
 use App\Services\Converter;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Throwable;
@@ -30,6 +33,44 @@ class TrainingItemsController extends Controller
         return view('admin.trainingItems.index', compact('trainingItems', 'languageOptions'));
     }
 
+    /**
+     * Delete all items from training_items and then copy the source field from outputs together with the
+     * associated language field from conversions, restricting to cases in which
+     * source has at least 35 characters
+     * source has at most 1000 characters
+     * source does not start with __ or -- or —
+     * source has at least 4 spaces
+     * In the case of duplicates, take the source for which the conversion_id is largest.
+     * Could use REGEXP rather than LIKE, but probably is slower?:
+     *    AND source NOT REGEXP "^[_-]{2,}"
+     *    AND source NOT REGEXP "^—"
+     */
+    public function copy()
+    {
+        DB::statement('DELETE FROM training_items');
+        DB::statement('ALTER TABLE training_items AUTO_INCREMENT 1');
+        DB::statement('INSERT INTO training_items (source, language) 
+            SELECT o.source, c.language
+            FROM outputs o
+            JOIN (
+                SELECT source, MAX(conversion_id) AS max_conversion_id
+                FROM outputs
+                    WHERE LENGTH(source) >= 35 
+                        AND LENGTH(source) <= 1000 
+                        AND source NOT LIKE "\_\_%"
+                        AND source NOT LIKE "--%"
+                        AND source NOT LIKE "—%"
+                        AND source LIKE "% % % % %"
+                GROUP BY source
+            ) latest ON o.source = latest.source AND o.conversion_id = latest.max_conversion_id
+            JOIN conversions c ON o.conversion_id = c.id');
+
+        return back();
+    }
+
+    /**
+     * Not used now --- the cleaning is done in the copy method.
+     */
     public function clean()
     {
         TrainingItem::chunk(10000, function ($trainingItems) {
@@ -41,7 +82,7 @@ class TrainingItemsController extends Controller
                     ||
                     substr_count($trainingItem->source, ' ') < 4
                     ||
-                    preg_match('/^[_-]{2,}[.,]?/', $trainingItem->source)
+                    preg_match('/^[_-—]{2,}/', $trainingItem->source)
                    ) {
                     $trainingItem->delete();
                 }
@@ -53,19 +94,33 @@ class TrainingItemsController extends Controller
 
     public function convert()
     {
-        $trainingItems = TrainingItem::select('id', 'source', 'language')->get();
+        error_reporting(E_ALL);
+        ini_set('display_errors', '1');
+
         $conversion = new Conversion;
-        // Needs to be chunked. Also accumulate converted items and then write them in chunks? (as for ExampleSeeder)
-        foreach ($trainingItems as $trainingItem) {
-            $output = $this->converter->convertEntry($trainingItem->source, $conversion, $trainingItem->language, 'utf8leave', 'biblatex', null);
-            // If get JSON encoding error, delete $trainingItem
-            try {
-                $trainingItem->update(['item' => $output['item'], 'type' => $output['itemType']]);
-            } catch (Throwable $e) {
-                report($e);
-                $trainingItem->delete();
-            }
-        }
+        TrainingItem::select('id', 'source', 'language')
+            ->chunkById(5000, function (Collection $trainingItems) use ($conversion) {
+                $itemsAndTypes = [];
+                foreach ($trainingItems as $trainingItem) {
+                    $output = $this->converter->convertEntry($trainingItem->source, $conversion, $trainingItem->language, 'utf8leave', 'biblatex', null);
+                    $itemsAndType = [];
+                    try {
+                        $itemsAndType['item'] = json_encode($output['item']);
+                    } catch (Throwable $e) {
+                        report($e);
+                        $trainingItem->delete();
+                    }
+                    if ($trainingItem) {
+                        $itemsAndType['id'] = $trainingItem->id;
+                        $itemsAndType['source'] = $trainingItem->source;
+                        $itemsAndType['type'] = $output['itemType'];
+                        $itemsAndTypes[] = $itemsAndType;
+                    }
+                }
+                // Even though source field is not being updated, apparently need to specify it because upsert
+                // might do an insert if an entry does not exist (although in this case the entries always exist).
+                TrainingItem::upsert($itemsAndTypes, ['id'], ['item', 'type']);
+            });
 
         return back();
     }

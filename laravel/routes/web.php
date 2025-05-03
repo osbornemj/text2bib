@@ -188,6 +188,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/trainingItems', 'index')->name('admin.trainingItems.index');
         Route::get('/admin/trainingItems/convert', 'convert')->name('admin.trainingItems.convert');
         Route::get('/admin/trainingItems/clean', 'clean')->name('admin.trainingItems.clean');
+        Route::get('/admin/trainingItems/copy', 'copy')->name('admin.trainingItems.copy');
     });
 
     Route::controller(UsersController::class)->group(function () {
