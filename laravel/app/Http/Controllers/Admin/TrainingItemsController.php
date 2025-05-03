@@ -94,30 +94,34 @@ class TrainingItemsController extends Controller
 
     public function convert()
     {
-        // Allow script to run for up to 90 minutes (5400 seconds)
-        set_time_limit(5400);
+        // Allow script to run for up to 120 minutes (7200 seconds)
+        set_time_limit(7200);
 
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
         $conversion = new Conversion;
-        TrainingItem::select('id', 'source', 'language')
+        TrainingItem::select('id', 'source', 'language')->whereNull('item')
             ->chunkById(5000, function (Collection $trainingItems) use ($conversion) {
                 $itemsAndTypes = [];
                 foreach ($trainingItems as $trainingItem) {
                     $output = $this->converter->convertEntry($trainingItem->source, $conversion, $trainingItem->language, 'utf8leave', 'biblatex', null);
-                    $itemsAndType = [];
-                    try {
-                        $itemsAndType['item'] = json_encode($output['item']);
-                    } catch (Throwable $e) {
-                        report($e);
+                    if (!$output) {
                         $trainingItem->delete();
-                    }
-                    if ($trainingItem) {
-                        $itemsAndType['id'] = $trainingItem->id;
-                        $itemsAndType['source'] = $trainingItem->source;
-                        $itemsAndType['type'] = $output['itemType'];
-                        $itemsAndTypes[] = $itemsAndType;
+                    } else {
+                        $itemsAndType = [];
+                        try {
+                            $itemsAndType['item'] = json_encode($output['item']);
+                        } catch (Throwable $e) {
+                            report($e);
+                            $trainingItem->delete();
+                        }
+                        if ($trainingItem) {
+                            $itemsAndType['id'] = $trainingItem->id;
+                            $itemsAndType['source'] = $trainingItem->source;
+                            $itemsAndType['type'] = $output['itemType'];
+                            $itemsAndTypes[] = $itemsAndType;
+                        }
                     }
                 }
                 // Even though source field is not being updated, apparently need to specify it because upsert
