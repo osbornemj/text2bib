@@ -4438,10 +4438,10 @@ class Converter
                     if (! empty($publisherString)) {
                         // Replace *last* occurrence of $publisherString in $remainderMinusPubInfo
                         // (Deals with cases like "... Springer Series on ..., Springer, Berlin")
-                        $remainderMinusPubInfo = preg_replace('/(.*)' . $publisherString . '[.,]?/', '$1', $remainder);
+                        $remainderMinusPubInfo = preg_replace('%(.*)' . $publisherString . '[.,]?%', '$1', $remainder);
                     }
                     if (! empty($cityString)) {
-                        $remainderMinusPubInfo = preg_replace('/(.*)' . $cityString . '[.,:]?/', '$1', $remainderMinusPubInfo);
+                        $remainderMinusPubInfo = preg_replace('%(.*)' . $cityString . '[.,:]?%', '$1', $remainderMinusPubInfo);
                     }
                     $remainderMinusPubInfo = trim($remainderMinusPubInfo, '., ');
 
