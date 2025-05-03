@@ -65,6 +65,7 @@ class ConversionAdminController extends Controller
                 ->whereHas('outputs', function (Builder $q) {
                     $q->whereRaw('BINARY source REGEXP "^[a-z]"');
                 })
+                ->where('usable', 1)
                 ->paginate($numberPerPage);
         }
 
