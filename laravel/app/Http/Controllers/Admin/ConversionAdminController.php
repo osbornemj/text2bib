@@ -63,7 +63,13 @@ class ConversionAdminController extends Controller
                 ->with('user')
                 ->withCount('outputs')
                 ->whereHas('outputs', function (Builder $q) {
-                    $q->whereRaw('BINARY source REGEXP "^[a-z]"');
+                    $q->whereRaw('BINARY source REGEXP "^[a-z]"')
+                        ->where('source', 'not like', 'van %')
+                        ->where('source', 'not like', 'von %')
+                        ->where('source', 'not like', 'ter %')
+                        ->where('source', 'not like', 'de %')
+                        ->where('source', 'not like', 'd\'%')
+                        ->where('source', 'not like', 'del %');
                 })
                 ->where('usable', 1)
                 ->paginate($numberPerPage);
