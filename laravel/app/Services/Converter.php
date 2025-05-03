@@ -4723,7 +4723,7 @@ class Converter
         if ($pageCount) {
             if ($use == 'biblatex' && in_array($itemKind, ['book', 'phdthesis', 'mastersthesis'])) {
                 preg_match('/^(?P<pageCountNumber>[\d +\[\]]+)[^\d]*$/', $pageCount, $matches);
-                $pageCountNumber = trim($matches['pageCountNumber']) ?: $pageCount;
+                $pageCountNumber = isset($matches['pageCountNumber']) ? trim($matches['pageCountNumber']) : $pageCount;
                 $this->setField($item, 'pagetotal', $pageCountNumber, 'setField 246');
             } else {
                 $this->addToField($item, 'note', $pageCount, 'addToField 21');
