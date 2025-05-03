@@ -54,6 +54,11 @@ class Conversion extends Model
         return $this->hasMany(Output::class)->first();
     }
 
+    public function firstLowercaseOutput(): Output|null
+    {
+        return $this->hasMany(Output::class)->whereRaw('BINARY source REGEXP "^[a-z]"')->first();
+    }
+
     public function correctnessCounts(): Collection
     {
         return $this->hasMany(Output::class)->pluck('correctness')->countBy()->sortKeys();

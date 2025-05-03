@@ -92,6 +92,13 @@ class TrainingItemsController extends Controller
         return back();
     }
 
+    public function showLowercase()
+    {
+        $trainingItems = TrainingItem::whereRaw('BINARY source regexp "^[a-z]"')->paginate(100);
+
+        return view('admin.trainingItems.showLowercase', compact('trainingItems'));
+    }
+
     public function convert()
     {
         // Allow script to run for up to 120 minutes (7200 seconds)

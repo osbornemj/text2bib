@@ -116,7 +116,7 @@
                     @if ($conversion->outputs_count)
                         <div class="ml-4">
                             <div class="inline-flex">
-                                <livewire:conversion-first-item :conversion="$conversion" />
+                                <livewire:conversion-first-item :conversion="$conversion" :style="$style" />
                             </div>
                         </div>
                     @endif

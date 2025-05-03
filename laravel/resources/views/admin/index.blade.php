@@ -43,8 +43,10 @@
                 <x-link :href="route('admin.conversions')" :active="request()->routeIs('admin.conversions')">
                     Conversions
                 </x-link>
-                (<x-link href="{{ url('admin/conversions/0/compact') }}">
-                    for checking
+                (assess usability for training data: <x-link href="{{ url('admin/conversions/0/compact') }}">
+                    basic check                    
+                </x-link>, <x-link href="{{ url('admin/conversions/0/lowercase') }}">
+                    items starting with lowercase letter
                 </x-link>)
             </p>
 

@@ -18,6 +18,7 @@ use App\Models\Version;
 use App\Traits\AddLabels;
 
 use App\Services\Converter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\RedirectResponse;
 
@@ -47,15 +48,25 @@ class ConversionAdminController extends Controller
         }
 
         $numberPerPage = 50;
-        if ($style == 'compact') {
+        if (in_array($style, ['compact', 'lowercase'])) {
             $numberPerPage = 10;
         }
 
-        $conversions = $conversions
-            ->with('user')
-            ->with('bst')
-            ->withCount('outputs')
-            ->paginate($numberPerPage);
+        if (in_array($style, ['normal', 'compact'])) {
+            $conversions = $conversions
+                ->with('user')
+                ->with('bst')
+                ->withCount('outputs')
+                ->paginate($numberPerPage);
+        } elseif ($style == 'lowercase') {
+            $conversions = $conversions
+                ->with('user')
+                ->withCount('outputs')
+                ->whereHas('outputs', function (Builder $q) {
+                    $q->whereRaw('BINARY source REGEXP "^[a-z]"');
+                })
+                ->paginate($numberPerPage);
+        }
 
         $userRatings = $this->userRatings;
         $adminRatings = $this->adminRatings;

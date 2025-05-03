@@ -12,6 +12,9 @@
                     Delete all existing <code>training items</code> and copy new ones from <code>source</code> and <code>language</code> fields in <code>outputs</code> and <code>conversions</code> tables that (1)&nbsp;are at least 35 characters long, (2)&nbsp;are at most 1,000 characters long, (3)&nbsp;do not begin with "__" or "--" or "—", and (4)&nbsp;contain at least 4 spaces, after which you will need to convert all the training items again:  <x-link href="/admin/trainingItems/copy" onclick="return confirm('Are you sure you want to delete all the existing training items and create new ones?');">copy and clean</x-link>.
                 </li>
                 <li>
+                    <x-link href="/admin/trainingItems/showLowercase">Show all items for which source starts with lowercase letter</x-link>
+                </li>
+                <li>
                     <x-link href="/admin/trainingItems/convert">Convert all training sources</x-link>
                 </li>
             <ul>

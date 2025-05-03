@@ -8,6 +8,7 @@ use Carbon\Carbon;
 
 use App\Traits\Months;
 use App\Traits\Utilities;
+use Throwable;
 
 class Dates
 {
@@ -325,6 +326,8 @@ class Dates
                 }
             }
             return false;
+        } else {
+            return false;
         }
     }
 
@@ -353,8 +356,17 @@ class Dates
 
         $month1 = trim(Str::before($month, '-'), ', ');
         if (preg_match('/^[\p{L}.]*$/u', $month1)) {
-            $fullMonth1 = Carbon::parseFromLocale('1 ' . $month1, $language)->monthName;
-            $month1number = Carbon::parseFromLocale('1 ' . $month1, $language)->format('m');
+            try {
+                $fullMonth1 = Carbon::parseFromLocale('1 ' . $month1, $language)->monthName;
+            } catch (Throwable $e) {
+                report($e);
+                $fullMonth1 = $month1;
+            }
+            try {
+                $month1number = Carbon::parseFromLocale('1 ' . $month1, $language)->format('m');
+            } catch (Throwable $e) {
+                report($e);
+            }
         } else {
             $fullMonth1 = $month1;
         }
