@@ -94,6 +94,9 @@ class TrainingItemsController extends Controller
 
     public function convert()
     {
+        // Allow script to run for up to 90 minutes (5400 seconds)
+        set_time_limit(5400);
+
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
