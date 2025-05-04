@@ -49,8 +49,8 @@ class TrainingItemsController extends Controller
     {
         DB::statement('DELETE FROM training_items');
         DB::statement('ALTER TABLE training_items AUTO_INCREMENT 1');
-        DB::statement('INSERT INTO training_items (source, language) 
-            SELECT o.source, c.language
+        DB::statement('INSERT INTO training_items (source, language, conversion_id) 
+            SELECT o.source, c.language, c.id
             FROM outputs o
             JOIN (
                 SELECT source, MAX(conversion_id) AS max_conversion_id

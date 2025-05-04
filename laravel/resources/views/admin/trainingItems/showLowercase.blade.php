@@ -13,7 +13,8 @@
                 @foreach ($trainingItems as $trainingItem)
                     <div class="bg-blue-200 dark:bg-blue-900 mt-4 px-2">
                         {{ $trainingItem->id }}.
-                        <x-link href="{{ url('admin/trainingItems/' . $trainingItem->id . '/edit') }}">{{ $trainingItem->source }}</x-link>
+                        {{ $trainingItem->source }}
+                        <x-link href="{{ url('admin/showConversion/' . $trainingItem->conversion_id . '/0/normal/1') }}" target="_blank">conversion</x-link>
                     </div>
                 @endforeach
             {{ $trainingItems->links() }}
