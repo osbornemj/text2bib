@@ -137,7 +137,7 @@ class ArticlePubInfoParser
         $months = $this->monthsRegExp[$language];
 
         // −, third character that is replaced, is minus sign (E2 88 92)
-        $remainder = str_replace(['Ð', '{\DH}', '−'], '-', $remainder);
+        $remainder = str_replace(['Ð', '{\DH}', '−', ''], '-', $remainder);
 
         // First check for some common patterns
         // p omitted from permitted starting letters, to all p100 to be interpreted as page 100.
