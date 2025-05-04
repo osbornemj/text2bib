@@ -25,6 +25,9 @@
 
     <div class="m-4">
         For each conversion, the first item is shown.  Click on the item count to see all items.
+        @if ($style == 'lowercase')
+            A conversion is listed if its <code>usable</code> field is 1 and it has at least one <code>output</code> for which the <code>source</code> field starts with a lowercase letter and does not start with 'van ', 'von ', or several other von names.
+        @endif
     </div>
 
     <div class="sm:px-0 lg:px-0 mb-4 mt-2 pb-6">

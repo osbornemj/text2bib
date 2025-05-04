@@ -56,7 +56,19 @@ class Conversion extends Model
 
     public function firstLowercaseOutput(): Output|null
     {
-        return $this->hasMany(Output::class)->whereRaw('BINARY source REGEXP "^[a-z]"')->first();
+        return $this->hasMany(Output::class)
+            ->whereRaw('BINARY source REGEXP "^[a-z]"')
+            ->where('source', 'not like', 'van %')
+            ->where('source', 'not like', 'von %')
+            ->where('source', 'not like', 'ter %')
+            ->where('source', 'not like', 'da %')
+            ->where('source', 'not like', 'de %')
+            ->where('source', 'not like', 'di %')
+            ->where('source', 'not like', 'do %')
+            ->where('source', 'not like', 'd\'%')
+            ->where('source', 'not like', 'ten %')
+            ->where('source', 'not like', 'del %')
+            ->first();
     }
 
     public function correctnessCounts(): Collection
