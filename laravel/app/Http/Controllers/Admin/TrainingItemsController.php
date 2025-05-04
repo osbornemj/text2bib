@@ -95,7 +95,19 @@ class TrainingItemsController extends Controller
 
     public function showLowercase()
     {
-        $trainingItems = TrainingItem::whereRaw('BINARY source regexp "^[a-z]"')->paginate(100);
+        $trainingItems = TrainingItem::whereRaw('BINARY source regexp "^[a-z]"')
+            ->where('source', 'not like', 'van %')
+            ->where('source', 'not like', 'von %')
+            ->where('source', 'not like', 'ter %')
+            ->where('source', 'not like', 'da %')
+            ->where('source', 'not like', 'de %')
+            ->where('source', 'not like', 'den %')
+            ->where('source', 'not like', 'di %')
+            ->where('source', 'not like', 'do %')
+            ->where('source', 'not like', 'd\'%')
+            ->where('source', 'not like', 'ten %')
+            ->where('source', 'not like', 'del %')
+            ->paginate(100);
 
         return view('admin.trainingItems.showLowercase', compact('trainingItems'));
     }
