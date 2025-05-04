@@ -117,7 +117,7 @@ class RegularExpressions
 
         $edsRx = '';
         foreach ($editorWords as $i => $editorWord) {
-            $edsRx .= ($i ? '|' : '') . $editorWord;
+            $edsRx .= ($i ? '|' : '') . '(?<!\p{L})' . $editorWord;
         }
 
         // "[Ee]ditors?" or ...
@@ -704,7 +704,7 @@ class RegularExpressions
 
         // Other languages?
         $this->inReviewRegExp = '[Ii]n [Rr]eview';
-        $this->abbreviationsUsedAsInitials = '(Ch|Mª|Wm|Yu|Zh)';  // including Yu is problematic because it is also a comoplete name
+        $this->abbreviationsUsedAsInitials = '(ʿA|Ch|Mª|Wm|Yu|Zh)';  // including Yu is problematic because it is also a complete name
 
         $this->oclcLabelRegExp = 'OCLC:? ';
         $this->oclcNumberRegExp = '[0-9]+';

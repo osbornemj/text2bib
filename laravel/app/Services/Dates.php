@@ -61,7 +61,7 @@ class Dates
         $centuries = $allowEarlyYears ? '13|14|15|16|17|18|19|20' : '18|19|20';
 
         // en => n.d., es => 's.f.', pt => 's.d.'?
-        if (preg_match('/^(?P<year>[\(\[]?(n\. ?d\.|s\. ?f\.|s\. ?d\.)[\)\]]?|[\(\[]?[Ff]orthcoming[\)\]]?|[\(\[]?[Ii]n [Pp]ress[\)\]]?)(?P<remains>.*)$/', $remains, $matches0)) {
+        if (preg_match('/^(?P<year>[\(\[]?([Nn]\. ?d\.|s\. ?f\.|s\. ?d\.)[\)\]]?|[\(\[]?[Ff]orthcoming[\)\]]?|[\(\[]?[Ii]n [Pp]ress[\)\]]?)(?P<remains>.*)$/', $remains, $matches0)) {
             $remains = $matches0['remains'];
             $year = trim($matches0['year'], '[]()');
             return $year;

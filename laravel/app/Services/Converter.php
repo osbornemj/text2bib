@@ -1695,9 +1695,12 @@ class Converter
             if ($hasSecondaryDate || $containsTranslator || $containsOriginalPubDate) {
                 $this->verbose("Item type case 5a");
                 $itemKind = 'book'; // with editor as well as author
-            } else {
+            } elseif ($titleStyle == 'quoted') {
                 $this->verbose("Item type case 5b");
                 $itemKind = 'incollection';
+            } else {
+                $this->verbose("Item type case 5c");
+                $itemKind = 'book';
             }
         } elseif (
                 ($containsPageRange || $containsInteriorVolume)
@@ -4256,9 +4259,33 @@ class Converter
                     $remainder = trim(substr($remainder, strlen($matches[0])), '() ');
                 }
 
-                // Look for "edited by" in remainder
-                if (preg_match('/(?P<editorString>' . $this->regExps->editedByRegExp . ' .*?[a-z] ?\.)/', $remainder, $matches)) {
-                    $this->addToField($item, 'note', str_replace(' .', '.', $matches['editorString']), 'setField 193');
+                // Look for "edited by" or "eds" in remainder
+                if (
+                    preg_match('/(?P<editorString>' . $this->regExps->editedByRegExp . ' (?P<editor>.*?\p{Ll}) ?[.(])/u', $remainder, $matches)
+                    ||
+                    preg_match('/(?P<editorString>' . $this->regExps->edsNoParensRegExp . ' (?P<editor>.*?\p{Ll}) ?[.(])/u', $remainder, $matches)
+                    ) {
+                    if ($use == 'latex') {
+                        $this->addToField($item, 'note', str_replace(' .', '.', $matches['editorString']), 'setField 193');
+                    } else {
+                        $this->verbose('Matches for editor: ' . $matches['editor']);
+                        $result = $this->authorParser->convertToAuthors(
+                            explode(' ', $matches['editor']), 
+                            $trash1, 
+                            $trash2, 
+                            $month, 
+                            $day, 
+                            $date, 
+                            $isEditor, 
+                            $isTranslator, 
+                            $this->cities, 
+                            $this->dictionaryNames, 
+                            true, 
+                            'editors', 
+                            $language
+                        );
+                        $this->setField($item, 'editor', trim($result['authorstring']), 'setField 193a');
+                    }
                     $remainder = str_replace($matches['editorString'], '', $remainder);
                 }
 

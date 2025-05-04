@@ -949,7 +949,7 @@ class AuthorParser
                     $trimmedWord = (isset($words[$i+1]) && in_array(rtrim($words[$i+1], '.,)'), $this->nameSuffixes)) ? $word : rtrim($word, ',;');
                     $nameComponent = $this->spaceOutInitials($trimmedWord);
                     if (! in_array($nameComponent, ['Md.'])) {
-                        $nameComponent = preg_replace('/([A-Za-z][a-z])\.$/', '$1', $nameComponent);
+                        $nameComponent = preg_replace('/(\p{L}\p{Ll})\.$/u', '$1', $nameComponent);
                     }
                     $fullName .= " " . $nameComponent;
                 }
@@ -1388,6 +1388,8 @@ class AuthorParser
                 (strpos($name, '.') === false || strpos($name, '.') < strlen($name)) 
                 &&
                 $lettersOnlyName != 'III'
+                &&
+                !$isAbbreviationUsedAsInitial // To deal with ʿA. [first character is not an apostrophe]
                ) {
                 if (strlen($name) == 1) {
                     $fName .= $name . '.';

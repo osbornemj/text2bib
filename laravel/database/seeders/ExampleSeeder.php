@@ -5295,7 +5295,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'translator' => 'Maryam Loutfi',
-                    'note' => 'Edited by Abdou Filali-Ansary.',
+                    'editor' => 'Abdou Filali-Ansary',
                     'author' => 'Abdel Razek, Ali',
                     'year' => '2012 [1925]',
                     'title' => 'Islam and the Foundations of Political Power',
@@ -7536,7 +7536,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'Church Dogmatics 2:1',
                     'year' => '2004',
                     'translator' => 'T. H. L. Parker, W. B. Johnston, Harold Knight, and J. L. M. Haire',
-                    'note' => 'First published 1957. Edited by G. W. Bromiley and T. F. Torrance.',
+                    'note' => 'First published 1957.',
+                    'editor' => 'G. W. Bromiley and T. F. Torrance',
                     'address' => 'London/New York',
                     'publisher' => 'T&T Clark',
                     ]
@@ -7550,7 +7551,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Theodicy',
                     'year' => '1952',
                     'translator' => 'E. M. Huggard',
-                    'note' => 'Edited by Austin Farrer.',
+                    'editor' => 'Austin Farrer',
                     'address' => 'New Haven',
                     'publisher' => 'Yale University Press',
                     ]
@@ -9447,7 +9448,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Commentary on the Letters of Saint Paul to the Corinthians',
                     'year' => '2012',
                     'translator' => 'F. R. Larcher OP, B. Mortensen, and D. Keating',
-                    'note' => 'Edited by J. Mortensen and E. Alarcon.',
+                    'editor' => 'J. Mortensen and E. Alarcon',
                     'address' => 'Lander, WY',
                     'publisher' => 'The Aquinas Institute for the Study of Sacred Doctrine',
                     ]
@@ -9915,7 +9916,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Summa Theologiae',
                     'year' => '2012',
                     'translator' => 'Lawrence Shapcote',
-                    'note' => 'Edited by John Mortensen and Enrique Alarc{\\\'o}n.',
+                    'editor' => 'John Mortensen and Enrique Alarc{\\\'o}n',
                     'address' => 'Lander, WY',
                     'publisher' => 'The Aquinas Institute for the Study of Sacred Doctrine',
                     ]
@@ -12155,7 +12156,8 @@ class ExampleSeeder extends Seeder
                     'title' => 'An Exposition of the Thirty-Nine Articles',
                     'subtitle' => 'Historical and Doctrinal',
                     'year' => '1874',
-                    'note' => 'Originally published 1850. edited by J. Williams.',
+                    'note' => 'Originally published 1850.',
+                    'editor' => 'J. Williams',
                     'address' => 'New York',
                     'publisher' => 'E. P. Dutton',
                     ]
@@ -12168,7 +12170,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Burnet, Gilbert',
                     'title' => 'An Exposition of the Thirty-Nine Articles of the Church of England',
                     'year' => '1837',
-                    'note' => 'Originally published 1699. Edited by James Robert Page.',
+                    'note' => 'Originally published 1699.',
+                    'editor' => 'James Robert Page',
                     'address' => 'London',
                     'publisher' => 'Scott, Webster, and Geary',
                     ]
@@ -15554,6 +15557,62 @@ class ExampleSeeder extends Seeder
                     'volume' => '74',
                     'number' => '3',
                     ]
+            ],
+			// al-
+			[
+                'source' => 'al-Ashʿarī, Abū al-Ḥasan ʿAlī. 1980. Maqālāt al-Islāmīyīn wa-ikhtilāf al-musallīn. Edited by H. Ritter. Wiesbaden: Franz Steiner. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'al-Ashʿarī, Abū al-Ḥasan ʿAlī',
+                    'title' => 'Maqālāt al-Islāmīyīn wa-ikhtilāf al-musallīn',
+                    'year' => '1980',
+                    'editor' => 'H. Ritter',
+                    'address' => 'Wiesbaden',
+                    'publisher' => 'Franz Steiner',
+                ],
+                'char_encoding' => 'utf8leave',
+            ],
+			// al-
+			[
+                'source' => 'al-Baghdādī, ʿAbd al-Qāhir. N.d. Al-Farq bayn al-firaq. Edited by Muḥammad Ḥusaynī. Cairo: Maktabat Ibn Sīnā. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'al-Baghdādī, ʿAbd al-Qāhir',
+                    'title' => 'Al-Farq bayn al-firaq',
+                    'year' => 'N.d.',
+                    'editor' => 'Muḥammad Ḥusaynī',
+                    'address' => 'Cairo',
+                    'publisher' => 'Maktabat Ibn Sīnā',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// al-
+			[
+                'source' => 'al-Iṣfahānī, al-Rāghib. 2009. Mufradāt alfāz al-Qurʻān. Ed. Ṣafwān ʻAdnān Dawūdī. Beirut: al-Dār al-Shāmīyah. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'al-Iṣfahānī, al-Rāghib',
+                    'title' => 'Mufradāt alfāz al-Qurʻān',
+                    'year' => '2009',
+                    'editor' => 'Ṣafwān ʻAdnān Dawūdī',
+                    'address' => 'Beirut',
+                    'publisher' => 'al-Dār al-Shāmīyah',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// al-
+			[
+                'source' => 'al-Juwaynī, Imām al-Ḥaramayn. 1950. Kitāb al-Irshād ilā qawāṭiʿ al-adilla fī uṣūl al-iʿtiqād, Edited by M.Y. Mūsā and ʿA. ʿA. ʿAbd al-Ḥāmīd. Cairo: Maktabat al-Khānjī. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'al-Juwaynī, Imām al-Ḥaramayn',
+                    'title' => 'Kitāb al-Irshād ilā qawāṭiʿ al-adilla fī uṣūl al-iʿtiqād',
+                    'year' => '1950',
+                    'editor' => 'M. Y. Mūsā and ʿA. ʿA. ʿAbd al-Ḥāmīd',
+                    'address' => 'Cairo',
+                    'publisher' => 'Maktabat al-Khānjī',
+                    ],
+                    'char_encoding' => 'utf8leave',
             ],
         ];
 
