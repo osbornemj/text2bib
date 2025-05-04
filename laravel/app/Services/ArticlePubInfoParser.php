@@ -136,7 +136,7 @@ class ArticlePubInfoParser
 
         $months = $this->monthsRegExp[$language];
 
-        // −, third character that is replaced, is minus sign (E2 88 92)
+        // −, third character that is replaced, is minus sign (E2 88 92). Fourth character is en-dash in Windows-1252 encoding.
         $remainder = str_replace(['Ð', '{\DH}', '−', ''], '-', $remainder);
 
         // First check for some common patterns
