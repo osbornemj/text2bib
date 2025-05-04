@@ -1,5 +1,5 @@
 <div>
-    @if ($style == 'compact')
+    @if (in_array($style, ['normal', 'compact']))
         {{ $conversion->firstOutput()?->source }}
 
         @if ($conversion->firstOutput())
