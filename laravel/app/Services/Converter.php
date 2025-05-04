@@ -4743,7 +4743,7 @@ class Converter
                 // 1--3 digit numbers are ignored (4-digit number could be year)
                 $warnings[] = "[u4] The string \"" . $remainder . "\" remains unidentified.";
             } elseif ($remainder != '\em)') {
-                $this->addToField($item, 'note', $remainder, 'addToField 17b');
+                $this->addToField($item, 'note', trim($remainder, '[]'), 'addToField 17b');
             }
         }
 

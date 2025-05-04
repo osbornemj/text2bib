@@ -7941,7 +7941,7 @@ class ExampleSeeder extends Seeder
                     'eprint' => '1704.07339v3',
                     'author' => 'M. Huerta-Leal and H. Novales-S\\\'anchez and J. J. Toscano',
                     'year' => '2020',
-                    'note' => '[hep-ph]',
+                    'note' => 'hep-ph',
                     ]
             ],
 			// Example with period within title
@@ -15614,6 +15614,21 @@ class ExampleSeeder extends Seeder
                     ],
                     'char_encoding' => 'utf8leave',
             ],
+            [
+                'source' => '	22.	Jawharī, Ṭ. (1914) al-Mūsīqá al-ʻArabīyah. al-Iskandarīyah: Maṭbaʻat Jurjī Gharzūzī. [American University of Beirut]. Available at: http://mc.dlib.nyu.edu/files/books/aub_aco000195/aub_aco000195_hi.pdf. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Jawharī, Ṭ.',
+                    'title' => 'al-Mūsīqá al-ʻArabīyah',
+                    'year' => '1914',
+                    'note' => 'American University of Beirut',
+                    'url' => 'http://mc.dlib.nyu.edu/files/books/aub_aco000195/aub_aco000195_hi.pdf',
+                    'address' => 'al-Iskandarīyah',
+                    'publisher' => 'Maṭbaʻat Jurjī Gharzūzī',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+            
         ];
 
         DB::statement('DELETE FROM examples');

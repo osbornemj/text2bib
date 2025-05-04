@@ -687,6 +687,8 @@ class TitleParser
                                 rtrim($nextWord, ':') != 'in'
                                 &&
                                 ! Str::startsWith($nextWord, 's.l.')
+                                &&
+                                ! Str::startsWith($nextWord, 'al-') // Could be start of name of Arabic publisher
                             )
                             || 
                             ($word == 'A.' && $nextWord == 'D.')
