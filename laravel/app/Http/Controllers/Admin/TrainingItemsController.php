@@ -9,7 +9,7 @@ use Illuminate\View\View;
 
 use App\Models\Conversion;
 use App\Models\TrainingItem;
-
+use App\Models\VonName;
 use App\Services\Converter;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -95,19 +95,15 @@ class TrainingItemsController extends Controller
 
     public function showLowercase()
     {
-        $trainingItems = TrainingItem::whereRaw('BINARY source regexp "^[a-z]"')
-            ->where('source', 'not like', 'van %')
-            ->where('source', 'not like', 'von %')
-            ->where('source', 'not like', 'ter %')
-            ->where('source', 'not like', 'da %')
-            ->where('source', 'not like', 'de %')
-            ->where('source', 'not like', 'den %')
-            ->where('source', 'not like', 'di %')
-            ->where('source', 'not like', 'do %')
-            ->where('source', 'not like', 'd\'%')
-            ->where('source', 'not like', 'ten %')
-            ->where('source', 'not like', 'del %')
-            ->paginate(100);
+        $vonNames = VonName::all();
+
+        $trainingItems = TrainingItem::whereRaw('BINARY source regexp "^[a-z]"');
+
+        foreach ($vonNames as $vonName) {
+            $trainingItems = $trainingItems->where('source', 'not like', $vonName->name . ' %');
+        }
+
+        $trainingItems = $trainingItems->paginate(100);
 
         return view('admin.trainingItems.showLowercase', compact('trainingItems'));
     }
