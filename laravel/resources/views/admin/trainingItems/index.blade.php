@@ -32,8 +32,8 @@
                         {{--<x-link href="{{ url('admin/trainingItems/' . $trainingItem->id . '/edit') }}">--}}
                         {{ $trainingItem->source }}
                         {{--</x-link>--}}
-                        [<x-link href="{{ url('admin/showConversion/' . $trainingItem->conversion_id . '/0/normal/1') }}" target="_blank">conversion</x-link>]
                         [<x-link href="{{ url('admin/trainingItems/' . $trainingItem->id . '/convert') }}">re-convert</x-link>]
+                        [<x-link href="{{ url('admin/showConversion/' . $trainingItem->conversion_id . '/0/normal/1') }}" target="_blank">conversion</x-link>]
                     </div>
                     <div class="bg-sky-200 dark:bg-blue-800 px-2">
                         @if ($trainingItem->type)

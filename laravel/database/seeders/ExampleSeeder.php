@@ -15714,7 +15714,6 @@ class ExampleSeeder extends Seeder
                     'address' => 'Heidelberg',
                     ]
             ],
-            
         ];
 
         DB::statement('DELETE FROM examples');
