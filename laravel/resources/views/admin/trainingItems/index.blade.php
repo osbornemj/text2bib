@@ -15,7 +15,7 @@
                     <x-link href="/admin/trainingItems/showLowercase">Show all items for which source starts with lowercase letter</x-link>
                 </li>
                 <li>
-                    <x-link href="/admin/trainingItems/convert">Convert all training sources</x-link>
+                    <x-link href="/admin/trainingItems/convert">Convert all training sources that have not been converted</x-link>
                 </li>
             <ul>
         </div>
@@ -29,7 +29,10 @@
                 @foreach ($trainingItems as $trainingItem)
                     <div class="bg-blue-200 dark:bg-blue-900 mt-4 px-2">
                         {{ $trainingItem->id }}.
-                        <x-link href="{{ url('admin/trainingItems/' . $trainingItem->id . '/edit') }}">{{ $trainingItem->source }}</x-link>
+                        {{--<x-link href="{{ url('admin/trainingItems/' . $trainingItem->id . '/edit') }}">--}}
+                        {{ $trainingItem->source }}
+                        {{--</x-link>--}}
+                        [<x-link href="{{ url('admin/showConversion/' . $trainingItem->conversion_id . '/0/normal/1') }}" target="_blank">conversion</x-link>]
                     </div>
                     <div class="bg-sky-200 dark:bg-blue-800 px-2">
                         @if ($trainingItem->type)
@@ -42,12 +45,16 @@
                             </p>
                             @endforeach
                         @endif
+                        <p>
+                            language: {{ $trainingItem->language }}
+                        </p>
                     </div>
                     <div class="mt-2">
                         @php
                             $selectedLanguage = [];
                             $selectedLanguage[$trainingItem->language] = true;
                         @endphp
+                        {{--
                         <form method="POST" action="{{ url('/admin/runExampleCheck') }}" class="mt-0 space-y-0">
                             @csrf
                             <input type="hidden" id="trainingItemId" name="trainingItemId" value="{{ $trainingItem->id }}"/>
@@ -56,6 +63,7 @@
                                 {{ __('Submit') }}
                             </x-primary-button>
                         </form>
+                        --}}
                     </div>
                 @endforeach
             {{ $trainingItems->links() }}
