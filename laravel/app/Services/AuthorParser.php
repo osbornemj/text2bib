@@ -823,7 +823,8 @@ class AuthorParser
                     if ($wordIsVon) {
                         $this->verbose('[convertToAuthors 16]');
                         $this->verbose("convertToAuthors: '" . $word . "' identified as 'von' name");
-                        if ($oldFullName && ! $prevWordVon) {
+                        // Excluding 'ibn' because Arabic names can have many components --- but exclusion is very ad hoc
+                        if ($oldFullName && ! $prevWordVon && $word != 'ibn') {
                             $this->verbose("convertToAuthors: incrementing \$namePart");
                             $namePart++;
                         }
@@ -1053,10 +1054,11 @@ class AuthorParser
                             count($bareWords) > 3
                             ||
                             (
-                                // next word ends in '.' or ',', then there is another word, and then numbers
+                                // next word ends in '.' or ',' but is not 'b.' (using within Arabic names),
+                                // then there is another word, and then numbers
                                 // Two words seems to be the minimum (e.g. one-word article title and one-word journal name),
                                 // so terminate authors.
-                                in_array(substr($nextWord, -1), ['.', ',']) && isset($remainingWords[2]) && preg_match('/^[0-9.,;:\-()]*$/', $remainingWords[2])
+                                in_array(substr($nextWord, -1), ['.', ',']) && $nextWord != 'b.' && isset($remainingWords[2]) && preg_match('/^[0-9.,;:\-()]*$/', $remainingWords[2])
                             )
                             ||
                             (
@@ -1572,12 +1574,13 @@ class AuthorParser
             $include = true;
 
             // : is now included in this list (which may require special handling for titles that have : after first or second word)
-            if (Str::endsWith($word, ['.', ',', ')', ';', '}', ':'])) {
+            // Exclude 'b.' because it is used within Arabic names (abbreviation for "bin"?).
+            if (Str::endsWith($word, ['.', ',', ')', ';', '}', ':']) && $word != 'b.') {
                 $stop = true;
                 $endsWithPunc = true;
             }
 
-            if (preg_match('/[A-Z]\.:/', $word)) {
+            if (preg_match('/\p{Lu}\.:/u', $word)) {
                 $stop = true;
                 $endsWithPunc = true;
             }
@@ -1629,7 +1632,7 @@ class AuthorParser
             // Names are in dictionary with initial u.c. letter, so convert word to l.c. to exclude them as regular words
             $lcword = mb_strtolower($word);
 
-            if (($this->isAnd($word) && ! $ignoreAnd) || $this->isInitials($word)) {
+            if (($this->isAnd($word) && ! $ignoreAnd) || $this->isInitials($word) || $word == 'b') {
                 $score++;
             } elseif (
                 // not using isAnd here, because that allows "with"

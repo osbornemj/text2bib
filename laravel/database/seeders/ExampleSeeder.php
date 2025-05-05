@@ -15628,6 +15628,53 @@ class ExampleSeeder extends Seeder
                     ],
                     'char_encoding' => 'utf8leave',
             ],
+            [
+                'source' => 'ul Aibdin Z, Nafees M, Rizwan M, Ahmad S, Ali S, Obaid WA, Alsubeie MS, Darwish DBE, Abeed AH. Combined effect of zinc lysine and biochar on growth and physiology of wheat (Triticum aestivum L.) to alleviate salinity stress. Front Plant Sci 2022, 13. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'ul Aibdin, Z. and Nafees, M. and Rizwan, M. and Ahmad, S. and Ali, S. and Obaid, W. A. and Alsubeie, M. S. and Darwish, D. B. E. and Abeed, A. H.',
+                    'title' => 'Combined effect of zinc lysine and biochar on growth and physiology of wheat (Triticum aestivum L.) to alleviate salinity stress',
+                    'year' => '2022',
+                    'journal' => 'Front Plant Sci',
+                    'volume' => '13',
+                    ]
+            ],
+            [
+                'source' => 'op ‘t Roodt H, Krug H, Otto K (2021) Subgroup Formation in Diverse Virtual Teams: The Moderating Role of Identity Leadership. Frontiers in Psychology 12. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'op `t Roodt, H. and Krug, H. and Otto, K.',
+                    'year' => '2021',
+                    'title' => 'Subgroup Formation in Diverse Virtual Teams: The Moderating Role of Identity Leadership',
+                    'journal' => 'Frontiers in Psychology',
+                    'volume' => '12',
+                    ]
+            ],
+            [
+                'source' => 'al-Maḥaṭwarī, al-Murtaḍā b. Zayd. 2014. al-Zaydiyya. Sanaa: Maktabat Badr. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Sanaa',
+                    'author' => 'al-Maḥaṭwarī, al-Murtaḍā b. Zayd',
+                    'publisher' => 'Maktabat Badr',
+                    'title' => 'al-Zaydiyya',
+                    'year' => '2014',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+            [
+                'source' => 'al-Nuʿmān ibn Muḥammad, al-Qāḍī Abū Ḥanīfa. 1960. Kitāb Asās al-taʾwīl. Edited by ʿĀrif Tāmir. Beirut: Dār al-Thaqāfa.  ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'al-Nuʿmān ibn Muḥammad, al-Qāḍī Abū Ḥanīfa',
+                    'title' => 'Kitāb Asās al-taʾwīl',
+                    'year' => '1960',
+                    'editor' => 'ʿĀrif Tāmir',
+                    'address' => 'Beirut',
+                    'publisher' => 'Dār al-Thaqāfa',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
             
         ];
 
