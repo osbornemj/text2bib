@@ -562,6 +562,7 @@ class RegularExpressions
         $seriesPhrases = [
             '(?<![Tt]ime[ \-])[Ss]eries',
             '[Ll]ecture [Nn]otes',
+            'LNCS',
             'Graduate [Tt]exts',
             'Graduate Studies',
             'Grundlehren der mathematischen Wissenschaften',
