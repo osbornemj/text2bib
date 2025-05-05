@@ -133,7 +133,7 @@ class TrainingItemsController extends Controller
                             $trainingItem->delete();
                         }
                         if ($trainingItem) {
-                            $itemsAndType['id'] = $trainingItem->id;
+                            $itemsAndType['conversion_id'] = $trainingItem->conversion_id;
                             $itemsAndType['source'] = $trainingItem->source;
                             $itemsAndType['type'] = $output['itemType'];
                             $itemsAndTypes[] = $itemsAndType;
@@ -142,7 +142,7 @@ class TrainingItemsController extends Controller
                 }
                 // Even though source field is not being updated, apparently need to specify it because upsert
                 // might do an insert if an entry does not exist (although in this case the entries always exist).
-                TrainingItem::upsert($itemsAndTypes, ['id'], ['item', 'type']);
+                TrainingItem::upsert($itemsAndTypes, ['id'], ['item', 'type', 'conversion_id']);
             });
 
         return back();
