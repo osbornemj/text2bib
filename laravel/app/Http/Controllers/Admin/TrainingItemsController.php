@@ -117,7 +117,7 @@ class TrainingItemsController extends Controller
         ini_set('display_errors', '1');
 
         $conversion = new Conversion;
-        TrainingItem::select('id', 'source', 'language')->whereNull('item')
+        TrainingItem::select('id', 'source', 'language', 'conversion_id')->whereNull('item')
             ->chunkById(5000, function (Collection $trainingItems) use ($conversion) {
                 $itemsAndTypes = [];
                 foreach ($trainingItems as $trainingItem) {
@@ -133,6 +133,7 @@ class TrainingItemsController extends Controller
                             $trainingItem->delete();
                         }
                         if ($trainingItem) {
+                            $itemsAndType['id'] = $trainingItem->id;
                             $itemsAndType['conversion_id'] = $trainingItem->conversion_id;
                             $itemsAndType['source'] = $trainingItem->source;
                             $itemsAndType['type'] = $output['itemType'];
