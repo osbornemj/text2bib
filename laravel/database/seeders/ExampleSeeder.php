@@ -15687,6 +15687,18 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Affective Computing',
                     ]
             ],
+            [
+                'source' => 'ARENDSE, C, GOVENDER, A. AND G.M. BRANCH (2007). Are closed fishing seasons an effective means of increasing reproductive output? A per-recruit simulation using the limpet Cymbula granatina as a case history. Fisheries Research 85: 93-100. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Arendse, C. and Govender, A. and G. M. Branch',
+                    'year' => '2007',
+                    'title' => 'Are closed fishing seasons an effective means of increasing reproductive output? A per-recruit simulation using the limpet Cymbula granatina as a case history',
+                    'journal' => 'Fisheries Research',
+                    'volume' => '85',
+                    'pages' => '93-100',
+                    ]
+            ],
             
         ];
 

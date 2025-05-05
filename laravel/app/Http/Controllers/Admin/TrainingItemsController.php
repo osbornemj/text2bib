@@ -123,7 +123,7 @@ class TrainingItemsController extends Controller
             ->chunkById(5000, function (Collection $trainingItems) use ($conversion) {
                 $itemsAndTypes = [];
                 foreach ($trainingItems as $trainingItem) {
-                    $output = $this->converter->convertEntry($trainingItem->source, $conversion, $trainingItem->language, 'utf8leave', 'biblatex', null);
+                    $output = $this->converter->convertEntry($trainingItem->source, $conversion, $trainingItem->language, 'utf8leave', 'biblatex');
                     if (!$output) {
                         $trainingItem->delete();
                     } else {
@@ -147,6 +147,18 @@ class TrainingItemsController extends Controller
                 // might do an insert if an entry does not exist (although in this case the entries always exist).
                 TrainingItem::upsert($itemsAndTypes, ['id'], ['item', 'type', 'conversion_id']);
             });
+
+        return back();
+    }
+
+    public function convertItem($id)
+    {
+        $trainingItem = TrainingItem::find($id);
+
+        $conversion = new Conversion;
+        $output = $this->converter->convertEntry($trainingItem->source, $conversion, $trainingItem->language, 'utf8leave', 'biblatex');
+
+        $trainingItem->update(['type' => $output['itemType'], 'item' => $output['item']]);
 
         return back();
     }
