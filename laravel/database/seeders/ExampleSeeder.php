@@ -15675,6 +15675,18 @@ class ExampleSeeder extends Seeder
                     ],
                     'char_encoding' => 'utf8leave',
             ],
+            [
+                'source' => '\bibitem{Gunes} H. Gunes, M. Piccardi, and M. Pantic, "From the Lab to the Real World: Affect Recognition Using Multiple Cues and Modalities," in Affective Computing, J. Or, Ed.: InTech Education and Publishing, 2008. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'H. Gunes and M. Piccardi and M. Pantic',
+                    'title' => 'From the Lab to the Real World: Affect Recognition Using Multiple Cues and Modalities',
+                    'year' => '2008',
+                    'editor' => 'J. Or',
+                    'publisher' => 'InTech Education and Publishing',
+                    'booktitle' => 'Affective Computing',
+                    ]
+            ],
             
         ];
 

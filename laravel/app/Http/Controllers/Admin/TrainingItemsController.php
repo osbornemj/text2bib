@@ -66,6 +66,8 @@ class TrainingItemsController extends Controller
             JOIN conversions c ON o.conversion_id = c.id
             WHERE c.usable = 1');
 
+        DB::statement('UPDATE training_items SET language="fr" WHERE source LIKE "%Décem%" COLLATE utf8mb4_bin AND language="en"');
+
         return back();
     }
 

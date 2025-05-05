@@ -2466,10 +2466,13 @@ class Converter
 
                 // Address can have one or two words, publisher can have 1-3 words, the last of which can be in parens.
                 $booktitleRegExp = '\p{Lu}[\p{L}\-: ]{5,80}';
+                $booktitleNoPuncRegExp = '\p{Lu}[\p{L} ]{5,80}';
                 $booktitleWithPeriodRegExp = '\p{Lu}[\p{L}\-:. ]{5,80}';
                 $editorsRegExp = '\p{Lu}[\p{L}\- ]+';
+                $editorsWithPeriodRegExp = '\p{Lu}[\p{L}\-. ]+';
                 $addressRegExp = '[\p{L},]+( [\p{L}]+)?';
                 $publisherRegExp = '[\p{L}\-]+( [\p{L}\-]+)?( [\p{L}\-()]+)?';
+                $publisherUpTo4WordsRegExp = '[\p{L}\-]+( [\p{L}\-]+)?( [\p{L}\-()]+)?( [\p{L}\-()]+)?';
 
                 ///////////////////
                 // Some patterns //
@@ -2583,6 +2586,33 @@ class Converter
                         }
                         if (isset($matches['address'])) {
                             $this->setField($item, 'address', $matches['address'], 'setField 80');
+                        }
+                        if (isset($matches['publisher'])) {
+                            $this->setField($item, 'publisher', $matches['publisher'], 'setField 81');
+                        }
+                        $remainder = '';
+                    // $remainder is <booktitle> [no punctuation], <editors> [with periods], ed.: <publisher> [up to 4 words]
+                    } elseif (preg_match('/^(?P<booktitle>' . $booktitleNoPuncRegExp . ')[.,] (?P<editors>' . $editorsWithPeriodRegExp . '), ' . $this->regExps->edsNoParensRegExp . ': ?(?P<publisher>' . $publisherUpTo4WordsRegExp . ')\.?$/u', $remainder, $matches)) {
+                        $result = $this->authorParser->convertToAuthors(
+                            explode(' ', $matches['editors']), 
+                            $remainder, 
+                            $trash, 
+                            $month, 
+                            $day, 
+                            $date, 
+                            $isEditor, 
+                            $isTranslator, 
+                            $this->cities, 
+                            $this->dictionaryNames, 
+                            true, 
+                            'editors', 
+                            $language
+                        );
+                        if ($result) {
+                            $this->setField($item, 'editor', trim($result['authorstring']), 'setField 78');
+                        }
+                        if (isset($matches['booktitle'])) {
+                            $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 79');
                         }
                         if (isset($matches['publisher'])) {
                             $this->setField($item, 'publisher', $matches['publisher'], 'setField 81');
