@@ -59,6 +59,7 @@ trait AuthorPatterns
                 $andWord = '\$\\\&\$';
             }
             $andRegExp .= ($i ? '|' : '').$andWord.'|'.mb_strtoupper($andWord);
+            //$andRegExp .= ($i ? '|' : '').$andWord;
         }
         $andRegExp .= ')';
 

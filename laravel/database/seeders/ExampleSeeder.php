@@ -15699,6 +15699,21 @@ class ExampleSeeder extends Seeder
                     'pages' => '93-100',
                     ]
             ],
+            [
+                'source' => '\bibitem{Castellano1} G. Castellano, L. Kessous, G. Caridakis, Emotion recognition through multiple modalities: face, body gesture, speech. In: Peter C., Beale R. (eds.): Affect and Emotion in Human-Computer Interaction. LNCS, vol. 4868. Springer, Heidelberg, 2008',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'G. Castellano and L. Kessous and G. Caridakis',
+                    'title' => 'Emotion recognition through multiple modalities: face, body gesture, speech',
+                    'year' => '2008',
+                    'editor' => 'Peter, C. and Beale, R.',
+                    'booktitle' => 'Affect and Emotion in Human-Computer Interaction',
+                    'series' => 'LNCS',
+                    'volume' => '4868',
+                    'publisher' => 'Springer',
+                    'address' => 'Heidelberg',
+                    ]
+            ],
             
         ];
 

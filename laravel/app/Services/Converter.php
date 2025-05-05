@@ -3872,6 +3872,7 @@ class Converter
                     $periodBeforeColonPos = ($colonPos !== false) ? strrpos(substr($remainder, 0, $colonPos - 5), '.') : false;
 
                     // Check whether publication info matches pattern for book to be a volume in a series
+                    // ... vol. [of|in|,] <series>
                     $result = $this->removeAndReturn(
                         $remainder,
                         '(?P<volumeSeriesName>(' . $this->regExps->volumeAndCodesRegExp . ')( (?P<volume>[1-9][0-9]{0,4}))(( of| in|,) )((?P<seriesName>[^\.,]*)\.|,))',
@@ -3894,6 +3895,11 @@ class Converter
                             $this->verbose('Volume found, so book is part of a series');
                             $this->verbose('Remainder (publisher and address): ' . $remainder);
                         }
+                    // ... <series>,? vol. <volume>.?
+                    } elseif (preg_match('/^(?P<remainder>.*?)\. (?P<seriesName>([\p{L} \-]*)' . $this->regExps->seriesRegExp . '([\p{L} \-])),? (' . $this->regExps->volumeAndCodesRegExp . ')(?P<volume>[1-9][0-9]{0,4})\.?$/u', $remainder, $matches)) {
+                        $this->setField($item, 'series', $matches['seriesName'], 'setField 137a');
+                        $this->setField($item, 'volume', $matches['volume'], 'setField 137b');
+                        $remainder = $matches['remainder'];
                     } elseif (! empty($cityString) && ! empty($publisher)) {
                         $this->setField($item, 'address', $cityString, 'setField 138');
                         $this->setField($item, 'publisher', $publisher, 'setField 139');
