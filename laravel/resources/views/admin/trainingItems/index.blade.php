@@ -15,7 +15,10 @@
                     <x-link href="/admin/trainingItems/showLowercase">Show only items for which source starts with lowercase letter</x-link>
                 </li>
                 <li>
-                    <x-link href="/admin/trainingItems/convert">Convert all items</x-link> (using current version of Converter)
+                    <x-link href="/admin/trainingItems/convert">Convert all items using current version of Converter</x-link> (to view progress, open main Admin page in new tab)
+                </li>
+                <li>
+                    <x-link href="/admin/trainingItems/selectAndFormat">Select 6,000 random items, format as json, and download</x-link>
                 </li>
             <ul>
         </div>

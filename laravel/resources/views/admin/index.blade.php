@@ -29,6 +29,12 @@
                 <x-link :href="route('admin.trainingItems.index')">
                     Training data
                 </x-link>
+                ({{ number_format($trainingItemsConversionCount) }} items converted in last conversion, started {{ $trainingItemsConversionStartedAt }}, 
+                @if ($trainingItemsConversionEndedAt)
+                    ended {{ $trainingItemsConversionEndedAt }})
+                @else
+                    currently underway)
+                @endif
             </p>
 
             <h3 class="font-semibold text-l mt-2">

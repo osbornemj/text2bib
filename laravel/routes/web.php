@@ -195,6 +195,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/trainingItems/clean', 'clean')->name('admin.trainingItems.clean');
         Route::get('/admin/trainingItems/copy', 'copy')->name('admin.trainingItems.copy');
         Route::get('/admin/trainingItems/showLowercase', 'showLowercase')->name('admin.trainingItems.showLowercase');
+        Route::get('/admin/trainingItems/selectAndFormat', 'selectAndFormat')->name('admin.trainingItems.selectAndFormat');
     });
 
     Route::controller(UsersController::class)->group(function () {

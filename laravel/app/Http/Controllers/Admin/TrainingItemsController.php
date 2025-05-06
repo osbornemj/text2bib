@@ -19,6 +19,7 @@ use App\Services\Converter;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TrainingItemsController extends Controller
 {
@@ -92,8 +93,8 @@ class TrainingItemsController extends Controller
 
     public function convert(): RedirectResponse
     {
-        // Allow script to run for up to 120 minutes (7200 seconds)
-        set_time_limit(7200);
+        // Allow script to run for up to 180 minutes (10800 seconds)
+        set_time_limit(10800);
 
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
@@ -105,10 +106,18 @@ class TrainingItemsController extends Controller
             $itemTypeIds[$itemType->name] = $itemType->id;
         }
 
+        AdminSetting::first()->update([
+            'training_items_conversion_count' => 0, 
+            'training_items_conversion_started_at' => now(),
+            'training_items_conversion_ended_at' => null,
+        ]);
+
         $conversion = new Conversion;
+        $chunkSize = 5000;
         TrainingItem::select('id', 'output_id')->with('output.conversion')
-            ->chunkById(5000, function (Collection $trainingItems) use ($conversion, $itemTypeIds, $converter) {
+            ->chunkById($chunkSize, function (Collection $trainingItems) use ($conversion, $itemTypeIds, $converter) {
                 $itemsAndTypes = [];
+                $conversionCount = AdminSetting::first()->training_items_conversion_count;
                 foreach ($trainingItems as $trainingItem) {
                     $result = $converter->convertEntry(
                         $trainingItem->output->source, 
@@ -136,14 +145,55 @@ class TrainingItemsController extends Controller
                             $itemsAndType['seq'] = $trainingItem->output->seq;
                             $itemsAndType['item_type_id'] = $itemTypeIds[$result['itemType']];
                             $itemsAndTypes[] = $itemsAndType;
+                            $conversionCount++;
                         }
                     }
                 }
                 // Even though source, conversion_id, label, and seq fields are not being updated, apparently need to specify
                 // them because upsert might do an insert if an entry does not exist (although in this case the entries always exist).
                 Output::upsert($itemsAndTypes, ['id'], ['item', 'item_type_id']);
+                AdminSetting::first()->update(['training_items_conversion_count' => $conversionCount]);
             });
 
-        return back();
+            AdminSetting::first()->update(['training_items_conversion_ended_at' => now()]);
+
+            return back();
+    }
+
+    public function selectAndFormat()
+    {
+        $trainingItems = TrainingItem::inRandomOrder()->limit(6000)->get();
+
+        $itemTypes = ItemType::select('id', 'name')->get();
+        foreach ($itemTypes as $itemType) {
+            $itemTypeNames[$itemType->id] = $itemType->name;
+        }
+
+        $data = [];
+        foreach ($trainingItems as $trainingItem) {
+            $output = $trainingItem->output;
+            $i = $output->id;
+            $data[$i] = [];
+            $data[$i]['input'] = $output->source;
+            $data[$i]['output'] = [];
+            $data[$i]['output']['type'] = $itemTypeNames[$output->item_type_id];
+            $item = $output->item;
+            foreach ($item as $name => $field) {
+                $data[$i]['output'][$name] = $field;
+            }
+        }
+ 
+        return new StreamedResponse(
+            function () use ($data) {
+                $handle = fopen('php://output', 'w');
+                fwrite($handle, json_encode($data));
+                fclose($handle);
+            },
+            200,
+            [
+                'Content-type'        => 'text/plain; charset=UTF-8',
+                'Content-Disposition' => 'attachment; filename=training_data.json'
+            ]
+        );
     }
 }
