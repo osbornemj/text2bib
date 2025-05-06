@@ -113,6 +113,10 @@
                                     &nbsp;&bull;&nbsp;
                                     quota remaining {{ $conversion->crossref_quota_remaining }}
                                 @endif
+                                &nbsp;&bull;&nbsp;
+                                <div class="inline-flex">
+                                    <livewire:conversion-checked :conversion="$conversion" :maxCheckedConversionId="$maxCheckedConversionId" />
+                                </div>
                             @endif
                         </div>
                     @endif

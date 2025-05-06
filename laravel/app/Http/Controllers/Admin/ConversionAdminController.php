@@ -9,12 +9,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+use App\Models\AdminSetting;
 use App\Models\Conversion;
 use App\Models\ItemType;
 use App\Models\Output;
 use App\Models\User;
 use App\Models\UserFile;
 use App\Models\Version;
+use App\Models\VonName;
 use App\Traits\AddLabels;
 
 use App\Services\Converter;
@@ -59,22 +61,16 @@ class ConversionAdminController extends Controller
                 ->withCount('outputs')
                 ->paginate($numberPerPage);
         } elseif ($style == 'lowercase') {
+            $vonNames = VonName::all();
             $conversions = $conversions
                 ->with('user')
                 ->withCount('outputs')
-                ->whereHas('outputs', function (Builder $q) {
-                    $q->whereRaw('BINARY source REGEXP "^[a-z]"')
-                        ->where('source', 'not like', 'van %')
-                        ->where('source', 'not like', 'von %')
-                        ->where('source', 'not like', 'ter %')
-                        ->where('source', 'not like', 'da %')
-                        ->where('source', 'not like', 'de %')
-                        ->where('source', 'not like', 'den %')
-                        ->where('source', 'not like', 'di %')
-                        ->where('source', 'not like', 'do %')
-                        ->where('source', 'not like', 'd\'%')
-                        ->where('source', 'not like', 'ten %')
-                        ->where('source', 'not like', 'del %');
+                ->whereHas('outputs', function (Builder $q) use ($vonNames) {
+                    $q->whereRaw('BINARY source REGEXP "^[a-z]"');
+                    foreach ($vonNames as $vonName) {
+                        $q = $q->where('source', 'not like', $vonName->name . ' %');
+                    }
+                    $q = $q->where('source', 'not like', 'd\'%');
                 })
                 ->where('usable', 1)
                 ->paginate($numberPerPage);
@@ -86,7 +82,9 @@ class ConversionAdminController extends Controller
         $selectedCorrectness = [];
         $selectedAdminCorrectness = [];
 
-        return view('admin.conversions.index', compact('conversions', 'user', 'userId', 'userRatings', 'adminRatings', 'selectedCorrectness', 'selectedAdminCorrectness', 'style'));
+        $maxCheckedConversionId = AdminSetting::select('max_checked_conversion_id')->first()->max_checked_conversion_id;
+
+        return view('admin.conversions.index', compact('conversions', 'user', 'userId', 'userRatings', 'adminRatings', 'selectedCorrectness', 'selectedAdminCorrectness', 'style', 'maxCheckedConversionId'));
     }
 
     public function showConversion(int $conversionId, int $userId, string $style, int $page): View
@@ -121,6 +119,21 @@ class ConversionAdminController extends Controller
                 'bstFields'
             )
         );
+    }
+
+    public function editSource(Output $output): View
+    {
+        return view('admin.conversions.editSource')->with('output', $output);
+    }
+
+    public function updateSource(Request $request, int $id): RedirectResponse
+    {
+        $output = Output::find($id);
+
+        $output->source = $request->source;
+        $output->save();
+
+        return redirect()->route('admin.trainingItems');
     }
 
     public function destroy(int $id): RedirectResponse

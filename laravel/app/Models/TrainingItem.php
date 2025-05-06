@@ -15,8 +15,8 @@ class TrainingItem extends Model
         'item' => 'array',
     ];
 
-    public function conversion(): BelongsTo
+    public function output(): BelongsTo
     {
-        return $this->belongsTo(Conversion::class);
+        return $this->belongsTo(Output::class);
     }
 }

@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\ItemFieldsController;
 use App\Http\Controllers\Admin\ItemTypesController;
 use App\Http\Controllers\Admin\JournalsController;
 use App\Http\Controllers\Admin\NamesController;
+use App\Http\Controllers\Admin\OutputsController;
 use App\Http\Controllers\Admin\PublishersController;
 use App\Http\Controllers\Admin\JournalWordAbbreviationsController;
 use App\Http\Controllers\Admin\TrainingItemsController;
@@ -110,6 +111,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         '/admin/itemTypes' => ItemTypesController::class,
         '/admin/itemFields' => ItemFieldsController::class,
         '/admin/examples' => ExamplesController::class,
+        '/admin/outputs' => OutputsController::class,
         '/admin/vonNames' => VonNamesController::class,
         '/admin/publishers' => PublishersController::class,
         '/admin/cities' => CitiesController::class,
@@ -163,6 +165,8 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::get('/admin/conversionUnexamined/{conversionId}', 'unexamined')->name('admin.conversion.unexamined');
         Route::post('/admin/searchConversions', 'search')->name('admin.search.conversions');
         Route::get('/admin/searchConversions', 'search')->name('admin.search.conversions');
+        //Route::get('/admin/outputs/{id}/edit', 'editSource')->name('admin.editSource');
+        //Route::put('/admin/outputs/{id}/update', 'updateSource')->name('admin.updateSource');
     });
 
     Route::controller(ExampleFieldsController::class)->group(function () {

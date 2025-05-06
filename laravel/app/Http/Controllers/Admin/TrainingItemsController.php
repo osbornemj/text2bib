@@ -3,34 +3,32 @@
 namespace App\Http\Controllers\Admin;
 
 use DB;
+use Throwable;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminSetting;
 use Illuminate\View\View;
 
 use App\Models\Conversion;
+use App\Models\ItemType;
+use App\Models\Output;
 use App\Models\TrainingItem;
 use App\Models\VonName;
+
 use App\Services\Converter;
+
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Throwable;
+use Illuminate\Http\RedirectResponse;
 
 class TrainingItemsController extends Controller
 {
-    private Converter $converter;
-
-    public function __construct()
-    {
-        $this->converter = new Converter;
-    }
-
     public function index(): View
     {
-        $trainingItems = TrainingItem::paginate(50);
-        $languageOptions = config('constants.languages');
+        $trainingItems = TrainingItem::with('output.conversion')->orderBy('id')->paginate(50);
 
-        return view('admin.trainingItems.index', compact('trainingItems', 'languageOptions'));
+        $type = 'all';
+
+        return view('admin.trainingItems.index', compact('trainingItems', 'type'));
     }
 
     /**
@@ -45,12 +43,14 @@ class TrainingItemsController extends Controller
      *    AND source NOT REGEXP "^[_-]{2,}"
      *    AND source NOT REGEXP "^—"
      */
-    public function copy()
+    public function copy(): RedirectResponse
     {
+        $maxCheckedConversionId = AdminSetting::first()->max_checked_conversion_id;
+
         DB::statement('DELETE FROM training_items');
         DB::statement('ALTER TABLE training_items AUTO_INCREMENT 1');
-        DB::statement('INSERT INTO training_items (source, language, conversion_id) 
-            SELECT o.source, c.language, c.id
+        DB::statement('INSERT INTO training_items (output_id)
+            SELECT o.id
             FROM outputs o
             JOIN (
                 SELECT source, MAX(conversion_id) AS max_conversion_id
@@ -64,53 +64,33 @@ class TrainingItemsController extends Controller
                 GROUP BY source
             ) latest ON o.source = latest.source AND o.conversion_id = latest.max_conversion_id
             JOIN conversions c ON o.conversion_id = c.id
-            WHERE c.usable = 1');
+            WHERE c.usable = 1 AND c.id <= ' . $maxCheckedConversionId);
 
-        DB::statement('UPDATE training_items SET language="fr" WHERE source LIKE "%Décem%" COLLATE utf8mb4_bin AND language="en"');
-
-        return back();
-    }
-
-    /**
-     * Not used now --- the cleaning is done in the copy method.
-     */
-    public function clean()
-    {
-        TrainingItem::chunk(10000, function ($trainingItems) {
-            foreach ($trainingItems as $trainingItem) {
-                if (
-                    strlen($trainingItem->source) < 35 
-                    ||
-                    strlen($trainingItem->source) > 1000 
-                    ||
-                    substr_count($trainingItem->source, ' ') < 4
-                    ||
-                    preg_match('/^[_-—]{2,}/', $trainingItem->source)
-                   ) {
-                    $trainingItem->delete();
-                }
-            }
-        });
+        //DB::statement('UPDATE training_items SET language="fr" WHERE source LIKE "%Décem%" COLLATE utf8mb4_bin AND language="en"');
 
         return back();
     }
 
-    public function showLowercase()
+    public function showLowercase(): View
     {
         $vonNames = VonName::all();
 
-        $trainingItems = TrainingItem::whereRaw('BINARY source regexp "^[a-z]"');
+        $trainingItems = TrainingItem::whereHas('output', function ($q) use ($vonNames) {
+            $q->whereRaw('BINARY source regexp "^[a-z]"');
+            foreach ($vonNames as $vonName) {
+                $q = $q->where('source', 'not like', $vonName->name . ' %');
+            }
+            $q = $q->where('source', 'not like', 'd\'%');
+        })->get();
 
-        foreach ($vonNames as $vonName) {
-            $trainingItems = $trainingItems->where('source', 'not like', $vonName->name . ' %');
-        }
+        $type = 'lowercase';
 
-        $trainingItems = $trainingItems->paginate(100);
+        $trainingItems = $trainingItems->paginate(50);
 
-        return view('admin.trainingItems.showLowercase', compact('trainingItems'));
+        return view('admin.trainingItems.index', compact('trainingItems', 'type'));
     }
 
-    public function convert()
+    public function convert(): RedirectResponse
     {
         // Allow script to run for up to 120 minutes (7200 seconds)
         set_time_limit(7200);
@@ -118,47 +98,51 @@ class TrainingItemsController extends Controller
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
+        $converter = new Converter;
+
+        $itemTypes = ItemType::select('id', 'name')->get();
+        foreach ($itemTypes as $itemType) {
+            $itemTypeIds[$itemType->name] = $itemType->id;
+        }
+
         $conversion = new Conversion;
-        TrainingItem::select('id', 'source', 'language', 'conversion_id')->whereNull('item')
-            ->chunkById(5000, function (Collection $trainingItems) use ($conversion) {
+        TrainingItem::select('id', 'output_id')->with('output.conversion')
+            ->chunkById(5000, function (Collection $trainingItems) use ($conversion, $itemTypeIds, $converter) {
                 $itemsAndTypes = [];
                 foreach ($trainingItems as $trainingItem) {
-                    $output = $this->converter->convertEntry($trainingItem->source, $conversion, $trainingItem->language, 'utf8leave', 'biblatex');
-                    if (!$output) {
+                    $result = $converter->convertEntry(
+                        $trainingItem->output->source, 
+                        $conversion, 
+                        $trainingItem->output->conversion->language, 
+                        'utf8leave', 
+                        'biblatex'
+                    );
+                    if (!$result) {
                         $trainingItem->delete();
                     } else {
                         $itemsAndType = [];
                         try {
-                            $itemsAndType['item'] = json_encode($output['item']);
+                            $itemsAndType['item'] = json_encode($result['item']);
                         } catch (Throwable $e) {
                             report($e);
                             $trainingItem->delete();
                         }
                         if ($trainingItem) {
-                            $itemsAndType['id'] = $trainingItem->id;
-                            $itemsAndType['conversion_id'] = $trainingItem->conversion_id;
-                            $itemsAndType['source'] = $trainingItem->source;
-                            $itemsAndType['type'] = $output['itemType'];
+                            //$itemsAndType['id'] = $trainingItem->id;
+                            $itemsAndType['id'] = $trainingItem->output_id;
+                            $itemsAndType['source'] = $trainingItem->output->source;
+                            $itemsAndType['conversion_id'] = $trainingItem->output->conversion_id;
+                            $itemsAndType['label'] = $trainingItem->output->label;
+                            $itemsAndType['seq'] = $trainingItem->output->seq;
+                            $itemsAndType['item_type_id'] = $itemTypeIds[$result['itemType']];
                             $itemsAndTypes[] = $itemsAndType;
                         }
                     }
                 }
-                // Even though source field is not being updated, apparently need to specify it because upsert
-                // might do an insert if an entry does not exist (although in this case the entries always exist).
-                TrainingItem::upsert($itemsAndTypes, ['id'], ['item', 'type', 'conversion_id']);
+                // Even though source, conversion_id, label, and seq fields are not being updated, apparently need to specify
+                // them because upsert might do an insert if an entry does not exist (although in this case the entries always exist).
+                Output::upsert($itemsAndTypes, ['id'], ['item', 'item_type_id']);
             });
-
-        return back();
-    }
-
-    public function convertItem($id)
-    {
-        $trainingItem = TrainingItem::find($id);
-
-        $conversion = new Conversion;
-        $output = $this->converter->convertEntry($trainingItem->source, $conversion, $trainingItem->language, 'utf8leave', 'biblatex');
-
-        $trainingItem->update(['type' => $output['itemType'], 'item' => $output['item']]);
 
         return back();
     }

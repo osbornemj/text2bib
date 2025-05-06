@@ -54,6 +54,7 @@
 
             @foreach ($outputs as $i => $output)
                 <div>
+                    <a name="{{ $output->id }}"></a>
                     <livewire:admin-converted-item :output="$output" />
                 </div>
             @endforeach
