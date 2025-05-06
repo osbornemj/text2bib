@@ -31,7 +31,7 @@
                 </x-link>
                 ({{ number_format($trainingItemsConversionCount) }} items converted in last conversion, started {{ $trainingItemsConversionStartedAt }}, 
                 @if ($trainingItemsConversionEndedAt)
-                    ended {{ $trainingItemsConversionEndedAt }})
+                    ended {{ $trainingItemsConversionEndedAt }} ({{ $itemsPerSecond }} items per second))
                 @else
                     currently underway)
                 @endif

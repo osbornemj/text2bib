@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
+
 use App\Http\Controllers\Controller;
 use App\Models\AdminSetting;
 use App\Models\Bst;
@@ -26,6 +28,9 @@ class AdminController extends Controller
         $trainingItemsConversionStartedAt = AdminSetting::first()->training_items_conversion_started_at;
         $trainingItemsConversionEndedAt = AdminSetting::first()->training_items_conversion_ended_at;
 
+        $seconds = Carbon::parse($trainingItemsConversionStartedAt)->diffInSeconds(Carbon::parse($trainingItemsConversionEndedAt));
+        $itemsPerSecond = number_format($trainingItemsConversionCount / $seconds, 2);
+
         $latestVersion = Version::latest()->first()->created_at;
 
         return view('admin.index', compact(
@@ -38,6 +43,7 @@ class AdminController extends Controller
             'trainingItemsConversionCount',
             'trainingItemsConversionStartedAt',
             'trainingItemsConversionEndedAt',
+            'itemsPerSecond',
         ));
     }
 
