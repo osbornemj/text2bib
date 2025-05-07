@@ -46,7 +46,7 @@
                 </x-link>
             </p>
             <p>
-                Conversions:
+                Conversions:&nbsp;
                 <x-link :href="route('admin.conversions')">
                     all
                 </x-link>
@@ -54,6 +54,7 @@
                 <x-link href="{{ url('admin/conversions/0/unchecked') }}">
                     unchecked
                 </x-link>
+                ({{ $uncheckedConversionCount }})
                 &nbsp;&bull;&nbsp;
                 <x-link href="{{ url('admin/conversions/0/compact') }}">
                     compact display                    
