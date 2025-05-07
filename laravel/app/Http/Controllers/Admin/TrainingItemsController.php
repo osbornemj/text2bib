@@ -62,6 +62,7 @@ class TrainingItemsController extends Controller
                         AND source NOT LIKE "--%"
                         AND source NOT LIKE "—%"
                         AND source LIKE "% % % % %"
+                        AND detected_encoding = "UTF-8"
                 GROUP BY source
             ) latest ON o.source = latest.source AND o.conversion_id = latest.max_conversion_id
             JOIN conversions c ON o.conversion_id = c.id
