@@ -337,7 +337,9 @@ class ConvertFile extends Component
                 if ($conversion->language == 'my') {
                     $encodings[$i] = 'UTF-8';
                 } else {
-                    $encodings[$i] = $this->mb_detect_encoding_in_order($entry, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+                    // Distinguishing between Windows-1252 and ISO-8859-1 is difficult; Windows-1252 is more common
+                    // so it is checked first.
+                    $encodings[$i] = $this->mb_detect_encoding_in_order($entry, ['UTF-8', 'Windows-1252', 'ISO-8859-1'], true);
                     if (in_array($encodings[$i], ['ISO-8859-1', 'Windows-1252'])) {
                         $entries[$i] = mb_convert_encoding($entry, 'UTF-8', $encodings[$i]);
                         $this->convertedEncodingCount++;
