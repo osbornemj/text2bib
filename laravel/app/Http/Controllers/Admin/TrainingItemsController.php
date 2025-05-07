@@ -182,7 +182,7 @@ class TrainingItemsController extends Controller
                 $data[$i]['output'][$name] = $field;
             }
         }
- 
+
         return new StreamedResponse(
             function () use ($data) {
                 $handle = fopen('php://output', 'w');
