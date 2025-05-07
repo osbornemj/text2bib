@@ -26,12 +26,21 @@
                 </x-link>
             </p>
             <p>
+                @php
+                    $sameDay = $trainingItemsConversionStartedAt->isSameDay($trainingItemsConversionEndedAt);
+                @endphp
                 <x-link :href="route('admin.trainingItems.index')">
                     Training data
                 </x-link>
-                ({{ number_format($trainingItemsConversionCount) }} items converted in last conversion, started {{ $trainingItemsConversionStartedAt }}, 
+                ({{ number_format($trainingItemsConversionCount) }} items converted in last conversion, {{ $trainingItemsConversionStartedAt->format('Y-m-d H:i') }}
                 @if ($trainingItemsConversionEndedAt)
-                    ended {{ $trainingItemsConversionEndedAt }} ({{ $itemsPerSecond }} items per second))
+                    to
+                    @if ($sameDay)
+                        {{ $trainingItemsConversionEndedAt->format('H:i') }}
+                    @else
+                        {{ $trainingItemsConversionEndedAt->format('Y-m-d H:i') }}
+                    @endif
+                    => {{ $itemsPerSecond }} items per second)
                 @else
                     currently underway)
                 @endif

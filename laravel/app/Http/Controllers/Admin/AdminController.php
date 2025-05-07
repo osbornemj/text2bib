@@ -33,7 +33,7 @@ class AdminController extends Controller
         $uncheckedConversionCount = Conversion::where('id', '>', $maxCheckedConversionId)->count();
 
         $seconds = Carbon::parse($trainingItemsConversionStartedAt)->diffInSeconds(Carbon::parse($trainingItemsConversionEndedAt));
-        $itemsPerSecond = number_format($trainingItemsConversionCount / $seconds, 2);
+        $itemsPerSecond = $seconds ? number_format($trainingItemsConversionCount / $seconds, 2) : null;
 
         $latestVersion = Version::latest()->first()->created_at;
 
