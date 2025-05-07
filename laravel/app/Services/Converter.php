@@ -1009,6 +1009,9 @@ class Converter
         }
         
         if (! $title) {
+            // if (mb_ord($remainder[0], 'Windows-1252') == 194) {
+            //     dump(mb_chr(194), mb_chr(194, 'Windows-1252'), mb_chr(195), mb_chr(195, 'Windows-1252'));
+            // }
             $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $titleStyle);
             $this->verbose('Title is ' . ($titleStyle == 'none' ? 'not styled' : 'styled (' . $titleStyle . ')'));
             $newRemainder = $before . ($after ? ltrim($after, "., ") : '');

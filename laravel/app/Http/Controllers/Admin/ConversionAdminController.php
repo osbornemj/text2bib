@@ -28,19 +28,13 @@ class ConversionAdminController extends Controller
 {
     use AddLabels;
 
-    private Converter $converter;
-
     public $userRatings = ['' => '', 0 => 'unrated', 1 => 'correct', -1 => 'incorrect', 2 => 'corrected'];
     public $adminRatings = ['' => '', 0 => 'unrated', 1 => 'correct', -1 => 'incorrect'];
-
-    public function __construct()
-    {
-        $this->converter = new Converter;
-    }
 
     public function index(int $userId = 0, string $style = 'normal'): View
     {
         $conversions = Conversion::orderByDesc('created_at');
+        $maxCheckedConversionId = AdminSetting::select('max_checked_conversion_id')->first()->max_checked_conversion_id;
 
         $user = null;
 
@@ -58,9 +52,17 @@ class ConversionAdminController extends Controller
             $conversions = $conversions
                 ->with('user')
                 ->with('bst')
-                ->withCount('outputs')
-                ->paginate($numberPerPage);
-        } elseif ($style == 'lowercase') {
+                ->with('outputs')
+                //->with('firstOutput')
+                ->paginate(20);
+        } elseif (in_array($style, ['unchecked'])) {
+                    $conversions = $conversions
+                        ->where('id', '>', $maxCheckedConversionId)
+                        ->with('user')
+                        ->with('bst')
+                        ->with('outputs')
+                        ->paginate(20);
+                } elseif ($style == 'lowercase') {
             $vonNames = VonName::all();
             $conversions = $conversions
                 ->with('user')
@@ -73,7 +75,7 @@ class ConversionAdminController extends Controller
                     $q = $q->where('source', 'not like', 'd\'%');
                 })
                 ->where('usable', 1)
-                ->paginate($numberPerPage);
+                ->paginate(20);
         }
 
         $userRatings = $this->userRatings;
@@ -81,8 +83,6 @@ class ConversionAdminController extends Controller
 
         $selectedCorrectness = [];
         $selectedAdminCorrectness = [];
-
-        $maxCheckedConversionId = AdminSetting::select('max_checked_conversion_id')->first()->max_checked_conversion_id;
 
         return view('admin.conversions.index', compact('conversions', 'user', 'userId', 'userRatings', 'adminRatings', 'selectedCorrectness', 'selectedAdminCorrectness', 'style', 'maxCheckedConversionId'));
     }
@@ -178,6 +178,9 @@ class ConversionAdminController extends Controller
     // Can duplication easily be avoided?
     public function convert(int $fileId, string|null $itemSeparator = null): View
     {
+
+        $converter = new Converter;
+
         if (! $itemSeparator) {
             $itemSeparator = 'line';
         }
@@ -228,7 +231,7 @@ class ConversionAdminController extends Controller
             // $convertedEntries is array with components 'source', 'item', 'itemType', 'label', 'warnings',
             // 'notices', 'details'.
             // 'label' (which depends on whole set of converted items) is updated later
-            $convertedEntry = $this->converter->convertEntry($entry, $conversion);
+            $convertedEntry = $converter->convertEntry($entry, $conversion);
             if ($convertedEntry) {
                 $convertedEntries[] = $convertedEntry;
             }

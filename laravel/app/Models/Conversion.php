@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
@@ -49,9 +50,14 @@ class Conversion extends Model
         return $this->hasMany(Output::class);
     }
 
-    public function firstOutput(): Output|null
+    // public function firstOutput(): Output|null
+    // {
+    //     return $this->hasMany(Output::class)->first();
+    // }
+
+    public function firstOutput(): HasOne
     {
-        return $this->hasMany(Output::class)->first();
+        return $this->hasOne(Output::class);
     }
 
     public function firstLowercaseOutput(): Output|null

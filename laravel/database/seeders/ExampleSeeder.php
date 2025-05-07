@@ -15714,6 +15714,19 @@ class ExampleSeeder extends Seeder
                     'address' => 'Heidelberg',
                     ]
             ],
+            [
+                'source' => '[3] S. Namasudra, A secure cryptosystem using DNA cryptography and DNA steganography for the cloud-based IoT infrastructure, Computers and Electrical Engineering, vol. 104, p. 108426, 2022. doi: 10.1016/j.compeleceng.2022.108426 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'doi:10.1016/j.compeleceng.2022.108426.',
+                    'author' => 'S. Namasudra',
+                    'title' => 'A secure cryptosystem using DNA cryptography and DNA steganography for the cloud-based IoT infrastructure',
+                    'year' => '2022',
+                    'journal' => 'Computers and Electrical Engineering',
+                    'volume' => '104',
+                    'pages' => '108426',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');

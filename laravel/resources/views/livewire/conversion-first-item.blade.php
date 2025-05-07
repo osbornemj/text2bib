@@ -1,9 +1,19 @@
 <div>
-    @if (in_array($style, ['normal', 'compact']))
-        {{ $conversion->firstOutput()?->source }}
+    @if (in_array($style, ['normal', 'unchecked', 'compact']))
+        @php
+            $firstOutput = $conversion->firstOutput;
+        @endphp
+        @if ($firstOutput)
+            {{ $firstOutput->source }}
 
-        @if ($conversion->firstOutput())
-            <x-link wire:click="delete()" class="pl-2 text-red-800 dark:text-red-400 cursor-pointer">Delete item</x-link>
+            @if ($firstOutput->detected_encoding != 'UTF-8')
+            &nbsp;&bull;&nbsp;
+            <span class="text-red-600 dark:text-red-400">
+                Detected character encoding: {{ $firstOutput->detected_encoding }}
+            </span>
+            @endif
+            &nbsp;&bull;&nbsp;
+            <x-link wire:click="delete()" class="text-red-800 dark:text-red-600 cursor-pointer">Delete item</x-link>
         @endif
     @elseif ($style == 'lowercase')
         {{ $conversion->firstLowercaseOutput()?->source }}

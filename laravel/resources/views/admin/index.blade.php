@@ -46,14 +46,22 @@
                 </x-link>
             </p>
             <p>
-                <x-link :href="route('admin.conversions')" :active="request()->routeIs('admin.conversions')">
-                    Conversions
+                Conversions:
+                <x-link :href="route('admin.conversions')">
+                    all
                 </x-link>
-                (assess usability for training data: <x-link href="{{ url('admin/conversions/0/compact') }}">
-                    basic check                    
-                </x-link>, <x-link href="{{ url('admin/conversions/0/lowercase') }}">
+                &nbsp;&bull;&nbsp;
+                <x-link href="{{ url('admin/conversions/0/unchecked') }}">
+                    unchecked
+                </x-link>
+                &nbsp;&bull;&nbsp;
+                <x-link href="{{ url('admin/conversions/0/compact') }}">
+                    compact display                    
+                </x-link>
+                &nbsp;&bull;&nbsp;
+                <x-link href="{{ url('admin/conversions/0/lowercase') }}">
                     items starting with lowercase letter
-                </x-link>)
+                </x-link>
             </p>
 
             <h3 class="font-semibold text-l mt-2">

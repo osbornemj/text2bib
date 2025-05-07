@@ -1,14 +1,25 @@
 <x-app-layout>
-    @if ($style == 'normal')
+    @if (in_array($style, ['normal', 'unchecked']))
         <x-slot name="header">
             <h2 class="font-semibold text-xl leading-tight">
                 Conversions
             </h2>
-            @if ($user)
+            @if ($style == 'unchecked')
+                <p>
+                    Unchecked
+                </p>
+            @elseif ($user)
+                <p>
+                    by {{ $user->fullName() }}
+                </p>
+            @endif
+            @if ($style == 'unchecked' || $user)
+                <p>
+                    <x-link href="{{ url('/admin/conversions') }}">Show all</x-link>
+                </p>
+            @elseif ($style == 'normal')
             <p>
-                by {{ $user->fullName() }}
-                &nbsp;&bull;&nbsp;
-                <x-link href="{{ url('/admin/conversions') }}">Show all</x-link>
+                <x-link href="{{ url('admin/conversions/0/unchecked') }}">Show only unchecked</x-link>
             </p>
             @endif
             <p>
@@ -17,7 +28,7 @@
         </x-slot>
     @endif
 
-    @if ($style == 'normal')
+    @if (in_array($style, ['normal', 'unchecked']))
         <div class="m-4 -mt-2">
             @include('admin.conversions.searchForm')
         </div>
@@ -36,19 +47,21 @@
             @foreach ($conversions as $conversion)
                 <li>
                     <a name="{{ $conversion->id }}"></a>
-                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/' . $userId . '/' . $style . '/' . $conversions->currentPage()) }}">{{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}</x-link>
+                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/' . $userId . '/' . $style . '/' . $conversions->currentPage()) }}">{{ $conversion->outputs->count() }} {{ Str::plural('item', $conversion->outputs->count() ) }}</x-link>
                     &nbsp;&bull;&nbsp;
                     @if ($conversion->user)
                         <x-link href="{{ url('/admin/conversions/' . $conversion->user->id) }}">{{ $conversion->user->fullName() }}</x-link>
                         &nbsp;&bull;&nbsp;
                     @endif
                     user
-                    @foreach ($conversion->correctnessCounts() as $key => $value)
+                    {{-- @foreach ($conversion->correctnessCounts() as $key => $value) --}}
+                    @foreach ($conversion->outputs->pluck('correctness')->countBy()->sortKeys() as $key => $value)
                         <span class="@if ($key == -1) bg-red-300 dark:bg-red-500 @elseif ($key == 1) bg-emerald-300 dark:bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-300 dark:bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
                     @endforeach
                     &nbsp;&bull;&nbsp;
                     admin
-                    @foreach ($conversion->adminCorrectnessCounts() as $key => $value)
+                    @foreach ($conversion->outputs->pluck('admin_correctness')->countBy()->sortKeys() as $key => $value)
+                    {{-- @foreach ($conversion->adminCorrectnessCounts() as $key => $value) --}}
                         <span class="@if ($key == -1) bg-red-300 dark:bg-red-500 @elseif ($key == 1) bg-emerald-300 dark:bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-300 dark:bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
                     @endforeach
                     &nbsp;&bull;&nbsp;
@@ -83,7 +96,7 @@
                     <div class="inline-flex">
                         <livewire:conversion-usability :conversion="$conversion" />
                     </div>
-                    @if ($style == 'normal')
+                    @if (in_array($style, ['normal', 'unchecked']))
                         <div class="ml-4 dark:text-slate-400">
                             @if ($conversion->version)
                             v. {{ $conversion->version }}
@@ -120,7 +133,7 @@
                             @endif
                         </div>
                     @endif
-                    @if ($conversion->outputs_count)
+                    @if ($conversion->outputs->count())
                         <div class="ml-4">
                             <div class="inline-flex">
                                 <livewire:conversion-first-item :conversion="$conversion" :style="$style" />
