@@ -47,23 +47,35 @@
             @foreach ($conversions as $conversion)
                 <li>
                     <a name="{{ $conversion->id }}"></a>
-                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/' . $userId . '/' . $style . '/' . $conversions->currentPage()) }}">{{ $conversion->outputs->count() }} {{ Str::plural('item', $conversion->outputs->count() ) }}</x-link>
-                    &nbsp;&bull;&nbsp;
+                    <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/' . $userId . '/' . $style . '/' . $conversions->currentPage()) }}">{{ $conversion->outputs_count }} {{ Str::plural('item', $conversion->outputs_count ) }}</x-link>
                     @if ($conversion->user)
-                        <x-link href="{{ url('/admin/conversions/' . $conversion->user->id) }}">{{ $conversion->user->fullName() }}</x-link>
                         &nbsp;&bull;&nbsp;
+                        <x-link href="{{ url('/admin/conversions/' . $conversion->user->id) }}">{{ $conversion->user->fullName() }}</x-link>
                     @endif
-                    user
-                    {{-- @foreach ($conversion->correctnessCounts() as $key => $value) --}}
-                    @foreach ($conversion->outputs->pluck('correctness')->countBy()->sortKeys() as $key => $value)
-                        <span class="@if ($key == -1) bg-red-300 dark:bg-red-500 @elseif ($key == 1) bg-emerald-300 dark:bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-300 dark:bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
-                    @endforeach
-                    &nbsp;&bull;&nbsp;
-                    admin
-                    @foreach ($conversion->outputs->pluck('admin_correctness')->countBy()->sortKeys() as $key => $value)
-                    {{-- @foreach ($conversion->adminCorrectnessCounts() as $key => $value) --}}
-                        <span class="@if ($key == -1) bg-red-300 dark:bg-red-500 @elseif ($key == 1) bg-emerald-300 dark:bg-emerald-500 @elseif ($key == 2) bg-blue-600 @else bg-slate-300 dark:bg-slate-500 @endif text-xs px-1">{{ $value }}</span>
-                    @endforeach
+
+                    @if ($conversion->outputs_count && $style != 'lowercase')
+
+                        &nbsp;&bull;&nbsp;
+                        user
+
+                        <div class="inline-flex gap-1">
+                            <x-correctness-badge :count="$conversion->correctness_minus1_count" class="bg-red-300 dark:bg-red-500" />
+                            <x-correctness-badge :count="$conversion->correctness_0_count" />
+                            <x-correctness-badge :count="$conversion->correctness_1_count" class="bg-emerald-300 dark:bg-emerald-500" />
+                            <x-correctness-badge :count="$conversion->correctness_2_count" class="bg-blue-300 dark:bg-blue-600" />
+                        </div>
+
+                        &nbsp;&bull;&nbsp;
+                        admin
+
+                        <div class="inline-flex gap-1">
+                            <x-correctness-badge :count="$conversion->admin_correctness_minus1_count" class="bg-red-300 dark:bg-red-500" />
+                            <x-correctness-badge :count="$conversion->admin_correctness_0_count" />
+                            <x-correctness-badge :count="$conversion->admin_correctness_1_count" class="bg-emerald-300 dark:bg-emerald-500" />
+                        </div>
+
+                    @endif
+
                     &nbsp;&bull;&nbsp;
                     {{ $conversion->created_at }}
 
@@ -133,7 +145,7 @@
                             @endif
                         </div>
                     @endif
-                    @if ($conversion->outputs->count())
+                    @if ($conversion->outputs_count)
                         <div class="ml-4">
                             <div class="inline-flex">
                                 <livewire:conversion-first-item :conversion="$conversion" :style="$style" />

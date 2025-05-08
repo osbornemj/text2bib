@@ -8,10 +8,18 @@ class ConversionFirstItem extends Component
 {
     public $conversion;
 
+    public $firstOutput;
+
     public $style;
+
+    public function mount()
+    {
+        $this->firstOutput = $this->conversion->firstOutput;
+    }
 
     public function delete()
     {
-        $this->conversion->firstOutput?->delete();
+        $this->firstOutput->delete();
+        $this->firstOutput = $this->conversion->firstOutput;
     }
 }

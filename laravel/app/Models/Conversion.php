@@ -57,7 +57,7 @@ class Conversion extends Model
 
     public function firstOutput(): HasOne
     {
-        return $this->hasOne(Output::class);
+        return $this->hasOne(Output::class)->orderBy('id');
     }
 
     public function firstLowercaseOutput(): Output|null

@@ -1,8 +1,5 @@
 <div>
     @if (in_array($style, ['normal', 'unchecked', 'compact']))
-        @php
-            $firstOutput = $conversion->firstOutput;
-        @endphp
         @if ($firstOutput)
             {{ $firstOutput->source }}
 

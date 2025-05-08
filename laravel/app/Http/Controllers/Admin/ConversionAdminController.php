@@ -43,26 +43,32 @@ class ConversionAdminController extends Controller
             $user = User::find($userId);
         }
 
-        $numberPerPage = 50;
+        $numberPerPage = 20;
         if (in_array($style, ['compact', 'lowercase'])) {
             $numberPerPage = 10;
         }
 
-        if (in_array($style, ['normal', 'compact'])) {
+        if (in_array($style, ['unchecked'])) {
             $conversions = $conversions
-                ->with('user')
-                ->with('bst')
-                ->with('outputs')
-                //->with('firstOutput')
-                ->paginate(20);
-        } elseif (in_array($style, ['unchecked'])) {
-                    $conversions = $conversions
-                        ->where('id', '>', $maxCheckedConversionId)
-                        ->with('user')
-                        ->with('bst')
-                        ->with('outputs')
-                        ->paginate(20);
-                } elseif ($style == 'lowercase') {
+                ->where('id', '>', $maxCheckedConversionId);
+        }
+
+        if (in_array($style, ['normal', 'compact', 'unchecked'])) {
+            $conversions = $conversions
+                ->with(['user', 'bst', 'firstOutput:id,source,detected_encoding,conversion_id,correctness,admin_correctness'])
+                ->withCount([
+                    'outputs',
+                    'outputs as correctness_minus1_count'       => fn($q) => $q->where('correctness', -1),
+                    'outputs as correctness_0_count'            => fn($q) => $q->where('correctness', 0),
+                    'outputs as correctness_1_count'            => fn($q) => $q->where('correctness', 1),
+                    'outputs as correctness_2_count'            => fn($q) => $q->where('correctness', 2),
+                    'outputs as admin_correctness_minus1_count' => fn($q) => $q->where('admin_correctness', -1),
+                    'outputs as admin_correctness_0_count'      => fn($q) => $q->where('admin_correctness', 0),
+                    'outputs as admin_correctness_1_count'      => fn($q) => $q->where('admin_correctness', 1),
+                ]);
+        }
+ 
+         if ($style == 'lowercase') {
             $vonNames = VonName::all();
             $conversions = $conversions
                 ->with('user')
@@ -74,9 +80,10 @@ class ConversionAdminController extends Controller
                     }
                     $q = $q->where('source', 'not like', 'd\'%');
                 })
-                ->where('usable', 1)
-                ->paginate(20);
+                ->where('usable', 1);
         }
+
+        $conversions = $conversions->paginate($numberPerPage);
 
         $userRatings = $this->userRatings;
         $adminRatings = $this->adminRatings;
