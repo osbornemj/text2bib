@@ -15714,6 +15714,31 @@ class ExampleSeeder extends Seeder
                     'address' => 'Heidelberg',
                     ]
             ],
+			// university not detected
+			[
+                'source' => ' Cassidy, Daniel. "Irish exchange rates 1698–1826: credit, market integration, and international trade" (National University of Ireland thesis, 2021) ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Cassidy, Daniel',
+                    'title' => 'Irish exchange rates 1698--1826',
+                    'year' => '2021',
+                    'subtitle' => 'Credit, market integration, and international trade',
+					'school' => 'National University of Ireland',
+                    ]
+            ],
+			// pub info issues
+			[
+                'source' => ' Cassidy, Daniel, and Nick Hanley. Regional market integration and the emergence of a Scottish national grain market. No. 200. EHES Working Paper, 2020. ',
+                'type' => 'techreport',
+                'bibtex' => [
+                    'author' => 'Cassidy, Daniel and Nick Hanley',
+                    'title' => 'Regional market integration and the emergence of a Scottish national grain market',
+                    'year' => '2020',
+                    'institution' => 'EHES',
+                    'type' => 'Working Paper',
+                    'number' => '200',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');

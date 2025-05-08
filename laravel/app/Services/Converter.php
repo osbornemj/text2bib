@@ -1456,13 +1456,13 @@ class Converter
             $this->verbose("Replacing ':' with '-' in page range.  Remainder is now: " . $remainder);
         }
 
-        $regExp = '/' . $this->workingPaperRegExp . $this->workingPaperNumberRegExp . '/i';
-        if (preg_match($regExp, $remainder, $workingPaperMatches, PREG_OFFSET_CAPTURE)) {
+        $regExp = '/(?P<techReportType>' . $this->workingPaperRegExp . ')(?P<techReportNumber>' . $this->workingPaperNumberRegExp . ')/i';
+        if (preg_match($regExp, $remainder, $workingPaperMatches)) {
             if ($italicStart) {
                 // Remove italic code at start and recompute $workingPaperMatches (used later)
                 foreach ($this->italicCodes as $italicCode) {
                     $remainder = Str::replaceStart($italicCode, '', $remainder);
-                    preg_match($regExp, $remainder, $workingPaperMatches, PREG_OFFSET_CAPTURE);
+                    preg_match($regExp, $remainder, $workingPaperMatches);
                 }
             }
             $containsNumberedWorkingPaper = true;
@@ -2199,38 +2199,38 @@ class Converter
             ////////////////////////////////////////////////
 
             case 'techreport':
-                // If string before type, take that to be institution, else take string after number
-                // to be institution---handles both 'CORE Discussion Paper 34' and 'Discussion paper 34, CORE'
-                $type = $workingPaperMatches[1][0] ?? '';
-                // Following line deals with "Report No." case
-                $type = trim(Str::replaceLast(' No.', '', $type));
-                if ($type) {
-                    $this->setField($item, 'type', $type, 'setField 60');
-                }
+                $remainder = trim($remainder);
+                
+                $institutionRegExp = '(?P<institution>[\p{L},\- ]+)';
+                $typeRegExp = '(?P<type>' . $this->workingPaperRegExp . ')';
+                $numberRegExp = $this->workingPaperNumberRegExp;
 
-                $number = $workingPaperMatches[3][0] ?? '';
-                if ($number) {
-                    $this->setField($item, 'number', $number, 'setField 61');
-                }
+                $regExps = [
+                    $institutionRegExp . $typeRegExp . ' ' . $numberRegExp,
+                    $typeRegExp . ' ' . $numberRegExp . '(?P<note>.*?)' . $institutionRegExp,
+                    $numberRegExp . ' ' . $institutionRegExp . ' ' . $typeRegExp,
+                ];
 
-                // Institution could conceivably be 3-letter acronym, but not shorter?  (Note that first character of
-                // string from which $workingPaperMatches was extracted might be '(', so definitely need condition > 1, at least.)
-                if (isset($workingPaperMatches[0][1]) && $workingPaperMatches[0][1] > 2) {
-                    // Chars before 'Working Paper'
-                    $this->setField($item, 'institution', trim(substr($remainder, 0, $workingPaperMatches[0][1] - 1), ' .,'), 'setField 62');
-                    $remainder = trim(substr($remainder, $workingPaperMatches[3][1] + strlen($number)), ' .,');
-                } else {
-                    // No chars before 'Working paper'---so take string after number to be institution
-                    $n = $workingPaperMatches[3][1] ?? 0;
-                    $remainder = trim(substr($remainder, $n + strlen($number)), ' .,;');
-                    // Are pages referred to next?  If so, put them in a note.
-                    if (preg_match('/^(?P<note>[Pp]p?\.? [0-9]+( ?--? ?[0-9]+)?)(?P<remainder>.*)/', $remainder, $matches)) {
-                        $this->addToField($item, 'note', $matches['note']);
-                        $remainder = trim($matches['remainder'], '()., ');
+                $match = false;
+                foreach ($regExps as $regExp) {
+                    if (preg_match('/^' . $regExp . '[.,]?$/ui', $remainder, $matches)) {
+                        $match = true;
+                        break;
                     }
-                    $this->setField($item, 'institution', $remainder, 'setField 63');
-                    $remainder = '';
                 }
+
+                if ($match) {
+                    $this->setField($item, 'institution', trim($matches['institution'], ',. '), 'setField 60');
+                    $this->setField($item, 'type', $matches['type'], 'setField 61');
+                    $this->setField($item, 'number', $matches['number'], 'setField 62');
+                    if (isset($matches['note'])) {
+                        $this->setField($item, 'note', trim($matches['note'], '().,; '), 'setField 63');
+                    }
+                    $remainder  = '';
+                } else {
+                    $this->setField($item, 'note', trim($remainder, '().,; '), 'setField 64');
+                }
+
                 if (empty($item->institution)) {
                     $warnings[] = "Mandatory 'institition' field missing";
                 }
@@ -4667,8 +4667,10 @@ class Converter
                 } else {
                     if (preg_match('/\(' . $this->regExps->fullThesisRegExp . '\)/u', $remainder)) {
                         $remainder = $this->findAndRemove($remainder, ',? ?\(' . $this->regExps->fullThesisRegExp . '\)');
-                    } elseif (preg_match('/' . $this->regExps->thesisRegExp . ' (?P<remainder>.*)$/', $remainder, $matches)) {
-                        $remainder = $matches['remainder'] ?? '';
+                    } elseif (preg_match('/^(?P<before>.*?)' . $this->regExps->fullThesisRegExp . '[.,]? (?P<after>.*)$/', $remainder, $matches)) {
+                        $remainder = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
+                    } elseif (preg_match('/^(?P<before>.*?)' . $this->regExps->thesisRegExp . ' (?P<after>.*)$/', $remainder, $matches)) {
+                        $remainder = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
                     } else {
                         $remainder = preg_replace('/' . $this->regExps->unpublishedRegExp . ' /', '', $remainder);
                         $remainder = $this->findAndRemove($remainder, $this->regExps->fullThesisRegExp);

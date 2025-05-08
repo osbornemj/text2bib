@@ -9,7 +9,7 @@
         <div class="p-0 sm:p-0 px-4 sm:px-4 sm:rounded-lg">
             <ul class="ml-4 list-disc">
                 <li>
-                    Delete all existing <code>training items</code> and enter ones from <code>outputs</code> table for which associated <code>conversion</code> has been checked and is marked as 'usable' and <code>source</code> field (1)&nbsp;is at least 35 characters long, (2)&nbsp;is at most 1,000 characters long, (3)&nbsp;does not begin with "__" or "--" or "—", and (4)&nbsp;contains at least 4 spaces: <x-link href="/admin/trainingItems/copy" onclick="return confirm('Are you sure you want to delete all the existing training items and create new ones?');">delete existing items and enter new ones</x-link>.
+                    Delete all existing <code>training items</code> and enter ones from <code>outputs</code> table for which associated <code>conversion</code> has been checked and is marked as 'usable' and <code>source</code> field (1)&nbsp;is at least 35 characters long, (2)&nbsp;is at most 1,000 characters long, (3)&nbsp;does not begin with "__" or "--" or "—", (4)&nbsp;contains at least 4 spaces, and (5)&nbsp; has <code>detected_encoding</code> UTF-8: <x-link href="/admin/trainingItems/copy" onclick="return confirm('Are you sure you want to delete all the existing training items and create new ones?');">delete existing items and enter new ones</x-link>.
                 </li>
                 <li>
                     <x-link href="/admin/trainingItems/showLowercase">Show only items for which source starts with lowercase letter</x-link>

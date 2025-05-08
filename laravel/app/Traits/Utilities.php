@@ -51,13 +51,13 @@ trait Utilities
     public $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted for publication in|^accepted( at)?|^to appear in|^à paraître';
 
     public $workingPaperRegExp = '(preprint|arXiv preprint|bioRxiv|working paper|texto para discussão|discussion paper|'
-        .'technical report|tech\. report|report no\.|'
+        .'technical report|tech\. report|report(?= [Nn]o\.)|'
         .'research paper|mimeo|unpublished paper|unpublished manuscript|manuscript|'
         .'under review|submitted|in preparation)';
 
     // Working paper number can contain letters and dashes, but must contain at least one digit
     // (otherwise word following "manuscript" will be matched, for example)
-    public $workingPaperNumberRegExp = ' (\\\\#|number|no\.?)? ?(?=.*[0-9])([a-zA-Z0-9\-]+),?';
+    public $workingPaperNumberRegExp = '(\\\\#|number|no\.?)? ?(?=.*[0-9])(?P<number>[a-zA-Z0-9\-]+)[.,]?';
 
     public $proceedingsRegExp = '(^proceedings of |proceedings of the (.*) (conference|congress)|conference|conferencia| symposium | meeting |congress of the | world congress|congreso|^proc\.| workshop|^actas del | scientific assembly of the )';
 
