@@ -12,6 +12,6 @@ class ConversionFirstItem extends Component
 
     public function delete()
     {
-        $this->conversion->firstOutput()?->delete();
+        $this->conversion->firstOutput?->delete();
     }
 }
