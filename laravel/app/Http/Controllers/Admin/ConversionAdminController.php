@@ -69,7 +69,6 @@ class ConversionAdminController extends Controller
         }
  
          if ($style == 'lowercase') {
-            /*
             $vonNames = VonName::all()->toArray();
 
             $excludedPrefixes = array_merge(
@@ -95,20 +94,19 @@ class ConversionAdminController extends Controller
                 ->withCount('outputs')
                 ->where('usable', 1)
                 ->whereIn('id', $matchingConversionIds);
-                */
             
-            $vonNames = VonName::all();
-            $conversions = $conversions
-                ->with('user')
-                ->withCount('outputs')
-                ->whereHas('outputs', function (Builder $q) use ($vonNames) {
-                    $q->whereRaw('BINARY source REGEXP "^[a-z]"');
-                    foreach ($vonNames as $vonName) {
-                        $q = $q->where('source', 'not like', $vonName->name . ' %');
-                    }
-                    $q = $q->where('source', 'not like', 'd\'%');
-                })
-                ->where('usable', 1);
+            // $vonNames = VonName::all();
+            // $conversions = $conversions
+            //     ->with('user')
+            //     ->withCount('outputs')
+            //     ->whereHas('outputs', function (Builder $q) use ($vonNames) {
+            //         $q->whereRaw('BINARY source REGEXP "^[a-z]"');
+            //         foreach ($vonNames as $vonName) {
+            //             $q = $q->where('source', 'not like', $vonName->name . ' %');
+            //         }
+            //         $q = $q->where('source', 'not like', 'd\'%');
+            //     })
+            //     ->where('usable', 1);
         }
 
         $conversions = $conversions->paginate($numberPerPage);
