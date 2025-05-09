@@ -78,6 +78,7 @@ trait StringCleaners
             // „
             "\xE2\x80\x9E" => '``',
             "\xE2\x80\x9F" => "''",
+            "\xE2\x80\xAF" => " ", // narrow no-break space
             "\xEF\xAC\x80" => 'ff',
             "\xEF\xAC\x81" => 'fi',
             "\xEF\xAC\x82" => 'fl',

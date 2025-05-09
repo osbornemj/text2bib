@@ -294,6 +294,8 @@ class ConvertFile extends Component
 
         // Regularlize line-endings
         $filestring = str_replace(["\r\n", "\r"], "\n", $filestring);
+        // Regularize spaces
+        $filestring = $this->normalize_spaces($filestring);
         // If line consists only of tab and/or space followed by a linefeed, remove the tab and space.
         $filestring = preg_replace('/\n\t? ?\n/', "\n\n", $filestring);
         $filestring = str_replace('\end{bibliography}', '', $filestring);
@@ -559,5 +561,25 @@ class ConvertFile extends Component
         }
 
         return false;
+    }
+
+    /**
+     * Change all space-equivalent characters to regular spaces
+     */
+    function normalize_spaces(string $text): string
+    {
+        // Define Unicode whitespace chars to normalize
+        $whitespaceChars = [
+            "\u{00A0}", // No-Break Space
+            "\u{2000}", "\u{2001}", "\u{2002}", "\u{2003}",
+            "\u{2004}", "\u{2005}", "\u{2006}", "\u{2007}",
+            "\u{2008}", "\u{2009}", "\u{200A}",
+            "\u{202F}", // Narrow No-Break Space
+            "\u{205F}", // Medium Math Space
+            "\u{3000}", // Ideographic Space
+            "\u{200B}", // Zero Width Space (optional)
+        ];
+    
+        return str_replace($whitespaceChars, ' ', $text);
     }
 }
