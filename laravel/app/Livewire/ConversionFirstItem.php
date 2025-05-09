@@ -2,24 +2,29 @@
 
 namespace App\Livewire;
 
+use App\Models\Conversion;
 use Livewire\Component;
 
 class ConversionFirstItem extends Component
 {
-    public $conversion;
+    public Conversion $conversion;
 
     public $firstOutput;
 
     public $style;
 
-    public function mount()
+    public function mount(Conversion $conversion)
     {
-        $this->firstOutput = $this->conversion->firstOutput;
+        $this->conversion = $conversion;
+        $this->firstOutput = $conversion->firstOutput;
     }
 
     public function delete()
     {
-        $this->firstOutput->delete();
-        $this->firstOutput = $this->conversion->firstOutput;
+        if ($this->firstOutput) {
+            $this->firstOutput->delete();
+            $this->conversion->refresh(); // in case Conversion has been changed by another user or background process
+            $this->firstOutput = $this->conversion->firstOutput;
+        }
     }
 }

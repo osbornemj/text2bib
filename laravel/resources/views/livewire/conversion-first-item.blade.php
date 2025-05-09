@@ -10,7 +10,7 @@
             </span>
             @endif
             &nbsp;&bull;&nbsp;
-            <x-link wire:click="delete()" class="text-red-800 dark:text-red-600 cursor-pointer">Delete item</x-link>
+            <x-link wire:click="delete" class="text-red-800 dark:text-red-600 cursor-pointer">Delete item</x-link>
         @endif
     @elseif ($style == 'lowercase')
         {{ $conversion->firstLowercaseOutput()?->source }}
