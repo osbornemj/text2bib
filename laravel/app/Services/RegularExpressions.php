@@ -81,10 +81,7 @@ class RegularExpressions
             'W',          // Polish
         ];
 
-        foreach ($inWords as $i => $inWord) {
-            $this->inRegExp .= ($i ? '|' : '(') . $inWord;
-        }
-        $this->inRegExp .= ')';
+        $this->inRegExp = '(' . implode('|', $inWords) . ')';
 
         /////////////
         // Editors //
@@ -115,10 +112,7 @@ class RegularExpressions
             '[Dd]iedit oleh',       // Indonesian
         ];
 
-        $edsRx = '';
-        foreach ($editorWords as $i => $editorWord) {
-            $edsRx .= ($i ? '|' : '') . '(?<!\p{L})' . $editorWord;
-        }
+        $edsRx = implode('|', array_map(fn($word) => '(?<!\p{L})' . $word, $editorWords));
 
         // "[Ee]ditors?" or ...
         $this->edsNoParensRegExp = '(' . $edsRx . ')';
@@ -129,10 +123,7 @@ class RegularExpressions
         // " [Ee]ditors? " or "([Ee]ditors?)" or "[[Ee]ditors?]" or ...
         $this->edsRegExp = '/[(\[ ](' . $edsRx . ')[)\],. ]/u';
 
-        $editedByRx = '';
-        foreach ($editedByWords as $i => $editedByWord) {
-            $editedByRx .= ($i ? '|' : '') . $editedByWord;
-        }
+        $editedByRx = implode('|', $editedByWords);
 
         $this->editedByRegExp = '(' . $editedByRx . ')';
 
@@ -314,12 +305,7 @@ class RegularExpressions
             'Çev\.',      // Turkish
         ];
 
-        $translatorRx = '';
-        foreach ($translatorWords as $i => $translatorWord) {
-            $translatorRx .= ($i ? '|' : '') . $translatorWord;
-        }
-
-        $this->translatorRegExp = '(' . $translatorRx . ')';
+        $this->translatorRegExp = '(' . implode('|', $translatorWords) . ')';
 
         $translatedByWords = [
             '[Tt]ranslat(ed|ion) by',
@@ -336,12 +322,7 @@ class RegularExpressions
             '[Tt]raduction par',      // French
         ];
 
-        $translatedByRx = '';
-        foreach ($translatedByWords as $i => $translatedByWord) {
-            $translatedByRx .= ($i ? '|' : '') . $translatedByWord;
-        }
-
-        $this->translatedByRegExp = '(' . $translatedByRx . ')';
+        $this->translatedByRegExp = '(' . implode('|', $translatedByWords) . ')';
 
         ///////////
         // Pages //
@@ -419,10 +400,7 @@ class RegularExpressions
             'Broj ',                  // Bosnian
         ];
 
-        $numberRegExp = '';
-        foreach ($numberWords as $i => $numberWord) {
-            $numberRegExp .= ($i ? '|' : '') . $numberWord;
-        }
+        $numberRegExp = implode('|', $numberWords);
 
         // number words
         $this->numberRegExp = $numberRegExp;
@@ -446,10 +424,7 @@ class RegularExpressions
             '[Cc]ilt',     // Turkish
         ];
 
-        $volumeRegExp = '';
-        foreach ($volumeWords as $i => $volumeWord) {
-            $volumeRegExp .= ($i ? '|' : '') . $volumeWord . ' ?';
-        }
+        $volumeRegExp = implode('|', array_map(fn($word) => $word . ' ?', $volumeWords));
 
         // volume words, with optional space after each one
         $this->volumeRegExp = $volumeRegExp;
@@ -476,10 +451,7 @@ class RegularExpressions
             '[Dd]isertación',
         ];
 
-        $thesisRegExp = '';
-        foreach ($thesisWords as $i => $thesisWord) {
-            $thesisRegExp .= ($i ? '|' : '') . $thesisWord . ' ?';
-        }
+        $thesisRegExp = implode('|', array_map(fn($word) => $word . ' ?', $thesisWords));
 
         $this->thesisRegExp = '(^|[ (\[])(' . $thesisRegExp . ')([ .,)\]]|$)';
 
@@ -497,13 +469,8 @@ class RegularExpressions
             'Masterproef',
         ];
 
-        $masterRegExp = '';
-        foreach ($mastersWords as $i => $mastersWord) {
-            $masterRegExp .= ($i ? '|' : '') . $mastersWord . ' ?';
-        }
+        $this->masterRegExp = implode('|', array_map(fn($word) => $word . ' ?', $mastersWords));
 
-        $this->masterRegExp = $masterRegExp;
-        
         $phdWords = [
             'Ph[Dd]',
             'Ph\. ?D\.?',
@@ -515,12 +482,7 @@ class RegularExpressions
             '[Dd]oktorská',
         ];
 
-        $phdRegExp = '';
-        foreach ($phdWords as $i => $phdWord) {
-            $phdRegExp .= ($i ? '|' : '') . $phdWord . ' ?';
-        }
-
-        $this->phdRegExp = $phdRegExp;
+        $this->phdRegExp = implode('|', array_map(fn($word) => $word . ' ?', $phdWords));
         
         $fullThesisWords = [
             '((' . $this->phdRegExp . '|' . $this->masterRegExp . ') (' . $thesisRegExp . '))',
@@ -548,13 +510,7 @@ class RegularExpressions
             '[Yy]ükseklisans [Tt]ezi',           // Turkish
         ];
 
-        $fullThesisRegExp = '(';
-        foreach ($fullThesisWords as $i => $fullThesisWord) {
-            $fullThesisRegExp .= ($i ? '|' : '') . $fullThesisWord . ' ?';
-        }
-        $fullThesisRegExp .= ')';
-
-        $this->fullThesisRegExp = $fullThesisRegExp;
+        $this->fullThesisRegExp = '(' . implode('|', array_map(fn($word) => $word . ' ?', $fullThesisWords)) . ')';
 
         ////////////
         // Series //
@@ -573,10 +529,7 @@ class RegularExpressions
             'Coleção',
         ];
 
-        $this->seriesRegExp = '';
-        foreach ($seriesPhrases as $i => $seriesPhrase) {
-            $this->seriesRegExp .= ($i ? '|' : '') . $seriesPhrase . ' ?';
-        }
+        $this->seriesRegExp = implode('|', array_map(fn($word) => $word . ' ?', $seriesPhrases));
 
         /////////////////
         // Unpublished //
@@ -592,12 +545,7 @@ class RegularExpressions
             '[Yy]ayınlanmamış',    // Turkish
         ];
 
-        $unpublishedRegExp = '';
-        foreach ($unpublishedWords as $i => $unpublishedWord) {
-            $unpublishedRegExp .= ($i ? '|' : '') . $unpublishedWord . ' ?';
-        }
-
-        $this->unpublishedRegExp = '(' . $unpublishedRegExp . ')';
+        $this->unpublishedRegExp = '(' . implode('|', array_map(fn($word) => $word . ' ?', $unpublishedWords)) . ')';
  
         /////////////////////
         // First published //
@@ -611,12 +559,7 @@ class RegularExpressions
             '[Pp]ublicado originalmente( en)?',  // Spanish
         ];
 
-        $firstPublishedRegExp = '';
-        foreach ($firstPublishedWords as $i => $firstPublishedWord) {
-            $firstPublishedRegExp .= ($i ? '|' : '') . $firstPublishedWord . ' ?';
-        }
-
-        $this->firstPublishedRegExp = '(' . $firstPublishedRegExp . ')';
+        $this->firstPublishedRegExp = '(' . implode('|', array_map(fn($word) => $word . ' ?', $firstPublishedWords)) . ')';
 
         ////////////////
         // ISBN, ISSN //
@@ -697,12 +640,9 @@ class RegularExpressions
             ['stat\.', 'rest\.'],
         ];
 
-        $twoPartTitleAbbreviationsRegExp = '';
-        foreach ($twoPartTitleAbbreviations as $i => $twoPartTitleAbbreviation) {
-            $twoPartTitleAbbreviationsRegExp .= ($i ? '|' : '') . $twoPartTitleAbbreviation[0] . ' ?' . $twoPartTitleAbbreviation[1] . ',?';
-        }
-
-        $this->twoPartTitleAbbreviationsRegExp = '(' . $twoPartTitleAbbreviationsRegExp . ')';
+        $this->twoPartTitleAbbreviationsRegExp = '(' . implode('|', array_map(
+            fn($abbrev) => $abbrev[0] . ' ?' . $abbrev[1] . ',?', $twoPartTitleAbbreviations
+        )) . ')';
 
         // Other languages?
         $this->inReviewRegExp = '[Ii]n [Rr]eview';
