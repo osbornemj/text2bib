@@ -13,6 +13,8 @@
             <x-link wire:click="delete" class="text-red-800 dark:text-red-600 cursor-pointer">Delete item</x-link>
         @endif
     @elseif ($style == 'lowercase')
-        {{ $conversion->firstLowercaseOutput()?->source }}
+        {{ $conversion->firstLowercaseOutput->source }}
+        &nbsp;&bull;&nbsp;
+        <x-link href="{{ url('/admin/showConversion/' . $conversion->firstLowercaseOutput->conversion_id . '/0/lowercase/1#' . $conversion->firstLowercaseOutput->id) }}">view</x-link>
     @endif
 </div>

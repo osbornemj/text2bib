@@ -68,45 +68,12 @@ class ConversionAdminController extends Controller
                 ]);
         }
  
-         if ($style == 'lowercase') {
-            $vonNames = VonName::all()->toArray();
-
-            $excludedPrefixes = array_merge(
-                array_map(fn($vn) => $vn['name'] . ' ', $vonNames),
-                ["d'"]
-            );
-            
-            // Build regex that matches excluded prefixes
-            $excludedRegex = implode('|', array_map(
-                fn($prefix) => '^' . preg_quote($prefix, '/'),
-                $excludedPrefixes
-            ));
-//dd($excludedRegex);            
-            $matchingConversionIds = Output::query()
-                ->select('conversion_id')
-                ->whereRaw('BINARY source REGEXP "^[a-z]"')
-                ->whereRaw('BINARY source NOT REGEXP ?', [$excludedRegex])
-                ->distinct()
-                ->pluck('conversion_id');
-            
-            $conversions = $conversions
+        if ($style == 'lowercase') {
+            $conversions = Conversion::with(['firstLowercaseOutput'])
                 ->with('user')
                 ->withCount('outputs')
                 ->where('usable', 1)
-                ->whereIn('id', $matchingConversionIds);
-            
-            // $vonNames = VonName::all();
-            // $conversions = $conversions
-            //     ->with('user')
-            //     ->withCount('outputs')
-            //     ->whereHas('outputs', function (Builder $q) use ($vonNames) {
-            //         $q->whereRaw('BINARY source REGEXP "^[a-z]"');
-            //         foreach ($vonNames as $vonName) {
-            //             $q = $q->where('source', 'not like', $vonName->name . ' %');
-            //         }
-            //         $q = $q->where('source', 'not like', 'd\'%');
-            //     })
-            //     ->where('usable', 1);
+                ->whereHas('firstLowercaseOutput');            
         }
 
         $conversions = $conversions->paginate($numberPerPage);

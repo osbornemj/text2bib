@@ -60,17 +60,24 @@ class Conversion extends Model
         return $this->hasOne(Output::class)->orderBy('id');
     }
 
-    public function firstLowercaseOutput(): Output|null
+    public function firstLowercaseOutput(): HasOne
     {
-        $vonNames = VonName::all();
+        $vonNames = VonName::all()->toArray();
 
-        $q = $this->hasMany(Output::class)->whereRaw('BINARY source REGEXP "^[a-z]"');
-        foreach ($vonNames as $vonName) {
-            $q = $q->where('source', 'not like', $vonName->name . ' %');
-        }
-        $q = $q->where('source', 'not like', 'd\'%');
+        $excludedPrefixes = array_merge(
+            array_map(fn($vn) => $vn['name'] . ' ', $vonNames),
+            ["d'"]
+        );
+        
+        // Build regex that matches excluded prefixes
+        $excludedRegex = implode('|', array_map(
+            fn($prefix) => '^' . preg_quote($prefix, '/'),
+            $excludedPrefixes
+        ));
 
-        return $q->first();
+        return $this->hasOne(Output::class)
+            ->whereRaw('CAST(source AS BINARY) REGEXP "^[a-z]"')
+            ->whereRaw('CAST(source AS BINARY) NOT REGEXP ?', [$excludedRegex]);
     }
 
     public function correctnessCounts(): Collection
