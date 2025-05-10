@@ -9,6 +9,8 @@ class ConversionFirstItem extends Component
 {
     public Conversion $conversion;
 
+    public $currentPage;
+
     public $firstOutput;
 
     public $style;

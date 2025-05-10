@@ -15,6 +15,6 @@
     @elseif ($style == 'lowercase')
         {{ $conversion->firstLowercaseOutput->source }}
         &nbsp;&bull;&nbsp;
-        <x-link href="{{ url('/admin/showConversion/' . $conversion->firstLowercaseOutput->conversion_id . '/0/lowercase/1#' . $conversion->firstLowercaseOutput->id) }}">view</x-link>
+        <x-link href="{{ url('/admin/showConversion/' . $conversion->firstLowercaseOutput->conversion_id . '/0/lowercase/' . $currentPage . '#' . $conversion->firstLowercaseOutput->id) }}">view</x-link>
     @endif
 </div>

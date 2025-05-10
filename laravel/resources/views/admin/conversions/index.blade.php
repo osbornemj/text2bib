@@ -146,9 +146,12 @@
                         </div>
                     @endif
                     @if ($conversion->outputs_count)
+                        @php
+                            $currentPage = $conversions->currentPage();
+                        @endphp
                         <div class="ml-4">
                             <div class="inline-flex">
-                                <livewire:conversion-first-item :conversion="$conversion" :style="$style" />
+                                <livewire:conversion-first-item :conversion="$conversion" :style="$style" :currentPage="$currentPage" />
                             </div>
                         </div>
                     @endif
