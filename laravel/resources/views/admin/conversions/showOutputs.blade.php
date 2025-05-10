@@ -38,6 +38,14 @@
                     &nbsp;&bull;&nbsp;
                     code version {{ $conversion->version }}
                 @endif
+                &nbsp;&bull;&nbsp;
+                @if ($conversion->usable)
+                    <span class="bg-slate-400 dark:bg-slate-600">usable</span>
+                @else
+                    <span class="bg-red-400 dark:bg-red-600">unusable</span>
+                @endif
+                &nbsp;&bull;&nbsp;
+                <x-link href="{{ url('/admin/showConversion/' . $conversion->id . '/0/normal/1') }}">view</x-link>
                 <br/>
                 @include('index.partials.settings')
 

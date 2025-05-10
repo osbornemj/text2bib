@@ -443,6 +443,7 @@ class RegularExpressions
             '[Bb]and',     // German
             '[Bb]d\.',     // German
             'Т\.',         // Russian
+            '[Cc]ilt',     // Turkish
         ];
 
         $volumeRegExp = '';

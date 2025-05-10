@@ -15739,6 +15739,21 @@ class ExampleSeeder extends Seeder
                     'number' => '200',
                     ]
             ],
+  			// 've' not detected for and?
+			[
+                'source' => 'Kuutti, S., Bowden, R., Jin, Y., Barber, P. ve Fallah, S. (2021). A Survey of Deep Learning Applications to Autonomous Vehicle Control. IEEE Transactions on Intelligent Transportation Systems, cilt 22(2), ss. 712-733. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Kuutti, S. and Bowden, R. and Jin, Y. and Barber, P. and Fallah, S.',
+                    'year' => '2021',
+                    'title' => 'A Survey of Deep Learning Applications to Autonomous Vehicle Control',
+                    'journal' => 'IEEE Transactions on Intelligent Transportation Systems',
+                    'pages' => '712-733',
+                    'volume' => '22',
+                    'number' => '2',
+                    ]
+            ],
+
         ];
 
         DB::statement('DELETE FROM examples');
