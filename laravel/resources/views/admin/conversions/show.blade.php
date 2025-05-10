@@ -22,6 +22,9 @@
                     &nbsp;&bull;&nbsp;
                     code version {{ $conversion->version }}
                 @endif
+                <div class="inline-flex">
+                    <livewire:conversion-usability :conversion="$conversion" />
+                </div>
                 <br/>
                 @include('index.partials.settings')
                 <br/>
