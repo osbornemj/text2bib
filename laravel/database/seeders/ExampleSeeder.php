@@ -13042,7 +13042,8 @@ class ExampleSeeder extends Seeder
                     'year' => '1969',
                     'address' => 'Chicago',
                     'publisher' => 'Aldine Publishing',
-                    'booktitle' => 'The Ritual Process: Structure and Anti-Structure',
+                    'booktitle' => 'The Ritual Process',
+                    'booksubtitle' => 'Structure and Anti-Structure',
                     ]
             ],
             // Name of journal truncated --- "Voltage" matched with "Vol"?
@@ -13158,7 +13159,8 @@ class ExampleSeeder extends Seeder
                     'editor' => 'Ignacio Ellacuría and Jon Sobrino',
                     'address' => 'Maryknoll',
                     'publisher' => 'Orbis Books',
-                    'booktitle' => 'Mysterium Liberationis: Fundamental Concepts of Liberation Theology',
+                    'booktitle' => 'Mysterium Liberationis',
+                    'booksubtitle' => 'Fundamental Concepts of Liberation Theology',
                 ],
                 'char_encoding' => 'utf8leave',
             ],
@@ -15753,6 +15755,75 @@ class ExampleSeeder extends Seeder
                     'number' => '2',
                     ]
             ],
+            [
+                'source' => '\bibitem{evans} L.~C. Evans. \newblock {\em Partial differential equations}, volume~19 of {\em Graduate   Studies in Mathematics}. \newblock American Mathematical Society, Providence, RI, second edition, 2010. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Providence, RI',
+                    'author' => 'L. C. Evans',
+                    'edition' => '2',
+                    'publisher' => 'American Mathematical Society',
+                    'series' => 'Graduate Studies in Mathematics',
+                    'title' => 'Partial differential equations',
+                    'number' => '19',
+                    'year' => '2010',
+                    ]
+            ],
+            [
+                'source' => '\bibitem{KoMe} A.~Komech and A.~Merzon. \newblock {\em Stationary diffraction by wedges}, volume 2249 of {\em Lecture   Notes in Mathematics}. \newblock Springer, Cham, 2019. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Cham',
+                    'author' => 'A. Komech and A. Merzon',
+                    'publisher' => 'Springer',
+                    'series' => 'Lecture Notes in Mathematics',
+                    'title' => 'Stationary diffraction by wedges',
+                    'number' => '2249',
+                    'year' => '2019',
+                    ]
+            ],
+   			// ignore period after vs
+			[
+                'source' => '3. Henry, P. B. & Miller, C. Institutions vs. Policies: A Tale of Two Islands. (2008). ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => 'Henry, P. B. and Miller, C.',
+                    'title' => 'Institutions vs. Policies: A Tale of Two Islands',
+                    'year' => '2008',
+                    ]
+            ],
+			// editors and booktitle misidentified
+			[
+                'source' => 'Beaney, M. (2005). Sinn, Bedeutung and the paradox of analysis. In Gottlob Frege: Critical Assessments of Leading Philosophers, eds. M. Beaney & E. H. Reck. London: Routledge. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Beaney, M.',
+                    'year' => '2005',
+                    'title' => 'Sinn, Bedeutung and the paradox of analysis',
+                    'editor' => 'M. Beaney and E. H. Reck',
+                    'booktitle' => 'Gottlob Frege',
+                    'booksubtitle' => 'Critical Assessments of Leading Philosophers',
+                    'address' => 'London',
+                    'publisher' => 'Routledge',
+                    ]
+            ],
+			// editor, booktitle misidentified
+			[
+                'source' => 'Frege, G. (1906/1979). A brief Survey of my logical Doctrines. In Posthumous Writings, eds. H. Hermes, F. Kambaratel & F. Kaulbach, transl. P. Long & R. White. Chicago: University of Chicago Press. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Frege, G.',
+                    'year' => '1906/1979',
+                    'title' => 'A brief Survey of my logical Doctrines',
+                    'address' => 'Chicago',
+                    'publisher' => 'University of Chicago Press',
+                    'booktitle' => 'Posthumous Writings',
+                    'editor' => 'H. Hermes and F. Kambaratel and F. Kaulbach',
+					'translator' => 'P. Long and R. White',
+                    ]
+            ],
+
+            
 
         ];
 

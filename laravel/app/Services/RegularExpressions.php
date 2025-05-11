@@ -73,7 +73,6 @@ class RegularExpressions
         // in [booktitle] //
         ////////////////////
 
-        // en for Spanish (and French?), em for Portuguese, dans for French, dalam for Indonesian
         $inWords = [
             '[IiEe][nm]', // English, Spanish, French(?), Portuguese
             '[Dd]ans',    // French
@@ -98,7 +97,7 @@ class RegularExpressions
             '[Aa] cura di', // Italian
             '[Rr]ed\.',     // Polish
             '[Dd]ü\.',      // Turkish
-            '[Cc]oords?\.',   // Portuguese(?)
+            '[Cc]oords?\.', // Portuguese(?)
         ];
 
         $editedByWords = [
@@ -298,7 +297,7 @@ class RegularExpressions
 
         $translatorWords = [
             '[Tt]ranslators?',
-            '[Tt]rans\.(?! by)',
+            '[Tt]ransl?\.(?! by)',
             '[Tt]rad\.(?! by)',
             '[Tt]r\.(?! by)',
             'Tradução',   // Portuguese

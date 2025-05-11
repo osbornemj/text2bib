@@ -61,6 +61,11 @@ class TitleParser
         string $language = 'en'
        ): array
     {
+        $titleAbbreviations = [
+            'St.',
+            'vs.',
+        ];
+
         $title = $editor = $translator = null;
         $this->titleDetails = [];
         $seriesNext = false;
@@ -367,7 +372,7 @@ class TitleParser
                 // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
                 // of the cases ``<word>.'' and "<word>."
                 if (
-                    ! in_array($word, ['St.'])
+                    ! in_array($word, $titleAbbreviations)
                     &&
                     (
                         Str::endsWith(rtrim($word, "'\""), ['.', '!', '?', ':', ',', ';']) 
@@ -695,7 +700,7 @@ class TitleParser
                             || 
                             ($word == 'B.' && $nextWord == 'C.')
                             ||
-                            in_array($word, ['vs.'])
+                            in_array($word, $titleAbbreviations)
                             || 
                             preg_match('/^(Part )?(I|II|III|[1-9])[:.] /', $remainder)
                         )
@@ -703,7 +708,7 @@ class TitleParser
                         ! ($nextWord == 'edited' && $nextButOneWord == 'by')
                     ) {
                         $this->verbose("Not ending title, case 1 (next word is " . $nextWord . ")");
-                        $skipNextWord = true;
+                        //$skipNextWord = true;
                     } elseif (
                         preg_match('/' . $this->regExps->twoPartTitleAbbreviationsRegExp . '/', $word . ' ' . $remainder)
                         ||
@@ -739,7 +744,7 @@ class TitleParser
                             &&
                             ! ($word == 'U.' && in_array($nextWord, ['K.', 'S.'])) // special case of 'U. S.' or 'U. K.' in title
                             &&
-                            $word != 'St.' 
+                            !in_array($word, $titleAbbreviations) 
                         ) {
                         $this->verbose("Ending title, case 4");
                         $title = rtrim(implode(' ', $initialWords), ' ,');
