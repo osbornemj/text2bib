@@ -7,11 +7,30 @@
     </x-slot>
 
     <div class="px-4 sm:rounded-lg">
-        Author pattern counts:
-        @foreach ($authorPatternCounts as $i => $authorPatternCount)
-            {{ $i }}: {{ $authorPatternCount }}@if ($loop->last).@else, @endif
-        @endforeach
-        Total: {{ array_sum($authorPatternCounts)}}
+        @if ($exampleCount > 1)
+            <div>
+                @foreach ($typeCounts as $type => $count)
+                    {{ $type }}: {{ $count }}@if (!$loop->last), @endif
+                @endforeach
+            </div>
+
+            <div class="my-2">
+                Author pattern counts:
+                @foreach ($authorPatternCounts as $i => $authorPatternCount)
+                    {{ $i }}: {{ $authorPatternCount }}@if ($loop->last).@else, @endif
+                @endforeach
+                Total: {{ array_sum($authorPatternCounts)}} ({{ number_format(100 * array_sum($authorPatternCounts) / $exampleCount, 0) }}%)
+            </div>
+
+            <div class="my-2">
+                incollection cases:
+                @foreach ($incollectionCases as $case => $count)
+                    {{ $case }}: {{ $count }}@if (!$loop->last), @else.@endif
+                @endforeach
+                Total: {{ array_sum($incollectionCases) }} ({{ number_format(100 * array_sum($incollectionCases) / $typeCounts['incollection'], 0) }}%)
+            </div>
+        @endif
+
         <div class="my-2">
         @if ($allCorrect && $detailsIfCorrect == 'hide') 
             <span class="bg-green-600">All correct</span> ({{ $exampleCount }} {{ Str::plural('item', $exampleCount) }})

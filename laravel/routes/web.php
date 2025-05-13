@@ -181,6 +181,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::controller(ExamplesController::class)->group(function () {
         Route::get('/admin/seedExamples', 'seed')->name('admin.examples.seed');
+        Route::get('/admin/examplesShow/{type}', 'index')->name('admin.examples.type');
     });
 
     Route::controller(ExampleCheckController::class)->group(function () {

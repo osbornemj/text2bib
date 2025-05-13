@@ -352,7 +352,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'author' => 'Cliff, Gary X. and R. P. van der Elst and Govender, A. B. and Smith, X. Y. and Teng, A. and Ulster, Z. and Thomas K. Witthukn and E. M. Bullen',
                     'title' => 'First estimates of mortality and population size of white sharks on the South African coast',
-                    'booktitle' => 'Great white sharks: the biology of Carcharodon carcharias',
+                    'booktitle' => 'Great white sharks',
+                    'booksubtitle' => 'The biology of Carcharodon carcharias',
                     'year' => '1996',
                     'publisher' => 'Academic Press',
                     'address' => 'San Diego',

@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="sm:px-0 lg:px-0 space-y-6">
+    <div class="sm:px-0 lg:px-0 space-y-2">
         <div class="p-0 sm:p-0 px-4 sm:px-4 sm:rounded-lg">
             <p>
                 After making a change in the conversion algorithm, you should check that all the examples are still converted correctly.
@@ -15,6 +15,25 @@
                 &nbsp;&bull;&nbsp;
                 <x-link href="/admin/seedExamples">Run seeder</x-link>
             </p>
+        </div>
+        <div class="px-4">
+            <x-link href="{{ url('admin/examplesShow/article') }}">articles</x-link>
+            &nbsp;&bull;&nbsp;
+            <x-link href="{{ url('admin/examplesShow/book') }}">books</x-link>
+            &nbsp;&bull;&nbsp;
+            <x-link href="{{ url('admin/examplesShow/incollection') }}">incollections</x-link>
+            &nbsp;&bull;&nbsp;
+            <x-link href="{{ url('admin/examplesShow/inproceedings') }}">inproceedings</x-link>
+            &nbsp;&bull;&nbsp;
+            <x-link href="{{ url('admin/examplesShow/phdthesis') }}">phdtheses</x-link>
+            &nbsp;&bull;&nbsp;
+            <x-link href="{{ url('admin/examplesShow/mastersthesis') }}">masterstheses</x-link>
+            &nbsp;&bull;&nbsp;
+            <x-link href="{{ url('admin/examplesShow/online') }}">online</x-link>
+            &nbsp;&bull;&nbsp;
+            <x-link href="{{ url('admin/examplesShow/techreport') }}">techreports</x-link>
+            &nbsp;&bull;&nbsp;
+            <x-link href="{{ url('admin/examplesShow/unpublished') }}">unpublished</x-link>
         </div>
     </div>
 

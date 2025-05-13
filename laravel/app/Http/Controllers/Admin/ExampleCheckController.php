@@ -33,6 +33,10 @@ class ExampleCheckController extends Controller
         $languageOptions = config('constants.languages');
         $detailOptions = ['show' => 'show', 'hide' => 'hide'];
 
+        $typeCounts = ['article' => 0, 'book' => 0, 'incollection' => 0, 'inproceedings' => 0, 'phdthesis' => 0, 'mastersthesis' => 0, 'online' => 0, 'techreport' => 0, 'unpublished' => 0];
+
+        $incollectionCases = [];
+
         $id = $request->exampleId ?: $id;
         // If single example is being converted, save language of conversion to the example
         // (so that when all examples are converted that language is used for this example)
@@ -105,7 +109,7 @@ class ExampleCheckController extends Controller
                 $result['result'] = 'incorrect';
             }
 
-            if (! $correctType) {
+            if (!$correctType) {
                 $result['typeError']['content'] = $output['itemType'];
                 $result['typeError']['correct'] = $example->type;
             }
@@ -138,12 +142,24 @@ class ExampleCheckController extends Controller
             if (isset($result) && ($result['result'] == 'incorrect' || $detailsIfCorrect == 'show')) {
                 $results[$example->id] = $result;
             }
+
+            $typeCounts[$example->type]++;
+
+            if (isset($output['incollection_case'])) {
+                if (isset($incollectionCases[$output['incollection_case']])) {
+                    $incollectionCases[$output['incollection_case']]++;
+                } else {
+                    $incollectionCases[$output['incollection_case']] = 1;
+                }
+            }
         }
 
         $exampleCount = count($examples);
 
+        ksort($incollectionCases);
         ksort($authorPatternCounts);
+
         return view('admin.examples.checkResult',
-            compact('results', 'reportType', 'detailsIfCorrect', 'allCorrect', 'exampleCount', 'typeOptions', 'utf8Options', 'languageOptions', 'detailOptions', 'authorPatternCounts'));
+            compact('results', 'reportType', 'detailsIfCorrect', 'allCorrect', 'exampleCount', 'typeOptions', 'utf8Options', 'languageOptions', 'detailOptions', 'typeCounts', 'authorPatternCounts', 'incollectionCases'));
     }
 }

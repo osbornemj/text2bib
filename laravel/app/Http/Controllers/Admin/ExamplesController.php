@@ -13,9 +13,15 @@ use Illuminate\Support\Facades\Artisan;
 
 class ExamplesController extends Controller
 {
-    public function index(): View
+    public function index(string $type = ''): View
     {
-        $examples = Example::orderByDesc('id')
+        $examples = Example::query();
+
+        if ($type) {
+            $examples = $examples->where('type', $type);
+        }
+
+        $examples = $examples->orderByDesc('id')
             ->with('fields')
             ->paginate(100);
 
@@ -63,6 +69,11 @@ class ExamplesController extends Controller
         }
 
         return redirect()->route('examples.index');
+    }
+
+    public function show()
+    {
+        //
     }
 
     public function edit(Example $example): View
