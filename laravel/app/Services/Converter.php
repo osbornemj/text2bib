@@ -1011,9 +1011,6 @@ class Converter
         }
         
         if (! $title) {
-            // if (mb_ord($remainder[0], 'Windows-1252') == 194) {
-            //     dump(mb_chr(194), mb_chr(194, 'Windows-1252'), mb_chr(195), mb_chr(195, 'Windows-1252'));
-            // }
             $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $titleStyle);
             $this->verbose('Title is ' . ($titleStyle == 'none' ? 'not styled' : 'styled (' . $titleStyle . ')'));
             $newRemainder = $before . ($after ? ltrim($after, "., ") : '');
@@ -2252,7 +2249,6 @@ class Converter
                 $wordsBeforeEds = [];
                 $beforeEds = '';
                 $afterEds = '';
-                $publisherPosition = false;
                 $remainderContainsEds = false;
 
                 // If year is in parens, it is not part of booktitle
@@ -2277,10 +2273,7 @@ class Converter
                     $remainderWithMonthYear = ltrim(substr($remainderWithMonthYear, 2), ': ');
                 }
                 
-                // dd(preg_match('/(?P<before>.*?) (?P<note>(?P<translatedBy>' . $this->regExps->translatorRegExp . '|' . $this->regExps->translatedByRegExp . ') (?P<translator>.*?[a-z])\.)(?P<remainder>.*)$/', $remainder, $matches),
-                // $matches);
-
-                // If remainder starts with translator, remove it and put it in appropriate field.
+                // If remainder contains translator, remove it and put it in appropriate field.
                 if (preg_match('/^(?P<before>.*?)(?P<note>(?P<translatedBy>' . $this->regExps->translatorRegExp . '|' . $this->regExps->translatedByRegExp . ') (?P<translator>.*?[a-z])\.)(?P<remainder>.*)$/', $remainder, $matches)) {
                     if (isset($matches['note']) && isset($matches['translator'])) {
                         $translator = $matches['translator'];
@@ -2309,11 +2302,6 @@ class Converter
                         }
                         $remainder = (trim($matches['before']) ?? '') . ' ' . (trim($matches['remainder']) ?? '');
                     }
-
-                    // if (isset($matches['note'])) {
-                    //     $this->addToField($item, 'note', $matches['note'], 'addToField 19');
-                    //     $remainder = $matches['remainder'] ?? '';
-                    // }
                 }
 
                 if ($itemKind == 'inproceedings') {
@@ -2487,76 +2475,46 @@ class Converter
                 $this->verbose('[in3] Remainder: ' . $remainder);
                 $updateRemainder = false;
 
-                // Address can have one or two words, publisher can have 1-3 words, the last of which can be in parens.
-                $addressRegExp = '[\p{L},]+( [\p{L}]+)?';
-                $publisherRegExp = '[\p{L}\-]+( [\p{L}\-]+)?( \(?[\p{L}\-()]+\)?)?';
-
                 ///////////////////
                 // Some patterns //
                 ///////////////////
 
-                // $remainder is <address>: <publisher>.
-                if (preg_match('/^(?P<address>' . $addressRegExp . '): ?(?P<publisher>' . $publisherRegExp . ')\.?$/u', $remainder, $matches)) {
-                    if (isset($matches['address'])) {
-                        $this->setField($item, 'address', $matches['address'], 'setField 69');
+                $this->verbose('[incollectionPubInfoParser] Remainder: ' . $remainder);
+
+                $incollectionResult = $this->incollectionPubInfoParser->checkPatterns($remainder, $language, !empty($booktitle));
+
+                if (is_array($incollectionResult)) {
+                    if (isset($incollectionResult['editor'])) {
+                        $this->setField($item, 'editor', $incollectionResult['editor'], 'setField 71');
                     }
-                    if (isset($matches['publisher'])) {
-                        $this->setField($item, 'publisher', $matches['publisher'], 'setField 70');
+                    if (isset($incollectionResult['booktitle'])) {
+                        $booktitle = $incollectionResult['booktitle'];
+
+                        $editionResult = $this->editionParser->extractEdition($booktitle, false, true);
+                        if ($editionResult) {
+                            $edition = trim($editionResult['edition'], ',. ');
+                            $this->setField($item, 'edition', $use == 'biblatex' ? $editionResult['biblatexEdition'] : $edition, 'setField 71a');
+                            $booktitle = $editionResult['before'];
+                        }
+
+                        if ($use == 'biblatex' && preg_match('/^(?P<booktitle>.*) \(?(?P<fullVolume>(' . $this->regExps->volumeRegExp . ') (?P<volumeNumber>\d+))\)?$/', $booktitle, $volumeMatches)) {
+                            $this->setField($item, 'volume', $volumeMatches['volumeNumber'], 'setField 71b');
+                            $booktitle = $volumeMatches['booktitle'];
+                        }
+
+                        $this->setField($item, 'booktitle', rtrim(trim($booktitle), '.'), 'setField 72');
                     }
+                    if (isset($incollectionResult['address'])) {
+                        $this->setField($item, 'address', $incollectionResult['address'], 'setField 73');
+                    }
+                    if (isset($incollectionResult['publisher'])) {
+                        $this->setField($item, 'publisher', $incollectionResult['publisher'], 'setField 74');
+                    }
+                    $this->verbose('inCollectionCase: ' . $incollectionResult['incollectionCase']);
+
                     $remainder = '';
-                }
-
-                // $remainder is (<editors>, Eds.)
-                if (preg_match('/^\((?P<editor>[^()]+), ' . $this->regExps->edsNoParensRegExp . '\)$/u', $remainder, $matches)) {
-                    if (isset($matches['editor'])) {
-                        $editorConversion = $this->authorParser->convertToAuthors(
-                            explode(' ', $matches['editor']), 
-                            $trash1, 
-                            $trash2, 
-                            $trash3, 
-                            $trash4, 
-                            $trash5, 
-                            $isEditor, 
-                            $isTranslator, 
-                            $this->cities, 
-                            $this->dictionaryNames, 
-                            false, 
-                            'editors', 
-                            $language
-                        );
-
-                        $editor = trim($editorConversion['authorstring']);
-                        $this->setField($item, 'editor', $editor, 'setField 69a');
-                    }
-                    $remainder = '';
-                }
-
-                if (!$booktitle) {
-
-                    $this->verbose('[incollectionPubInfoParser] Remainder: ' . $remainder);
-
-                    // Check incollection patterns
-                    $incollectionResult = $this->incollectionPubInfoParser->checkPatterns($remainder, $language);
-
-                    if (is_array($incollectionResult)) {
-                        if (isset($incollectionResult['editor'])) {
-                            $this->setField($item, 'editor', $incollectionResult['editor'], 'setField 71');
-                        }
-                        if (isset($incollectionResult['booktitle'])) {
-                                $this->setField($item, 'booktitle', $incollectionResult['booktitle'], 'setField 72');
-                        }
-                        if (isset($incollectionResult['address'])) {
-                            $this->setField($item, 'address', $incollectionResult['address'], 'setField 73');
-                        }
-                        if (isset($incollectionResult['publisher'])) {
-                            $this->setField($item, 'publisher', $incollectionResult['publisher'], 'setField 74');
-                        }
-                        $this->verbose('inCollectionCase: ' . $incollectionResult['incollectionCase']);
-
-                        $remainder = '';
-                    } else {
-                        $this->verbose('No match by incollectionPubInfoParser');
-                    }
+                } else {
+                    $this->verbose('No match by incollectionPubInfoParser');
                 }
 
                 if (isset($item->booktitle)) {
@@ -2923,8 +2881,6 @@ class Converter
                             if (isset($matches['publisher'])) {
                                 $this->setField($item, 'publisher', rtrim($matches['publisher'], ','), 'setField 109');
                             }
-                            // The following code is logical, but causes items that are processed correctly by later code to be processed
-                            // incorrectly here.
                             if (isset($matches['address']) && isset($matches['publisher'])) {
                                 $remainder = $beforeEds . ' ' . trim($matches['string'], ": ");
                             }
