@@ -2157,7 +2157,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Mooney, W. D. and G. C. Beroza and R. Kind',
                     'editor' => 'Mark R. Handy and Greg Hirth and Niels Hovius',
                     'address' => 'Berlin, Germany',
-                    'booktitle' => 'Tectonic Faults: Agents of Change on a Dynamic Earth',
+                    'booktitle' => 'Tectonic Faults',
+                    'booksubtitle' => 'Agents of Change on a Dynamic Earth',
                     ]
             ],
             [
@@ -2381,7 +2382,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'G. Crippen',
                     'editor' => 'A. Mucherino and C. Lavor and L. Liberti and N. Maculan',
                     'address' => 'New York',
-                    'booktitle' => 'Distance Geometry: Theory, Methods, and Applications',
+                    'booktitle' => 'Distance Geometry',
+                    'booksubtitle' => 'Theory, Methods, and Applications',
                     'publisher' => 'Springer',
                     ]
             ],
@@ -2417,7 +2419,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'M. Laurent',
                     'editor' => 'C. Floudas and P. Pardalos',
                     'address' => 'New York',
-                    'booktitle' => 'Encyclopedia of Optimization, 2nd ed.',
+                    'booktitle' => 'Encyclopedia of Optimization',
+                    'edition' => '2',
                     'publisher' => 'Springer',
                     ]
             ],
@@ -8946,7 +8949,8 @@ class ExampleSeeder extends Seeder
                     'author' => 'Barrett, C. B.',
                     'year' => '2002',
                     'title' => 'Food Security and Food Assistance Programs',
-                    'booktitle' => 'Handbook of Agricultural Economics, Volume 2',
+                    'booktitle' => 'Handbook of Agricultural Economics',
+                    'volume' => '2',
                     'publisher' => 'Elsevier',
                     'address' => 'Amsterdam',
                     'editor' => 'B. Gardner and G. Rausser',
@@ -15822,6 +15826,35 @@ class ExampleSeeder extends Seeder
                     'editor' => 'H. Hermes and F. Kambaratel and F. Kaulbach',
 					'translator' => 'P. Long and R. White',
                     ]
+            ],
+			// dashes need to be handled
+			[
+                'source' => ' 51. Adamo S., Michler J., Zurbuchen Y. et al. Signature of long-lived memory CD8+ T cells in acute SARS-CoV-2 infection // Nature. - 2022. - Vol. 602. - № 7895. - P. 148-155. - DOI: 10.1038/s41586-021-04280-x. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1038/s41586-021-04280-x',
+                    'author' => 'Adamo, S. and Michler, J. and Zurbuchen, Y. and others',
+                    'title' => 'Signature of long-lived memory CD8+ T cells in acute SARS-CoV-2 infection',
+                    'year' => '2022',
+                    'journal' => 'Nature.',
+                    'pages' => '148-155',
+                    'volume' => '602',
+                    'number' => '7895',
+                    ]
+            ],
+			// editors not detected
+			[
+                'source' => 'Pazos Barrera, J. (2008a). El sabor de la memoria. Historia de la cocina quiteña (A. Ortiz & A. Pacheco, Eds.). Fondo de Salvamento del Patrimonio Cultural de Quito (FONSAL). ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Pazos Barrera, J.',
+                    'year' => '2008',
+                    'title' => 'El sabor de la memoria',
+                    'booktitle' => 'Historia de la cocina quiteña',
+					'editor' => 'A. Ortiz and A. Pacheco',
+					'publisher' => 'Fondo de Salvamento del Patrimonio Cultural de Quito (FONSAL)',
+                    ],
+                    'char_encoding' => 'utf8leave',
             ],
 
             

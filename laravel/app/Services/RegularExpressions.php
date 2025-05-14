@@ -331,7 +331,7 @@ class RegularExpressions
             '[Pp]ages? ',
             '[Pp]ages? : ',
             '[Pp]p\.? ?',
-            'p\.? ?',
+            '[Pp]\.? ?',
             '[Pp]ágs?\. ?',   // Spanish, Portuguese
             '[Bb]lz\. ?',     // Dutch
             '[Hh]al[\.:] ?',  // Indonesian

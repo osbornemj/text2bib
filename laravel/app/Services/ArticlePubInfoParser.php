@@ -165,8 +165,8 @@ class ArticlePubInfoParser
         $volumeWordLetterRx = '('. $this->regExps->volumeAndCodesRegExp . ')(?P<vol>' . $letterNumber . ')';
         $numberWordRx = '('. $this->regExps->numberRegExp . ')(?P<num>' . $numberRangeWithSlash . ')';
         $pagesRx = '(?P<pageWord>'. $pageWordsRegExp . ')?(?P<pp>' . $letterNumberRange . ')';
-        $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?[(\[]\(?|\* ?\()';
-        $punc2 = '([)\]]?[ :] ?|[)\]]?\)?, ?| ?: ?)';
+        $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?[(\[]\(?|\* ?\(|\. - )';
+        $punc2 = '([)\]]?[ :] ?|[)\]]?\)?, ?| ?: ?|\. - )';
 
         $dashEquivalents = ['---', '--', ' - ', '- ', ' -', '_', '?'];
 
@@ -220,7 +220,7 @@ class ArticlePubInfoParser
                 $matchIndex = $numberOfMatches - 1;
                 $this->verbose("Number of matches for a potential page range: " . $numberOfMatches);
                 $this->verbose("Match index: " . $matchIndex);
-                $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches['pages'][$matchIndex]), 'getVolumeNumberPagesForArticle 10');
+                $this->setField($item, 'pages', str_replace(['---', '--', ' '], ['-', '-', ''], $matches['pages'][$matchIndex]), 'getVolumeNumberPagesForArticle 10a');
 
                 // If pages surrounded by parens, don't include parens in remainder
                 $remainder = $matches['before'][$matchIndex] . ' ' . $matches['after'][$matchIndex];
@@ -229,15 +229,13 @@ class ArticlePubInfoParser
             // single page
             } elseif (preg_match('/^(?P<before>.*?)p\. (?P<pp>[1-9][0-9]{0,5})(?P<after>.*?)$/', $remainder, $matches)) {
                 if (isset($matches['pp'])) {
-                    $this->setField($item, 'pages', $matches['pp'], 'getVolumeNumberPagesForArticle 10a');
+                    $this->setField($item, 'pages', $matches['pp'], 'getVolumeNumberPagesForArticle 10b');
                     $result = true;
                     $remainder = $matches['before'] . ' ' . $matches['after'];
                     $remainder = trim($remainder, ',. ');
                 }
             } else {
                 $item->pages = '';
-                $take = 0;
-                $drop = 0;
             }
         }
 

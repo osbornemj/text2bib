@@ -1320,6 +1320,7 @@ class Converter
         $this->verbose("[type] Remainder: " . $remainder);
         
         $inStart = $containsIn = $italicStart = $containsEditors = $allWordsInitialCaps = false;
+        $booktitleStart = false;
         $containsNumber = $containsInteriorVolume = $containsCity = $containsPublisher = false;
         $containsWorkingPaper = $containsFullThesis = false;
         $containsNumberedWorkingPaper = $containsNumber = $pubInfoStartsWithForthcoming = $pubInfoEndsWithForthcoming = false;
@@ -1351,6 +1352,12 @@ class Converter
            ) {
             $containsIn = true;
             $this->verbose("Contains variant of \"in\".");
+        }
+
+        // booktitle followed by editors in parens.  Pattern copied from TitleParser.
+        if (preg_match('%^\p{Lu}[\p{L} ]+ \([\p{L}.& ]+, ' . $this->regExps->edsNoParensRegExp . '\)%u', $remainder)) {
+            $booktitleStart = true;
+            $this->verbose("Starts with booktitle.");
         }
 
         if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
@@ -1697,7 +1704,7 @@ class Converter
             if ($hasSecondaryDate || $containsTranslator || $containsOriginalPubDate) {
                 $this->verbose("Item type case 5a");
                 $itemKind = 'book'; // with editor as well as author
-            } elseif ($titleStyle == 'quoted') {
+            } elseif ($titleStyle == 'quoted' || $booktitleStart) {
                 $this->verbose("Item type case 5b");
                 $itemKind = 'incollection';
             } else {
@@ -2004,10 +2011,8 @@ class Converter
                         $itemKind = 'unpublished';  // but continue processing as if journal
                     }
                 }
-                $remainder = trim($remainder, ' ,.');
+                $remainder = trim($remainder, ' ,.-');
                 $this->verbose("Remainder: " . $remainder);
-
-                $volumeNumberPages = $remainder;
 
                 if ($remainder) {
                     // No space after \bf => add one
@@ -2471,7 +2476,7 @@ class Converter
 
                 // booktitle is not quoted or in italics
                 $remainder = Str::replaceStart('{\em', '', $remainder);
-                $remainder = trim($remainder, '}.,: ');
+                $remainder = trim($remainder, '}.,:; ');
                 $this->verbose('[in3] Remainder: ' . $remainder);
                 $updateRemainder = false;
 
@@ -2484,6 +2489,7 @@ class Converter
                 $incollectionResult = $this->incollectionPubInfoParser->checkPatterns($remainder, $language, !empty($booktitle));
 
                 if (is_array($incollectionResult)) {
+
                     if (isset($incollectionResult['editor'])) {
                         $this->setField($item, 'editor', $incollectionResult['editor'], 'setField 71');
                     }
@@ -2504,12 +2510,31 @@ class Converter
 
                         $this->setField($item, 'booktitle', rtrim(trim($booktitle), '.'), 'setField 72');
                     }
-                    if (isset($incollectionResult['address'])) {
-                        $this->setField($item, 'address', $incollectionResult['address'], 'setField 73');
+
+                    if (
+                        $incollectionResult['addressAndPublisher']
+                        && 
+                        '' == $this->publisherAddressParser->extractPublisherAndAddress(
+                            $incollectionResult['addressAndPublisher'],
+                            $address, 
+                            $publisher, 
+                            $cityString, 
+                            $publisherString, 
+                            $this->cities, 
+                            $this->publishers
+                        )
+                    ) {
+                        $this->setField($item, 'address', $address, 'setField 73');
+                        $this->setField($item, 'publisher', $publisher, 'setField 74');
+                    } else {
+                        if (isset($incollectionResult['address'])) {
+                            $this->setField($item, 'address', $incollectionResult['address'], 'setField 73a');
+                        }
+                        if (isset($incollectionResult['publisher'])) {
+                            $this->setField($item, 'publisher', $incollectionResult['publisher'], 'setField 74b');
+                        }
                     }
-                    if (isset($incollectionResult['publisher'])) {
-                        $this->setField($item, 'publisher', $incollectionResult['publisher'], 'setField 74');
-                    }
+
                     $this->verbose('inCollectionCase: ' . $incollectionResult['incollectionCase']);
 
                     $remainder = '';
@@ -2730,7 +2755,8 @@ class Converter
                             $this->verbose("Format is <booktitle> <editor> eds.");
                             $result = $this->titleParser->getTitleAndEditor($tempRemainderMinusEds, $language);
                             
-                            $this->setField($item, 'booktitle', $result['title']);
+                            $booktitle = $result['title'];
+                            $this->setField($item, 'booktitle', $booktitle, 'setField 101c');
 
                             if ($result['editor']) {
                                 $editor = $result['editor'];
@@ -2879,7 +2905,12 @@ class Converter
                                 $this->setField($item, 'address', $matches['address'], 'setField 108');
                             }
                             if (isset($matches['publisher'])) {
-                                $this->setField($item, 'publisher', rtrim($matches['publisher'], ','), 'setField 109');
+                                $publisher = rtrim($matches['publisher'], ',');
+                                $periodExceptions = ['Inc', 'St', 'Univ', 'Pub', 'Co'];  // Also in PublisherAddressParser
+                                if (Str::endsWith($publisher, $periodExceptions)) {
+                                    $publisher .= '.';
+                                }
+                                $this->setField($item, 'publisher', $publisher, 'setField 109');
                             }
                             if (isset($matches['address']) && isset($matches['publisher'])) {
                                 $remainder = $beforeEds . ' ' . trim($matches['string'], ": ");
@@ -3662,8 +3693,12 @@ class Converter
                         $this->setField($item, 'volume', $matches['volume'], 'setField 137b');
                         $remainder = $matches['remainder'];
                     } elseif (! empty($cityString) && ! empty($publisher)) {
-                        $this->setField($item, 'address', $cityString, 'setField 138');
-                        $this->setField($item, 'publisher', $publisher, 'setField 139');
+                        if (! isset($item->address)) {
+                            $this->setField($item, 'address', $cityString, 'setField 138');
+                        }
+                        if (! isset($item->publisher)) {
+                            $this->setField($item, 'publisher', $publisher, 'setField 139');
+                        }
                         $remainder = Str::remove([$publisher, $cityString], $remainder);
                         $remainder = rtrim($remainder, ' :)(');
                         $booktitle = $remainder;
@@ -3993,7 +4028,7 @@ class Converter
                 // If booktitle has been found and ends in volume specification, for $use == biblatex put the volume in 
                 // volume field.
                 if ($booktitle && $use == 'biblatex') {
-                    if (preg_match('/^(?P<before>.*) (' . $this->regExps->volumeRegExp . ') (?P<volumeNumber>[0-9]+)\.?$/u', $booktitle, $matches)) {
+                    if (preg_match('/^(?P<before>.*) (' . $this->regExps->volumeRegExp . ') (?P<volumeNumber>[0-9]+)[.,]? ?$/u', $booktitle, $matches)) {
                         $booktitle = rtrim($matches['before'], '., ');
                         $this->setField($item, 'booktitle', $booktitle, 'setField 185');
                         $volume = $matches['volumeNumber'];

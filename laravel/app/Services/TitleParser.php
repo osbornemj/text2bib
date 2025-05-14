@@ -405,7 +405,7 @@ class TitleParser
                             // 1- or 2-word journal name followed by numbers, 'p', '.', ' ', and '-' (pub info)
                             || preg_match('/^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?,? [0-9, \-p\.]*$/u', $remainder)
                             || (in_array('Journal', $wordsToNextPeriodOrComma) && ! preg_match('/^[a-z]/', $remainder))
-                            || preg_match('/^(Revue|Jurnal) /', $remainder)
+                            || preg_match('/^(Revue|Jurnal|Revista|Annals|Bulletin) /', $remainder)
                             // journal name, pub info ('}' after volume # for \textbf{ (in $volumeAndCodesRegExp))
                             // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
                             // The following pattern allows too much latitude --- e.g. "The MIT Press. 2015." matches it.
@@ -573,6 +573,8 @@ class TitleParser
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
                         || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^' . $this->yearRegExp . '[a-z]?(\.|$)/', $remainder)
+                        // title (letters and spaces) and then editors in parens next
+                        || preg_match('%^\p{Lu}[\p{L} ]+ \([\p{L}.& ]+, ' . $this->regExps->edsNoParensRegExp . '\)%u', $remainder)
                         // editor next
                         || preg_match('/^' . $this->regExps->edsOptionalParensRegExp . ' /', $remainder)
                         || preg_match('/^' . $this->regExps->editedByRegExp . ' /', $remainder)
