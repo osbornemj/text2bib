@@ -1633,7 +1633,8 @@ class Converter
                     ! $containsPageRange &&
                     ! $containsJournalName &&
                     ! $allWordsInitialCaps &&
-                    ! $isArticle
+                    ! $isArticle &&
+                    ! $containsThesis
                 )
                 ||
                 (

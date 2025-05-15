@@ -58,7 +58,9 @@ trait AuthorPatterns
             } elseif ($andWord == '$\&$') {
                 $andWord = '\$\\\&\$';
             }
-            $andRegExp .= ($i ? '|' : '').$andWord.'|'.mb_strtoupper($andWord);
+            // Allow all-uppercase and-words that are not single letters.  (Single letters will be confused with initials.
+            // In fact, even pairs of letters, like ET, could be initials.)
+            $andRegExp .= ($i ? '|' : '').$andWord.(mb_strlen($andWord) > 1 ? '|'.mb_strtoupper($andWord) : '');
             //$andRegExp .= ($i ? '|' : '').$andWord;
         }
         $andRegExp .= ')';

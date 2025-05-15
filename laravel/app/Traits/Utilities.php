@@ -59,7 +59,7 @@ trait Utilities
     // (otherwise word following "manuscript" will be matched, for example)
     public $workingPaperNumberRegExp = '(\\\\#|number|no\.?)? ?(?=.*[0-9])(?P<number>[a-zA-Z0-9\-]+)[.,]?';
 
-    public $proceedingsRegExp = '(^proceedings of |proceedings of the (.*) (conference|congress)|conference|conferencia| symposium | meeting |congress of the | world congress|congreso|^proc\.| workshop|^actas del | scientific assembly of the )';
+    public $proceedingsRegExp = '(^proceedings of |proceedings of the (.*) (conference|congress)|conference|conferencia| symposium | meeting |congress of the | world congress|congreso|^proc\.| workshop|^actas del | scientific assembly of the |int\. conf\.)';
 
     public $proceedingsExceptions = '^Proceedings of the American Mathematical Society|^Proceedings of the VLDB Endowment|^Proceedings of the AMS|^Proceedings of the National Academy|^Proc\.? Natl?\.? Acad|^Proc\.? Amer\.? Math|^Proc\.? National Acad|^Proceedings of the \p{L}+ (\p{L}+ )?Society|^Proc\.? R\.? Soc\.?|^Proc\.? Roy\.? Soc\.? A|^Proc\.? Roy\.? Soc\.?|^Proc\.? Royal Society( A)?|^Proc\. Camb\. Phil\. Soc\.|^Proceedings of the International Association of Hydrological Sciences|^Proc\.? IEEE(?! [a-zA-Z])|^Proceedings of the IEEE (?!(International )?(Conference|Congress))|^Proceedings of the IRE|^Proc\.? Inst\.? Mech\.? Eng\.?|^Proceedings of the American Academy|^Proceedings of the American Catholic|^Carnegie-Rochester conference';
 

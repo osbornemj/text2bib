@@ -2253,7 +2253,7 @@ class ExampleSeeder extends Seeder
                 'type' => 'book',
                 'bibtex' => [
                     'year' => '1989',
-                    'title' => 'The Archaeology of Mainland Southeast Asia from 10,000 B. C. to the Fall of Angkor',
+                    'title' => 'The Archaeology of Mainland Southeast Asia from 10,000 B.C. to the Fall of Angkor',
                     'author' => 'Higham, Charles',
                     'address' => 'Cambridge',
                     'publisher' => 'Cambridge University Press',
@@ -15856,6 +15856,117 @@ class ExampleSeeder extends Seeder
                     ],
                     'char_encoding' => 'utf8leave',
             ],
+   			// Problems with B.C. and A.D.
+			[
+                'source' => 'Clarke, J. R. (1991). The houses of Roman Italy, 100 B.C.–A.D. 250: Ritual, space, and decoration. University of California Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Clarke, J. R.',
+                    'publisher' => 'University of California Press',
+                    'subtitle' => 'Ritual, space, and decoration',
+                    'title' => 'The houses of Roman Italy, 100 B.C.--A.D. 250',
+                    'year' => '1991',
+                    ]
+            ],
+			// part of title disappears.  Attempt to deal with date range is coded in TitleParser, but it
+			// is not successful.
+			[
+                'source' => 'Brown, P. (2013). The Rise of Western Christendom: Triumph and Diversity, A.D. 200-1000. New York: Wiley-Blackwell. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Brown, P.',
+                    'year' => '2013',
+                    'title' => 'The Rise of Western Christendom',
+					'subtitle' => 'Triumph and Diversity, A.D. 200-1000',
+                    'publisher' => 'Wiley-Blackwell',
+                    'address' => 'New York',
+                    ]
+            ],
+			// Why do authors not match a pattern?
+			[
+                'source' => '[67]	 M. Murtaza, Y. Ahmed, J. A. Shamsi, F. Sherwani and M. Usman, "AI-Based Personalized E-Learning Systems: Issues, Challenges, and Solutions," IEEE Access, vol. 10, pp. 81323–81342, 2022, doi: 10.1109/ACCESS.2022.3193938. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1109/ACCESS.2022.3193938',
+                    'author' => 'M. Murtaza and Y. Ahmed and J. A. Shamsi and F. Sherwani and M. Usman',
+                    'title' => 'AI-Based Personalized E-Learning Systems: Issues, Challenges, and Solutions',
+                    'year' => '2022',
+                    'journal' => 'IEEE Access',
+                    'volume' => '10',
+                    'pages' => '81323-81342',
+                    ]
+            ],
+			// booktitle repeated in publisher
+			[
+                'source' => '[42]	 P. R. R. Fernando, "Improving the quality of education system using Data Science Technologies: Survey," in 2020 5th Int. Conf. Innov. Technol. Intell. Syst. Ind. Appl. (CITISIA), Sydney, Australia, 2020, pp. 1–6, doi: 10.1109/CITISIA50690.2020.9371793. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'doi' => '10.1109/CITISIA50690.2020.9371793',
+                    'author' => 'P. R. R. Fernando',
+                    'title' => 'Improving the quality of education system using Data Science Technologies: Survey',
+                    'year' => '2020',
+                    'pages' => '1-6',
+                    'booktitle' => '2020 5th Int. Conf. Innov. Technol. Intell. Syst. Ind. Appl. (CITISIA), Sydney, Australia',
+                    ]
+            ],
+			// volume missed
+			[
+                'source' => '[21]	 H. Guruler and A. Istanbullu, "Modeling Student Performance in Higher Education Using Data Mining," in Educational Data Mining. Studies in Computational Intelligence, vol. 524, A. Peña-Ayala, Ed., Cham, Switzerland: Springer, 2014, pp. 41-63, doi: 10.1007/978-3-319-02738-8_4. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'doi' => '10.1007/978-3-319-02738-8_4',
+                    'author' => 'H. Guruler and A. Istanbullu',
+                    'title' => 'Modeling Student Performance in Higher Education Using Data Mining',
+                    'year' => '2014',
+                    'pages' => '41-63',
+                    'address' => 'Cham, Switzerland',
+                    'publisher' => 'Springer',
+                    'booktitle' => 'Educational Data Mining. Studies in Computational Intelligence',
+					'volume' => '524',
+                    'editor' => 'A. Peña-Ayala',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// misidentified as online
+			[
+                'source' => '[19]	 M. Pojon, "Using machine learning to predict student performance," M.S. thesis, Tampere Univ., Tampere, Finland, 2017. [Online]. Available: https://trepo.tuni.fi/handle/10024/101646 ',
+                'type' => 'mastersthesis',
+                'bibtex' => [
+					'school' => 'Tampere Univ., Tampere, Finland',
+                    'url' => 'https://trepo.tuni.fi/handle/10024/101646',
+                    'author' => 'M. Pojon',
+                    'title' => 'Using machine learning to predict student performance',
+                    'year' => '2017',
+                    ]
+            ],
+			// misidentified as article
+			[
+                'source' => '[13]	 W. Zhang and S. Qin, "A brief analysis of the key technologies and applications of educational data mining on online learning platform," in 2018 IEEE 3rd Int. Conf. Big Data Anal. (ICBDA), Shanghai, China, 2018, pp. 83-86, doi: 10.1109/ICBDA.2018.8367655. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'doi' => '10.1109/ICBDA.2018.8367655',
+                    'author' => 'W. Zhang and S. Qin',
+                    'title' => 'A brief analysis of the key technologies and applications of educational data mining on online learning platform',
+                    'year' => '2018',
+                    'pages' => '83-86',
+                    'booktitle' => '2018 IEEE 3rd Int. Conf. Big Data Anal. (ICBDA), Shanghai, China',
+                    ]
+            ],
+			// journal name partly in title
+			[
+                'source' => 'Cooper, P. J. M., Dimes, J., Rao, K. P. C., Shapiro, B., Shiferaw, B., & Twomlow, S. (2008). Coping better with current climatic variability in the rain-fed farming systems of sub-Saharan Africa: An essential first step in adapting to future climate change? Agriculture, Ecosystems & Environment, 126(1-2), 24–35. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Cooper, P. J. M. and Dimes, J. and Rao, K. P. C. and Shapiro, B. and Shiferaw, B. and Twomlow, S.',
+                    'year' => '2008',
+                    'title' => 'Coping better with current climatic variability in the rain-fed farming systems of sub-Saharan Africa: An essential first step in adapting to future climate change?',
+                    'journal' => 'Agriculture, Ecosystems & Environment',
+                    'volume' => '126',
+                    'number' => '1-2',
+                    'pages' => '24-35',
+                    ]
+            ],
+
 
             
 

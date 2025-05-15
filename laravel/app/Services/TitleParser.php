@@ -557,6 +557,10 @@ class TitleParser
                             Str::endsWith($nextWord, '.') 
                             &&
                             in_array(substr($nextWord, 0, -1), $journalWordAbbreviations)
+                            &&
+                            ! ($nextWord == 'A.' && $nextButOneWord == 'D.')
+                            &&
+                            ! ($nextWord == 'B.' && $nextButOneWord == 'C.')
                            )
                         || (
                             $nextWord 
@@ -729,6 +733,16 @@ class TitleParser
                             isset($words[$key+2]) 
                             &&
                             ! in_array($words[$key+2], ['J', 'J.', 'Journal'])
+                            && 
+                            ! ($nextWord == 'A.' && $nextButOneWord == 'D.')
+                            && 
+                            ! ($nextWord == 'B.' && $nextButOneWord == 'C.')
+                            && 
+                            ! ($nextWord == 'B.' && $nextButOneWord == 'C.--A.') // '100 B. C.--A. D. 500'
+                            && 
+                            ! ($nextWord == 'C.--A.' && $nextButOneWord == 'D.')
+                            && 
+                            ! ($nextWord == 'D.' && preg_match('/^\d\d\d/', $nextButOneWord))
                             &&
                             (! Str::endsWith($word, ',') 
                                 || (! $this->inDict(substr($nextWord, 0, -1), $dictionaryNames) && ! in_array(substr($nextWord, 0, -1), $this->countries)) 
@@ -934,6 +948,8 @@ class TitleParser
         // if (isset($remainder[0]) && $remainder[0] == '(') {
         //     $remainder = substr($remainder, 1);
         // }
+
+        $title = str_replace(['A. D.', 'B. C.'], ['A.D.', 'B.C.'], $title);
 
         $result['title'] = $title;
         $result['titleDetails'] = $this->titleDetails;
