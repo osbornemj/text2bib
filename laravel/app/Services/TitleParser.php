@@ -388,7 +388,7 @@ class TitleParser
                         ||
                         ($nextWord && in_array($nextWord[0], ['(', '['])) 
                         || 
-                        ($nextWord && $nextWord == '-')
+                        $nextWord == '-'
                     )
                     &&
                     // if $word is followed by comma, and then a country name followed by ":", add $word to title
@@ -409,12 +409,10 @@ class TitleParser
                         // ! Str::endsWith($word, ':')
                         // &&
                         (
-                            // e.g. SIAM J. ... (Don't generalize too much, because 'J.' can be an editor's initial.)
-                            preg_match('/^(SIAM (J\.|Journal)|IEEE Transactions|ACM Transactions)/', $remainder)
+                            preg_match('/^' . $this->regExps->journalRegExp . ' /u', $remainder)
                             // 1- or 2-word journal name followed by numbers, 'p', '.', ' ', and '-' (pub info)
                             || preg_match('/^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?,? [0-9, \-p\.]*$/u', $remainder)
                             || (in_array('Journal', $wordsToNextPeriodOrComma) && ! preg_match('/^[a-z]/', $remainder))
-                            || preg_match('/^' . $this->regExps->journalRegExp . ' /', $remainder)
                             // journal name, pub info ('}' after volume # for \textbf{ (in $volumeAndCodesRegExp))
                             // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
                             // The following pattern allows too much latitude --- e.g. "The MIT Press. 2015." matches it.
@@ -565,7 +563,7 @@ class TitleParser
                         || preg_match('/^\(?' . $this->regExps->workingPaperRegExp . '/u', $remainder)
                         || preg_match($this->regExps->startPagesRegExp, $remainder)
                         || preg_match('/^' . $this->regExps->inRegExp . ':? (`|``|\'|\'\'|"|' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
-                        || preg_match('/^(Journal |Annals |Proc(eedings)? |Bulletin )/', $remainder)
+                        || preg_match('/^(' . $this->regExps->proceedingsRegExp . ')/u', $remainder)
                         || preg_match('/^\(?(' . $this->regExps->volumeRegExp . ') /', $remainder)
                         || (
                             $nextWord 

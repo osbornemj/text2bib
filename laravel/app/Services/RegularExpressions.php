@@ -369,6 +369,9 @@ class RegularExpressions
             '[Pp]hilosophical [Tt]ransactions',
             '[Rr]evue',
             '[Rr]evista',
+            'SIAM (J\.|Journal)',
+            'IEEE Transactions',
+            'ACM Transactions',
         ];
 
         $this->journalRegExp = '(' . implode('|', $journalWords) . ')';
@@ -489,20 +492,20 @@ class RegularExpressions
         /////////////////
 
         $proceedingsWords = [
-            '^proceedings of ',
-            'proceedings of the (.*) (conference|congress)',
-            'conference',
-            'conferencia',
-            ' symposium ',
-            ' meeting ',
-            'congress of the ',
-            ' world congress',
-            'congreso',
-            '^proc\.',
-            ' workshop',
-            '^actas del ',
-            ' scientific assembly of the ',
-            'int\. conf\.',
+            '^[Pp]roceedings of ',
+            '[Pp]roceedings of the (.*) ([Cc]onference|[Cc]ongress)',
+            '[Cc]onference',
+            '[Cc]onferencia',
+            ' [Ss]ymposium ',
+            ' [Mm]eeting ',
+            '[Cc]ongress of the ',
+            ' [Ww]orld [Cc]ongress',
+            '[Cc]ongreso',
+            '^[Pp]roc\.? ',
+            ' [Ww]orkshop',
+            '^[Aa]ctas del ',
+            ' [Ss]cientific [Aa]ssembly of the ',
+            '[Ii]nt\.? [Cc]onf\.?',
         ];
 
         $this->proceedingsRegExp = implode('|', $proceedingsWords);
