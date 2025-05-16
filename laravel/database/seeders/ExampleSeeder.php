@@ -9698,19 +9698,6 @@ class ExampleSeeder extends Seeder
                     ],
                     'char_encoding' => 'utf8leave',
             ],
-			// phdthesis (Turkish)
-			[
-                'source' => 'Çelik, K. (2018). Genişletilmiş Teknoloji Kabul Modeli: Uzaktan Eğitim Öğrencileri Üzerine Bir Araştırma. Yönetim Bilişim Sistemleri Anabilim Dalı, Gazi Üniversitesi Bilişim Enstitüsü,(Yayımlanmamış doktora tezi), Ankara. ',
-                'type' => 'phdthesis',
-                'bibtex' => [
-                    'author' => 'Çelik, K.',
-                    'year' => '2018',
-                    'title' => 'Genişletilmiş Teknoloji Kabul Modeli',
-                    'subtitle' => 'Uzaktan Eğitim Öğrencileri Üzerine Bir Araştırma',
-                    'school' => 'Yönetim Bilişim Sistemleri Anabilim Dalı, Gazi Üniversitesi Bilişim Enstitüsü, Ankara',
-                    ],
-                    'char_encoding' => 'utf8leave',
-            ],
 			// unpublished master's thesis
 			[
                 'source' => 'Ceylan, H. (2019). Fen bilgisi öğretmenlerinin eğitim-öğretimde, Eğitim Bilişim Ağından (EBA ) yararlanmaya ilişkin görüşleri. Yayınlanmamış Yüksek Lisans Tezi, Trakya Üniversitesi, Edirne. ',

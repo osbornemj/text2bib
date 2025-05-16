@@ -792,7 +792,7 @@ class Converter
         $wordString = mb_strtolower(' ' . implode(' ', $words));
 
         // Internationalize?
-        if (Str::contains($wordString, $this->journalWords)) {
+        if (preg_match('/' . $this->regExps->journalRegExp . '[,. ]/u', $wordString)) {
             $containsJournalName = true;
         }
 
@@ -1462,7 +1462,7 @@ class Converter
             $this->verbose("Replacing ':' with '-' in page range.  Remainder is now: " . $remainder);
         }
 
-        $regExp = '/(?P<techReportType>' . $this->workingPaperRegExp . ')(?P<techReportNumber>' . $this->workingPaperNumberRegExp . ')/i';
+        $regExp = '/(?P<techReportType>' . $this->regExps->workingPaperRegExp . ')(?P<techReportNumber>' . $this->workingPaperNumberRegExp . ')/ui';
         if (preg_match($regExp, $remainder, $workingPaperMatches)) {
             if ($italicStart) {
                 // Remove italic code at start and recompute $workingPaperMatches (used later)
@@ -1475,7 +1475,7 @@ class Converter
             $this->verbose("Contains string for numbered working paper.");
         }
 
-        if (preg_match('/' . $this->workingPaperRegExp . '/i', $remainder)) {
+        if (preg_match('/' . $this->regExps->workingPaperRegExp . '/ui', $remainder)) {
             $containsWorkingPaper = true;
         }
 
@@ -2207,7 +2207,7 @@ class Converter
                 $remainder = trim($remainder);
 
                 $institutionRegExp = '(?P<institution>[\p{L},\- ]+)';
-                $typeRegExp = '(?P<type>' . $this->workingPaperRegExp . ')';
+                $typeRegExp = '(?P<type>' . $this->regExps->workingPaperRegExp . ')';
                 $numberRegExp = $this->workingPaperNumberRegExp;
 
                 $regExps = [

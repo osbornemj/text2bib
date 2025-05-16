@@ -30,6 +30,8 @@ class RegularExpressions
     var $isbnNumberRegExp;
     var $issnRegExps;
 
+    var $journalRegExp;
+
     var $numberRegExp;
     var $numberAndCodesRegExp;
 
@@ -44,6 +46,9 @@ class RegularExpressions
     var $pagesRegExpWithPp;
     var $pageWordsRegExp;
     var $startPagesRegExp;
+
+    var $proceedingsRegExp;
+    var $proceedingsExceptionsRegExp;
 
     var $seriesRegExp;
 
@@ -64,6 +69,8 @@ class RegularExpressions
     var $volumeNumberPagesRegExp;
     var $volumeNumberYearRegExp;
     var $volumeWithNumberRegExp;
+
+    var $workingPaperRegExp;
 
     use Utilities;
 
@@ -323,6 +330,49 @@ class RegularExpressions
 
         $this->translatedByRegExp = '(' . implode('|', $translatedByWords) . ')';
 
+        ///////////////////
+        // Working paper //
+        ///////////////////
+
+        $workingPaperWords = [
+            '[Pp]reprint',
+            '[Aa]rXiv [Pp]reprint',
+            '[Bb]ioRxiv',
+            '[Ww]orking [Pp]aper',
+            '[Tt]exto [Pp]ara [Dd]iscussão',
+            '[Dd]iscussion [Pp]aper',
+            '[Tt]echnical [Rr]eport',
+            '[Tt]ech\. [Rr]eport',
+            '[Rr]eport(?= [Nn]o\.)',
+            '[Rr]esearch [Pp]aper',
+            '[Mm]imeo',
+            '[Uu]npublished [Pp]aper',
+            '[Uu]npublished [Mm]anuscript',
+            '[Mm]anuscript',
+            '[Uu]nder [Rr]eview',
+            '[Ss]ubmitted',
+            '[Ii]n [Pp]reparation',
+        ];
+
+        $this->workingPaperRegExp = '(' . implode('|', $workingPaperWords) . ')';
+
+        /////////////
+        // Journal //
+        /////////////
+
+        $journalWords = [
+            '[Jj]ournal', 
+            '[Jj]urnal', 
+            '[Ff]rontiers in', 
+            '[Aa]nnals of', 
+            '[Bb]ulletin', 
+            '[Pp]hilosophical [Tt]ransactions',
+            '[Rr]evue',
+            '[Rr]evista',
+        ];
+
+        $this->journalRegExp = '(' . implode('|', $journalWords) . ')';
+
         ///////////
         // Pages //
         ///////////
@@ -434,6 +484,55 @@ class RegularExpressions
 
         $this->volumeNumberYearRegExp = '/(' . $this->volumeAndCodesRegExp . ')? ?\d{1,4}(, ?| )(' . $this->numberRegExp . ')? ?\d{1,4} [\(\[]?' . $this->yearRegExp . '[\)\]]/u';
 
+        /////////////////
+        // Proceedings //
+        /////////////////
+
+        $proceedingsWords = [
+            '^proceedings of ',
+            'proceedings of the (.*) (conference|congress)',
+            'conference',
+            'conferencia',
+            ' symposium ',
+            ' meeting ',
+            'congress of the ',
+            ' world congress',
+            'congreso',
+            '^proc\.',
+            ' workshop',
+            '^actas del ',
+            ' scientific assembly of the ',
+            'int\. conf\.',
+        ];
+
+        $this->proceedingsRegExp = implode('|', $proceedingsWords);
+
+        $proceedingsExceptions = [
+            '^Proceedings of the American Mathematical Society',
+            '^Proceedings of the VLDB Endowment',
+            '^Proceedings of the AMS',
+            '^Proceedings of the National Academy',
+            '^Proc\.? Natl?\.? Acad',
+            '^Proc\.? Amer\.? Math',
+            '^Proc\.? National Acad',
+            '^Proceedings of the \p{L}+ (\p{L}+ )?Society',
+            '^Proc\.? R\.? Soc\.?',
+            '^Proc\.? Roy\.? Soc\.? A',
+            '^Proc\.? Roy\.? Soc\.?',
+            '^Proc\.? Royal Society( A)?',
+            '^Proc\. Camb\. Phil\. Soc\.',
+            '^Proceedings of the International Association of Hydrological Sciences',
+            '^Proc\.? IEEE(?! [a-zA-Z])',
+            '^Proceedings of the IEEE (?!(International )?(Conference|Congress))',
+            '^Proceedings of the IRE',
+            '^Proc\.? Inst\.? Mech\.? Eng\.?',
+            '^Proceedings of the American Academy',
+            '^Proceedings of the American Catholic',
+            '^Carnegie-Rochester conference',
+        ];
+
+        $this->proceedingsExceptionsRegExp = implode('|', $proceedingsExceptions);
+        
         ////////////
         // Thesis //
         ////////////

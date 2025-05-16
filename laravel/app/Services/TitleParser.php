@@ -181,6 +181,7 @@ class TitleParser
         $volumeWithDigitRegExp = '/^(' . $this->regExps->volumeRegExp . ') (\d)\.?\)?[.,]?$/i';
 
         $parensLevel = 0;
+        $bracketLevel = 0;
         // $skip = 0;
         // Go through the words in $remainder one at a time.
         foreach ($words as $key => $word) {
@@ -195,6 +196,14 @@ class TitleParser
             } elseif (strpos($word, '(') === false && strpos($word, ')') !== false) {
                 $parensLevel--;
                 $this->verbose("Parens level changed to " . $parensLevel . " (word \"" . $word . "\")");
+            }
+
+            if (substr($word, 0, 1) == '[' && strpos($word, ']') === false) {
+                $bracketLevel++;
+                $this->verbose("Bracket level changed to " . $bracketLevel . " (word \"" . $word . "\")");
+            } elseif (strpos($word, '[') === false && strpos($word, ']') !== false) {
+                $bracketLevel--;
+                $this->verbose("Bracket level changed to " . $bracketLevel . " (word \"" . $word . "\")");
             }
 
             if (substr($word, 0, 1) == '"') {
@@ -405,13 +414,20 @@ class TitleParser
                             // 1- or 2-word journal name followed by numbers, 'p', '.', ' ', and '-' (pub info)
                             || preg_match('/^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?,? [0-9, \-p\.]*$/u', $remainder)
                             || (in_array('Journal', $wordsToNextPeriodOrComma) && ! preg_match('/^[a-z]/', $remainder))
-                            || preg_match('/^(Revue|Jurnal|Revista|Annals|Bulletin) /', $remainder)
+                            || preg_match('/^' . $this->regExps->journalRegExp . ' /', $remainder)
                             // journal name, pub info ('}' after volume # for \textbf{ (in $volumeAndCodesRegExp))
                             // ('?' is a possible character in a page range because it can appear for '-' due to an encoding error)
                             // The following pattern allows too much latitude --- e.g. "The MIT Press. 2015." matches it.
                             // || preg_match('/^\p{Lu}[A-Za-z &]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->regExps->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
                             // journal name, forthcoming/in press/... 
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]?(' . $this->endForthcomingRegExp . ')/u', $remainder) 
+                            // journal name of form "Aaaa, Aaaa & Aaaa" followed by volume(number) page range 
+                            || 
+                            (
+                                preg_match('/^((\p{Lu}\p{L}+|&),? ){1,4}[0-9(),\- ]{5,20}$/u', $remainder) 
+                                &&
+                                ! preg_match('/' . $this->regExps->workingPaperRegExp . '/u', $remainder)
+                            )
                             // journal name, volume (year?) issue? page
                             // Note: permits no space or punctuation between volume number and page number
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->regExps->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $this->regExps->pagesRegExp . '\.? ?$/u', $remainder)
@@ -546,7 +562,7 @@ class TitleParser
                                 $upcomingVolumeCount
                             )
                            )
-                        || preg_match('/^\(?' . $this->workingPaperRegExp . '/i', $remainder)
+                        || preg_match('/^\(?' . $this->regExps->workingPaperRegExp . '/u', $remainder)
                         || preg_match($this->regExps->startPagesRegExp, $remainder)
                         || preg_match('/^' . $this->regExps->inRegExp . ':? (`|``|\'|\'\'|"|' . $italicCodesRegExp . ')?([A-Z1-9]|' . $this->yearRegExp . ')/', $remainder)
                         || preg_match('/^(Journal |Annals |Proc(eedings)? |Bulletin )/', $remainder)
@@ -674,7 +690,17 @@ class TitleParser
 
                 // If end of title has not been detected and word ends in period-equivalent or comma
                 if (
-                    (Str::endsWith($word, ['.', '!', '?', ',']) && $parensLevel == 0)
+                    (
+                        Str::endsWith($word, ['.', '!', '?', ',']) 
+                        && 
+                        $parensLevel == 0 
+                        && 
+                        $bracketLevel == 0
+                        &&
+                        ! in_array($word, ['vol.', 'Vol.', 'v.'])
+                        &&
+                        ! preg_match('/^\p{Lu}\.$/u', $word)
+                    )
                     ) {
                         $this->verbose('$stringToNextPeriodOrComma: ' . $stringToNextPeriodOrComma);
                         $this->verbose('$wordAfterNextCommaOrPeriod: ' . $wordAfterNextCommaOrPeriod);
@@ -785,18 +811,36 @@ class TitleParser
                     // (which is unlikely to be within a title following punctuation)
                     // and is followed by at least 30 characters or 37 if it contains pages (for the publication info),
                     // assume it is part of the title,
+                    // unless it ends in an uppercase letter followed by a period or is more than a single word 
+                    // or is followed by "edited by"
                     } elseif (
-                            preg_match('/^[a-zA-Z0-9 \-\(\)`"\':,\/]+$/', substr($stringToNextPeriodOrComma, 0, -1))
+                        (
+                            preg_match('/^[\p{L}0-9 \-\(\)`"\':,\/]+$/u', substr($stringToNextPeriodOrComma, 0, -1))
                             //preg_match('/[a-zA-Z -]+/', substr($stringToNextPeriodOrComma,0,-1))
-                            && ! preg_match('/^' . $this->regExps->inRegExp . ':? /', $remainder)
-                            && ! $this->isProceedings($remainder)
-                            && strlen($remainder) > strlen($stringToNextPeriodOrComma) + ($containsPages ? 37 : 30)
-                            && ! $upcomingYear
-                            && ! Str::startsWith($remainder, $this->journalWords)
-                            ) {
+                            && 
+                            ! preg_match('/^' . $this->regExps->inRegExp . ':? /', $remainder)
+                            && 
+                            ! $this->isProceedings($remainder)
+                            && 
+                            strlen($remainder) > strlen($stringToNextPeriodOrComma) + ($containsPages ? 37 : 30)
+                            && 
+                            ! $upcomingYear
+                            && 
+                            ! preg_match('/^' . $this->regExps->journalRegExp . '[,. ]/u', $remainder)
+                            // && 
+                            // (
+                            //     preg_match('/\p{Lu}[,.]$/u', $stringToNextPeriodOrComma) // $stringToNextCommaOrPeriod is X. or X, for any letter X
+                            //     || 
+                            //     strpos($stringToNextPeriodOrComma, ' ') !== false // $stringToNextPeriodOrComma is more than a single word
+                            // )
+                        )
+                        ||
+                        // After next word, "edited by" phrase occurs
+                        preg_match('%^' . $this->regExps->editedByRegExp . '%u', ltrim(substr($remainder, strpos($remainder, ' ') ?: 0)))
+                        ) {
                         $this->verbose("Not ending title, case 2 (next word is '" . $nextWord . "', and string to next period or comma is '" . $stringToNextPeriodOrComma . "')");
                     // else if working paper string occurs later in remainder,
-                    } elseif (preg_match('/(.*)(' . $this->workingPaperRegExp . ')/i', $remainder, $matches)) {
+                    } elseif (preg_match('/(.*)(' . $this->regExps->workingPaperRegExp . ')/u', $remainder, $matches)) {
                         // if no intervening punctuation, end title
                         if (!Str::contains($matches[1], ['.', ',', ':'])) {
                             $this->verbose("Ending title, case 5");
