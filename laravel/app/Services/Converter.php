@@ -4714,7 +4714,7 @@ class Converter
             'infos' => $infos,
             'details' => $conversion->report_type == 'detailed' ? $this->detailLines : [],
             'scholarTitle' => $scholarTitle,
-            'incollection_case' => $incollectionResult['incollectionCase'] ?? null,
+            'incollection_pattern' => $incollectionResult['incollectionCase'] ?? null,
             'author_pattern' => $authorConversion['author_pattern'] ?? null,
         ];
 

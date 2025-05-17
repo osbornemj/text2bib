@@ -528,6 +528,7 @@ class ConvertFile extends Component
                     'crossref_item' => $convItem['crossref_item'] ?? null,
                     'crossref_source' => $crossrefSource ?? null,
                     'author_pattern' => $convItem['author_pattern'],
+                    'incollection_pattern' => $convItem['incollection_pattern'],
                     'seq' => $i,
                 ]);
 

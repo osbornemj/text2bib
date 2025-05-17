@@ -50,6 +50,16 @@
                 {{ $output->author_pattern }}
             @endif
 
+            @if ($output->itemType->name == 'incollection')
+                &nbsp;&bull;&nbsp;
+                Incollection pattern:
+                @if ($output->incollection_pattern === null)
+                    <span class="bg-red-500">none</span>
+                @else
+                    {{ $output->incollection_pattern }}
+                @endif
+            @endif
+
             <br/>
             
             @if (isset($output['crossref_item_type']) && $output->itemType && $output->itemType->name != $output['crossref_item_type'])
