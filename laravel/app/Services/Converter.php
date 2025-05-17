@@ -350,7 +350,7 @@ class Converter
             )
             &&
             preg_match(
-                '%^https?://doi.org/(?P<doi>[^ ]+)%',
+                '%^https?://doi\.org/(?P<doi>[^ ]+)%',
                 $matches1['url'],
                 $matches2,
             )
@@ -375,6 +375,16 @@ class Converter
             }
         }
 
+        // Case in which https://doi.org is mistakenly repeated
+        if (empty($doi)) {
+            if (preg_match('%https://doi\.org/https://doi\.org/ ?(?P<doi>10\.[^ ]+)%', $remainder, $matches)) {
+                if (isset($matches['doi'])) {
+                    $doi = $matches['doi'];
+                    $remainder = str_replace($matches[0], '', $remainder);
+                }
+            }
+        }
+
         // Optional space in segment
         // \\\url{)?https?://doi\.org/ ?
         // is designed to deal with an erroneous space.
@@ -383,7 +393,7 @@ class Converter
             //$precedingChar = $matches['precedingChar'] ?? null;
             $doi = $this->extractLabeledContent(
                 $remainder,
-                ' [\[)]?doi:? | [\[(]?doi: ?|doi:|(' . $retrievedFromRegExp1 . ')?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(' . $retrievedFromRegExp1 . ')?(\\\href\{|\\\url{)?https?://doi\.org[/:] ?(?=10)|doi\.org',
+                ' [\[)]?doi:? | [\[(]?doi: ?|doi:|(' . $retrievedFromRegExp1 . ')?(\\\href\{|\\\url{)?https?://dx\.doi\.org/|(' . $retrievedFromRegExp1 . ')?(\\\href\{|\\\url{)?https?://doi\.org[/:] ?(?=10)|doi\.org|https?://doi:',
                 '[^ ]+'
             );
         }
@@ -1262,7 +1272,7 @@ class Converter
             }
         }
 
-        $yearIsForthcoming = isset($item->year) && preg_match('/^([Ff]orthcoming|[Ii]n [Pp]ress)$/', $item->year);
+        $yearIsForthcoming = isset($item->year) && preg_match('/^' . $this->regExps->forthcomingRegExp . '$/', $item->year);
 
         $remainder = ltrim($newRemainder, ' ');
 
@@ -1462,7 +1472,7 @@ class Converter
             $this->verbose("Replacing ':' with '-' in page range.  Remainder is now: " . $remainder);
         }
 
-        $regExp = '/(?P<techReportType>' . $this->regExps->workingPaperRegExp . ')(?P<techReportNumber>' . $this->workingPaperNumberRegExp . ')/ui';
+        $regExp = '/(^| )(?P<techReportType>' . $this->regExps->workingPaperRegExp . ')(?P<techReportNumber>' . $this->workingPaperNumberRegExp . ')/ui';
         if (preg_match($regExp, $remainder, $workingPaperMatches)) {
             if ($italicStart) {
                 // Remove italic code at start and recompute $workingPaperMatches (used later)
@@ -1475,7 +1485,7 @@ class Converter
             $this->verbose("Contains string for numbered working paper.");
         }
 
-        if (preg_match('/' . $this->regExps->workingPaperRegExp . '/ui', $remainder)) {
+        if (preg_match('/(^| )' . $this->regExps->workingPaperRegExp . '/u', $remainder)) {
             $containsWorkingPaper = true;
         }
 
@@ -1541,12 +1551,12 @@ class Converter
             $containsNumberOutsidePages = true;
         }
 
-        if (preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)) {
+        if (preg_match('/' . $this->regExps->startForthcomingRegExp . '/i', $remainder)) {
             $pubInfoStartsWithForthcoming = true;
             $this->verbose("Publication info starts with 'forthcoming', 'accepted', 'in press', or 'to appear'.");
         }
 
-        if (preg_match('/' . $this->endForthcomingRegExp . '/i', $remainder)) {
+        if (preg_match('/' . $this->regExps->endForthcomingRegExp . '/i', $remainder)) {
             $pubInfoEndsWithForthcoming = true;
             $this->verbose("Publication info ends with 'forthcoming', 'accepted', or 'in press', or 'to appear'.");
         }
@@ -2021,7 +2031,7 @@ class Converter
 
                     // If $remainder ends with 'forthcoming' phrase and contains no digits (which might be volume & number,
                     // for example, even if paper is forthcoming), put that in note.  Else look for pages & volume etc.
-                    if (preg_match('/' . $this->endForthcomingRegExp . '/i', $remainder) && !preg_match('/[0-9]/', $remainder)) {
+                    if (preg_match('/' . $this->regExps->endForthcomingRegExp . '/i', $remainder) && !preg_match('/[0-9]/', $remainder)) {
                         $this->addToField($item, 'note', trim($remainder, '()'), 'addToField 6');
                         $remainder = '';
                     } else {
@@ -2433,7 +2443,7 @@ class Converter
                         // Pattern is <string1> <booktitle> <string2> (with <string1> nonempty).
                         // Check whether <string1> starts with "forthcoming"
                         $string1 = trim(substr($remainder, 0, strlen($before)), ',. ');
-                        if (preg_match('/' . $this->startForthcomingRegExp . '/i', $string1, $matches)) {
+                        if (preg_match('/' . $this->regExps->startForthcomingRegExp . '/i', $string1, $matches)) {
                             $match = trim($matches[0], '() ');
                             $match = Str::replaceEnd(' in', '', $match);
                             $match = Str::replaceEnd(' at', '', $match);
@@ -3886,7 +3896,7 @@ class Converter
                 $this->verbose("[in12] Remainder: " . ($remainder ? $remainder : '[empty]'));
 
                 // If $remainder contains 'forthcoming' string, remove it and put it in $item->note.
-                $result = $this->findRemoveAndReturn($remainder, '^(Forthcoming|In press|Accepted)');
+                $result = $this->findRemoveAndReturn($remainder, '^' . $this->regExps->forthcomingRegExp);
                 if ($result) {
                     $this->addToField($item, 'note', ' ' . $result[0], 'addToField 12');
                     $this->verbose('"Forthcoming" string removed and put in note field');
@@ -4122,7 +4132,7 @@ class Converter
                     $remainder = str_replace($matches['editorString'], '', $remainder);
                 }
 
-                if (preg_match('/(?P<remains>.*)forthcoming\)?\.?$/i', $remainder, $matches)) {
+                if (preg_match('/(?P<remains>.*) ' . $this->regExps->forthcomingRegExp . '\)?\.?$/i', $remainder, $matches)) {
                     $this->addToField($item, 'note', 'Forthcoming.', 'setField 194');
                     $remainder = $matches['remains'];
                 } 
@@ -4543,9 +4553,9 @@ class Converter
             if (is_numeric($year) && $month && $day) {
                 $this->setField($item, 'date', $year . '-' . $month . '-' . $day, 'setField 245');
                 $remainder = '';
-            } elseif (preg_match('/^' . $this->endForthcomingRegExp . '/i', $remainder)
+            } elseif (preg_match('/^' . $this->regExps->endForthcomingRegExp . '/i', $remainder)
                 ||
-                preg_match('/^' . $this->startForthcomingRegExp . '/i', $remainder)
+                preg_match('/^' . $this->regExps->startForthcomingRegExp . '/i', $remainder)
                 ) {
                 $this->addToField($item, 'note', $remainder, 'addToField 14');
             } elseif ($itemKind == 'online') {

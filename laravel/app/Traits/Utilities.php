@@ -42,12 +42,6 @@ trait Utilities
 
     public $yearRegExp = '(18|19|20)[0-9]{2}';
 
-    public $forthcomingRegExp = '[Ff]orthcoming( at| in)?|[Ii]n [Pp]ress|[Aa]ccepted( at)?|[Tt]o [Aa]ppear [Ii]n|à paraître';
-
-    public $endForthcomingRegExp = '( |\()([Ff]orthcoming|[Ii]n [Pp]ress|[Aa]ccepted|[Tt]o [Aa]ppear|à paraître)\.?\)?$';
-
-    public $startForthcomingRegExp = '^\(?forthcoming( at| in)?\)?|^in press|^accepted for publication in|^accepted( at)?|^to appear in|^à paraître';
-
     // Working paper number can contain letters and dashes, but must contain at least one digit
     // (otherwise word following "manuscript" will be matched, for example)
     public $workingPaperNumberRegExp = '(\\\\#|number|no\.?)? ?(?=.*[0-9])(?P<number>[a-zA-Z0-9\-]+)[.,]?';
@@ -374,9 +368,9 @@ trait Utilities
         if (
             $quotedText
             && preg_match('/[a-z]$/', $quotedText)
-            && preg_match('/^ [a-z]/', $afterQuote)
-            && ! preg_match('/^ (in|en|em)[ :,]/', $afterQuote)
-            && ! preg_match('/^ (forthcoming|to appear|accepted|submitted)/', $afterQuote)
+            && preg_match('/^:? [a-z]/', $afterQuote)
+            && ! preg_match('/^ '. $this->regExps->inRegExp . '[ :,]/', $afterQuote)
+            && ! preg_match('/^ ' . $this->regExps->forthcomingRegExp . '/', $afterQuote)
         ) {
             $quotedText = '';
         } else {

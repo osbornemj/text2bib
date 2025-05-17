@@ -15953,6 +15953,90 @@ class ExampleSeeder extends Seeder
                     'pages' => '24-35',
                     ]
             ],
+			// title starts with quote
+			[
+                'source' => '64: Ling K, Langlois D, Preusse H, Rheman JM, Parson D, Kuballa S, Simecek M, Tsui KM, Fraune MR. "If you weren\'t connected to the Internet, you were not alive": experience of using social technology during COVID-19 in adults 50. Front Public Health. 2023 Oct 9;11:1177683. doi: 10.3389/fpubh.2023.1177683. PMID: 37876716; PMCID: PMC10590895. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'PMID: 37876716. PMCID: PMC10590895. Article 1177683',
+                    'doi' => '10.3389/fpubh.2023.1177683',
+                    'author' => 'Ling, K. and Langlois, D. and Preusse, H. and Rheman, J. M. and Parson, D. and Kuballa, S. and Simecek, M. and Tsui, K. M. and Fraune, M. R.',
+                    'title' => '``If you weren\'t connected to the Internet, you were not alive\'\': experience of using social technology during COVID-19 in adults 50',
+                    'year' => '2023',
+                    'month' => '10',
+                    'date' => '2023-10-09',
+                    'journal' => 'Front Public Health',
+					'volume' => '11',
+                    ]
+            ],
+			//
+			[
+                'source' => 'Hartmann, C., Hegel, C. & Boampong, O. (2022) The forgotten essential workers in the circular economy? Waste picker precarity and resilience amidst the COVID-19 pandemic, Local Environment, 27:10-11, 1272-1286, https://doi:10.1080/13549839.2022.2040464 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1080/13549839.2022.2040464',
+                    'author' => 'Hartmann, C. and Hegel, C. and Boampong, O.',
+                    'year' => '2022',
+                    'title' => 'The forgotten essential workers in the circular economy? Waste picker precarity and resilience amidst the COVID-19 pandemic',
+					'journal' => 'Local Environment',
+					'volume' => '27',
+					'number' => '10-11',
+					'pages' => '1272-1286',
+                    ]
+            ],
+			// https://doi:
+			[
+                'source' => 'Jewett RL, Mah SM, Howell N, Larsen MM. (2021) Social Cohesion and Community Resilience During COVID-19 and Pandemics: A Rapid Scoping Review to Inform the United Nations Research Roadmap for COVID-19 Recovery. International Journal of Health Services. 51(3):325-336. https://doi:10.1177/0020731421997092 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1177/0020731421997092',
+                    'author' => 'Jewett, R. L. and Mah, S. M. and Howell, N. and Larsen, M. M.',
+                    'year' => '2021',
+                    'title' => 'Social Cohesion and Community Resilience During COVID-19 and Pandemics: A Rapid Scoping Review to Inform the United Nations Research Roadmap for COVID-19 Recovery',
+                    'journal' => 'International Journal of Health Services',
+                    'volume' => '51',
+                    'number' => '3',
+                    'pages' => '325-336',
+                    ]
+            ],
+			// Ms. for manuscript
+			 [
+                'source' => 'Groenendijk, J., Roelofsen, F., 2009. Inquisitive Semantics and Pragmatics. Ms., University of Amsterdam. ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => 'Groenendijk, J. and Roelofsen, F.',
+                    'year' => '2009',
+                    'title' => 'Inquisitive Semantics and Pragmatics',
+                    'note' => 'Ms., University of Amsterdam',
+                    ]
+            ],
+			// repeated https://doi.org
+			[
+                'source' => 'Choi, H. H., Hwang, Y. W., Kim, J., Kang, H. Y., & Kim, D. H. (2024). Material flow and domestic demand analysis for nickel in South Korea. Journal of Cleaner Production, 449, 141711. https://doi.org/https://doi.org/10.1016/j.jclepro.2024.141711 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1016/j.jclepro.2024.141711',
+                    'author' => 'Choi, H. H. and Hwang, Y. W. and Kim, J. and Kang, H. Y. and Kim, D. H.',
+                    'year' => '2024',
+                    'title' => 'Material flow and domestic demand analysis for nickel in South Korea',
+                    'journal' => 'Journal of Cleaner Production',
+                    'pages' => '141711',
+                    'volume' => '449',
+                    ]
+            ],
+			// replace '[C]' with space?
+			[
+                'source' => 'Ouyang W, Dong R, Zhang X, et al. Contrastive Learning for Conversion Rate Prediction[C]//International ACM SIGIR Conference on Research and Development in Information Retrieval. 2023: 1909-1913. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'Ouyang, W. and Dong, R. and Zhang, X. and others',
+                    'title' => 'Contrastive Learning for Conversion Rate Prediction',
+					'booktitle' => 'International ACM SIGIR Conference on Research and Development in Information Retrieval',
+                    'year' => '2023',
+                    'pages' => '1909-1913',
+                    ]
+            ]
+			
 
 
             

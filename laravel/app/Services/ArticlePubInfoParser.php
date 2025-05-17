@@ -61,20 +61,20 @@ class ArticlePubInfoParser
 
         if ($pubInfoStartsWithForthcoming && ! $containsDigit) {
             // forthcoming at start
-            $result = $this->extractLabeledContent($remainder, $this->startForthcomingRegExp, '.*', true);
+            $result = $this->extractLabeledContent($remainder, $this->regExps->startForthcomingRegExp, '.*', true);
             $journal = $result ? $this->getQuotedOrItalic($result['content'], true, false, $before, $after, $style) : null;
             if (! $journal) {
                 $journal = $result ? $result['content'] : '';
             }
             $label = $result ? $result['label'] : '';
-            if (Str::startsWith($label, ['Forthcoming', 'forthcoming', 'Accepted', 'accepted', 'To appear', 'to appear'])) {
+            if (preg_match('/' . $this->regExps->startForthcomingRegExp . '/', $label)) {
                 $label = Str::replaceEnd(' in', '', $label);
                 $label = Str::replaceEnd(' at', '', $label);
             }
             $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . $label, 'getJournal 1');
         } elseif ($pubInfoEndsWithForthcoming && ! $containsDigit) {
             // forthcoming at end
-            $result = $this->extractLabeledContent($remainder, '.*', $this->endForthcomingRegExp, true);
+            $result = $this->extractLabeledContent($remainder, '.*', $this->regExps->endForthcomingRegExp, true);
             $journal = $result['label'];
             $this->setField($item, 'note', (isset($item->note) ? $item->note . ' ' : '') . trim($result['content'], '()'), 'getJournal 2');
         } else {

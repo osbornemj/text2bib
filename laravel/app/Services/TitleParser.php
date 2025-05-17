@@ -94,7 +94,7 @@ class TitleParser
             }
             $journalStartPos = strpos($strippedRemainder, $journal);
             $title = substr($remainder, 0, $journalStartPos);
-            if (preg_match('/(?P<title>.*)\(?(?P<forthcoming>' . $this->forthcomingRegExp . ')\)?$/i', rtrim($title, '., '), $matches)) {
+            if (preg_match('/(?P<title>.*)\(?(?P<forthcoming>' . $this->regExps->forthcomingRegExp . ')\)?$/i', rtrim($title, '., '), $matches)) {
                 $title = $matches['title'];
                 $note = $matches['forthcoming'];     
             }
@@ -127,6 +127,24 @@ class TitleParser
                 $result['editionNumber'] = null;
                 $result['fullEdition'] = null;
         
+                return $result;
+            }
+        }
+
+        // Title terminated by [C] or [J] or [A] or [D] or [Z].
+        if (preg_match('%^(?P<title>.*?)\[(?P<designation>(J|C|A|D|Z))\](?P<remainder>.*?)$%', $remainder, $matches)) {
+            if (isset($matches['title'])) {
+                $this->verbose('Taking title to be string preceding "[' . $matches['designation'] . ']".');
+
+                $remainder = ltrim(($matches['remainder'] ?? ''), '/');
+
+                $result['title'] = $matches['title'];
+                $result['titleDetails'] = $this->titleDetails;
+                $result['editor'] = $editor;
+                $result['translator'] = $translator;
+                $result['editionNumber'] = null;
+                $result['fullEdition'] = null;
+
                 return $result;
             }
         }
@@ -211,6 +229,9 @@ class TitleParser
             }
             if (substr($word, -1) == '"') {
                 $word = substr($word, 0, -1) . "''";
+            }
+            if (substr($word, -2, 2) == '":') {
+                $word = substr($word, 0, -2) . "'':";
             }
 
             if (Str::startsWith($word, '//')) {
@@ -378,7 +399,7 @@ class TitleParser
                 // OR a year 
                 // OR the name of a publisher.
                 // If so, the title is $remainder up to the punctuation.
-                // Before checking for punctuation at the end of a work, trim ' and " from the end of it, to take care
+                // Before checking for punctuation at the end of a word, trim ' and " from the end of it, to take care
                 // of the cases ``<word>.'' and "<word>."
                 if (
                     ! in_array($word, $titleAbbreviations)
@@ -418,7 +439,7 @@ class TitleParser
                             // The following pattern allows too much latitude --- e.g. "The MIT Press. 2015." matches it.
                             // || preg_match('/^\p{Lu}[A-Za-z &]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->regExps->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
                             // journal name, forthcoming/in press/... 
-                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]?(' . $this->endForthcomingRegExp . ')/u', $remainder) 
+                            || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]?(' . $this->regExps->endForthcomingRegExp . ')/u', $remainder) 
                             // journal name of form "Aaaa, Aaaa & Aaaa" followed by volume(number) page range 
                             || 
                             (
@@ -589,7 +610,7 @@ class TitleParser
                            )
                         // pages (e.g. within book)
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
-                        || preg_match('/' . $this->startForthcomingRegExp . '/i', $remainder)
+                        || preg_match('/' . $this->regExps->startForthcomingRegExp . '/i', $remainder)
                         || preg_match('/^' . $this->yearRegExp . '[a-z]?(\.|$)/', $remainder)
                         // title (letters and spaces) and then editors in parens next
                         || preg_match('%^\p{Lu}[\p{L} ]+ \([\p{L}.& ]+, ' . $this->regExps->edsNoParensRegExp . '\)%u', $remainder)

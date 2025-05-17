@@ -22,6 +22,10 @@ class RegularExpressions
 
     var $firstPublishedRegExp;
 
+    var $forthcomingRegExp;
+    var $startForthcomingRegExp;
+    var $endForthcomingRegExp;
+
     var $inRegExp;
 
     var $inReviewRegExp;
@@ -346,6 +350,7 @@ class RegularExpressions
             '[Rr]eport(?= [Nn]o\.)',
             '[Rr]esearch [Pp]aper',
             '[Mm]imeo',
+            '[Mm]s\.',
             '[Uu]npublished [Pp]aper',
             '[Uu]npublished [Mm]anuscript',
             '[Mm]anuscript',
@@ -662,6 +667,25 @@ class RegularExpressions
 
         $this->firstPublishedRegExp = '(' . implode('|', array_map(fn($word) => $word . ' ?', $firstPublishedWords)) . ')';
 
+        /////////////////
+        // Forthcoming //
+        /////////////////
+
+        $forthcomingWords = [
+            '[Ff]orthcoming( at| in)?\)?',
+            '[Ii]n [Pp]ress',
+            '[Aa]ccepted for [Pp]ublication( [Ii]n)?',
+            '[Aa]ccepted( at)?',
+            '[Tt]o [Aa]ppear( [Ii]n)?',
+            'à paraître',
+        ];
+
+        $this->forthcomingRegExp = '(' . implode('|', $forthcomingWords) . ')';
+
+        $this->endForthcomingRegExp = '(( |\()(' . implode('|', $forthcomingWords) . ')\.?\)?$)';
+    
+        $this->startForthcomingRegExp = '(^\(?(' . implode('|', $forthcomingWords) . '))';
+        
         ////////////////
         // ISBN, ISSN //
         ////////////////
@@ -685,7 +709,7 @@ class RegularExpressions
         // Used in: "*Retrieved from* (site)? <url> accessed <date>"
         // and "*Retrieved from* (site)? <url> <date>?"
         $this->retrievedFromRegExp1 = [
-            'en' => '(Retrieved from:? |Available( online)? ?(at|from)?:? )',
+            'en' => '(Retrieved from[.:]? |Available( online)? ?(at|from)?:? )',
             'cz' => '(Dostupné z:? |načteno z:? )',
 //            'de' => 'Abgerufen von',
             'fr' => '(Récupéré sur |Disponible( (à l\'adresse|sur))?:? )',
@@ -715,7 +739,7 @@ class RegularExpressions
         // *acceessed <date>* <url>
         // *accessed <date>*
         $this->accessedRegExp1 = [
-            'en' => '(([Ll]ast|[Dd]ate) )?([Rr]etrieved|[Aa]ccessed|[Cc]onsulted|[Vv]iewed|[Vv]isited)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
+            'en' => '(([Ll]ast|[Dd]ate) )?([Rr]etrieved|[Aa]ccessed|[Cc]onsulted|[Vv]iewed|[Vv]isited)( on)?[,:.]? (?P<date2>' . $dateRegExp . ')',
             'cz' => '([Nn]ačteno|[Zz]přístupněno|[Zz]obrazeno|[Cc]itováno)( dne)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'fr' => '([Rr]écupéré |[Cc]onsulté )(le )?(?P<date2>' . $dateRegExp . ')',
             'es' => '([Oo]btenido|[Aa]ccedido)[,:]? (?P<date2>' . $dateRegExp . ')',
