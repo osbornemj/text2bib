@@ -10,6 +10,7 @@ use App\Models\Bst;
 use App\Models\City;
 use App\Models\Conversion;
 use App\Models\Journal;
+use App\Models\Output;
 use App\Models\Publisher;
 use App\Models\JournalWordAbbreviation;
 use App\Models\Version;
@@ -31,6 +32,7 @@ class AdminController extends Controller
 
         $maxCheckedConversionId = AdminSetting::select('max_checked_conversion_id')->first()->max_checked_conversion_id;
         $uncheckedConversionCount = Conversion::where('id', '>', $maxCheckedConversionId)->count();
+        $adminCorrectOutputCount = Output::where('admin_correctness', 1)->count();
 
         $seconds = Carbon::parse($trainingItemsConversionStartedAt)->diffInSeconds(Carbon::parse($trainingItemsConversionEndedAt));
         $itemsPerSecond = $seconds ? number_format($trainingItemsConversionCount / $seconds, 2) : null;
@@ -49,6 +51,7 @@ class AdminController extends Controller
             'trainingItemsConversionEndedAt',
             'itemsPerSecond',
             'uncheckedConversionCount',
+            'adminCorrectOutputCount',
         ));
     }
 

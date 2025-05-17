@@ -59,6 +59,7 @@
                 <x-link :href="route('admin.conversions')">
                     all
                 </x-link>
+                ({{ $adminCorrectOutputCount }} admin-correct)
                 &nbsp;&bull;&nbsp;
                 <x-link href="{{ url('admin/conversions/0/unchecked') }}">
                     unchecked
