@@ -16035,7 +16035,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2023',
                     'pages' => '1909-1913',
                     ]
-            ]
+            ],
 			
 
 
