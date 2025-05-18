@@ -7533,13 +7533,13 @@ class ExampleSeeder extends Seeder
             ],
 			// translators not detected correctly
 			[
-                'source' => 'Barth, Karl. 2004. Church Dogmatics 2:1. Edited by G. W. Bromiley and T. F. Torrance. Translated by T. H. L. Parker, W. B. Johnston, Harold Knight, and J. L. M. Haire. London/New York: T&T Clark. First published 1957.  ',
+                'source' => 'Barth, Karl. 2004. Church Dogmatics 2:1. Edited by G. W. Bromiley and T. F. Torrance. Translated by T. H. L. Parker, W. B. Johnston, H. Knight, and J. L. M. Haire. London/New York: T&T Clark. First published 1957.  ',
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Barth, Karl',
                     'title' => 'Church Dogmatics 2:1',
                     'year' => '2004',
-                    'translator' => 'T. H. L. Parker, W. B. Johnston, Harold Knight, and J. L. M. Haire',
+                    'translator' => 'T. H. L. Parker and W. B. Johnston and H. Knight and J. L. M. Haire',
                     'note' => 'First published 1957.',
                     'editor' => 'G. W. Bromiley and T. F. Torrance',
                     'address' => 'London/New York',
@@ -9446,13 +9446,13 @@ class ExampleSeeder extends Seeder
             ],
    			// city in address not picked up; classified as incollection not book
 			[
-                'source' => 'Aquinas, Thomas. 2012. Commentary on the Letters of Saint Paul to the Corinthians. Translated by F.R. Larcher OP, B. Mortensen, and D. Keating. Edited by J. Mortensen and E. Alarcon. Lander, WY: The Aquinas Institute for the Study of Sacred Doctrine. ',
+                'source' => 'Aquinas, Thomas. 2012. Commentary on the Letters of Saint Paul to the Corinthians. Translated by F.R. Larcher, B. Mortensen, and D. Keating. Edited by J. Mortensen and E. Alarcon. Lander, WY: The Aquinas Institute for the Study of Sacred Doctrine. ',
                 'type' => 'book',
                 'bibtex' => [
                     'author' => 'Aquinas, Thomas',
                     'title' => 'Commentary on the Letters of Saint Paul to the Corinthians',
                     'year' => '2012',
-                    'translator' => 'F. R. Larcher OP, B. Mortensen, and D. Keating',
+                    'translator' => 'F. R. Larcher and B. Mortensen and D. Keating',
                     'editor' => 'J. Mortensen and E. Alarcon',
                     'address' => 'Lander, WY',
                     'publisher' => 'The Aquinas Institute for the Study of Sacred Doctrine',
@@ -9894,7 +9894,7 @@ class ExampleSeeder extends Seeder
                     'title' => 'Summa contra Gentiles',
                     'year' => '1955',
                     'note' => '5 vols.',
-                    'translator' => 'Anton C. Pegis et al.',
+                    'translator' => 'Anton C. Pegis and others',
                     'address' => 'Garden City',
                     'publisher' => 'Doubleday & Company',
                     ]
@@ -16036,6 +16036,59 @@ class ExampleSeeder extends Seeder
                     'pages' => '1909-1913',
                     ]
             ],
+			// translator not extracted
+			[
+                'source' => 'Pavis, Patrice Theatre at the Crossroads of Culture, translated by Loren Kruger (London and New York: Routledge, 1992). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Pavis, Patrice',
+                    'title' => 'Theatre at the Crossroads of Culture',
+					'translator' => 'Loren Kruger',
+                    'year' => '1992',
+                    'publisher' => 'Routledge',
+                    'address' => 'London and New York',
+                    ]
+            ],
+            // translator not extracted
+			[
+                'source' => 'Ricoeur, Paul Oneself as Another, trans. by Kathleen Blamey (Chicago and London: University of Chicago Press, 1992). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Ricoeur, Paul',
+                    'title' => 'Oneself as Another',
+					'translator' => 'Kathleen Blamey',
+                    'year' => '1992',
+                    'publisher' => 'University of Chicago Press',
+                    'address' => 'Chicago and London',
+                    ]
+            ],
+			// translators not formatted correctly
+			[
+                'source' => 'Sartre, Jean-Paul Politics and Literature, trans. by J. A. Underwood, John Calder (London: Calder & Boyars, 1973). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Sartre, Jean-Paul',
+                    'title' => 'Politics and Literature',
+                    'year' => '1973',
+                    'translator' => 'J. A. Underwood and John Calder',
+                    'publisher' => 'Calder & Boyars',
+                    'address' => 'London',
+                    ]
+            ],
+			// dash between publisher and address (whether either or both are in database)
+			[
+                'source' => 'Drury, Shadia B. 1994, Alexandre Kojève. The Roots of Postmodern Politics. St. Martin\'s Press - Zurich. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Drury, Shadia B.',
+                    'year' => '1994',
+                    'title' => 'Alexandre Kojève. The Roots of Postmodern Politics',
+                    'publisher' => 'St. Martin\'s Press',
+                    'address' => 'Zurich',
+                    ],
+                    'char_encoding' => 'utf8leave',
+                    'use' => 'zotero',
+                ],
 			
 
 

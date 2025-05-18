@@ -298,7 +298,7 @@ class AuthorParser
                     'authorstring' => substr($word, 0, -1),
                     'author_pattern' => 129,
                 ];
-            } elseif (ctype_alpha((string) $word) && ($this->inDict($word, $dictionaryNames) || in_array($word, ['American']))) {
+            } elseif (ctype_alpha((string) $word) && ($this->inDict($word, $dictionaryNames) || in_array($word, ['American', 'English', 'Dominican']))) {
                 $name .= ($i ? ' ' : '') . $word;
             } else {
                 $xword = substr($word, 0, -1);

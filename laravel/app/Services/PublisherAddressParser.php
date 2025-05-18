@@ -125,6 +125,12 @@ class PublisherAddressParser
                 $publisher = $address;
                 $address = $oldPublisher;
             }
+        // else if patter is "string1 - string2", take string1 to be publisher and string2 to be address.  (Must be spaces around
+        // hyphen, otherwise it might be a hyphen in the name of a publisher.)
+        } elseif (substr_count($string, '-') == 1 && preg_match('/^(?P<publisher>[^\-]+) - (?P<address>[^\-]+)$/u', $string, $matches)) {
+            $address = trim($matches['address']);
+            $publisher = trim($matches['publisher']);
+            $remainder = '';
         // else if string contains no colon and at least one ',', take publisher to be string
         // preceding first comma and city to be rest UNLESS string before comma has "City,? AB" format, in which case
         // it is a US city-state, and therefore is the address OR string before comma is a city string, in which case

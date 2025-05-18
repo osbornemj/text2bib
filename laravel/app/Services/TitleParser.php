@@ -111,25 +111,25 @@ class TitleParser
             return $result;
         }
 
-        // If $remainder ends with string in parenthesis, look at the string
-        if (preg_match('/\(([^\(]*)\)$/', rtrim($remainder, '. '), $matches)) {
-            $match = $matches[1];
-            if (Str::contains($match, $publishers)) {
-                // String in parentheses seems like it's the publication info; set $title equal to preceding string
-                $title = rtrim(Str::before($remainder, $match), ' (');
-                $remainder = $match;
-                $this->verbose('Taking title to be string preceding string in parentheses, which is taken to be publication info');
+        // // If $remainder ends with string in parenthesis, look at the string
+        // if (preg_match('/\(([^\(]*)\)$/', rtrim($remainder, '. '), $matches)) {
+        //     $match = $matches[1];
+        //     if (Str::contains($match, $publishers)) {
+        //         // String in parentheses seems like it's the publication info; set $title equal to preceding string
+        //         $title = rtrim(Str::before($remainder, $match), ' (');
+        //         $remainder = $match;
+        //         $this->verbose('Taking title to be string preceding string in parentheses, which is taken to be publication info');
 
-                $result['title'] = $title;
-                $result['titleDetails'] = $this->titleDetails;
-                $result['editor'] = $editor;
-                $result['translator'] = $translator;
-                $result['editionNumber'] = null;
-                $result['fullEdition'] = null;
+        //         $result['title'] = $title;
+        //         $result['titleDetails'] = $this->titleDetails;
+        //         $result['editor'] = $editor;
+        //         $result['translator'] = $translator;
+        //         $result['editionNumber'] = null;
+        //         $result['fullEdition'] = null;
         
-                return $result;
-            }
-        }
+        //         return $result;
+        //     }
+        // }
 
         // Title terminated by [C] or [J] or [A] or [D] or [Z].
         if (preg_match('%^(?P<title>.*?)\[(?P<designation>(J|C|A|D|Z))\](?P<remainder>.*?)$%', $remainder, $matches)) {

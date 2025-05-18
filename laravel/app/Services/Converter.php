@@ -1302,7 +1302,23 @@ class Converter
             $translatedBy = $setEditor ? $matches['editedAndTranslatedBy'] : $matches['translatedBy'];
 
             if ($use != 'latex' || ($bst && $bst->translator)) {
-                $this->setField($item, 'translator', $translator, 'setField 47');
+                // $this->setField($item, 'translator', $translator, 'setField 47');
+                $result = $this->authorParser->convertToAuthors(
+                    explode(' ', $translator),
+                    $trash1, 
+                    $year, 
+                    $month, 
+                    $day, 
+                    $date, 
+                    $isEditor, 
+                    $isTranslator, 
+                    $this->cities, 
+                    $this->dictionaryNames, 
+                    false, 
+                    'editors', 
+                    $language
+                );
+                $this->setField($item, 'translator', trim($result['authorstring']), 'setField 47');
             } else {
                 $this->addToField($item, 'note', $translatedBy . ' ' . $translator, 'addToField 18b');
             }
@@ -4363,23 +4379,23 @@ class Converter
                             // First use routine to find publisher and address, to catch cases where address
                             // contains more than one city, for example.
 
-                            // If item is a book, $cityString and $publisherString are set, and existing title is followed by comma
-                            // in $entry, string preceding $cityString
-                            // and $publisherString must be part of title (which must have been ended prematurely). 
-                            if ($itemKind == 'book' && ! empty($cityString) && ! empty($publisherString)) {
-                                $afterTitle = Str::after($entry, $item->title ?? '');
-                                if ($afterTitle[0] == ',') {
-                                    $beforeCity = Str::before($remainder, $cityString);
-                                    $beforePublisher = Str::before($remainder, $publisherString);
-                                    $beforeCityPublisher = strlen($beforeCity) < strlen($beforePublisher) ? $beforeCity : $beforePublisher;
-                                    if ($beforeCityPublisher) {
-                                        $entryStartingWithTitle = strstr($entry, $item->title);
-                                        $title = strstr($entryStartingWithTitle, $beforeCityPublisher, true) . $beforeCityPublisher;
-                                        $this->setField($item, 'title', trim($title, ' ,'), 'setField 225');
-                                        $remainder = $cityString . ':' . $publisherString;
-                                    }
-                                }
-                            }
+                            // // If item is a book, $cityString and $publisherString are set, and existing title is followed by comma
+                            // // in $entry, string preceding $cityString
+                            // // and $publisherString must be part of title (which must have been ended prematurely). 
+                            // if ($itemKind == 'book' && ! empty($cityString) && ! empty($publisherString)) {
+                            //     $afterTitle = Str::after($entry, $item->title ?? '');
+                            //     if ($afterTitle[0] == ',') {
+                            //         $beforeCity = Str::before($remainder, $cityString);
+                            //         $beforePublisher = Str::before($remainder, $publisherString);
+                            //         $beforeCityPublisher = strlen($beforeCity) < strlen($beforePublisher) ? $beforeCity : $beforePublisher;
+                            //         if ($beforeCityPublisher) {
+                            //             $entryStartingWithTitle = strstr($entry, $item->title);
+                            //             $title = strstr($entryStartingWithTitle, $beforeCityPublisher, true) . $beforeCityPublisher;
+                            //             $this->setField($item, 'title', trim($title, ' ,'), 'setField 225');
+                            //             $remainder = $cityString . ':' . $publisherString;
+                            //         }
+                            //     }
+                            // }
                         }
                     }
 

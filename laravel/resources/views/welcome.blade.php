@@ -57,13 +57,16 @@
             You receive a <x-link href="https://economics.utoronto.ca/osborne/latex/BIBTEX.HTM" target="_blank">BibTeX file</x-link> of the references.
         </p>
         <p class="mb-4">
-            Each reference in the file you upload may start with the authors, as in the examples above, or with the year, like this
+            Each reference in the file you upload must start either with the authors, as in the examples above, or with the year, like this
         </p>
         <div class="m-5 ml-8">
             <p>
-            <code>1961 Arrow, K. J., L. Hurwicz, and H. Uzawa, "Constraint qualifications in maximization problems," Naval Research Logistics Quarterly 8, 175-191.<span class="bg-slate-300 dark:bg-gray-500 font-bold"></span></code>
+            <code>1961 Arrow, K. J., L. Hurwicz, and H. Uzawa, "Constraint qualifications in maximization problems," Naval Research Logistics Quarterly 8, 175-191</code>
             </p>
         </div>
+        <p class="mb-4">
+            and must contain a title.
+        </p>
         <p class="mb-4">
             Each reference may be preceded by one of the strings <code>\bibitem{}</code>, <code>\bibitem{&lt;label&gt;}</code>, <code>\bibitem[&lt;text&gt;]{&lt;label&gt;}</code>, <code>\noindent</code>, <code>\smallskip</code>, <code>\bigskip</code>, or <code>\item</code> or any of the characters in the string <code>.,[]()|*+</code>, or, if it doesn't start with the year, any digit.  If it starts with a string in brackets that contains at least one letter (e.g. <code>[Arrow1990]</code>), the string is interpreted as the label for the item.  (An entirely numeric string in brackets is intepreted as a number for the item, and is ignored.)  If it starts with the year, the year may be followed by any character in the string <code>|*+</code>.
         </p>
@@ -72,6 +75,9 @@
         </p>
         <p class="mb-4">
             The system does not extract the references from a file that contains other material, so the file you upload should contain <i>only</i> the list of references, not other text.  
+        </p>
+        <p class="mb-4 pb-8">
+            To get an idea of the range of references the system converts correctly, see the page of <x-link href="{{ url('examples') }}">examples</x-link>.
         </p>
     </div>
 
