@@ -145,11 +145,11 @@ class ExampleCheckController extends Controller
 
             $typeCounts[$example->type]++;
 
-            if (isset($output['incollection_case'])) {
-                if (isset($incollectionCases[$output['incollection_case']])) {
-                    $incollectionCases[$output['incollection_case']]++;
+            if (isset($output['incollection_pattern'])) {
+                if (isset($incollectionCases[$output['incollection_pattern']])) {
+                    $incollectionCases[$output['incollection_pattern']]++;
                 } else {
-                    $incollectionCases[$output['incollection_case']] = 1;
+                    $incollectionCases[$output['incollection_pattern']] = 1;
                 }
             }
         }

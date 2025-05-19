@@ -2855,7 +2855,7 @@ class Converter
                             if (! isset($item->year) || ! $item->year) {
                                 $this->setField($item, 'year', $matches['year'], 'setField 106');
                             }
-                        } elseif (preg_match('/^(?P<before>.*?)(?P<publisherWord>(University|Press))/', $remainder, $matches)) {
+                        } elseif (preg_match('/^(?P<before>.*?)(?P<publisherWord>(' . $this->regExps->publisherRegExp . '))/', $remainder, $matches)) {
                             // If remainder contains publisher word, look for editor before preceding punctuation
                             $origRemainder = $remainder;
                             $before = $matches['before'];
@@ -3854,7 +3854,7 @@ class Converter
                                     $this->verbose('booktitle case 14d');
                                 }
                                 $remainder = '';
-                            } elseif (preg_match('/^(?P<booktitle>[\p{L}: ]+)[.,] (?P<publisher>[\p{L} ]+(Press|Publishing)), (?P<address>[\p{L}, ]+)$/', $remainder, $matches)) {
+                            } elseif (preg_match('/^(?P<booktitle>[\p{L}: ]+)[.,] (?P<publisher>[\p{L} ]+(' . $this->regExps->publisherRegExp . ')), (?P<address>[\p{L}, ]+)$/', $remainder, $matches)) {
                                 $this->setField($item, 'booktitle', $matches['booktitle'], 'setField 165');
                                 $this->setField($item, 'address', trim($matches['address']), 'setField 166');
                                 $this->setField($item, 'publisher', $matches['publisher'], 'setField 167');

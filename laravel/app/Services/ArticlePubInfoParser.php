@@ -84,16 +84,26 @@ class ArticlePubInfoParser
                 $initialWords[] = $word;
                 array_shift($remainingWords);
                 $remainder = implode(' ', $remainingWords);
-                if ($key === count($words) - 1 // last word in remainder
-                    || (isset($words[$key+1]) && Str::contains($words[$key+1], range('1', '9'))) // next word contains a digit
-                    || (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}:?$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
-                    || preg_match('/^(' . $this->monthsRegExp[$language] . ')( [0-9]{1,2})?[\-.,;]/', $remainder) // <month> or <month day> next
-                    || preg_match('/^(' . $this->regExps->numberRegExp . ')/u', $remainder) // followed by number info
-                    || preg_match('/^(\(?(' . $this->regExps->volumeRegExp . ')) /', $remainder) // followed by volume info
-                    || preg_match($this->regExps->startPagesRegExp, ltrim($remainder, '( ')) // followed by pages info
-                    || preg_match('/^' . $this->articleRegExp . '/i', $remainder) // followed by article info
-                    || $this->containsFontStyle($remainder, true, 'bold', $posBold, $lenBold) // followed by bold
-                    || $this->containsFontStyle($remainder, true, 'italics', $posItalic, $lenItalic) // followed by italics
+                if (
+                    $key === count($words) - 1 // last word in remainder
+                    || 
+                    (isset($words[$key+1]) && Str::contains($words[$key+1], range('1', '9'))) // next word contains a digit
+                    || 
+                    (isset($words[$key+1]) && preg_match('/^[IVXLCD]{2,}[:,]?$/', $words[$key+1])) // next word is Roman number.  2 or more characters required because some journal names end in "A", "B", "C", "D", ....  That means I or C won't be detected as a volume number.
+                    || 
+                    preg_match('/^(' . $this->monthsRegExp[$language] . ')( [0-9]{1,2})?[\-.,;]/', $remainder) // <month> or <month day> next
+                    || 
+                    preg_match('/^(' . $this->regExps->numberRegExp . ')/u', $remainder) // followed by number info
+                    || 
+                    preg_match('/^(\(?(' . $this->regExps->volumeRegExp . ')) /', $remainder) // followed by volume info
+                    || 
+                    preg_match($this->regExps->startPagesRegExp, ltrim($remainder, '( ')) // followed by pages info
+                    || 
+                    preg_match('/^' . $this->articleRegExp . '/i', $remainder) // followed by article info
+                    || 
+                    $this->containsFontStyle($remainder, true, 'bold', $posBold, $lenBold) // followed by bold
+                    || 
+                    $this->containsFontStyle($remainder, true, 'italics', $posItalic, $lenItalic) // followed by italics
                     // (Str::endsWith($word, '.') && strlen($word) > 2 && $this->inDict($word) && !in_array($word, $this->excludedWords))
                    )
                 {
@@ -178,7 +188,7 @@ class ArticlePubInfoParser
             $remainder = trim(substr($remainder, strlen($matches[0])));
             $result = true;
         // e.g. Volume 6, 41-75$ OR 6 41-75$
-       } elseif (preg_match('/^' . $volumeRx . $punc1 . $pagesRx . '$/J', $remainder, $matches)) {
+       } elseif (preg_match('/^' . $volumeWithRomanRx . $punc1 . $pagesRx . '$/J', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--'], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 4');
             if (Str::contains($matches['pp'], ['-', '_', '?']) || strlen($matches['pp']) < 7 || (isset($matches['pageWord']) && $matches['pageWord'])) {
                 $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 5a');

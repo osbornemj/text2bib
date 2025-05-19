@@ -54,6 +54,8 @@ class RegularExpressions
     var $proceedingsRegExp;
     var $proceedingsExceptionsRegExp;
 
+    var $publisherRegExp;
+
     var $seriesRegExp;
 
     var $fullThesisRegExp;
@@ -491,6 +493,19 @@ class RegularExpressions
         $this->volumeNumberPagesRegExp = '/(' . $this->volumeRegExp . ')?[0-9]{1,4} ?(' . $this->numberRegExp . ')?[ \(][0-9]{1,4}[ \)]:? ?(' . $this->pageRegExp . ')/u';
 
         $this->volumeNumberYearRegExp = '/(' . $this->volumeAndCodesRegExp . ')? ?\d{1,4}(, ?| )(' . $this->numberRegExp . ')? ?\d{1,4} [\(\[]?' . $this->yearRegExp . '[\)\]]/u';
+
+        ////////////////
+        // Publishers //
+        ////////////////
+
+        $publisherWords = [
+            'Press',
+            'Publishers?',
+            'Publishing',
+            'University',
+        ];
+
+        $this->publisherRegExp = implode('|', $publisherWords);
 
         /////////////////
         // Proceedings //

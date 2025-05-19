@@ -266,9 +266,9 @@ class TitleParser
             // word is '//' (used as separator in some references (Russian?)), stop and form title
             if (
                     (
-                    in_array($word . ' ', $this->italicCodes) &&
-                    isset($words[$key-1]) &&
-                    in_array(substr($words[$key-1], -1), [',', '.', ':', ';', '!', '?'])
+                        in_array($word . ' ', $this->italicCodes) &&
+                        isset($words[$key-1]) &&
+                        in_array(substr($words[$key-1], -1), [',', '.', ':', ';', '!', '?'])
                     )
                     ||
                     $word == '//'
@@ -428,7 +428,9 @@ class TitleParser
                         // Some styles use a colon to separate the title from the publication information,
                         // and removing the next condition does not affect the conversion of any other item.
                         // ! Str::endsWith($word, ':')
-                        // &&
+                        //////////////////////////////////////////
+                        // Publication info for journal article //
+                        //////////////////////////////////////////
                         (
                             preg_match('/^' . $this->regExps->journalRegExp . ' /u', $remainder)
                             // 1- or 2-word journal name followed by numbers, 'p', '.', ' ', and '-' (pub info)
@@ -558,6 +560,10 @@ class TitleParser
                         $remainder = $matches['remainder'] ?? '';
                     }
 
+                    ////////////////////////////
+                    // Other publication info //
+                    ////////////////////////////
+
                     if (
                         $this->containsFontStyle($remainder, true, 'italics', $startPos, $length)
                         || $upcomingJournalAndPubInfo
@@ -637,6 +643,8 @@ class TitleParser
                            )
                         // <publisher> (1 or 2 words), <city> (1 or 2 words), US State, <year>?
                         || preg_match('/^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?, (?P<city>\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)?, \p{Lu}{2})(, ' . $this->yearRegExp . ')?$/u', $remainder, $matches) 
+                        // one-word address, publisher, <year>?
+                        || preg_match('/^\(?\p{Lu}\p{Ll}+,( \p{Lu}\p{Ll}+){1,4}, (' . $this->yearRegExp . ')?\)?$/u', $remainder) 
                         // [,.] <address>: <publisher>(, <year>)?$ OR (<address>: <publisher>(, <year>)?)
                         // Note that ',' is allowed in address and '.' and '&' are allowed in publisher.
                         // May need to put a limit on length of publisher part?

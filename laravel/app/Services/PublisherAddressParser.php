@@ -13,6 +13,13 @@ class PublisherAddressParser
     use StringExtractors;
     use Utilities;
 
+    private RegularExpressions $regExps;
+
+    public function __construct()
+    {
+        $this->regExps = new RegularExpressions;
+    }
+
     /**
      * Assuming $string contains the publisher and address, isolate those two components.
      * @param $string string
@@ -49,18 +56,15 @@ class PublisherAddressParser
             return '';
         } 
 
-        // Strings that occur in publishers' names and end in periods that are not sentence-ending
-        $periodExceptions = ['Inc.', 'St.', 'Univ.', 'Pub.', 'Co.'];
-
         $containsPublisher = $containsCity = false;
         $string = trim($string, ' (),');
-        if (! Str::endsWith($string, $periodExceptions)) {
+        if (! Str::endsWith($string, $this->publisherAbbreviations)) {
             $string = trim($string, '.');
         }
 
         $stringHasOnePeriod = false;
         // Exclude periods that end abbreviations
-        if (substr_count($string, '. ') == 1 && ! Str::contains($string, $periodExceptions)) {
+        if (substr_count($string, '. ') == 1 && ! Str::contains($string, $this->publisherAbbreviations)) {
             $stringHasOnePeriod = true;
         }
 
@@ -83,7 +87,7 @@ class PublisherAddressParser
 
             $remainder = substr($string, $colonPos + 1);
             $remainder = trim($remainder, ',: ');
-            if (! Str::endsWith($remainder, $periodExceptions)) {
+            if (! Str::endsWith($remainder, $this->publisherAbbreviations)) {
                 $remainder = trim($remainder, '.');
             }
 
@@ -94,11 +98,11 @@ class PublisherAddressParser
             $periodPos = strpos($remainder, '.');
             $truncatedRemainder = $periodPos !== false ? substr($remainder, 0, $periodPos+1) : null;
 
-            // If period ends one of the $periodExceptions, ignore it and find next period
+            // If period ends one of the $this->publisherAbbreviations, ignore it and find next period
             if (
                 $periodPos !== false 
                 && 
-                Str::endsWith($truncatedRemainder, $periodExceptions)
+                Str::endsWith($truncatedRemainder, $this->publisherAbbreviations)
                ) {
                 $pos = strpos(substr($remainder, $periodPos + 1), '.');
                 $periodPos = ($pos === false) ? false : $periodPos + 1 + $pos;
@@ -109,7 +113,7 @@ class PublisherAddressParser
                 $remainder = substr($remainder, $periodPos);
             } else {
                 $publisher = trim($remainder, ', ');
-                if (! Str::endsWith($publisher, $periodExceptions)) {
+                if (! Str::endsWith($publisher, $this->publisherAbbreviations)) {
                     $publisher = trim($publisher, '.');
                 }
                 $remainder = '';
@@ -120,7 +124,7 @@ class PublisherAddressParser
             }
 
             // If publisher ends in " [A-Z][A-Z]" (US 2-letter state abbreviation) then in fact it must be the address, and if address ends in 'Press' it must be the publisher, so switch the publisher and address
-            if (preg_match('/ ([A-Z]{2}|USA)$/', $publisher) || preg_match('/ Press$/', $address)) {
+            if (preg_match('/ ([A-Z]{2}|USA)$/', $publisher) || preg_match('/ (' . $this->regExps->publisherRegExp . ')$/', $address)) {
                 $oldPublisher = $publisher;
                 $publisher = $address;
                 $address = $oldPublisher;
@@ -144,8 +148,11 @@ class PublisherAddressParser
             } elseif ($stringBeforeComma == $cityString) {
                 $address = $stringBeforeComma . ', ' . $stringAfterComma;
                 $publisher = '';
-            } elseif (in_array($stringAfterComma, ['Publishers', 'Publisher'])) {
+            } elseif (preg_match('/^Publishers?$/', $stringAfterComma)) {
                 $publisher = $string;
+            } elseif (preg_match('(' . $this->regExps->publisherRegExp . ')', $stringAfterComma)) {
+                $address = $stringBeforeComma;
+                $publisher = $stringAfterComma;
             } else {
                 $publisher = $stringBeforeComma;
                 $address = $stringAfterComma;

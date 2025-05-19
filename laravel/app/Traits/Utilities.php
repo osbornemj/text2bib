@@ -46,6 +46,9 @@ trait Utilities
     // (otherwise word following "manuscript" will be matched, for example)
     public $workingPaperNumberRegExp = '(\\\\#|number|no\.?)? ?(?=.*[0-9])(?P<number>[a-zA-Z0-9\-]+)[.,]?';
 
+    // Strings that occur in publishers' names and end in periods that are not sentence-ending
+    public $publisherAbbreviations = ['Inc.', 'St.', 'Univ.', 'Pub.', 'Co.'];
+
     public $detailLines;
 
     public function isInitials(string $word): bool

@@ -27,7 +27,7 @@ class IncollectionPubInfoParser
         $publisherRegExp = '(?P<publisher>[\p{L}\-]+( [\p{L}\-]+)?( \(?[\p{L}\-()]+\)?)?)';
         $publisherUpTo4WordsRegExp = '(?P<publisher>[\p{L}\-\/]+( [\p{L}\-\/]+){0,2}( \(?[\p{L}\-()]+\)?)?)';
         $publisherAnyLengthRegExp = '(?P<publisher>[\p{L}\-\/]+( [\p{L}\-\/]+)*( [\p{L}\-\/()]+)?)';
-        $publisherDetailsRegExp = '(?P<publisher>[\p{L}\-\/ ]*(University|Press|Publisher|Publishers)[\p{L}\-\/() ]*)';
+        $publisherDetailsRegExp = '(?P<publisher>[\p{L}\-\/ ]*(' . $this->regExps->publisherRegExp . ')[\p{L}\-\/() ]*)';
 
         $addressPublisher1 = '(?P<address>' . $addressRegExp . '): ?(?P<publisher>' . $publisherAnyLengthRegExp . ')';
         $addressPublisher2 = '(?P<address>' . $addressRegExp . '), (?P<publisher>' . $publisherDetailsRegExp . ')'; 

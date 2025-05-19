@@ -16086,9 +16086,34 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'St. Martin\'s Press',
                     'address' => 'Zurich',
                     ],
-                    'char_encoding' => 'utf8leave',
-                    'use' => 'zotero',
-                ],
+                'char_encoding' => 'utf8leave',
+                'use' => 'zotero',
+            ],
+			// volume not detected
+			[
+                'source' => 'Ankersmit, F. R. 1990. “Reply to Professor Zagorin,” History and Theory XXIX, 275—296. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Ankersmit, F. R.',
+                    'year' => '1990',
+                    'title' => 'Reply to Professor Zagorin',
+                    'journal' => 'History and Theory',
+					'volume' => 'XXIX',
+                    'pages' => '275-296',
+                    ]
+            ],
+			// why detected as article?
+			[
+                'source' => 'May, Todd The Moral Theory of Poststructuralism (Pennsylvania, Pennsylvania State University Press, 1995). ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'May, Todd',
+                    'title' => 'The Moral Theory of Poststructuralism',
+					'address' => 'Pennsylvania',
+                    'year' => '1995',
+                    'publisher' => 'Pennsylvania State University Press',
+                    ]
+            ],
 			
 
 
