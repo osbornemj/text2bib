@@ -75,7 +75,8 @@ trait AuthorPatterns
         $otherNameRegExp = '(?=[^ ]*\p{Ll})'.$nameSegment;
         // Uppercase name
         $ucNameRegExp = '\p{Lu}+( \p{Lu}+)?';
-        $initialRegExp = '((\p{Lu}|'.$abbreviationsUsedAsInitials.')\.?|\p{Lu}\.?-\p{Lu}\.?)';
+        //$initialRegExp = '((\p{Lu}|'.$abbreviationsUsedAsInitials.')\.?|\p{Lu}\.?-\p{Lu}\.?)';
+        $initialRegExp = '((\p{Lu}|'.$abbreviationsUsedAsInitials.')\.?|\p{Lu}\.?-\p{Lu}\.?|'.$vonNameRegExp.')';
         $initialPeriodRegExp = '((\p{Lu}|'.$abbreviationsUsedAsInitials.')\.|\p{Lu}\.-\p{Lu}\.)';
 
         // Spaces between initials are added before an item is processed, so "A.B." doesn't need to be matched
@@ -359,7 +360,8 @@ trait AuthorPatterns
                 'name2' => $initialsLastName,
                 'end1' => ',? '.$andRegExp.' ',
                 // 'end2' => '(: |\. |,? ' . $notJr . ')',
-                'end2' => $periodOrColonOrCommaYearOrCommaNotJr,
+                //'end2' => $periodOrColonOrCommaYearOrCommaNotJr,
+                'end2' => $periodOrColonOrCommaYearOrCommaNotInitialNotAnd,
                 'end3' => null,
             ],
             // 28. Smith, Jane( J\.?)? and Susan( K\.?)? Jones[,.]

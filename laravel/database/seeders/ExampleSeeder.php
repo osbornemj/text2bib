@@ -16114,6 +16114,37 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Pennsylvania State University Press',
                     ]
             ],
+			// v. and d. are valid von names?
+			[
+                'source' => 'Aziz, A. N. A., Bosh, K. v. d. & Nillson, K., 2018. Recreational Use of Urban Green Space in Malaysian Cities. International Journal of Business and Society, 19(S1), pp. 1-16. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Aziz, A. N. A. and Bosh, K. v. d. and Nillson, K.',
+                    'year' => '2018',
+                    'title' => 'Recreational Use of Urban Green Space in Malaysian Cities',
+					'journal' => 'International Journal of Business and Society',
+                    'volume' => '19',
+                    'number' => 'S1',
+                    'pages' => '1-16',
+                    ]
+            ],
+            // why doesn't incollection pub info match a pattern?
+			[
+                'source' => 'Walther, J.B. (2011) \'Theories of Computer-Mediated Communication and Interpersonal Relations\', in Knapp, M.L., Hall, J.A. and Horgan, T.G. (eds.) Nonverbal Communication. Boston: Allyn & Bacon, pp. 57–70. Available at: https://www.researchgate.net/publication/228162399_Theories_of_Computer-Mediated_Communication_and_Interpersonal_Relations (Accessed: 22 May 2025). ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'urldate' => '2025-05-22',
+                    'url' => 'https://www.researchgate.net/publication/228162399_Theories_of_Computer-Mediated_Communication_and_Interpersonal_Relations',
+                    'author' => 'Walther, J. B.',
+                    'year' => '2011',
+                    'title' => 'Theories of Computer-Mediated Communication and Interpersonal Relations',
+                    'pages' => '57-70',
+                    'address' => 'Boston',
+                    'publisher' => 'Allyn & Bacon',
+                    'editor' => 'Knapp, M. L. and Hall, J. A. and Horgan, T. G.',
+                    'booktitle' => 'Nonverbal Communication',
+                    ]
+            ],
 			
 
 
