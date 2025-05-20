@@ -25,9 +25,9 @@ class IncollectionPubInfoParser
         $addressRegExp = '(?<address>[\p{L},]+( [\p{L}]+)?)';
         
         $publisherWord = '[\p{L}\-&\/]+';
-        $publisherRegExp = '(?P<publisher>'.$publisherWord.'( '.$publisherWord.')?( \(?'.$publisherWord.'\)?)?)';
-        $publisherUpTo4WordsRegExp = '(?P<publisher>'.$publisherWord.'( '.$publisherWord.'){0,2}( \(?'.$publisherWord.'\)?)?)';
-        $publisherAnyLengthRegExp = '(?P<publisher>'.$publisherWord.'( '.$publisherWord.')*)';
+        $publisherRegExp = '(?P<publisher>( ?'.$publisherWord.'){1,2}( \(?'.$publisherWord.'\)?)?)';
+        $publisherUpTo4WordsRegExp = '(?P<publisher>( '.$publisherWord.'){1,3}( \(?'.$publisherWord.'\)?)?)';
+        $publisherAnyLengthRegExp = '(?P<publisher>( '.$publisherWord.')+)';
         $publisherDetailsRegExp = '(?P<publisher>[\p{L}\-\/ ]*('.$this->regExps->publisherRegExp.')[\p{L}\-\/() ]*)';
 
         $addressPublisher1 = '(?P<address>'.$addressRegExp.'): ?(?P<publisher>'.$publisherAnyLengthRegExp.')';
@@ -58,19 +58,21 @@ class IncollectionPubInfoParser
             // <editor> Ed.[.,] <booktitle>, <addressAndPublisher>
             9 => $editorRegExp.',? '.$this->regExps->edsNoParensRegExp.'[.,]? (?P<booktitle>[^,.]*)[,.] '.$addressAndPublisherRegExp,
             // <editor>,? (Ed.)[,:]? <booktitle[no comma or period]>. \(?<addressAndPublisher>\)?
-            10 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^,.]*)[\.,] \(?'.$addressAndPublisherRegExp.'\)?',            
+            10 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^,.]*)[.,] \(?'.$addressAndPublisherRegExp.'\)?',
             // <editor>,? (Ed.)[,:]? <booktitle>[no period]. \(<addressAndPublisher>\)?
-            11 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)\.? \('.$addressAndPublisherRegExp.'\)?',                        
+            11 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)\.? \('.$addressAndPublisherRegExp.'\)?',
             // <booktitle> (eds. editor>), <addressAndPublisher>
-            12 => '(?P<booktitle>.{5,80}) \('.$this->regExps->edsNoParensRegExp.' '.$editorRegExp.'\), '.$addressAndPublisherRegExp.'',
+            12 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)\. \(?'.$addressPublisher1.'\)?',
+            // <booktitle> (eds. editor>), <addressAndPublisher>
+            13 => '(?P<booktitle>.{5,80}) \('.$this->regExps->edsNoParensRegExp.' '.$editorRegExp.'\), '.$addressAndPublisherRegExp.'',
             // <booktitle> edited by <editor>[.,] \(?<addressAndPublisher>\)?
-            13 => '(?P<booktitle>.*?)'.$this->regExps->editedByRegExp.' '.$editorRegExp.'[.,] \(?'.$addressAndPublisherRegExp.'\)?',
+            14 => '(?P<booktitle>.*?)'.$this->regExps->editedByRegExp.' '.$editorRegExp.'[.,] \(?'.$addressAndPublisherRegExp.'\)?',
             // <editor>,? (Ed.)[,:]? <booktitle>[no punc]. <addressAndPublisher>
-            14 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[\p{L} ]*)[,.] '.$addressAndPublisherRegExp,                                    
+            15 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[\p{L} ]*)[,.] '.$addressAndPublisherRegExp,
             // <editor>,? (Ed.)[,:]? <booktitle>[no period]. <publisher[no punc]>
-            15 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)[,.] (?P<publisher>[\p{L} ]+)',                                    
+            16 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)[,.] (?P<publisher>[\p{L} ]+)',
             // <booktitle> (<editor> ed.).? <publisher>
-            16 => $booktitleRegExp.' \('.$editorRegExp.',? '.$this->regExps->edsNoParensRegExp.'\)\.? (?P<publisher>[\p{L}() ]+)',
+            17 => $booktitleRegExp.' \('.$editorRegExp.',? '.$this->regExps->edsNoParensRegExp.'\)\.? (?P<publisher>[\p{L}() ]+)',
         ];
 
         $this->patternsNoBooktitle = [

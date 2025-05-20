@@ -16145,7 +16145,23 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Nonverbal Communication',
                     ]
             ],
-			
+            // why doesn't incollection pub info match a pattern?
+            [
+                'source' => 'Cornelius, S. W. (1990). Aging and everyday cognitive abilities. In T. M. Hess (Ed.), Aging and cognition: Knowledge, organization, and utilization (pp. 411–459). Amsterdam: North-Holland/Elsevier. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Cornelius, S. W.',
+                    'year' => '1990',
+                    'title' => 'Aging and everyday cognitive abilities',
+                    'pages' => '411-459',
+                    'address' => 'Amsterdam',
+                    'publisher' => 'North-Holland/Elsevier',
+                    'editor' => 'T. M. Hess',
+                    'booktitle' => 'Aging and cognition',
+                    'booksubtitle' => 'Knowledge, organization, and utilization',
+                    ]
+            ],
+            			
 
 
             
