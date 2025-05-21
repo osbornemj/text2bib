@@ -442,10 +442,10 @@ class TitleParser
                             // || preg_match('/^\p{Lu}[A-Za-z &]+[,.]? (' . $volumeAndCodesRegExp . ')? ?[0-9]+}?[,:(]? ?(' . $this->regExps->numberRegExp . ')?[0-9, \-p\.():\?]*$/', $remainder) 
                             // journal name, forthcoming/in press/... 
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]?(' . $this->regExps->endForthcomingRegExp . ')/u', $remainder) 
-                            // journal name of form "Aaaa, Aaaa & Aaaa" followed by volume(number) page range 
+                            // journal name of form "Aaaa, Aaaa & Aaaa" followed by volume(number) page range or article number
                             || 
                             (
-                                preg_match('/^((\p{Lu}\p{L}+|&),? ){1,4}[0-9(),\- ]{5,20}$/u', $remainder) 
+                                preg_match('/^((\p{Lu}\p{L}+|&),? ){1,4}[0-9(),\- ]{5,20}(e(\d{4}[A-Z]{2}\d{4,8}|\d{4,8}))?$/u', $remainder) 
                                 &&
                                 ! preg_match('/' . $this->regExps->workingPaperRegExp . '/u', $remainder)
                             )
@@ -732,6 +732,12 @@ class TitleParser
                         $this->verbose('$stringToNextPeriodOrComma: ' . $stringToNextPeriodOrComma);
                         $this->verbose('$wordAfterNextCommaOrPeriod: ' . $wordAfterNextCommaOrPeriod);
                         $this->verbose('$stringToNextPeriod: ' . $stringToNextPeriod);
+                        // if (preg_match('/^(?P<beforeDigit>[^\d]*)/', $remainder, $matches) && $matches['beforeDigit']) {
+                        //     $charCountBeforeDigit = mb_strlen($matches['beforeDigit']);
+                        // } else {
+                        //     $charCountBeforeDigit = mb_strlen($remainder);
+                        // }
+
                     // if first character of next word is lowercase letter and does not end in period
                     // OR $word and $nextWord are A. and D. or B. and C.
                     // OR following string starts with a part designation,
@@ -850,6 +856,8 @@ class TitleParser
                             ! $this->isProceedings($remainder)
                             && 
                             strlen($remainder) > strlen($stringToNextPeriodOrComma) + ($containsPages ? 37 : 30)
+                            // &&
+                            // $charCountBeforeDigit > 38
                             && 
                             ! $upcomingYear
                             && 

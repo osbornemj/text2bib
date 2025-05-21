@@ -503,6 +503,7 @@ class RegularExpressions
             'Publishers?',
             'Publishing',
             'University',
+            'Books',
         ];
 
         $this->publisherRegExp = implode('|', $publisherWords);

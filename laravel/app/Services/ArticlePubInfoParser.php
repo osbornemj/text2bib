@@ -151,7 +151,8 @@ class ArticlePubInfoParser
 
         // First check for some common patterns
         // p omitted from permitted starting letters, to all p100 to be interpreted as page 100.
-        $number = '[A-Za-oq-z]?([Ss]upp )?[0-9]{1,13}[A-Za-z]?';
+        $articleNumber = '(?P<articleNumber>e([0-9]{4,}|[0-9]{4}[A-Z]{2}[0-9]+))(?![A-Za-z0-9])';
+        $number = '[A-Za-oq-z]?([Ss]upp )?[0-9]{1,13}[A-Za-z]?([0-9]{1,4})?';
         $numberWithRoman = '([0-9]{1,4}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
         $numberRange = $number . '(( ?--?-? ?|_|\?)' . $number . ')?';
@@ -174,17 +175,25 @@ class ArticlePubInfoParser
         // Letter in front of volume is allowed only if preceded by "vol(ume)" and is single number
         $volumeWordLetterRx = '('. $this->regExps->volumeAndCodesRegExp . ')(?P<vol>' . $letterNumber . ')';
         $numberWordRx = '('. $this->regExps->numberRegExp . ')(?P<num>' . $numberRangeWithSlash . ')';
-        $pagesRx = '(?P<pageWord>'. $pageWordsRegExp . ')?(?P<pp>' . $letterNumberRange . ')';
+        $pagesRx = '(?P<pageWord>'. $pageWordsRegExp . ')?(?P<pp>' . $letterNumberRange . ')(?![A-Za-z0-9])';
         $punc1 = '(}?[ ,] ?|, ?| ?: ?|,? ?[(\[]\(?|\* ?\(|\. - )';
         $punc2 = '([)\]]?[ :] ?|[)\]]?\)?, ?| ?: ?|\. - )';
 
         $dashEquivalents = ['---', '--', ' - ', '- ', ' -', '_', '?'];
 
         // e.g. Volume 6, No. 3, pp. 41-75 OR 6(3) 41-75
-        if (preg_match('/^' . $volumeWithRomanRx . $punc1 . $numberRx . $punc2 . $pagesRx . '/J', $remainder, $matches)) {
+        if (preg_match('/^'.$volumeWithRomanRx.$punc1.$numberRx.$punc2 .'('.$pagesRx.'|'.$articleNumber.')/J', $remainder, $matches)) {
             $this->setField($item, 'volume', str_replace(['---', '--', ' - '], '-', $matches['vol']), 'getVolumeNumberPagesForArticle 1');
             $this->setField($item, 'number', str_replace(['---', '--', ' - '], '-', $matches['num']), 'getVolumeNumberPagesForArticle 2');
-            $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3');
+            if (isset($matches['articleNumber'])) {
+                $this->addToField($item, 'note', 'Article ' . $matches['articleNumber'], 'getVolumeNumberPagesForArticle 3a');
+            } else {
+                if (Str::contains($matches['pp'], ['-', '_', '?']) || strlen($matches['pp']) < 10 || (isset($matches['pageWord']) && $matches['pageWord'])) {
+                    $this->setField($item, 'pages', str_replace($dashEquivalents, '-', $matches['pp']), 'getVolumeNumberPagesForArticle 3b');
+                } else {
+                    $this->addToField($item, 'note', 'Article ' . $matches['pp'], 'getVolumeNumberPagesForArticle 3c');
+                }
+            }
             $remainder = trim(substr($remainder, strlen($matches[0])));
             $result = true;
         // e.g. Volume 6, 41-75$ OR 6 41-75$

@@ -8443,7 +8443,7 @@ class ExampleSeeder extends Seeder
                     'year' => '2022',
                     'volume' => '11',
                     'number' => '12',
-                    'pages' => 'e393111234449',
+                    'note' => 'Article e393111234449',
                     'doi' => '10.33448/rsd-v11i12.34449',
                     ],
                     'char_encoding' => 'utf8leave',
@@ -11371,7 +11371,7 @@ class ExampleSeeder extends Seeder
 					'year' => '2020',
 					'volume' => '9',
 					'number' => '6',
-					'pages' => '15705e',
+					'pages' => '15705e38',
                 ],
                 'char_encoding' => 'utf8leave',
             ],
@@ -11386,7 +11386,7 @@ class ExampleSeeder extends Seeder
 					'year' => '2013',
 					'volume' => '16',
 					'number' => '2',
-					'pages' => '125e',
+					'pages' => '125e47',
                     ]
             ],
 			// author name ended early
@@ -12680,7 +12680,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Stephan T, Burgess SM, Cheng H, Danko CG, Gill CA, Jarvis ED, Koepfli KP, Koltes JE, Lyons E, Ronald P, Ryder OA, Schriml LM, Soltis P, VandeWoude S, Zhou H, Ostrander EA, Karlsson EK. Darwinian genomics and diversity in the tree of life. Proc Natl Acad Sci U S A. 2022 Jan 25;119(4):e2115644119. doi: 10.1073/pnas.2115644119. PMID: 35042807; PMCID: PMC8795533. ',
                 'type' => 'article',
                 'bibtex' => [
-                    'note' => 'PMID: 35042807. PMCID: PMC8795533',
+                    'note' => 'PMID: 35042807. PMCID: PMC8795533. Article e2115644119',
                     'doi' => '10.1073/pnas.2115644119',
                     'author' => 'Stephan, T. and Burgess, S. M. and Cheng, H. and Danko, C. G. and Gill, C. A. and Jarvis, E. D. and Koepfli, K. P. and Koltes, J. E. and Lyons, E. and Ronald, P. and Ryder, O. A. and Schriml, L. M. and Soltis, P. and VandeWoude, S. and Zhou, H. and Ostrander, E. A. and Karlsson, E. K.',
                     'title' => 'Darwinian genomics and diversity in the tree of life',
@@ -12690,7 +12690,6 @@ class ExampleSeeder extends Seeder
                     'date' => '2022-01-25',
                     'volume' => '119',
                     'number' => '4',
-                    'pages' => 'e2115644119',
                     ]
             ],
             // journal not extracted
@@ -16161,6 +16160,35 @@ class ExampleSeeder extends Seeder
                     'booksubtitle' => 'Knowledge, organization, and utilization',
                     ]
             ],
+  			// Note should contain article number
+			[
+                'source' => 'Albino, F., S. Gremion, V. Pinel, P. Bouygues, A. Peltier, F. Beauducel, J‐L. Froger, and Agus Budi Santoso. "Benefits of GNSS local observations compared to global weather‐based models for InSAR tropospheric corrections over tropical volcanoes: Case studies of Piton de la Fournaise and Merapi." Journal of Geophysical Research: Solid Earth 130, no. 4 (2025): e2024JB028898.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Albino, F. and S. Gremion and V. Pinel and P. Bouygues and A. Peltier and F. Beauducel and J.-L. Froger and Agus Budi Santoso',
+                    'title' => 'Benefits of GNSS local observations compared to global weather-based models for InSAR tropospheric corrections over tropical volcanoes: Case studies of Piton de la Fournaise and Merapi',
+                    'year' => '2025',
+                    'journal' => 'Journal of Geophysical Research: Solid Earth',
+                    'volume' => '130',
+                    'number' => '4',
+                    'note' => 'Article e2024JB028898',
+                    ]
+            ],
+			// misclassified as unpublished
+			[
+                'source' => 'Angarita, M., Grapenthin, R., Henderson, S., Christoffersen, M., & Anderson, K. R. (2024). Versatile Modeling Of Deformation (VMOD) inversion framework: Application to 20 years of observations at Westdahl volcano and Fisher Caldera, Alaska, US. Geochemistry, Geophysics, Geosystems, 25(4), e2023GC011341. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Angarita, M. and Grapenthin, R. and Henderson, S. and Christoffersen, M. and Anderson, K. R.',
+                    'year' => '2024',
+                    'title' => 'Versatile Modeling Of Deformation (VMOD) inversion framework: Application to 20 years of observations at Westdahl volcano and Fisher Caldera, Alaska, US',
+					'journal' => 'Geochemistry, Geophysics, Geosystems',
+					'volume' => '25',
+					'number' => '4',
+					'note' => 'Article e2023GC011341',
+                    ]
+            ],
+
             			
 
 
