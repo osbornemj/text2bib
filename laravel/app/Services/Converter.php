@@ -2330,7 +2330,7 @@ class Converter
                             );
                             $this->setField($item, 'translator', trim($result['authorstring']), 'setField 64');
                         } else {
-                            $this->addToField($item, 'note', $translatedBy . ' ' . $translator, 'addToField 18');
+                            $this->addToField($item, 'note', ($matches['translatedBy'] ?? '') . ' ' . $translator, 'addToField 18');
                         }
                         $remainder = (trim($matches['before']) ?? '') . ' ' . (trim($matches['remainder']) ?? '');
                     }
