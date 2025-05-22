@@ -16188,6 +16188,114 @@ class ExampleSeeder extends Seeder
 					'note' => 'Article e2023GC011341',
                     ]
             ],
+			// remove colon from end of doi
+			[
+                'source' => 'Aronson, D., Rayfield, E.J. How hyperglycemia promotes atherosclerosis: molecular mechanisms. Cardiovasc Diabetol 1, 1 (2002). https://doi.org/10.1186/1475-2840-1-1IF: 8.5 Q1 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1186/1475-2840-1-1IF',
+                    'author' => 'Aronson, D. and Rayfield, E. J.',
+                    'title' => 'How hyperglycemia promotes atherosclerosis: molecular mechanisms',
+                    'year' => '2002',
+                    'journal' => 'Cardiovasc Diabetol',
+                    'volume' => '1',
+                    'number' => '1',
+                    'pages' => '8',
+                    'note' => '5 Q1',
+                    ]
+            ],
+			// make incollection pattern for it?
+			[
+                'source' => 'DeGrandpre, K., & Lu, Z. (2024). Modeling of Remote Sensing Data: Common Practices, State of the Art, and Limitations. In: Chaussard, E., Jones, C., Chen, J.A., Donnellan, A. (eds) Remote Sensing for Characterization of Geohazards and Natural Resources, 225-269. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'DeGrandpre, K. and Lu, Z.',
+                    'year' => '2024',
+                    'title' => 'Modeling of Remote Sensing Data: Common Practices, State of the Art, and Limitations',
+                    'pages' => '225-269',
+                    'editor' => 'Chaussard, E. and Jones, C. and Chen, J. A. and Donnellan, A.',
+                    'booktitle' => 'Remote Sensing for Characterization of Geohazards and Natural Resources',
+                    ]
+            ],
+			// Handle [C]// ?
+			[
+                'source' => 'He K, Zhang X, Ren S, et al. Delving deep into rectifiers: Surpassing human-level performance on imagenet classification[C]//Proceedings of the IEEE international conference on computer vision. 2015: 1026-1034. ',
+                'type' => 'inproceedings',
+                'bibtex' => [
+                    'author' => 'He, K. and Zhang, X. and Ren, S. and others',
+                    'title' => 'Delving deep into rectifiers: Surpassing human-level performance on imagenet classification',
+					'booktitle' => 'Proceedings of the IEEE international conference on computer vision',
+                    'year' => '2015',
+                    'pages' => '1026-1034',
+                    ]
+            ],
+			// publisher missed
+			[
+                'source' => 'Al Ghazāli. 1962. Al-lqtisād fi al-Itiqād. Edited by I. A. Çubukçu and H. Atay. Ankara: University of Ankara Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Al Ghazāli',
+                    'title' => 'Al-lqtisād fi al-Itiqād',
+                    'year' => '1962',
+                    'editor' => 'I. A. Çubukçu and H. Atay',
+                    'address' => 'Ankara',
+                    'publisher' => 'University of Ankara Press',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// address, publisher, and type missed
+			[
+                'source' => 'Mascall, Eric L. 1956. Christian Theology and Modern Science, London: Longmans ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Mascall, Eric L.',
+                    'title' => 'Christian Theology and Modern Science',
+                    'year' => '1956',
+                    'address' => 'London',
+                    'publisher' => 'Longmans',
+                    ]
+            ],
+			// school not identified
+			[
+                'source' => 'Reynolds, Jon. 2017. ‘Popular theology from popular scientists: assessing the legacy of Eddington and Jeans as apologists’. Unpublished PhD thesis, Durham University. ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Reynolds, Jon',
+                    'title' => 'Popular theology from popular scientists',
+                    'subtitle' => 'Assessing the legacy of Eddington and Jeans as apologists',
+                    'year' => '2017',
+                    'school' => 'Durham University',
+                    ]
+            ],
+			// 'dans' for 'in', 'dir' for 'eds'.
+			[
+                'source' => 'Camerer C. F. [2015], «The Promise and Success of Lab-Field Generalizability in Experimental Economics : A Critical Reply to Levitt and List», dans G. Fréchette et A. Schotter (dir.), Handbook of Experimental Economic Methodology, Oxford, Oxford University Press. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Camerer, C. F.',
+                    'year' => '2015',
+                    'title' => 'The Promise and Success of Lab-Field Generalizability in Experimental Economics : A Critical Reply to Levitt and List',
+                    'editor' => 'G. Fréchette and A. Schotter',
+					'booktitle' => 'Handbook of Experimental Economic Methodology',
+                    'address' => 'Oxford',
+                    'publisher' => 'Oxford University Press',
+                    ],
+					'char_encoding' => 'utf8leave',
+            ],
+			// doi.org repeated
+			[
+                'source' => 'Ametepey, S., Aigbavboa, C., Addy, H., & Thwala, W. (2024). A Bibliometric Review of the Trends of Construction Digitalization Research in the Past Ten Years. Buildings, 14(9). https://doi.org/https://doi.org/10.3390/buildings14092729 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Ametepey, S. and Aigbavboa, C. and Addy, H. and Thwala, W.',
+                    'title' => 'A Bibliometric Review of the Trends of Construction Digitalization Research in the Past Ten Years',
+                    'journal' => 'Buildings',
+                    'year' => '2024',
+                    'volume' => '14',
+                    'number' => '9',
+                    'doi' => '10.3390/buildings14092729',
+                    ]
+            ],
 
             			
 

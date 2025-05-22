@@ -356,12 +356,12 @@ class AuthorParser
 
             $nameComponentUpperCase[$i] = false;
 
-            $wordEndsName = false;
             $nameSuffixNoComma = false;
             if (substr($word, -1) == ';') {
                 $word = substr($word, 0, -1) . ',';
-                $wordEndsName = true;
             }
+
+            $wordIsAllCaps = preg_match('/^\p{Lu}*$/u', $word);
 
             // Word is in vonNames or it is all uppercase and lowercased version of it is a lowercased vonName
             // $wordIsVon = in_array($word, $this->vonNames)
@@ -372,7 +372,7 @@ class AuthorParser
             if (in_array($word, $this->vonNames)) {
                 $wordIsVon = true;
             }
-            if (preg_match('/^[A-Z]*$/', $word) && in_array(strtolower($word), array_map('strtolower', $this->vonNames))) {
+            if ($wordIsAllCaps && in_array(strtolower($word), array_map('strtolower', $this->vonNames))) {
                 $wordIsVon = true;
                 $word = strtolower($word);
             }
@@ -386,7 +386,7 @@ class AuthorParser
                 &&
                 ! $wordIsVon 
                 &&
-                preg_match('/^[A-Z]*$/', $word) 
+                $wordIsAllCaps
                 &&
                 isset($words[$i+1]) 
                 &&
@@ -401,7 +401,7 @@ class AuthorParser
             $prevWordHasComma = $wordHasComma;
             $wordHasComma = substr($word, -1) == ',';
             // Get letters in word, eliminating accents & other non-letters, to get accurate length
-            $lettersOnlyWord = preg_replace("/[^A-Za-z]/", '', $word);
+            $lettersOnlyWord = preg_replace("/[^\p{L}]/u", '', $word);
 
             // Deal with specific cases of no space at end of authors.  Note that case Smith~(1980) is
             // already handled.
@@ -414,7 +414,7 @@ class AuthorParser
                 $remainingWords = array_merge([$firstWord, ltrim(Str::after($word, '}'), ',.')], $remain);
                 $word = $firstWord;
             // Smith(2001)
-            } elseif (preg_match('/[a-zA-Z]\([19|20]/', $word)) {
+            } elseif (preg_match('/\p{L}\([19|20]/u', $word)) {
                 $firstWord = strtok($word, '(');
                 $remain = $remainingWords;
                 array_shift($remain);
@@ -466,12 +466,12 @@ class AuthorParser
                 $multipleAuthors = true;
             }
 
-            $edResult = $this->isEd($word);
+            $wordIsEds = $this->isEd($word);
 
             $nextWord = isset($words[$i+1]) ? rtrim($words[$i+1], ',;') : null;
 
             // Case of initials A. -B. (with space).
-            if ($nextWord && preg_match('/^[A-Z]\./', $word) && preg_match('/^-[A-Z]\./', $nextWord)) {
+            if ($nextWord && preg_match('/^\p{Lu}\./u', $word) && preg_match('/^-\p{Lu}\./u', $nextWord)) {
                 $word = $word . $nextWord;
                 array_shift($remainingWords);
                 $skip = true;
@@ -493,9 +493,9 @@ class AuthorParser
                 $authorIndex++;
                 $remainder = implode(" ", $remainingWords);
                 $done = false;
-            } elseif ($edResult) {
+            } elseif ($wordIsEds) {
                 $this->verbose('[convertToAuthors 2]');
-                if ($edResult == 1 && $multipleAuthors) {
+                if ($wordIsEds == 1 && $multipleAuthors) {
                    $warnings[] = "More than one editor has been identified, but string denoting editors (\"" . $word . "\") is singular";
                 }
                 $this->verbose("String for editors, so ending name string (word: " . $word .")");
@@ -563,7 +563,7 @@ class AuthorParser
                 $done = true;
             } elseif ($determineEnd && substr($word, -1) == ':') {
                 if (
-                        ! preg_match('/^[A-Z]\.:$/', $word)
+                        ! preg_match('/^\p{Lu}\.:$/u', $word)
                         && $namePart >= 2 
                         && isset($words[$i-1]) 
                         && in_array(substr($words[$i-1], -1), ['.', ',', ';']) 
@@ -699,17 +699,17 @@ class AuthorParser
                 && isset($words[$i+2])
                 && isset($words[$i+2][0])
                 && ! preg_match('/^eds?/', $words[$i+2])
-                && preg_match('/[A-Z]/', $words[$i+1][0])
-                && preg_match('/[a-z]/', $words[$i+2][0])
+                && preg_match('/\p{Lu}/u', $words[$i+1][0])
+                && preg_match('/\p{Ll}/u', $words[$i+2][0])
                 && (
                     ! $this->isAnd($words[$i+2], $language)
                     ||
-                    (isset($words[$i+3][0]) && preg_match('/[a-z]/', $words[$i+3][0]) && ! in_array($words[$i+3], $this->vonNames))
+                    (isset($words[$i+3][0]) && preg_match('/\p{Ll}/u', $words[$i+3][0]) && ! in_array($words[$i+3], $this->vonNames))
                    )
                 && (
                     ! in_array($words[$i+2], $this->vonNames)
                     ||
-                    (isset($words[$i+3][0]) && preg_match('/[a-z]/', $words[$i+3][0]) && ! in_array($words[$i+3], $this->vonNames))
+                    (isset($words[$i+3][0]) && preg_match('/\p{Ll}/u', $words[$i+3][0]) && ! in_array($words[$i+3], $this->vonNames))
                    )
                 && ! in_array($words[$i+2], ['et', 'et.', 'al', 'al.'])
                 && (! isset($words[$i+3]) || ! preg_match('/^[\(\[]?' . $this->yearRegExp . '[\)\]]?$/', trim($words[$i+3], '.')))
@@ -787,7 +787,8 @@ class AuthorParser
                             ||
                             (
                                 isset($words[$i+1])
-                                && preg_match('/^[A-Z]{2}:$/', $words[$i+1])
+                                && 
+                                preg_match('/^[A-Z]{2}:$/', $words[$i+1])
                             )
                         )
                 ) {
@@ -1100,14 +1101,17 @@ class AuthorParser
                         &&
                         (
                             $nameScore['count'] == 0
-                            || $nameScore['score'] / $nameScore['count'] < 0.26
+                            || 
+                            $nameScore['score'] / $nameScore['count'] < 0.26
                             || (
                                 $bareWordStartsLc
                                )
                             || (
                                 isset($bareWords[1])
-                                && mb_strtolower($bareWords[1]) == $bareWords[1]
-                                && ! $this->isAnd($bareWords[1], $language)
+                                && 
+                                mb_strtolower($bareWords[1]) == $bareWords[1]
+                                && 
+                                ! $this->isAnd($bareWords[1], $language)
                                 && (
                                     ! in_array($bareWords[1], $this->vonNames)
                                     ||
@@ -1118,16 +1122,21 @@ class AuthorParser
                                         && ! $this->isAnd($bareWords[2], $language)
                                         )
                                    )
-                                && ! in_array($remainingWords[1], ['et', 'et.', 'al', 'al.'])
+                                && 
+                                ! in_array($remainingWords[1], ['et', 'et.', 'al', 'al.'])
                                )
                             || (
                                 // title cannot start with lowercase letter (assumes that only words in author string that
                                 // can begin with lowercase letters are 'and', a von name, and 'et' or 'al').
                                 isset($remainingWords[1])
-                                && preg_match('/^[a-z]/', $remainingWords[1])
-                                && ! $this->isAnd($remainingWords[1])
-                                && ! in_array($remainingWords[1], $this->vonNames)
-                                && ! in_array($remainingWords[1], ['et', 'et.', 'al', 'al.'])
+                                && 
+                                preg_match('/^\p{Ll}/u', $remainingWords[1])
+                                && 
+                                ! $this->isAnd($remainingWords[1])
+                                && 
+                                ! in_array($remainingWords[1], $this->vonNames)
+                                && 
+                                ! in_array($remainingWords[1], ['et', 'et.', 'al', 'al.'])
                                )
                         )
                         &&
@@ -1268,7 +1277,7 @@ class AuthorParser
         }
 
         // If format of $nameString is "Smith. J.", remove the period after the last name
-        if (preg_match('/^(?P<last>\p{Lu}\p{L}+)\.(?P<remainder> \p{Lu}\.?)$/', $nameString, $matches)) {
+        if (preg_match('/^(?P<last>\p{Lu}\p{L}+)\.(?P<remainder> \p{Lu}\.?)$/u', $nameString, $matches)) {
             $nameString = $matches['last'] . $matches['remainder'];
         }
 
@@ -1462,7 +1471,7 @@ class AuthorParser
         $words = explode(' ', $string);
         $word1 = count($words) > 1 ? rtrim($words[1], ',.;') : null;
         
-        if (preg_match('/^(\p{L}+ ){4,}\p{L}+[.,]/', $string) && ! in_array('and', array_slice($words, 0, 4))) {
+        if (preg_match('/^(\p{L}+ ){4,}\p{L}+[.,]/u', $string) && ! in_array('and', array_slice($words, 0, 4))) {
             // 5 words without any punctuation or the word "and"
             $this->verbose("isNameString: string is not name (case 0)");
             $result = false;
@@ -1539,7 +1548,7 @@ class AuthorParser
         $result = false;
         $words = explode(' ', $string);
 
-        if (preg_match('/^(\p{L}+ ){4,}\p{L}+[.,]/', $string)) {
+        if (preg_match('/^(\p{L}+ ){4,}\p{L}+[.,]/u', $string)) {
             $result = false;
         } elseif ($this->isInitials($words[0])) {
             if (isset($words[1]) && $this->isName($words[1], '.')) {
@@ -1654,9 +1663,12 @@ class AuthorParser
         }
 
         $string = implode(' ', $wordsToCheck);
-        // Number of words in $wordsToCheck not in dictionary
-        $score += iterator_count($this->aspell->check($string, ['en_US']));
-        
+        // Number of words in $wordsToCheck not in US or GB dictionaries
+        $scoreUS = iterator_count($this->aspell->check($string, ['en_US']));
+        $scoreGB = iterator_count($this->aspell->check($string, ['en_GB']));
+
+        $score += min($scoreUS, $scoreGB);
+
         $returner = ['count' => count($wordsToCheck), 'score' => $score];
 
         return $returner;
@@ -1681,7 +1693,7 @@ class AuthorParser
 
         foreach ($words as $i => $word) {
             // in case word is like {J}.-{P}.
-            $word = preg_replace('/\{([A-Z])\}/', '$1', $word);
+            $word = preg_replace('/\{(\p{Lu})\}/u', '$1', $word);
             // in case word is {Smith} or {Smith},
             $endsWithComma = false;
             if (Str::endsWith($word, ',')) {

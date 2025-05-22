@@ -59,20 +59,22 @@ class IncollectionPubInfoParser
             9 => $editorRegExp.',? '.$this->regExps->edsNoParensRegExp.'[.,]? (?P<booktitle>[^,.]*)[,.] '.$addressAndPublisherRegExp,
             // <editor>,? (Ed.)[,:]? <booktitle[no comma or period]>. \(?<addressAndPublisher>\)?
             10 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^,.]*)[.,] \(?'.$addressAndPublisherRegExp.'\)?',
-            // <editor>,? (Ed.)[,:]? <booktitle>[no period]. \(<addressAndPublisher>\)?
+            // <editor>,? (Ed.)[,:]? <booktitle>[no period].? (<addressAndPublisher>)?
             11 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)\.? \('.$addressAndPublisherRegExp.'\)?',
-            // <booktitle> (eds. editor>), <addressAndPublisher>
+            // <editor>,? (eds.)[,:]? <booktitle>. (?<addressAndPublisher>)?
             12 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)\. \(?'.$addressPublisher1.'\)?',
+            // <editor>,? (eds.)[,:]? <booktitle>[no punc]
+            13 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[\p{L} ]+)',
             // <booktitle> (eds. editor>), <addressAndPublisher>
-            13 => '(?P<booktitle>.{5,80}) \('.$this->regExps->edsNoParensRegExp.' '.$editorRegExp.'\), '.$addressAndPublisherRegExp.'',
+            14 => '(?P<booktitle>.{5,80}) \('.$this->regExps->edsNoParensRegExp.' '.$editorRegExp.'\), '.$addressAndPublisherRegExp.'',
             // <booktitle> edited by <editor>[.,] \(?<addressAndPublisher>\)?
-            14 => '(?P<booktitle>.*?)'.$this->regExps->editedByRegExp.' '.$editorRegExp.'[.,] \(?'.$addressAndPublisherRegExp.'\)?',
+            15 => '(?P<booktitle>.*?)'.$this->regExps->editedByRegExp.' '.$editorRegExp.'[.,] \(?'.$addressAndPublisherRegExp.'\)?',
             // <editor>,? (Ed.)[,:]? <booktitle>[no punc]. <addressAndPublisher>
-            15 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[\p{L} ]*)[,.] '.$addressAndPublisherRegExp,
+            16 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[\p{L} ]*)[,.] '.$addressAndPublisherRegExp,
             // <editor>,? (Ed.)[,:]? <booktitle>[no period]. <publisher[no punc]>
-            16 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)[,.] (?P<publisher>[\p{L} ]+)',
+            17 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)[,.] (?P<publisher>[\p{L} ]+)',
             // <booktitle> (<editor> ed.).? <publisher>
-            17 => $booktitleRegExp.' \('.$editorRegExp.',? '.$this->regExps->edsNoParensRegExp.'\)\.? (?P<publisher>[\p{L}() ]+)',
+            18 => $booktitleRegExp.' \('.$editorRegExp.',? '.$this->regExps->edsNoParensRegExp.'\)\.? (?P<publisher>[\p{L}() ]+)',
         ];
 
         $this->patternsNoBooktitle = [

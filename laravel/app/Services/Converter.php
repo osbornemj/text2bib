@@ -428,7 +428,7 @@ class Converter
         $doi = Str::replaceStart('https://doi.org/', '', $doi);
         $doi = Str::replaceStart('doi.', '', $doi);
         $doi = rtrim($doi, ']');
-        $doi = ltrim($doi, '/:');
+        $doi = trim($doi, '/:');
 
         // escape underscores for latex bst that requires it
         if ($use == 'latex' && $bst && (! $bst->doi || $bst->doi_escape_underscore)) {
@@ -4484,7 +4484,7 @@ class Converter
                 } else {
                     if (preg_match('/\(' . $this->regExps->fullThesisRegExp . '\)/u', $remainder)) {
                         $remainder = $this->findAndRemove($remainder, ',? ?\(' . $this->regExps->fullThesisRegExp . '\)');
-                    } elseif (preg_match('/^(?P<before>.*?)' . $this->regExps->fullThesisRegExp . '[.,]? (?P<after>.*)$/', $remainder, $matches)) {
+                    } elseif (preg_match('/^([Uu]npublished)?(?P<before>.*?)' . $this->regExps->fullThesisRegExp . '[.,]? (?P<after>.*)$/', $remainder, $matches)) {
                         $remainder = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
                     } elseif (preg_match('/^(?P<before>.*?)' . $this->regExps->thesisRegExp . ' (?P<after>.*)$/', $remainder, $matches)) {
                         $remainder = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
@@ -4493,7 +4493,7 @@ class Converter
                         $remainder = $this->findAndRemove($remainder, $this->regExps->fullThesisRegExp);
                     }
                     $remainder = trim($remainder, ' -.,)[]');
-                    // if remainder contains number of pages, put them in note
+                    // if remainder contains number of pages, put it in note
                     $result = $this->removeAndReturn($remainder, '(?P<pageWithPp>\(?' . $this->regExps->pageRegExpWithPp . '\)?)', ['pageWithPp', 'pages']);
                     if ($result) {
                         if ($use == 'latex') {

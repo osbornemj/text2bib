@@ -141,7 +141,7 @@ trait Utilities
     {
         $aspell = Aspell::create();
         // strtolower to exclude proper names (e.g. Federico is in dictionary)
-        $inDict = iterator_count($aspell->check($lowercaseOnly ? strtolower($word) : $word)) == 0;
+        $inDict = iterator_count($aspell->check($lowercaseOnly ? mb_strtolower($word) : $word)) == 0;
         $notName = ! in_array($word, $dictionaryNames);
 
         return $inDict && $notName;
