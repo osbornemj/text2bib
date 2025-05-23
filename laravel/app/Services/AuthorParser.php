@@ -1370,7 +1370,7 @@ class AuthorParser
                 } elseif (preg_match('/^\\\\\S[a-zA-Z]$/', $name)) {  // e.g. \'A
                     $fName .= $name . '.';
                 } elseif ($isAbbreviationUsedAsInitial) {
-                    $fName .= $name . '.';
+                    $fName .= $name . (substr($name, -1) == '.' ? '' : '.');
                 } else {
                     $chars = mb_str_split($name);
                     foreach ($chars as $j => $char) {

@@ -787,7 +787,7 @@ class RegularExpressions
 
         // Other languages?
         $this->inReviewRegExp = '[Ii]n [Rr]eview';
-        $this->abbreviationsUsedAsInitials = '(ʿA|Ch|Mª|Wm|Yu|Zh)';  // including Yu is problematic because it is also a complete name
+        $this->abbreviationsUsedAsInitials = '(ʿA|Ch|Mª|Md|Wm|Yu|Zh)';  // including Yu is problematic because it is also a complete name
 
         $this->oclcLabelRegExp = 'OCLC:? ';
         $this->oclcNumberRegExp = '[0-9]+';

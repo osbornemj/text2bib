@@ -16310,6 +16310,145 @@ class ExampleSeeder extends Seeder
                     'pages' => '1171-1179',
                     ]
             ],
+            // journal included in title
+			[
+                'source' => 'Jafir, M., et al., Characterization of Ocimum basilicum synthesized silver nanoparticles and its relative toxicity to some insecticides against tobacco cutworm, Spodoptera litura Feb.(Lepidoptera; Noctuidae). Ecotoxicology and Environmental Safety, 2021. 218: p. 112278. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Jafir, M. and others',
+                    'title' => 'Characterization of Ocimum basilicum synthesized silver nanoparticles and its relative toxicity to some insecticides against tobacco cutworm, Spodoptera litura Feb.(Lepidoptera; Noctuidae)',
+					'journal' => 'Ecotoxicology and Environmental Safety',
+                    'year' => '2021',
+                    'volume' => '218',
+                    'pages' => '112278',
+                    ]
+            ],
+			// Part of journal included in title.
+			[
+                'source' => 'Deresa, B. M., & Goshu, B. S. (2023). Evaluating Pediatric Radiation Protection Knowledge, Attitudes, and Practices Among Physicians: A Case Study of Hospitals in Gambella Town, Ethiopia. Konfrontasi: Jurnal Kultural, Ekonomi dan Perubahan Sosial, 10(4), 196-203.  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Deresa, B. M. and Goshu, B. S.',
+                    'year' => '2023',
+                    'title' => 'Evaluating Pediatric Radiation Protection Knowledge, Attitudes, and Practices Among Physicians: A Case Study of Hospitals in Gambella Town, Ethiopia',
+                    'journal' => 'Konfrontasi: Jurnal Kultural, Ekonomi dan Perubahan Sosial',
+                    'volume' => '10',
+                    'number' => '4',
+                    'pages' => '196-203',
+                    ]
+            ],
+			// pages/article number missed
+			[
+                'source' => 'Ibrahim, M., Salama, A., Zahran, F., Abdelfattah, M., Alsalme, A., Bechelany, M., & Barhoum A. (2024). Fabrication of cellulose nanocrystals/carboxymethyl cellulose/zeolite membranes for methylene blue dye removal: understanding factors, adsorption kinetics, and thermodynamic isotherms. Frontiers in Chemistry, 12, 1330810. https://doi.org/10.3389/fchem.2024.1330810 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Ibrahim, M. and Salama, A. and Zahran, F. and Abdelfattah, M. and Alsalme, A. and Bechelany, M. and Barhoum, A.',
+                    'doi' => '10.3389/fchem.2024.1330810',
+                    'journal' => 'Frontiers in Chemistry',
+                    'note' => 'Article 1330810',
+                    'title' => 'Fabrication of cellulose nanocrystals/carboxymethyl cellulose/zeolite membranes for methylene blue dye removal: understanding factors, adsorption kinetics, and thermodynamic isotherms',
+                    'volume' => '12',
+                    'year' => '2024',
+                    ]
+            ],
+			// Problems with name "Md."
+			[
+                'source' => 'S. Mondal, S. P. Biswas, Md. S. Bin Islam, Md. R. Islam, and A. Fekih, ‘A 3-Phase Switched-Capacitor Single-Source MLI With Self-Voltage Balancing and Boosting Ability’, IEEE Transactions on Applied Superconductivity, vol. 34, no. 8, pp. 1–5, Nov. 2024, doi: 10.1109/TASC.2024.3450847. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1109/TASC.2024.3450847',
+                    'author' => 'S. Mondal and S. P. Biswas and Md. S. Bin Islam and Md. R. Islam and A. Fekih',
+                    'title' => 'A 3-Phase Switched-Capacitor Single-Source MLI With Self-Voltage Balancing and Boosting Ability',
+                    'year' => '2024',
+                    'month' => '11',
+                    'journal' => 'IEEE Transactions on Applied Superconductivity',
+                    'pages' => '1-5',
+                    'volume' => '34',
+                    'number' => '8',
+                    ]
+            ],
+			// Filho is the same as Junior. There is also another one "Neto" for the case you have the same given name as your grandfather. Both are suffixes.
+			[
+				'source' => 'MARTINS FILHO, Ives Gandra da Silva. Manual Esquemático de Filosofia.  São Paulo, LTr 2004',
+				'type' => 'book',
+				'bibtex' => [
+					'author' => 'Martins Filho, Ives Gandra da Silva',
+					'title' => 'Manual Esquemático de Filosofia',
+					'address' => 'São Paulo',
+					'publisher' => 'LTr',
+					'year' => '2004',
+				],
+				'char_encoding' => 'utf8leave',
+				'language' => 'pt',
+			],
+			// Title ended early because of quotes
+			[
+                'source' => 'Afifi, T. D. (2003). ‘Feeling caught’ in stepfamilies: Managing boundary turbulence through appropriate communication privacy rules. Journal of Social and Personal Relationships, 20(6), 729–755. https://doi.org/10.1177/0265407503206002 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Afifi, T. D.',
+                    'doi' => '10.1177/0265407503206002',
+                    'journal' => 'Journal of Social and Personal Relationships',
+                    'number' => '6',
+                    'pages' => '729-755',
+                    'title' => '`Feeling caught\' in stepfamilies: Managing boundary turbulence through appropriate communication privacy rules',
+                    'volume' => '20',
+                    'year' => '2003',
+                    ]
+            ],
+			// Similar example, but with following uppercase letter
+			[
+                'source' => 'Hargittai, E., & Marwick, A. (2016). “What can I really do?” Explaining the privacy paradox with online apathy. International journal of communication, 10, 21. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Hargittai, E. and Marwick, A.',
+                    'journal' => 'International journal of communication',
+                    'pages' => '21',
+                    'title' => '``What can I really do?\'\' Explaining the privacy paradox with online apathy',
+                    'volume' => '10',
+                    'year' => '2016',
+                    ]
+            ],
+            // incollection misidentified as book
+			[
+                'source' => '\bibitem{Satake1987}Satake, M. (1987). Graph-theoretical approach to the mechanics of granular materials. In: Spencer A.J.M. (ed.) Continuum Models of Discrete Systems, 163-173. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'editor' => 'Spencer, A. J. M.',
+                    'author' => 'Satake, M.',
+                    'year' => '1987',
+                    'title' => 'Graph-theoretical approach to the mechanics of granular materials',
+                    'pages' => '163-173',
+                    'booktitle' => 'Continuum Models of Discrete Systems',
+                    ]
+            ],
+			// Do not terminate title in middle of parentheses
+			[
+                'source' => 'McDermott, Martin J. 1978. The Theology of al-Shaikh al-Mufīd (d.413/1022). Beirut: Dar El-Machreq. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'McDermott, Martin J.',
+                    'title' => 'The Theology of al-Shaikh al-Mufīd (d. 413/1022)',
+                    'year' => '1978',
+                    'address' => 'Beirut',
+                    'publisher' => 'Dar El-Machreq',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// Error in detection for author pattern
+			[
+                'source' => ' Alomoush, W, Khashan, O.A, Alrosan, A, Houssein, E.H, Attar, H, Alweshah, M, Alhosban, F. Fuzzy Clustering Algorithm Based on Improved Global Best-Guided Artificial Bee Colony with New Search Probability Model for Image Segmentation. Sensors (2022), 22, 8956. https://doi.org/10.3390/s22228956 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.3390/s22228956',
+                    'author' => 'Alomoush, W. and Khashan, O. A. and Alrosan, A. and Houssein, E. H. and Attar, H. and Alweshah, M. and Alhosban, F.',
+                    'year' => '2022',
+                    'title' => 'Fuzzy Clustering Algorithm Based on Improved Global Best-Guided Artificial Bee Colony with New Search Probability Model for Image Segmentation',
+					'journal' => 'Sensors',
+                    'volume' => '22',
+                    'pages' => '8956',
+                    ]
+            ],
 
             			
 

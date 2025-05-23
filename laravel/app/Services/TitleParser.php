@@ -449,7 +449,17 @@ class TitleParser
                                 &&
                                 ! preg_match('/' . $this->regExps->workingPaperRegExp . '/u', $remainder)
                             )
-                            // journal name, volume (year?) issue? page
+                            // journal name consisting of {\p{L} ,&]{5,55} followeed by pub info of form [0-9(),.:\-p ]{15,30}.  Lower
+                            // bound of 15 for pub info is to rule out just a year, for a book.
+                            || 
+                            (
+                                preg_match('/^\p{Lu}[\p{L} ,&]{5,55}[0-9(),.:\-p ]{15,30}$/u', $remainder) 
+                                &&
+                                ! preg_match('/' . $this->regExps->workingPaperRegExp . '/u', $remainder)
+                            )
+                            // $word ends in period and then journal name consists of \p{Lu}[\p{L},: ] and pub info is like 123(13),? <pages>
+                            || Str::endsWith($word, '.') && preg_match('/^\p{Lu}[\p{L},: ]{10,60}[0-9]{1,4}\([0-9]{1,2}\),? '. $this->regExps->pagesRegExp . '$/u', $remainder)
+                            // journal name[no punc][.,]? volume (year?) issue? page
                             // Note: permits no space or punctuation between volume number and page number
                             || preg_match('/^\p{Lu}[\p{L} &()}]+[,.]? (' . $this->regExps->volumeAndCodesRegExp . ')? ?[0-9IVXLC]+}?[,:(]? ?([(\[]?' . $this->yearRegExp . '[)\]]?,? ?)?(' . $this->regExps->numberRegExp . ')?[A-Z]?[0-9\/\-]{0,4}\)?,? ?' . $this->regExps->pagesRegExp . '\.? ?$/u', $remainder)
                             // similar, but requires some punctuation or space between volume and page numbers, but allows a single

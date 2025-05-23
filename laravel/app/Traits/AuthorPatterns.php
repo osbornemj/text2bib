@@ -304,7 +304,7 @@ trait AuthorPatterns
             // Hu, L, Geng, S., Li, Y., Cheng. S., Fu, X., Yue, X. and Han, X.
             // which has a typo --- no period after first L --- is not truncated after Geng, S.
             [
-                'name1' => $lastNameRegExp.',? \p{Lu}{1,3}',
+                'name1' => $lastNameRegExp.',? \p{Lu}{1,3}(?!\. \p{Lu}\.?,)',
                 'end1' => ', ',
                 // 'end2' => '(: |\. ' . $notAnd . ')',
                 // 'end2' => $periodNotAndOrColonOrCommaYearNotCommaLetter,

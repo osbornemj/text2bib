@@ -365,15 +365,25 @@ trait Utilities
             }
         }
 
-        // If quoted text ends in a lowercase letter, not punctuation for example, and is followed by a space and then a lowercase letter,
-        // and is not followed by " in" or by " forthcoming", it is the first word of the title that is in
+        // If quoted text ends in a lowercase letter, not punctuation for example, and is followed by a space and then a lowercase letter or
+        // at least 6 words without any punctuation and then at least three words with punctuation allowed (which could be journal name
+        // or publisher/address)
+        // and is not followed by " in" plus "," or ":" or " \p{Lu}", or by " forthcoming", it is the first word of the title that is in
         // quotes --- it is not the entire title.  E.g. "Global" cardiac ...
         if (
             $quotedText
-            && preg_match('/[a-z]$/', $quotedText)
-            && preg_match('/^:? [a-z]/', $afterQuote)
-            && ! preg_match('/^ '. $this->regExps->inRegExp . '[ :,]/', $afterQuote)
-            && ! preg_match('/^ ' . $this->regExps->forthcomingRegExp . '/', $afterQuote)
+            &&
+            preg_match('/(\p{Ll}|\?)$/u', $quotedText)
+            && 
+            (
+                preg_match('/^:? \p{Ll}/u', $afterQuote)
+                ||
+                preg_match('/^:? (\p{L}+ ){6,}([\p{L}.,]+ ){3,}/u', $afterQuote)
+            )
+            && 
+            ! preg_match('/^ '. $this->regExps->inRegExp . '([:,]| ("|``|`|\')?\p{Lu})/u', $afterQuote)
+            && 
+            ! preg_match('/^ ' . $this->regExps->forthcomingRegExp . '/', $afterQuote)
         ) {
             $quotedText = '';
         } else {
