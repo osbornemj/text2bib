@@ -16296,6 +16296,20 @@ class ExampleSeeder extends Seeder
                     'doi' => '10.3390/buildings14092729',
                     ]
             ],
+			// journal included in title
+			[
+                'source' => 'Ga’al, H., et al., Larvicidal and pupicidal evaluation of silver nanoparticles synthesized using Aquilaria sinensis and Pogostemon cablin essential oils against dengue and zika viruses vector Aedes albopictus mosquito and its histopathological analysis. Artificial cells, nanomedicine, and biotechnology, 2018. 46(6): p. 1171-1179. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Ga\'al, H. and others',
+                    'title' => 'Larvicidal and pupicidal evaluation of silver nanoparticles synthesized using Aquilaria sinensis and Pogostemon cablin essential oils against dengue and zika viruses vector Aedes albopictus mosquito and its histopathological analysis',
+					'journal' => 'Artificial cells, nanomedicine, and biotechnology',
+                    'year' => '2018',
+                    'volume' => '46',
+                    'number' => '6',
+                    'pages' => '1171-1179',
+                    ]
+            ],
 
             			
 
