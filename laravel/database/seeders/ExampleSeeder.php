@@ -16449,6 +16449,21 @@ class ExampleSeeder extends Seeder
                     'pages' => '8956',
                     ]
             ],
+			// deal with "Available from"
+			[
+                'source' => 'Alvarez B, Pellise L, Lobo F. Sistemas de pago a prestadores de servicios de salud en países de América Latina y de la OCDE. Rev Panam Salud Publica. 2000;8(1/2). Available from: http://www.scielosp.org/scielo.php',
+                'type' => 'article',
+                'bibtex' => [
+                    'journal' => 'Rev Panam Salud Publica',
+					'volume' => '8',
+					'number' => '1/2',
+                    'url' => 'http://www.scielosp.org/scielo.php',
+                    'author' => 'Alvarez, B. and Pellise, L. and Lobo, F.',
+                    'title' => 'Sistemas de pago a prestadores de servicios de salud en países de América Latina y de la OCDE',
+                    'year' => '2000',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
 
             			
 

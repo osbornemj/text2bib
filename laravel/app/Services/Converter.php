@@ -1355,6 +1355,7 @@ class Converter
         $containsDigitOutsideVolume = true;
         $containsNumberDesignation = false;
         $containsVolumeNumberPages = false;
+        $containsVolumeNumber = false;
         $startsAddressPublisher = $endsAddressPublisher = false;
         $cityLength = 0;
         $publisherString = $cityString = '';
@@ -1414,6 +1415,11 @@ class Converter
         if (preg_match($this->regExps->volumeNumberPagesRegExp, $remainder)) {
             $containsVolumeNumberPages = true;
             $this->verbose("Contains volume-number-pages info.");
+        }
+
+        if (preg_match($this->regExps->volumeNumberRegExp, $remainder)) {
+            $containsVolumeNumber = true;
+            $this->verbose("Contains volume-number info.");
         }
 
         // Contains volume designation
@@ -1656,6 +1662,7 @@ class Converter
                     ! $containsInteriorVolume &&
                     ! $containsVolumeNumberPages &&
                     ! $containsVolumeNumberYear &&
+                    ! $containsVolumeNumber &&
                     ! $containsPageRange &&
                     ! $containsJournalName &&
                     ! $allWordsInitialCaps &&
@@ -1672,6 +1679,7 @@ class Converter
                     ! $containsInteriorVolume &&
                     ! $containsVolumeNumberPages &&
                     ! $containsVolumeNumberYear &&
+                    ! $containsVolumeNumber &&
                     ! $containsPageRange &&
                     ! $containsJournalName &&
                     ! $containsThesis &&

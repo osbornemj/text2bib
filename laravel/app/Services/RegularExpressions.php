@@ -73,6 +73,7 @@ class RegularExpressions
     var $volumeRegExp;
     var $volumeAndCodesRegExp;
     var $volumeNumberPagesRegExp;
+    var $volumeNumberRegExp;
     var $volumeNumberYearRegExp;
     var $volumeWithNumberRegExp;
 
@@ -491,6 +492,8 @@ class RegularExpressions
         $this->volumeWithNumberRegExp = '(' . $this->volumeRegExp . ') ?(\\\textit\{|\\\textbf\{|\\\emph\{)?[1-9][0-9]{0,4}';
     
         $this->volumeNumberPagesRegExp = '/(' . $this->volumeRegExp . ')?[0-9]{1,4} ?(' . $this->numberRegExp . ')?[ \(][0-9]{1,4}[ \)]:? ?(' . $this->pageRegExp . ')/u';
+
+        $this->volumeNumberRegExp = '/(' . $this->volumeRegExp . ')?[0-9]{1,4} ?(' . $this->numberRegExp . ')?[ \(][0-9]{1,4}(\/[0-9]{1,4})?\)?/u';
 
         $this->volumeNumberYearRegExp = '/(' . $this->volumeAndCodesRegExp . ')? ?\d{1,4}(, ?| )(' . $this->numberRegExp . ')? ?\d{1,4} [\(\[]?' . $this->yearRegExp . '[\)\]]/u';
 
