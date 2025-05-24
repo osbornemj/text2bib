@@ -50,7 +50,7 @@
                 {{ $output->author_pattern }}
             @endif
 
-            @if ($output->itemType->name == 'incollection')
+            @if ($output->itemType && $output->itemType->name == 'incollection')
                 &nbsp;&bull;&nbsp;
                 Incollection pattern:
                 @if ($output->incollection_pattern === null)
