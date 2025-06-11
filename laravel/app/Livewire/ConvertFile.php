@@ -51,6 +51,8 @@ class ConvertFile extends Component
 
     public $invalidItems;
 
+    public $malformedUtf8Items;
+
     public $conversionId;
 
     public $outputId;
@@ -376,6 +378,7 @@ class ConvertFile extends Component
 
         $convertedEntries = [];
         $invalidItems = [];
+        $malformedUtf8Items = [];
         $previousAuthor = null;
         foreach ($entries as $j => $entry) {
             // Some files start with \u{FEFF}, but this character is now converted to space earlier in this method
@@ -506,36 +509,42 @@ class ConvertFile extends Component
                 $convItem['item_type_id'] = $itemTypes->where('name', $convItem['itemType'])->first()->id;
 
                 // Following doesn't avoid the error
-                // Unable to encode attribute [item] for model [App\Models\Output] to JSON: Malformed UTF-8 characters, possibly incorrectly encoded.
+                // "Unable to encode attribute [item] for model [App\Models\Output] to JSON:
+                // Malformed UTF-8 characters, possibly incorrectly encoded"
                 // because, it seems, there is another issue, although no error is reported
                 // (the conversion appears not to start)
                 // $convertedItem = json_encode($convItem['item'], JSON_INVALID_UTF8_SUBSTITUTE);
                 // $originalItem = json_encode($convItem['item'], JSON_INVALID_UTF8_SUBSTITUTE);
-                $output = Output::create([
-                    'source' => $convItem['source'],
-                    'detected_encoding' => $encodings[$i],
-                    'conversion_id' => $conversion->id,
-                    'item_type_id' => $convItem['item_type_id'],
-                    'orig_item_type_id' => $convItem['item_type_id'],
-                    'label' => $convItem['label'],
-                    'item' => $convItem['item'],
-                    //'item' => $convertedItem,
-                    'orig_item' => $convItem['item'],
-                    //'orig_item' => $originalItem,
-                    'crossref_item_type' => $convItem['crossref_item_type'] ?? null,
-                    'crossref_item_type_id' => $convItem['crossref_item_type_id'] ?? null,
-                    'crossref_item_label' => $convItem['crossref_item_label'] ?? null,
-                    'crossref_item' => $convItem['crossref_item'] ?? null,
-                    'crossref_source' => $crossrefSource ?? null,
-                    'author_pattern' => $convItem['author_pattern'],
-                    'incollection_pattern' => $convItem['incollection_pattern'],
-                    'seq' => $i,
-                ]);
+                try {
+                    $output = Output::create([
+                        'source' => $convItem['source'],
+                        'detected_encoding' => $encodings[$i],
+                        'conversion_id' => $conversion->id,
+                        'item_type_id' => $convItem['item_type_id'],
+                        'orig_item_type_id' => $convItem['item_type_id'],
+                        'label' => $convItem['label'],
+                        'item' => $convItem['item'],
+                        //'item' => $convertedItem,
+                        'orig_item' => $convItem['item'],
+                        //'orig_item' => $originalItem,
+                        'crossref_item_type' => $convItem['crossref_item_type'] ?? null,
+                        'crossref_item_type_id' => $convItem['crossref_item_type_id'] ?? null,
+                        'crossref_item_label' => $convItem['crossref_item_label'] ?? null,
+                        'crossref_item' => $convItem['crossref_item'] ?? null,
+                        'crossref_source' => $crossrefSource ?? null,
+                        'author_pattern' => $convItem['author_pattern'],
+                        'incollection_pattern' => $convItem['incollection_pattern'],
+                        'seq' => $i,
+                    ]);
 
-                $convItem['orig_item'] = $convItem['item'];
-                $convItem['orig_item_type'] = ItemType::find($convItem['item_type_id'])->name;
+                    $convItem['orig_item'] = $convItem['item'];
+                    $convItem['orig_item_type'] = ItemType::find($convItem['item_type_id'])->name;
 
-                $convertedItems[$output->id] = $convItem;
+                    $convertedItems[$output->id] = $convItem;
+                } catch (Throwable $e) {
+                    report($e);
+                    $malformedUtf8Items[] = ['source' => $convItem['source']];
+                }
             }
         }
 
@@ -544,6 +553,7 @@ class ConvertFile extends Component
 
         $this->convertedItems = $convertedItems;
         $this->invalidItems = $invalidItems;
+        $this->malformedUtf8Items = $malformedUtf8Items;
         $this->includeSource = $conversion->include_source;
         $this->reportType = $conversion->report_type;
         $this->itemTypes = $itemTypes;

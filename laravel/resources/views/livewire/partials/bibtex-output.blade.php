@@ -22,6 +22,19 @@
             </div>
             @endif
 
+            @if (count($malformedUtf8Items))
+            <div class="mt-4 border-b">
+                The following {{ Str::plural('item', $malformedUtf8Items) }} in your file @if (count($malformedUtf8Items) > 1) are @else is @endif not properly UTF-8 encoded, and cannot be converted.
+                <ul class="my-4">
+                    @foreach($malformedUtf8Items as $malformedUtf8Item)
+                    <li class="ml-4 mb-2">
+                        {{ $malformedUtf8Item['source'] }}
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
             <div class="mt-4">
                 <p>
                     {{ count($convertedItems) }} {{ Str::plural('item', $convertedItems) }} converted

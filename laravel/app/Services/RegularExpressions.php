@@ -487,6 +487,7 @@ class RegularExpressions
         $volumeRegExp = implode('|', array_map(fn($word) => $word . ' ?', $volumeWords));
 
         // volume words, with optional space after each one
+        // Should be synchronized with expressions in ArticlePubInfoParser.
         $this->volumeRegExp = $volumeRegExp;
         $this->volumeAndCodesRegExp = $volumeRegExp . '|{\\\bf |\\\textbf{|\\\textit{|\\\emph{|\*|_';
         $this->volumeWithNumberRegExp = '(' . $this->volumeRegExp . ') ?(\\\textit\{|\\\textbf\{|\\\emph\{)?[1-9][0-9]{0,4}';
