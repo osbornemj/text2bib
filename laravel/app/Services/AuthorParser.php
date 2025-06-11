@@ -268,7 +268,7 @@ class AuthorParser
          * Author strings without spaces, like 'John Doe and Jane Doe' or 'Doe J and Doe K' should have been
          * taken care of by author patterns earlier.
          */
-        if(preg_match('/^(?P<name>[\p{L}() ]{3,80})(?!\d)[,.]? ?(?P<remains>[(\[]?[1-9][0-9]{3}.*$)/u', $remainder, $matches)) {
+        if(preg_match('/^(?P<name>[\p{L}()\- ]{3,80})(?!\d)[,.]? ?(?P<remains>[(\[]?([1-9][0-9]{3}|n\. ?d\.|s\. ?f\.|s\. ?d\.).*$)/u', $remainder, $matches)) {
             $remainder = $matches['remains'] ?? '';
             $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
             $this->verbose('Authors match pattern 128');
@@ -276,6 +276,20 @@ class AuthorParser
                 'authorstring' => trim($matches['name']),
                 'author_pattern' => 128,
             ];
+        }
+
+        // Allow commas but require some words in the array ['for', 'of', 'the'] to appear in the name
+        if(preg_match('/^(?P<name>[\p{L}()\- ,]{3,80})(?!\d)[,.]? ?(?P<remains>[(\[]?([1-9][0-9]{3}|n\. ?d\.|s\. ?f\.|s\. ?d\.).*$)/u', $remainder, $matches)) {
+            $possibleNameWords = explode(' ', $matches['name']);
+            if (count(array_intersect($possibleNameWords, ['for', 'of', 'the']))) {
+                $remainder = $matches['remains'] ?? '';
+                $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
+                $this->verbose('Authors match pattern 129');
+                return [
+                    'authorstring' => trim($matches['name']),
+                    'author_pattern' => 129,
+                ];
+            }
         }
 
         /*
@@ -296,7 +310,7 @@ class AuthorParser
                 $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                 return [
                     'authorstring' => substr($word, 0, -1),
-                    'author_pattern' => 129,
+                    'author_pattern' => 130,
                 ];
             } elseif (ctype_alpha((string) $word) && ($this->inDict($word, $dictionaryNames) || in_array($word, ['American', 'English', 'Dominican']))) {
                 $name .= ($i ? ' ' : '') . $word;
@@ -309,7 +323,7 @@ class AuthorParser
                         $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                         return [
                             'authorstring' => $name . ' ' . $xword,
-                            'author_pattern' => 130,
+                            'author_pattern' => 131,
                         ];
                     } else {
                         break;
@@ -319,7 +333,7 @@ class AuthorParser
                     $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
                     return [
                         'authorstring' => $name . ' ' . $xword,
-                        'author_pattern' => 131,
+                        'author_pattern' => 132,
                     ];
                 } else {
                     break;

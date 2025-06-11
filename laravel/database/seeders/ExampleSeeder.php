@@ -16464,11 +16464,74 @@ class ExampleSeeder extends Seeder
                     ],
                     'char_encoding' => 'utf8leave',
             ],
-
-            			
-
-
-            
+            // Organization name
+            [
+                'source' => 'Australian Government Office of Impact Analysis. (n.d.). Australia\'s Regulatory Impact Analysis (RIA) Framework key changes over time. Retrieved from Australian Government Office of Impact Analysis: https://oia.pmc.gov.au/about/ria-framework-key-changes-over-time ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => '{Australian Government Office of Impact Analysis}',
+                    'note' => 'Retrieved from Australian Government Office of Impact Analysis',
+                    'title' => 'Australia\'s Regulatory Impact Analysis (RIA) Framework key changes over time',
+                    'url' => 'https://oia.pmc.gov.au/about/ria-framework-key-changes-over-time',
+                    'year' => 'n.d.',
+                    ]
+            ],
+            [
+                'source' => 'Australian Prudential Regulation Authority. (n.d.). Regulation Impact Statements. Retrieved from Australian Prudential Regulation Authority: https://www.apra.gov.au/regulation-impact-statements#:~:text=The\%20primary\%20role\%20of\%20the,a\%20decision\%20is\%20being\%20made. ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => '{Australian Prudential Regulation Authority}',
+                    'note' => 'Retrieved from Australian Prudential Regulation Authority',
+                    'title' => 'Regulation Impact Statements',
+                    'url' => 'https://www.apra.gov.au/regulation-impact-statements#:~:text=The%20primary%20role%20of%20the,a%20decision%20is%20being%20made',
+                    'year' => 'n.d.',
+                ]
+            ],            			
+            [
+                'source' => 'Department of Climate Change, Energy, the Environment and Water. (n.d.). Reducing transport emissions. Retrieved from Department of Climate Change, Energy, the Environment and Water: https://www.dcceew.gov.au/energy/transport ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => '{Department of Climate Change, Energy, the Environment and Water}',
+                    'note' => 'Retrieved from Department of Climate Change, Energy, the Environment and Water',
+                    'title' => 'Reducing transport emissions',
+                    'url' => 'https://www.dcceew.gov.au/energy/transport',
+                    'year' => 'n.d.',
+                    ]
+            ],
+            [
+                'source' => 'Organisation for Economic Co-operation and Development. (n.d.). About. Retrieved from Organisation for Economic Co-operation and Development: https://www.oecd.org/en/about.html ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => '{Organisation for Economic Co-operation and Development}',
+                    'note' => 'Retrieved from Organisation for Economic Co-operation and Development',
+                    'title' => 'About',
+                    'url' => 'https://www.oecd.org/en/about.html',
+                    'year' => 'n.d.',
+                    ]
+            ],
+            [
+                'source' => 'Organisation for Economic Co-operation and Development. (2020, April). International regulatory co-operation. Retrieved from Organisation for Economic Co-operation and Development: https://www.regulation.org.uk/library/2020-OECD-international-regulatory-cooperation-policy-brief.pdf ',
+                'type' => 'unpublished',
+                'bibtex' => [
+                    'author' => '{Organisation for Economic Co-operation and Development}',
+                    'month' => '4',
+                    'note' => 'Retrieved from Organisation for Economic Co-operation and Development',
+                    'title' => 'International regulatory co-operation',
+                    'url' => 'https://www.regulation.org.uk/library/2020-OECD-international-regulatory-cooperation-policy-brief.pdf',
+                    'year' => '2020',
+                    ]
+            ],
+            [
+                'source' => 'Aaronson, Scott. 2006. Reasons to believe. Shtetl-Optimized, the blog of Scott Aaronson. https: //www.scottaaronson.com/blog/?p=122.  ',
+                'type' => 'online',
+                'bibtex' => [
+                    'author' => 'Aaronson, Scott',
+                    'note' => 'Shtetl-Optimized, the blog of Scott Aaronson.',
+                    'title' => 'Reasons to believe',
+                    'url' => ' https://www.scottaaronson.com/blog/?p=122',
+                    'year' => '2006',
+                    ]
+            ],            
 
         ];
 
