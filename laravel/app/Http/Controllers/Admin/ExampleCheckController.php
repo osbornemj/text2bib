@@ -69,7 +69,15 @@ class ExampleCheckController extends Controller
                 $conversion->char_encoding = 'utf8leave';
             }
 
-            $output = $this->converter->convertEntry($example->source, $conversion, $example->language, $example->char_encoding, $example->use, $previousAuthor);
+            $output = $this->converter->convertEntry(
+                $example->source, 
+                $conversion, 
+                $example->language, 
+                $example->char_encoding, 
+                $example->use, 
+                $previousAuthor
+            );
+            
             $previousAuthor = $output['item']->author ?? null;
 
             $authorPattern = $output['author_pattern'];

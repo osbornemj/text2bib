@@ -11,7 +11,7 @@
 
             @if (count($invalidItems))
             <div class="mt-4 border-b">
-                The following {{ Str::plural('item', $invalidItems) }} in your file @if (count($invalidItems) > 1) are @else is @endif invalid, and were not converted.  (Every item must contain at least one author, a title, and publication information, and cannot exceed 1,000 characters in length.)
+                The following {{ Str::plural('item', $invalidItems) }} in your file @if (count($invalidItems) > 1) are @else is @endif invalid, and @if (count($invalidItems) > 1) were @else was @endif not converted.  (Every item must contain at least one author, a title, and publication information, and cannot exceed 1,000 characters in length.)
                 <ul class="my-4">
                     @foreach($invalidItems as $invalidItem)
                     <li class="ml-4 mb-2">
@@ -24,11 +24,24 @@
 
             @if (count($malformedUtf8Items))
             <div class="mt-4 border-b">
-                The following {{ Str::plural('item', $malformedUtf8Items) }} in your file @if (count($malformedUtf8Items) > 1) are @else is @endif not properly UTF-8 encoded, and cannot be converted.
+                PHP reports that the following {{ Str::plural('item', $malformedUtf8Items) }} in your file @if (count($malformedUtf8Items) > 1) are @else is @endif not properly UTF-8 encoded.  As a consequence, @if (count($malformedUtf8Items) > 1) they @else it @endif cannot be converted.
                 <ul class="my-4">
                     @foreach($malformedUtf8Items as $malformedUtf8Item)
                     <li class="ml-4 mb-2">
                         {{ $malformedUtf8Item['source'] }}
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            @if (count($itemsWithErrors))
+            <div class="mt-4 border-b">
+                The system is unable to process the following {{ Str::plural('item', $itemsWithErrors) }} in your file.  If you submit an error report, I will investigate the problem.
+                <ul class="my-4">
+                    @foreach($itemsWithErrors as $itemWithError)
+                    <li class="ml-4 mb-2">
+                        {{ $itemWithError['source'] }}
                     </li>
                     @endforeach
                 </ul>

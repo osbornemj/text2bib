@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Throwable;
 
 class ConvertFile extends Component
 {
@@ -52,6 +53,8 @@ class ConvertFile extends Component
     public $invalidItems;
 
     public $malformedUtf8Items;
+
+    public $itemsWithErrors;
 
     public $conversionId;
 
@@ -379,6 +382,7 @@ class ConvertFile extends Component
         $convertedEntries = [];
         $invalidItems = [];
         $malformedUtf8Items = [];
+        $itemsWithErrors = [];
         $previousAuthor = null;
         foreach ($entries as $j => $entry) {
             // Some files start with \u{FEFF}, but this character is now converted to space earlier in this method
@@ -543,7 +547,11 @@ class ConvertFile extends Component
                     $convertedItems[$output->id] = $convItem;
                 } catch (Throwable $e) {
                     report($e);
-                    $malformedUtf8Items[] = ['source' => $convItem['source']];
+                    if (str_contains($e->getMessage(), "Malformed UTF-8 characters")) {
+                        $malformedUtf8Items[] = ['source' => $convItem['source']];
+                    } else {
+                        $itemsWithErrors[] = ['source' => $convItem['source']];
+                    }
                 }
             }
         }
@@ -554,6 +562,7 @@ class ConvertFile extends Component
         $this->convertedItems = $convertedItems;
         $this->invalidItems = $invalidItems;
         $this->malformedUtf8Items = $malformedUtf8Items;
+        $this->itemsWithErrors = $itemsWithErrors;
         $this->includeSource = $conversion->include_source;
         $this->reportType = $conversion->report_type;
         $this->itemTypes = $itemTypes;

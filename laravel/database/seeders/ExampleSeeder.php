@@ -16546,6 +16546,17 @@ class ExampleSeeder extends Seeder
                     'title' => 'Bobolink',
                     ]
             ],
+            [
+                'source' => 'Alzheimer’s Association. (n.d.). What Is Dementia? Alzheimer’s Disease and Dementia. Retrieved March 4, 2024, from https://www.alz.org/alzheimers-dementia/what-is-dementia ',
+                'type' => 'online',
+                'bibtex' => [
+                    'urldate' => '2024-03-04',
+                    'url' => 'https://www.alz.org/alzheimers-dementia/what-is-dementia',
+                    'author' => 'Alzheimer\'s Association',
+                    'year' => 'n.d.',
+                    'title' => 'What Is Dementia? Alzheimer\'s Disease and Dementia',
+                    ]
+            ],            
         ];
 
         DB::statement('DELETE FROM examples');

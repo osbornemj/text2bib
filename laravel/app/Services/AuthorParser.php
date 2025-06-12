@@ -268,7 +268,7 @@ class AuthorParser
          * Author strings without spaces, like 'John Doe and Jane Doe' or 'Doe J and Doe K' should have been
          * taken care of by author patterns earlier.
          */
-        if(preg_match('/^(?P<name>[\p{L}()\- ]{3,80})(?!\d)[,.]? ?(?P<remains>[(\[]?([1-9][0-9]{3}|n\. ?d\.|s\. ?f\.|s\. ?d\.).*$)/u', $remainder, $matches)) {
+        if(preg_match('/^(?P<name>[\p{L}()\- \']{3,80})(?!\d)[,.]? ?(?P<remains>[(\[]?([1-9][0-9]{3}|n\. ?d\.|s\. ?f\.|s\. ?d\.).*$)/u', $remainder, $matches)) {
             $remainder = $matches['remains'] ?? '';
             $year = $this->dates->getDate($remainder, $remainder, $month, $day, $date, true, true, true, $language);
             $this->verbose('Authors match pattern 128');
@@ -279,7 +279,7 @@ class AuthorParser
         }
 
         // Allow commas but require some words in the array ['for', 'of', 'the'] to appear in the name
-        if(preg_match('/^(?P<name>[\p{L}()\- ,]{3,80})(?!\d)[,.]? ?(?P<remains>[(\[]?([1-9][0-9]{3}|n\. ?d\.|s\. ?f\.|s\. ?d\.).*$)/u', $remainder, $matches)) {
+        if(preg_match('/^(?P<name>[\p{L}()\- \',]{3,80})(?!\d)[,.]? ?(?P<remains>[(\[]?([1-9][0-9]{3}|n\. ?d\.|s\. ?f\.|s\. ?d\.).*$)/u', $remainder, $matches)) {
             $possibleNameWords = explode(' ', $matches['name']);
             if (count(array_intersect($possibleNameWords, ['for', 'of', 'the']))) {
                 $remainder = $matches['remains'] ?? '';
