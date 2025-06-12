@@ -627,7 +627,7 @@ class TitleParser
                         // pages (e.g. within book)
                         || preg_match('/^\(?pp?\.? [0-9]/', $remainder)
                         || preg_match('/' . $this->regExps->startForthcomingRegExp . '/i', $remainder)
-                        || preg_match('/^' . $this->yearRegExp . '[a-z]?(\.|$)/', $remainder)
+                        || (preg_match('/^' . $this->yearRegExp . '[a-z]?(\.|$)/', $remainder) && !$year)
                         // title (letters and spaces) and then editors in parens next
                         || preg_match('%^\p{Lu}[\p{L} ]+ \([\p{L}.& ]+, ' . $this->regExps->edsNoParensRegExp . '\)%u', $remainder)
                         // editor next

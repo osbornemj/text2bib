@@ -16522,17 +16522,30 @@ class ExampleSeeder extends Seeder
                     ]
             ],
             [
-                'source' => 'Aaronson, Scott. 2006. Reasons to believe. Shtetl-Optimized, the blog of Scott Aaronson. https: //www.scottaaronson.com/blog/?p=122.  ',
+                'source' => 'Aaronson, Scott. 2006. Reasons to believe. Shtetl-Optimized, the blog of Scott Aaronson. https://www.scottaaronson.com/blog/?p=122.  ',
                 'type' => 'online',
                 'bibtex' => [
                     'author' => 'Aaronson, Scott',
-                    'note' => 'Shtetl-Optimized, the blog of Scott Aaronson.',
+                    'note' => 'Shtetl-Optimized, the blog of Scott Aaronson',
                     'title' => 'Reasons to believe',
-                    'url' => ' https://www.scottaaronson.com/blog/?p=122',
+                    'url' => 'https://www.scottaaronson.com/blog/?p=122',
                     'year' => '2006',
                     ]
-            ],            
-
+            ],
+            [
+                'source' => 'Ontario Ministry of the Environment, Conservation and Parks. (2021(n), August 12). Bobolink. Retrieved from Government of Ontario: https://www.ontario.ca/page/bobolink ',
+                'type' => 'online',
+                'bibtex' => [
+                    'note' => 'Retrieved from Government of Ontario',
+                    'year' => '2021',
+                    'month' => '8',
+                    'date' => '2021-08-12',
+                    'urldate' => '2021-08-12',
+                    'url' => 'https://www.ontario.ca/page/bobolink',
+                    'author' => '{Ontario Ministry of the Environment, Conservation and Parks}',
+                    'title' => 'Bobolink',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');
