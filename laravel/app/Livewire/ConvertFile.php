@@ -546,7 +546,7 @@ class ConvertFile extends Component
 
                     $convertedItems[$output->id] = $convItem;
                 } catch (Throwable $e) {
-                    report($e);
+                    //report($e);
                     if (str_contains($e->getMessage(), "Malformed UTF-8 characters")) {
                         $malformedUtf8Items[] = ['source' => $convItem['source']];
                     } else {
