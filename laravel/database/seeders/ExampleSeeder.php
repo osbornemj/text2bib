@@ -5376,7 +5376,7 @@ class ExampleSeeder extends Seeder
                     'pages' => '205-220',
                     ]
             ],
-                        // journal appended to end of title
+             // journal appended to end of title
             [
                 'source' => 'ANTONIO JOSÉ SÁNCHEZ-GUARNIDO et al. Analysis of the Consequences of the COVID-19 Pandemic on People with Severe Mental Disorders. International Journal of Environmental Research and Public Health, v. 18, n. 16, p. 8549–8549, 13 ago. 2021.  ',
                 'type' => 'article',

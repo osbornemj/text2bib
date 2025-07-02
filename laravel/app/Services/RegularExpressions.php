@@ -766,7 +766,8 @@ class RegularExpressions
             'pt' => '([Oo]btido |[Aa]cess(ad)?o( (a|em):?)? |[Aa]cedido (em:?)? )(?P<date2>' . $dateRegExp . ')',
             'my' => '([Ll]ast )?([Rr]etrieved|[Aa]ccessed|[Vv]iewed)( on)?[,:]? (?P<date2>' . $dateRegExp . ')',
             'nl' => '([Oo]opgehaald op|[Gg]eraadpleegd op|[Bb]ekeken|[Bb]ezocht op|[Gg]eopend),? (?P<date2>' . $dateRegExp . ')',
-        ];
+//          'ru' => '(дата обращения,? (?P<date2>' . $dateRegExp . ')',
+];
 
         ///////////
         // Other //
