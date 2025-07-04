@@ -4123,11 +4123,12 @@ class Converter
                     $remainder = trim(substr($remainder, strlen($matches[0])), '() ');
                 }
 
-                // Look for "edited by" or "eds" in remainder
+                // Look for "edited by" or "eds" in remainder.  Editor is taken to be string up to lowercase letter followed
+                // either by period or ' (' or ', <word>,', where <word> is assumed to be publisher or address.
                 if (
-                    preg_match('/(?P<editorString>' . $this->regExps->editedByRegExp . ' (?P<editor>.*?\p{Ll}) ?[.(])/u', $remainder, $matches)
+                    preg_match('/(?P<editorString>' . $this->regExps->editedByRegExp . ' (?P<editor>.*?\p{Ll}))(\.| \(|, \p{L}+,)/u', $remainder, $matches)
                     ||
-                    preg_match('/(?P<editorString>' . $this->regExps->edsNoParensRegExp . ' (?P<editor>.*?\p{Ll}) ?[.(])/u', $remainder, $matches)
+                    preg_match('/(?P<editorString>' . $this->regExps->edsNoParensRegExp . ' (?P<editor>.*?\p{Ll}))(\.| \(|, \p{L}+,)/u', $remainder, $matches)
                     ) {
                     if ($use == 'latex') {
                         $this->addToField($item, 'note', str_replace(' .', '.', $matches['editorString']), 'setField 193');

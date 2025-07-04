@@ -16556,7 +16556,32 @@ class ExampleSeeder extends Seeder
                     'year' => 'n.d.',
                     'title' => 'What Is Dementia? Alzheimer\'s Disease and Dementia',
                     ]
-            ],            
+            ],
+			// "edited by" not detected
+			[
+                'source' => ' Jonson, Ben. Epicoene, or the Silent Woman. Edited by Roger V. Holdsworth, Bloomsbury, 2005. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Jonson, Ben',
+                    'title' => 'Epicoene, or the Silent Woman',
+                    'year' => '2005',
+                    'editor' => 'Roger V. Holdsworth',
+                    'publisher' => 'Bloomsbury',
+                    ]
+            ],
+			// "edited by" not detected
+			[
+                'source' => 'Marlowe, Christopher. The Jew of Malta. Edited by William H. Sherman and Chloe Kathleen Preedy, Bloomsbury, 2021. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'author' => 'Marlowe, Christopher',
+                    'title' => 'The Jew of Malta',
+                    'year' => '2021',
+                    'editor' => 'William H. Sherman and Chloe Kathleen Preedy',
+                    'publisher' => 'Bloomsbury',
+                    ]
+            ],
+
         ];
 
         DB::statement('DELETE FROM examples');
