@@ -32,7 +32,7 @@ Populate the auxiliary tables:
 ```
 cat auxiliary_tables_dump.sql | mysql -u<username> -p --database=text2bib
 ```
-(where you should enter your mysql username where <username> appears).
+(where you should enter your mysql username where &lt;username&gt; appears).
 
 Register as a user and then update the `is_admin` field in the `users` table for your user to 1, making you an administrator of the system.
 
