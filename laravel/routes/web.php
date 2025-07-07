@@ -83,8 +83,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified', 'noRequiredResponses'])->group(function () {
     Route::controller(IndexController::class)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
-        Route::get('/convertFile', 'convertFile')->name('convertFile');
-        Route::post('/convertFile', 'convertFile')->name('convertFile');
+        Route::get('/convertFile', 'convertFile')->name('convertFile.get');
+        Route::post('/convertFile', 'convertFile')->name('convertFile.post');
         Route::get('/conversions', 'conversions')->name('conversions');
         Route::get('/showConversion/{id}/{flag?}', 'showConversion')->name('showConversion');
         Route::get('/downloadSource/{userFileId}', 'downloadSource')->name('downloadSource');
@@ -163,8 +163,8 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         Route::delete('/admin/conversion/{conversionId}', 'destroy')->name('admin.conversion.destroy');
         Route::post('/admin/conversionExamined', 'examined')->name('admin.conversion.examined');
         Route::get('/admin/conversionUnexamined/{conversionId}', 'unexamined')->name('admin.conversion.unexamined');
-        Route::post('/admin/searchConversions', 'search')->name('admin.search.conversions');
-        Route::get('/admin/searchConversions', 'search')->name('admin.search.conversions');
+        Route::post('/admin/searchConversions', 'search')->name('admin.search.conversions.post');
+        Route::get('/admin/searchConversions', 'search')->name('admin.search.conversions.get');
         //Route::get('/admin/outputs/{id}/edit', 'editSource')->name('admin.editSource');
         //Route::put('/admin/outputs/{id}/update', 'updateSource')->name('admin.updateSource');
     });

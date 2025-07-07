@@ -1,4 +1,4 @@
-<form method="POST" action="{{ route('admin.search.conversions') }}">
+<form method="POST" action="{{ route('admin.search.conversions.post') }}">
     @csrf
 
     <div>

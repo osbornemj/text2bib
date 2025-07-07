@@ -13,7 +13,7 @@
                 <!-- Navigation Links -->
                 @auth
                     <div class="hidden space-x-6 sm:-my-px sm:ml-4 sm:flex">
-                        <x-nav-link :href="route('convertFile')" :active="request()->routeIs('convertFile')">
+                        <x-nav-link :href="route('convertFile.get')" :active="request()->routeIs('convertFile.get')">
                             {{ __('Convert') }}
                         </x-nav-link>
                     </div>
@@ -113,7 +113,7 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <!--
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('convertFile')" :active="request()->routeIs('convertFile')">
+            <x-responsive-nav-link :href="route('convertFile.get')" :active="request()->routeIs('convertFile.get')">
                 {{ __('Convert') }}
             </x-responsive-nav-link>
         </div>
@@ -130,7 +130,7 @@
 
             <div class="mt-3 space-y-1">
                 @auth
-                    <x-responsive-nav-link :href="route('convertFile')">
+                    <x-responsive-nav-link :href="route('convertFile.get')">
                         {{ __('Convert') }}
                     </x-responsive-nav-link>
 

@@ -147,7 +147,8 @@ class ConvertFile extends Component
         /** @var \App\Models\User $user * */
         $user = Auth::user();
         $this->conversionCount = $user->conversions->count();
-        $this->version = Version::latest()->first()->created_at;
+        $latestVersion = Version::latest()->first();
+        $this->version = $latestVersion ? $latestVersion->created_at : null;
 
         if ($user->crossref_date == null || ! $user->crossref_date->isToday()) {
             $user->crossref_date = now();

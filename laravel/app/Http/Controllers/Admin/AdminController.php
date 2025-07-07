@@ -37,7 +37,8 @@ class AdminController extends Controller
         $seconds = Carbon::parse($trainingItemsConversionStartedAt)->diffInSeconds(Carbon::parse($trainingItemsConversionEndedAt));
         $itemsPerSecond = $seconds ? number_format($trainingItemsConversionCount / $seconds, 2) : null;
 
-        $latestVersion = Version::latest()->first()->created_at;
+        $latestVersionRecord = Version::latest()->first();
+        $latestVersion = $latestVersionRecord ? $latestVersionRecord->created_at : null;
 
         return view('admin.index', compact(
             'uncheckedBstCount', 

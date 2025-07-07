@@ -27,12 +27,12 @@
             </p>
             <p>
                 @php
-                    $sameDay = $trainingItemsConversionStartedAt->isSameDay($trainingItemsConversionEndedAt);
+                    $sameDay = $trainingItemsConversionStartedAt && $trainingItemsConversionEndedAt ?   $trainingItemsConversionStartedAt->isSameDay($trainingItemsConversionEndedAt) : false;
                 @endphp
                 <x-link :href="route('admin.trainingItems.index')">
                     Training data
                 </x-link>
-                ({{ number_format($trainingItemsConversionCount) }} items converted in last conversion, {{ $trainingItemsConversionStartedAt->format('Y-m-d H:i') }}
+                ({{ number_format($trainingItemsConversionCount) }} items converted in last conversion, {{ $trainingItemsConversionStartedAt ? $trainingItemsConversionStartedAt->format('Y-m-d H:i') : 'Not available' }}
                 @if ($trainingItemsConversionEndedAt)
                     to
                     @if ($sameDay)

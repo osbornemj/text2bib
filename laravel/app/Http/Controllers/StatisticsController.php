@@ -41,6 +41,7 @@ class StatisticsController extends Controller
             ->get();
         $years = $monthlyData->pluck('year')->toArray();
         $months = $monthlyData->pluck('month')->toArray();
+        $monthlyLabels = [];
         foreach ($years as $i => $year) {
             $monthlyLabels[] = $year . '.' . $months[$i];
         }
