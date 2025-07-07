@@ -44,7 +44,7 @@ Install `aspell`.
 
 ## Code
 
-The code that performs the conversion from text to BibTeX is in the `Converter` class in the `Services` directory.  The rest of the code creates a front end for users and administrators/developers.
+The code that performs the conversion from text to BibTeX is in the `Converter` class in the `Services` directory and the other files in the `Services` directory together with the files in the `Traits` directory.  The rest of the code creates a front end for users and administrators/developers.
 
 When logged in as an administrator, you have access to the Admin page.  The most significant link on this page is `Examples`.  The `examples` and `example_fields` tables in the database contain the text (`source`) and correct conversion (`type` in `examples` table, fields in `example-fields` table) for a large number of references.  You can add examples by editing the `ExampleSeeder` (in `database/seeders`) and re-running that seeder.
 
@@ -55,8 +55,8 @@ If you would like to modify the Converter to deal with a reference that is not c
 - Convert the reference by uploading a file that contains it to the main public page.
 - As an administrator, you will see a link above the resulting conversion "Format result for Examples Seeder".  Click that link, which creates an appropriate entry in a new window/tab.
 - Copy the code into the `ExampleSeeder` to make it the last example in the array.
-- Run ```php artisan db:seed EaxmpleSeeder```.
-- Go to the Admin page and click "Examples".  The new example will be at the top of the page.  Click the "verbose" link under the example.
+- Go to the Admin page for Examples and click "Run seeder".
+- The new example will be at the top of the page.  Click the "verbose" link under the example.
 - Modify the code so that the example is converted correctly.
 - Check that all other examples are still converted correctly, by clicking the link "Check all conversions" on the Examples page.
 
