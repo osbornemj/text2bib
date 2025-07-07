@@ -15,9 +15,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $itemFields = ['address', 'annote', 'archiveprefix', 'author', 'booktitle', 'chapter', 'date', 'doi', 'edition', 'editor',
-            'howpublished', 'eprint', 'institution', 'isbn', 'journal', 'key', 'month', 'note', 'number', 'oclc',
-            'organization', 'pages', 'publisher', 'school', 'series', 'title', 'type', 'url', 'urldate', 'volume', 'year'];
+        $itemFields = ['address', 'annote', 'archiveprefix', 'author', 'booksubtitle', 'booktitle', 'chapter', 'date', 'doi', 'edition', 'editor', 'eprint',
+            'howpublished', 'institution', 'isbn', 'issn', 'journal', 'key', 'month', 'note', 'number', 'oclc',
+            'organization', 'pages', 'pagetotal', 'publisher', 'school', 'series', 'subtitle', 'title', 'translator', 'type', 'url', 'urldate', 'volume', 'year'];
 
         foreach ($itemFields as $name) {
             ItemField::create([
@@ -26,20 +26,19 @@ class DatabaseSeeder extends Seeder
         }
 
         $itemTypeItemFields = [
-            'article' => ['author', 'title', 'journal', 'year', 'month', 'volume', 'number', 'pages', 'note', 'doi',
-                 'url', 'archiveprefix', 'eprint', 'date'],
-            'book' => ['author', 'editor', 'title', 'edition', 'volume', 'series', 'year', 'address', 'publisher',
-                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'isbn', 'oclc'],
-            'incollection' => ['author', 'title', 'booktitle', 'volume', 'series', 'year', 'publisher', 'address', 'editor', 'pages',
-                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'isbn', 'chapter'],
-            'inproceedings' => ['author', 'title', 'booktitle', 'year', 'month', 'publisher', 'address', 'editor',
-                 'pages', 'note', 'archiveprefix', 'eprint', 'doi'],
-            'mastersthesis' => ['author', 'title', 'school', 'year', 'month', 'note', 'url', 'doi'],
-            'online' => ['author', 'title', 'year', 'url', 'urldate', 'month', 'date', 'note'],
-            'phdthesis' => ['author', 'title', 'school', 'year', 'month', 'note', 'url', 'doi', 'isbn'],
-            'techreport' => ['author', 'title', 'year', 'month', 'number', 'institution', 'note', 'type', 'url',
+            'article' => ['author', 'year', 'title', 'journal', 'volume', 'number', 'month', 'pages', 'note', 'doi',
+                 'url', 'archiveprefix', 'eprint', 'date', 'issn', 'urldate'],
+            'book' => ['author', 'year', 'editor', 'title', 'subtitle', 'volume', 'edition', 'series', 'address', 'publisher',
+                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'isbn', 'oclc', 'translator', 'pagetotal', 'number', 'urldate'],
+            'incollection' => ['author', 'year', 'title', 'booktitle', 'booksubtitle', 'volume', 'edition', 'series', 'editor', 'address', 'publisher', 'pages',
+                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'isbn', 'chapter', 'translator', 'number'],
+            'inproceedings' => ['author', 'year', 'title', 'booktitle', 'booksubtitle', 'editor', 'address', 'publisher', 'pages', 'month', 'note', 'archiveprefix', 'eprint', 'doi', 'translator'],
+            'mastersthesis' => ['author', 'year', 'title', 'subtitle', 'school', 'month', 'note', 'url', 'doi', 'pagetotal'],
+            'online' => ['author', 'year', 'title', 'url', 'urldate', 'month', 'note', 'date'],
+            'phdthesis' => ['author', 'year', 'title', 'subtitle', 'school', 'month', 'note', 'url', 'doi', 'isbn', 'pagetotal'],
+            'techreport' => ['author', 'year', 'title', 'type', 'number', 'institution', 'month', 'note', 'url',
                  'archiveprefix', 'eprint', 'doi'],
-            'unpublished' => ['author', 'title', 'year', 'month', 'note', 'url', 'archiveprefix', 'eprint', 'doi'],
+            'unpublished' => ['author', 'month', 'title', 'year', 'note', 'url', 'urldate', 'archiveprefix', 'eprint', 'doi'],
         ];
 
         foreach($itemTypeItemFields as $name => $fields) {
