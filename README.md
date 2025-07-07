@@ -18,7 +18,7 @@ Create the database tables:
 php artisan migrate
 ```
 
-Seed the database:
+Seed the tables `item_types` and `item_fields`:
 ```
 php artisan db:seed DatabaseSeeder
 ```
@@ -27,6 +27,12 @@ Seed the examples:
 ```
 php artisan db:seed ExampleSeeder
 ```
+
+Populate the auxiliary tables: 
+```
+cat auxiliary_tables_dump.sql | mysql -u<username> -p --database=text2bib
+``
+(where you should enter your mysql username where <username> appears).
 
 Register as a user and then update the `is_admin` field in the `users` table for your user to 1, making you an administrator of the system.
 
