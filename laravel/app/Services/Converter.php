@@ -3394,7 +3394,7 @@ class Converter
                 $this->verbose("[in9] Remainder: " . $remainder);
 
                 // Remainder consists entirely of <address>: <publisher> --- no booktitle possible, so must in fact be book, not incollection
-                if (! $booktitle && preg_match('/^(?P<address>[\p{L} ]{0,25}): (?P<publisher>[\p{L} ]{0,35}),?( ' . $this->regExps->pagesRegExp . ')?$/u', $remainder, $matches)) {
+                if (! $booktitle && preg_match('/^(?P<address>[\p{L} ]{1,25}): (?P<publisher>[\p{L} ]{1,35}),?( ' . $this->regExps->pagesRegExp . ')?$/u', $remainder, $matches)) {
                     $itemKind = 'book';
                     $this->itemType = 'book';
                     $this->setField($item, 'address', $matches['address'], 'setField 126');

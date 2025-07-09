@@ -7576,14 +7576,16 @@ class ExampleSeeder extends Seeder
             ],
 			// authors ended early
 			[
-                'source' => ' Jindong Xie, Xiyuan Luo, Xinpei Deng, Yuhui Tang, Wenwen Tian, Hui Cheng, Junsheng Zhang, Yutian Zou, Zhixing Guo and Xiaoming Xie \emph{Advances in artificial intelligence to predict cancer immunotherapy efficacy}, 2023, Frontiers in Immunology ',
+                'source' => ' Jindong Xie, Xiyuan Luo, Xinpei Deng, Yuhui Tang, Wenwen Tian, Hui Cheng, Junsheng Zhang, Yutian Zou, Zhixing Guo and Xiaoming Xie \emph{Advances in artificial intelligence to predict cancer immunotherapy efficacy}, 2023, Frontiers in Immunology, 13, 1076883',
                 'type' => 'article',
                 'bibtex' => [
                     'author' => 'Jindong Xie and Xiyuan Luo and Xinpei Deng and Yuhui Tang and Wenwen Tian and Hui Cheng and Junsheng Zhang and Yutian Zou and Zhixing Guo and Xiaoming Xie',
                     'title' => 'Advances in artificial intelligence to predict cancer immunotherapy efficacy',
 					'year' => '2023',
 					'journal' => 'Frontiers in Immunology',
-                    ]
+                    'volume' => '13',
+                    'note' => 'Article 1076883',
+                ],
             ],
 			// detect PMCID?
 			[
@@ -16594,6 +16596,21 @@ class ExampleSeeder extends Seeder
                     'volume' => '39',
                     'number' => '2',
                     'pages' => '160-175',
+                    ]
+            ],
+			// Detected as article
+			[
+                'source' => 'McFadden, Daniel (1974): Conditional logit analysis of qualitative choice behavior. In Paul Zarembka (Ed.): Frontiers in Econometrics. New York, USA: Academic Press, pp. 105–142. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'McFadden, Daniel',
+                    'year' => '1974',
+                    'title' => 'Conditional logit analysis of qualitative choice behavior',
+                    'editor' => 'Paul Zarembka',
+					'booktitle' => 'Frontiers in Econometrics',
+					'address' => 'New York, USA',
+					'publisher' => 'Academic Press',
+                    'pages' => '105-142',
                     ]
             ],
 

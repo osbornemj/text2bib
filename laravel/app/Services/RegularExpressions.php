@@ -371,7 +371,7 @@ class RegularExpressions
         $journalWords = [
             '[Jj]ournal', 
             '[Jj]urnal', 
-            '[Ff]rontiers in', 
+//            '[Ff]rontiers in', // Could be booktitle for incollection
             '[Aa]nnals of', 
             '[Bb]ulletin', 
             '[Pp]hilosophical [Tt]ransactions',
