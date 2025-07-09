@@ -16581,6 +16581,21 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'Bloomsbury',
                     ]
             ],
+			// Should be author pattern (like 17 for 3 authors)
+			[
+                'source' => 'Dobson, Gregory; Kalish, Shlomo (1993): Heuristics for pricing and positioning a product-line using conjoint and cost data. In Management Science 39 (2), pp. 160–175. DOI: 10.1287/mnsc.39.2.160. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.1287/mnsc.39.2.160',
+                    'author' => 'Dobson, Gregory and Kalish, Shlomo',
+                    'year' => '1993',
+                    'title' => 'Heuristics for pricing and positioning a product-line using conjoint and cost data',
+                    'journal' => 'Management Science',
+                    'volume' => '39',
+                    'number' => '2',
+                    'pages' => '160-175',
+                    ]
+            ],
 
         ];
 
