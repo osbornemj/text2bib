@@ -31,7 +31,7 @@ class AdminController extends Controller
         $trainingItemsConversionStartedAt = $adminSetting->training_items_conversion_started_at;
         $trainingItemsConversionEndedAt = $adminSetting->training_items_conversion_ended_at;
 
-        $maxCheckedConversionId = AdminSetting::select('max_checked_conversion_id')->first()->max_checked_conversion_id;
+        $maxCheckedConversionId = $adminSetting->max_checked_conversion_id;
         $uncheckedConversionCount = Conversion::where('id', '>', $maxCheckedConversionId)->count();
         $adminCorrectOutputCount = Output::where('admin_correctness', 1)->count();
 
