@@ -26,9 +26,10 @@ class AdminController extends Controller
         $uncheckedPublisherCount = Publisher::where('checked', 0)->count();
         $uncheckedCityCount = City::where('checked', 0)->count();
         $uncheckedJournalWordAbbreviationCount = JournalWordAbbreviation::where('checked', 0)->count();
-        $trainingItemsConversionCount = AdminSetting::first()->training_items_conversion_count;
-        $trainingItemsConversionStartedAt = AdminSetting::first()->training_items_conversion_started_at;
-        $trainingItemsConversionEndedAt = AdminSetting::first()->training_items_conversion_ended_at;
+        $adminSetting = AdminSetting::first();
+        $trainingItemsConversionCount = $adminSetting->training_items_conversion_count;
+        $trainingItemsConversionStartedAt = $adminSetting->training_items_conversion_started_at;
+        $trainingItemsConversionEndedAt = $adminSetting->training_items_conversion_ended_at;
 
         $maxCheckedConversionId = AdminSetting::select('max_checked_conversion_id')->first()->max_checked_conversion_id;
         $uncheckedConversionCount = Conversion::where('id', '>', $maxCheckedConversionId)->count();
