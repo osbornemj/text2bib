@@ -16613,6 +16613,96 @@ class ExampleSeeder extends Seeder
                     'pages' => '105-142',
                     ]
             ],
+			// problem with quotation marks
+			[
+                'source' => 'Marold, Edith. 1974. „Thor weihe diese Runen“. Frühmittelalterliche Studien 8. 195–222. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Marold, Edith',
+                    'year' => '1974',
+                    'title' => 'Thor weihe diese Runen',
+                    'journal' => 'Frühmittelalterliche Studien',
+                    'volume' => '8',
+                    'pages' => '195-222',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+			// Could match incollection pattern?
+			[
+                'source' => 'Marold, Edith. 1988. Wandel und Konstanz in der Darstellung der Figur des Dietrich von Bern. In Edith Marold (ed.), Heldensage und Heldendichtung in Germanischen, 149–182. Berlin: Mouton de Gruyter. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Marold, Edith',
+                    'year' => '1988',
+                    'title' => 'Wandel und Konstanz in der Darstellung der Figur des Dietrich von Bern',
+                    'pages' => '149-182',
+                    'editor' => 'Edith Marold',
+                    'address' => 'Berlin',
+                    'publisher' => 'Mouton de Gruyter',
+                    'booktitle' => 'Heldensage und Heldendichtung in Germanischen',
+                    ]
+            ],
+			// access date ignored
+			[
+                'source' => 'Marold, Edith. 1994. Der Skalde und sein Publikum. In Heiko Uecker (ed.), Studien zum Altgermanischen: Festschrift für Heinrich Beck, 462–76. Berlin: De Gruyter. https://doi.org/10.1515/9783110850444. (Accessed 2025-01-05). ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'doi' => '10.1515/9783110850444',
+                    'author' => 'Marold, Edith',
+                    'year' => '1994',
+                    'title' => 'Der Skalde und sein Publikum',
+                    'pages' => '462-76',
+                    'editor' => 'Heiko Uecker',
+                    'address' => 'Berlin',
+                    'publisher' => 'De Gruyter',
+                    'booktitle' => 'Studien zum Altgermanischen',
+                    'booksubtitle' => 'Festschrift für Heinrich Beck',
+                    'urldate' => '2025-01-05',
+                    ],
+                    'char_encoding' => 'utf8leave',
+            ],
+            // series missed
+			[
+                'source' => 'Raffensperger, Christian. 2016. Ties of kinship: Genealogy and dynastic marriages in Kyivan Rus’ (Harvard Series in Ukrainian Studies). Cambridge: Harvard University Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Cambridge',
+                    'author' => 'Raffensperger, Christian',
+                    'publisher' => 'Harvard University Press',
+                    'series' => 'Harvard Series in Ukrainian Studies',
+                    'subtitle' => 'Genealogy and dynastic marriages in Kyivan Rus\'',
+                    'title' => 'Ties of kinship',
+                    'year' => '2016',
+                    ]
+            ],
+            // series missed
+			[
+                'source' => 'Russom, Geoffrey. 1998. Beowulf and old Germanic metre. Cambridge Studies in Anglo-Saxon England 23. Cambridge: Cambridge University Press. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Cambridge',
+                    'author' => 'Russom, Geoffrey',
+                    'publisher' => 'Cambridge University Press',
+                    'series' => 'Cambridge Studies in Anglo-Saxon England',
+                    'number' => '23',
+                    'title' => 'Beowulf and old Germanic metre',
+                    'year' => '1998',
+                    ]
+            ],
+			// series missed
+			[
+                'source' => 'Schrijver, Peter. 1995. Studies in British Celtic historical phonology. Leiden Studies in Indo-European. Amsterdam: Rodopi. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Amsterdam',
+                    'author' => 'Schrijver, Peter',
+                    'publisher' => 'Rodopi',
+                    'series' => 'Leiden Studies in Indo-European',
+                    'title' => 'Studies in British Celtic historical phonology',
+                    'year' => '1995',
+                    ]
+            ],
+
 
         ];
 

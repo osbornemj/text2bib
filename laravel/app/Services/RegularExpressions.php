@@ -648,6 +648,7 @@ class RegularExpressions
             'LNCS',
             'Graduate [Tt]exts',
             'Graduate Studies',
+            '(Cambridge|Leiden) Studies in',
             'Grundlehren der mathematischen Wissenschaften',
             'Monographs',
             'Pure and Applied Mathematics',

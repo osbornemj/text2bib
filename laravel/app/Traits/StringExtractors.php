@@ -55,7 +55,6 @@ trait StringExtractors
      */
     private function removeAndReturn(string &$string, string $regExp, array $names, string $position = 'first', bool $caseInsensitive = true): false|string|array
     {
-
         $regExp = '%^(?P<before>.*'.($position == 'first' ? '?' : '').')'.$regExp.'(?P<after>.*?)$%u'.($caseInsensitive ? 'i' : '');
 
         $matched = preg_match($regExp, $string, $matches);
@@ -76,7 +75,7 @@ trait StringExtractors
         if (isset($after[0])) {
             if (substr($before, -1) == ',' && $after[0] == '.') {
                 $before = rtrim($before, ', ');
-                $string = $before.'. '.$after;
+                $string = $before.'. '.substr($after, 1);
             } elseif (substr($before, -1) == '.' && $after[0] == ',') {
                 $after = ltrim($after, ', ');
                 $string = $before.' '.$after;

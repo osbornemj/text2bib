@@ -77,7 +77,7 @@ class TitleParser
         $remainingWords = $words;
         $skipNextWord = false;
 
-        $note = null;
+        $note = $series = null;
 
         $italicCodesRegExp = '';
         foreach ($this->italicCodes as $i => $italicCode) {
@@ -104,6 +104,7 @@ class TitleParser
             $result['title'] = $title;
             $result['titleDetails'] = $this->titleDetails;
             $result['editor'] = $editor;
+            $result['series'] = $series;
             $result['translator'] = $translator;
             $result['editionNumber'] = null;
             $result['fullEdition'] = null;
@@ -141,6 +142,7 @@ class TitleParser
                 $result['title'] = $matches['title'];
                 $result['titleDetails'] = $this->titleDetails;
                 $result['editor'] = $editor;
+                $result['series'] = $series;
                 $result['translator'] = $translator;
                 $result['editionNumber'] = null;
                 $result['fullEdition'] = null;
@@ -187,6 +189,7 @@ class TitleParser
                 $result['title'] = $title;
                 $result['titleDetails'] = $this->titleDetails;
                 $result['editor'] = $editor;
+                $result['series'] = $series;
                 $result['translator'] = $translator;
                 $result['editionNumber'] = null;
                 $result['fullEdition'] = null;
@@ -211,6 +214,19 @@ class TitleParser
             if (substr($word, 0, 1) == '(' && strpos($word, ')') === false) {
                 $parensLevel++;
                 $this->verbose("Parens level changed to " . $parensLevel . " (word \"" . $word . "\")");
+
+                // Look at string in parens to see whether it is series name
+                $closingParenPos = strpos($remainder, ')');
+                if ($closingParenPos !== false) {
+                    $stringInParens = substr($remainder, 1, $closingParenPos-1);
+                    if (preg_match('%(' . $this->regExps->seriesRegExp . ')%', $stringInParens)) {
+                        $this->verbose("Ending title, case 1a");
+                        $title = rtrim(implode(' ', $initialWords), ',:;');
+                        $series = $stringInParens;
+                        $remainder = ltrim(substr($remainder, $closingParenPos+1), '. ');
+                        break;
+                    }
+                }
             } elseif (strpos($word, '(') === false && strpos($word, ')') !== false) {
                 $parensLevel--;
                 $this->verbose("Parens level changed to " . $parensLevel . " (word \"" . $word . "\")");
@@ -1043,6 +1059,7 @@ class TitleParser
         $result['title'] = $title;
         $result['titleDetails'] = $this->titleDetails;
         $result['seriesNext'] = $seriesNext;
+        $result['series'] = $series;
         $result['stringToNextPeriodOrComma'] = $stringToNextPeriodOrComma ?? '';
         $result['editor'] = $editor;
         $result['translator'] = $translator;

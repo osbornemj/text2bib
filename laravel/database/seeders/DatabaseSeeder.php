@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             'book' => ['author', 'year', 'editor', 'title', 'subtitle', 'volume', 'edition', 'series', 'address', 'publisher',
                  'note', 'doi', 'url', 'archiveprefix', 'eprint', 'isbn', 'oclc', 'translator', 'pagetotal', 'number', 'urldate'],
             'incollection' => ['author', 'year', 'title', 'booktitle', 'booksubtitle', 'volume', 'edition', 'series', 'editor', 'address', 'publisher', 'pages',
-                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'isbn', 'chapter', 'translator', 'number'],
+                 'note', 'doi', 'url', 'archiveprefix', 'eprint', 'isbn', 'chapter', 'translator', 'number', 'urldate'],
             'inproceedings' => ['author', 'year', 'title', 'booktitle', 'booksubtitle', 'editor', 'address', 'publisher', 'pages', 'month', 'note', 'archiveprefix', 'eprint', 'doi', 'translator'],
             'mastersthesis' => ['author', 'year', 'title', 'subtitle', 'school', 'month', 'note', 'url', 'doi', 'pagetotal'],
             'online' => ['author', 'year', 'title', 'url', 'urldate', 'month', 'note', 'date'],

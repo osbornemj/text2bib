@@ -30,7 +30,7 @@ trait StringCleaners
 
         return $string;
     }
-
+    
     private function cleanText(string $string): string
     {
         $replacements = [

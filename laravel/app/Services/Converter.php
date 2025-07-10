@@ -534,7 +534,7 @@ class Converter
             // accessed <date> <url>
             '%' . $accessedRegExp1 . '\.? ' . $urlRegExp . '$%i',
             // accessed <date> [no url]
-            '%' . $accessedRegExp1 . '\.?$%i',
+            '%' . $accessedRegExp1 . '[\.)]?$%i',
             // \href{<url>}{<note>}
             '%' . $urlRegExp . '{(?P<note>.*)}\.?$%i',
             // <url> <note>
@@ -1079,7 +1079,9 @@ class Converter
 
                 $title = $result['title'];
                 $containsSeries = $result['seriesNext'] ?? false;
-                if ($containsSeries) {
+                if ($result['series']) {
+                    $seriesString = $result['series'];
+                } elseif ($containsSeries) {
                     $seriesString = $result['stringToNextPeriodOrComma'];
                 }
 
@@ -4111,9 +4113,11 @@ class Converter
                 }
 
                 // If getTitle has reported series name is next, assign series to be $seriesString and remove it from $remainder
-                if ($containsSeries) {
+                if ($seriesString) {
                     $this->setField($item, 'series', trim($this->removeFontStyle($seriesString, 'bold'), '.,?! '), 'setField 191');
-                    $remainder = substr($remainder, strlen($seriesString));
+                    if ($containsSeries) {
+                        $remainder = substr($remainder, strlen($seriesString));
+                    }
                     $remainder = trim($remainder, ' ,.?!');
                 }
 
@@ -4417,44 +4421,45 @@ class Converter
                         $remainder = $before . '.' . $result['after'];
                     }
 
-                    $remainder = $this->publisherAddressParser->extractPublisherAndAddress(
-                        $remainder, 
-                        $address, 
-                        $publisher, 
-                        $cityString, 
-                        $publisherString, 
-                        $this->cities, 
-                        $this->publishers
-                    );
+                    if ($remainder) {
+                        $remainder = $this->publisherAddressParser->extractPublisherAndAddress(
+                            $remainder, 
+                            $address, 
+                            $publisher, 
+                            $cityString, 
+                            $publisherString, 
+                            $this->cities, 
+                            $this->publishers
+                        );
 
-                    if ($publisher) {
-                        $this->setField($item, 'publisher', trim($publisher, '();{} '), 'setField 226');
-                    }
-
-                    if ($address && ! preg_match('/^s\. ?l\.$/', $address)) {
-                        if (isset($item->year)) {
-                            $address = Str::replace($item->year, '', $address);
-                            $address = rtrim($address, ', ');
+                        if ($publisher) {
+                            $this->setField($item, 'publisher', trim($publisher, '();{} '), 'setField 226');
                         }
-                        $this->setField($item, 'address', $address, 'setField 227');
-                    }
 
-                    // Then fall back on publisher and city previously identified.
-                    if (! $publisher && $publisherString && ! $address && $cityString) {
-                        $this->setField($item, 'publisher', $publisherString, 'setField 228');
-                        $this->setField($item, 'address', $cityString, 'setField 229');
-                        $remainder = $this->findAndRemove((string) $remainder, $publisherString);
-                        $remainder = $this->findAndRemove($remainder, $cityString);
-                    } 
+                        if ($address && ! preg_match('/^s\. ?l\.$/', $address)) {
+                            if (isset($item->year)) {
+                                $address = Str::replace($item->year, '', $address);
+                                $address = rtrim($address, ', ');
+                            }
+                            $this->setField($item, 'address', $address, 'setField 227');
+                        }
 
-                    if (!isset($item->publisher)) {
-                        $warnings[] = "No publisher identified.";
-                    }
-                    
-                    if (!isset($item->address)) {
-                        $warnings[] = "No place of publication identified.";
-                    }
-        
+                        // Then fall back on publisher and city previously identified.
+                        if (! $publisher && $publisherString && ! $address && $cityString) {
+                            $this->setField($item, 'publisher', $publisherString, 'setField 228');
+                            $this->setField($item, 'address', $cityString, 'setField 229');
+                            $remainder = $this->findAndRemove((string) $remainder, $publisherString);
+                            $remainder = $this->findAndRemove($remainder, $cityString);
+                        } 
+
+                        if (!isset($item->publisher)) {
+                            $warnings[] = "No publisher identified.";
+                        }
+                        
+                        if (!isset($item->address)) {
+                            $warnings[] = "No place of publication identified.";
+                        }
+                    }        
                 }
 
                 if ($use == 'biblatex' && substr_count($title, ': ') == 1) {

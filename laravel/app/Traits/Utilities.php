@@ -192,7 +192,12 @@ trait Utilities
                 } elseif ($end) {
                     $afterQuote .= $char;
                 } elseif ($char == '`') {
-                    if ((! isset($chars[$i - 1]) || $chars[$i - 1] != '\\') && isset($chars[$i + 1]) && $chars[$i + 1] == '`') {
+                    // if ` immediately follows a lowercase letter and is followed by another `, and $begin is ``, assume string
+                    // is ending (`` at end is error for '')
+                    if (isset($chars[$i - 1]) && in_array($chars[$i - 1], range('a', 'z')) && $chars[$i + 1] == '`' && $begin == '``') {
+                        $end = true;
+                        $skip = 1;
+                    } elseif ((! isset($chars[$i - 1]) || $chars[$i - 1] != '\\') && isset($chars[$i + 1]) && $chars[$i + 1] == '`') {
                         $level++;
                         if ($begin) {
                             $quotedText .= $char.$chars[$i + 1];
