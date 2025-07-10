@@ -73,8 +73,10 @@ class IncollectionPubInfoParser
             16 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[\p{L} ]*)[,.] '.$addressAndPublisherRegExp,
             // <editor>,? (Ed.)[,:]? <booktitle>[no period]. <publisher[no punc]>
             17 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)[,.] (?P<publisher>[\p{L} ]+)',
+            // <editor>,? (Ed.)[,:]? <booktitle>[no period]. <series[no punc]> <seriesNumber>
+            18 => $editorRegExp.',? '.$this->regExps->edsParensRegExp.'[,:]? (?P<booktitle>[^.]*)[,.:] (?P<series>[\p{L} ]+) (?P<seriesNumber>\d+)',
             // <booktitle> (<editor> ed.).? <publisher>
-            18 => $booktitleRegExp.' \('.$editorRegExp.',? '.$this->regExps->edsNoParensRegExp.'\)\.? (?P<publisher>[\p{L}() ]+)',
+            19 => $booktitleRegExp.' \('.$editorRegExp.',? '.$this->regExps->edsNoParensRegExp.'\)\.? (?P<publisher>[\p{L}() ]+)',
         ];
 
         $this->patternsNoBooktitle = [
@@ -118,6 +120,8 @@ class IncollectionPubInfoParser
                 $returner['address'] = trim($matches['address'] ?? '');
                 $returner['publisher'] = trim($matches['publisher'] ?? '');
                 $returner['addressAndPublisher'] = trim($matches['addressAndPublisher'] ?? '');
+                $returner['series'] = $matches['series'] ?? '';
+                $returner['seriesNumber'] = $matches['seriesNumber'] ?? '';
                 $returner['incollectionCase'] = $i;
                 break;
             }

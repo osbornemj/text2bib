@@ -2547,6 +2547,12 @@ class Converter
 
                         $this->setField($item, 'booktitle', rtrim(trim($booktitle), '.'), 'setField 72');
                     }
+                    if (isset($incollectionResult['series'])) {
+                        $this->setField($item, 'series', rtrim(trim($incollectionResult['series']), '.'), 'setField 72a');
+                    }
+                    if (isset($incollectionResult['seriesNumber'])) {
+                        $this->setField($item, 'number', rtrim(trim($incollectionResult['seriesNumber']), '.'), 'setField 72b');
+                    }
 
                     if (
                         $incollectionResult['addressAndPublisher']

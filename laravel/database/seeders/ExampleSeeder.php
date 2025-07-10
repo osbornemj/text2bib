@@ -16735,7 +16735,8 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'address' => 'Cambridge',
                     'author' => 'Thorvaldsen, Bernt {\O}.',
-                    'booktitle' => 'A Handbook to Eddic poetry: Myths and legends of early Scandinavia, ',
+                    'booktitle' => 'A Handbook to Eddic poetry',
+                    'booksubtitle' => 'Myths and legends of early Scandinavia',
                     'editor' => 'Carolyne Larrington and Judy Quinn and Brittany Schorn',
                     'pages' => '72-91',
                     'publisher' => 'Cambridge University Press',
@@ -16749,10 +16750,11 @@ class ExampleSeeder extends Seeder
                 'type' => 'incollection',
                 'bibtex' => [
                     'author' => 'Ueda, Isao and Stuart Davis',
-                    'booktitle' => 'Developmental Paths in Phonological Acquisition: ',
+                    'booktitle' => 'Developmental Paths in Phonological Acquisition',
                     'editor' => 'Marina Tzakosta and Claartje Levelt and Jeroen van de Weijer',
                     'pages' => '117-135',
-                    'series' => 'Leiden Papers in Linguistics 2, ',
+                    'series' => 'Leiden Papers in Linguistics',
+                    'number' => '2',
                     'title' => 'Developmental paths in the acquisition of the Japanese liquid: An optimality-theoretic perspective',
                     'year' => '2005',
                     ]

@@ -149,22 +149,22 @@ class RegularExpressions
         // Words meaning edition; for each language, full word first, then abbreviations
         $editionWordsLocalized = [
             'en' => [
-                'edition', 'ed\.?', 'edn\.?', 
+                'edition', 'edn\.?', 'ed\.?', 
             ],
             'cz' => [
                 'vydání', 
             ],
             'fr' => [
-                'édition', 'ed\.?', 'edn\.?', 
+                'édition', 'edn\.?', 'ed\.?', 
             ],
             'es' => [
-                'edición', 'ed\.?', 'edn\.?', 
+                'edición', 'edn\.?', 'ed\.?', 
             ],
             'pt' => [
                 'edição', 'ed\.?', 
             ],
             'my' => [
-                'edition', 'ed\.?', 'edn\.?', 
+                'edition', 'edn\.?', 'ed\.?', 
             ],
             'nl' => [
                 'editie', 'ed\.?',
