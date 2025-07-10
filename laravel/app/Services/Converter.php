@@ -1526,7 +1526,7 @@ class Converter
             $this->verbose("Contains string for an edition.");
         }
 
-        if (preg_match('/' . $this->regExps->fullThesisRegExp . '/iu', $remainder)) {
+        if (preg_match('/(^| |\(|\[)' . $this->regExps->fullThesisRegExp . '/iu', $remainder)) {
             $containsFullThesis = true;
             $this->verbose("Contains full thesis.");
         }
@@ -4487,7 +4487,11 @@ class Converter
                 }
                 $this->verbose(['fieldName' => 'Item type', 'content' => $itemKind]);
 
-                if (preg_match('/^\(' . $this->regExps->fullThesisRegExp . '(?P<school>[^\)]*)\)(?P<remainder>.*)/u', $remainder, $matches)) {
+                if (
+                    preg_match('/^\(' . $this->regExps->fullThesisRegExp . '(?P<school>[^\)]*)\)(?P<remainder>.*)/u', $remainder, $matches)
+                    ||
+                    preg_match('/^(?P<school>[^:]+): ' . $this->regExps->fullThesisRegExp . '(?P<remainder>.*)/u', $remainder, $matches)
+                   ) {
                     $this->setField($item, 'school', trim($matches['school'], ', '), 'setField 232');
                     $remainder = $matches['remainder'];
                     if (empty($item->school)) {
@@ -4498,13 +4502,15 @@ class Converter
                 } else {
                     if (preg_match('/\(' . $this->regExps->fullThesisRegExp . '\)/u', $remainder)) {
                         $remainder = $this->findAndRemove($remainder, ',? ?\(' . $this->regExps->fullThesisRegExp . '\)');
-                    } elseif (preg_match('/^([Uu]npublished)?(?P<before>.*?)' . $this->regExps->fullThesisRegExp . '[.,]? (?P<after>.*)$/', $remainder, $matches)) {
+                    } elseif (preg_match('/^' . $this->regExps->unpublishedRegExp . '?(?P<before>.*?)' . $this->regExps->fullThesisRegExp . '[.,]?( (?P<after>.*))?$/', $remainder, $matches)) {
                         $remainder = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
-                    } elseif (preg_match('/^(?P<before>.*?)' . $this->regExps->thesisRegExp . ' (?P<after>.*)$/', $remainder, $matches)) {
+                    } elseif (preg_match('/^(?P<before>.*?)(' . $this->regExps->unpublishedRegExp . ')? ' . $this->regExps->fullThesisRegExp . '[.,]?( (?P<after>.*))?$/', $remainder, $matches)) {
+                    $remainder = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
+                    } elseif (preg_match('/^(?P<before>.*?)' . $this->regExps->thesisRegExp . '( (?P<after>.*))?$/', $remainder, $matches)) {
                         $remainder = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
                     } else {
                         $remainder = preg_replace('/' . $this->regExps->unpublishedRegExp . ' /', '', $remainder);
-                        $remainder = $this->findAndRemove($remainder, $this->regExps->fullThesisRegExp);
+                        $remainder = $this->findAndRemove($remainder, '(^| |\(|\[)' . $this->regExps->fullThesisRegExp);
                     }
                     $remainder = trim($remainder, ' -.,)[]');
                     // if remainder contains number of pages, put it in note
@@ -4544,6 +4550,8 @@ class Converter
                             $remainder = trim($remainder, '. ');
                         }
 
+                        $remainder = preg_replace('/' . $this->regExps->unpublishedRegExp . '($| )/', '', $remainder);
+                        $remainder = rtrim($remainder, '., ');
                         $this->setField($item, 'school', $remainder, 'setField 240');
                     } else {
                         $remArray = explode(':', $remainder);

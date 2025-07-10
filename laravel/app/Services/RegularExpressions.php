@@ -600,6 +600,7 @@ class RegularExpressions
         $phdWords = [
             'Ph[Dd]',
             'Ph\. ?D\.?',
+            'DPhil',
             '[Dd]octoral',
             '[Dd]octorat',
             '[Dd]oktora',

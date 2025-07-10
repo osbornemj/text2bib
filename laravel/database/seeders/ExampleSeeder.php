@@ -16702,6 +16702,72 @@ class ExampleSeeder extends Seeder
                     'year' => '1995',
                     ]
             ],
+            // 'edn' for 'edition'
+            [
+                'source' => 'Terrell, T. D., E. Tschirner & B. Nokolai. 2004. Kontakte: A communicative approach. 5th edn. Boston: McGraw-Hill. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Boston',
+                    'author' => 'Terrell, T. D. and E. Tschirner and B. Nokolai',
+                    'edition' => '5',
+                    'publisher' => 'McGraw-Hill',
+                    'subtitle' => 'A communicative approach',
+                    'title' => 'Kontakte',
+                    'year' => '2004',
+                    ]
+            ],
+            // error in detecting 'ma dissertation'
+            [
+                'source' => 'Thomas Coffman, Jana M. 2018. Bringing the past to life: The effects of historical linguistics instruction on motivation, enjoyment, and identity in the foreign language classroom. University of Alabama dissertation.  ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Thomas Coffman, Jana M.',
+                    'school' => 'University of Alabama',
+                    'subtitle' => 'The effects of historical linguistics instruction on motivation, enjoyment, and identity in the foreign language classroom',
+                    'title' => 'Bringing the past to life',
+                    'year' => '2018',
+                    ]
+            ],
+            // editor/booktitle error
+            [
+                'source' => 'Thorvaldsen, Bernt Ø. 2016. The dating of Eddic poetry. In Carolyne Larrington, Judy Quinn, and Brittany Schorn (eds.), A Handbook to Eddic poetry: Myths and legends of early Scandinavia, 72-91. Cambridge: Cambridge University Press. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'address' => 'Cambridge',
+                    'author' => 'Thorvaldsen, Bernt {\O}.',
+                    'booktitle' => 'A Handbook to Eddic poetry: Myths and legends of early Scandinavia, ',
+                    'editor' => 'Carolyne Larrington and Judy Quinn and Brittany Schorn',
+                    'pages' => '72-91',
+                    'publisher' => 'Cambridge University Press',
+                    'title' => 'The dating of Eddic poetry',
+                    'year' => '2016',
+                    ]
+            ],
+            // editor/booktitle error
+            [
+                'source' => 'Ueda, Isao & Stuart Davis. 2005. Developmental paths in the acquisition of the Japanese liquid: An optimality-theoretic perspective. In Marina Tzakosta, Claartje Levelt & Jeroen van de Weijer, (eds.), Developmental Paths in Phonological Acquisition: Leiden Papers in Linguistics 2, 117-135. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Ueda, Isao and Stuart Davis',
+                    'booktitle' => 'Developmental Paths in Phonological Acquisition: ',
+                    'editor' => 'Marina Tzakosta and Claartje Levelt and Jeroen van de Weijer',
+                    'pages' => '117-135',
+                    'series' => 'Leiden Papers in Linguistics 2, ',
+                    'title' => 'Developmental paths in the acquisition of the Japanese liquid: An optimality-theoretic perspective',
+                    'year' => '2005',
+                    ]
+            ],
+            // phdthesis not recognized
+            [
+                'source' => 'Yakovlev, Nicolay. 2008. The development of alliterative metre from Old to Middle English. University of Oxford: DPhil Dissertation.  ',
+                'type' => 'phdthesis',
+                'bibtex' => [
+                    'author' => 'Yakovlev, Nicolay',
+                    'school' => 'University of Oxford',
+                    'title' => 'The development of alliterative metre from Old to Middle English',
+                    'year' => '2008',
+                    ]
+            ],
 
 
         ];
