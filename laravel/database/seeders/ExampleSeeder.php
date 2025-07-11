@@ -16785,6 +16785,20 @@ class ExampleSeeder extends Seeder
                     'year' => '1993',
                     ]
             ],
+			// string for editor (in German) not removed
+			[
+                'source' => 'Krebernik, M. (1992). Die Textfunde der 9. Kampagne (1986). In B. Hrouda (Hrsg.), Isin - Isan Bahriyat IV. Die Ergebnisse der Ausgrabungen 1986-1989 (S. 102–144). Bayerische Akademie der Wissenschaft. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Krebernik, M.',
+                    'year' => '1992',
+                    'title' => 'Die Textfunde der 9. Kampagne (1986)',
+                    'pages' => '102-144',
+                    'editor' => 'B. Hrouda',
+                    'publisher' => 'Bayerische Akademie der Wissenschaft',
+                    'booktitle' => 'Isin - Isan Bahriyat IV. Die Ergebnisse der Ausgrabungen 1986-1989',
+                    ]
+            ],
 
 
         ];

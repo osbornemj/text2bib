@@ -103,7 +103,7 @@ class RegularExpressions
         $editorWords = [
             '[Ee]ditors?',
             '[Ee]ds?\.?',   // English, Czech
-            'Hrsgg\.',      // German
+            'Hrsgg?\.',      // German
             'Hg\.',         // German
             '[Dd]ir\.',     // French
             '[Éé]ds?\.',    // French
