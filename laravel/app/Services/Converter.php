@@ -306,7 +306,7 @@ class Converter
             $entry = preg_replace("/^\s*\[\d*\]|^\s*\(\d*\)/", "", $entry);
 
             $entry = ltrim($entry, ' {,');
-            $entry = rtrim($entry, ' }');
+//            $entry = rtrim($entry, ' }');  // don't remove }: might end a TeX macro like \doi
 
             $this->verbose(['item' => $entry]);
             if ($itemLabel) {
@@ -331,8 +331,15 @@ class Converter
         $accessedRegExp1 = $this->regExps->accessedRegExp1[$language];
 
         $urlDate = null;
+
+        // \doi macro
+        if (preg_match('%\\\doi{(?P<doi>10\.[^}]+)}%', $remainder, $matches)) {
+            $doi = $matches['doi'];
+            $remainder = str_replace($matches[0], '', $remainder);
+        }
+
         // doi in a Markdown-formatted url
-        if (preg_match('%\[https://doi\.org/(?P<doi>[^ \]]+)\]\(https://doi\.org/(?P<doi1>[^ \)]+)\)%', $remainder, $matches)) {
+        if (empty($doi) && preg_match('%\[https://doi\.org/(?P<doi>[^ \]]+)\]\(https://doi\.org/(?P<doi1>[^ \)]+)\)%', $remainder, $matches)) {
             $doi = $matches['doi'];
             $doi1 = $matches['doi1'];
             if ($doi != $doi1) {
@@ -342,7 +349,8 @@ class Converter
         }
 
         // Case of URL that is also link to doi --- record both doi and URL
-        if (
+        if (empty($doi)
+            &&
             preg_match(
                 '%(?P<retrievedFrom> ' . $retrievedFromRegExp2 . ')\[?(?P<siteName>.*)? ?\[?' . $urlRegExp . '(?P<note> .*)?$%iJu',
                 $remainder,

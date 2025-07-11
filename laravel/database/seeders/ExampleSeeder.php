@@ -16770,6 +16770,21 @@ class ExampleSeeder extends Seeder
                     'year' => '2008',
                     ]
             ],
+            // \doi
+            [
+                'source' => '	\bibitem{Bagai1993} 	Bagai A, Leishman JG (1993) Flow visualization of compressible vortex 	structures using density gradient techniques. Experiments in Fluids 	15(6):431--442, \doi{10.1007/BF00191786} ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Bagai, A. and Leishman, J. G.',
+                    'doi' => '10.1007/BF00191786',
+                    'journal' => 'Experiments in Fluids',
+                    'number' => '6',
+                    'pages' => '431-442',
+                    'title' => 'Flow visualization of compressible vortex structures using density gradient techniques',
+                    'volume' => '15',
+                    'year' => '1993',
+                    ]
+            ],
 
 
         ];
