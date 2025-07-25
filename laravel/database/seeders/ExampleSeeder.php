@@ -16799,6 +16799,32 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Isin - Isan Bahriyat IV. Die Ergebnisse der Ausgrabungen 1986-1989',
                     ]
             ],
+			// Remove letter in parens after number at start of entry
+			[
+                'source' => '4. (a) Ghosh, I. et al. General cross-coupling reactions with adaptive dynamic homogeneous catalysis. Nature 619, 87–93 (2023).  ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Ghosh, I. and others',
+                    'title' => 'General cross-coupling reactions with adaptive dynamic homogeneous catalysis',
+                    'year' => '2023',
+                    'journal' => 'Nature',
+                    'volume' => '619',
+                    'pages' => '87-93',
+                    ]
+            ],
+			// Remove letter in parens at start of entry
+			[
+                'source' => '(b) Yoo, C. et al. Nickel-catalyzed ester carbonylation promoted by imidazole-derived carbenes and salts. Science 382, 815–820 (2023); ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Yoo, C. and others',
+                    'title' => 'Nickel-catalyzed ester carbonylation promoted by imidazole-derived carbenes and salts',
+                    'year' => '2023',
+                    'journal' => 'Science',
+                    'volume' => '382',
+                    'pages' => '815-820',
+                    ]
+            ],
 
 
         ];

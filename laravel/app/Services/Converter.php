@@ -273,6 +273,9 @@ class Converter
                 $entry = substr($entry, 1, strlen($entry) - 2);
             }
 
+            // Remove possibly number followed possibly by (x) at start, where x is any letter
+            $entry = preg_replace('/^((\d+)?\.? ?(\(?[a-z]\.?\)? )?)(.*)/', '$4', $entry);
+
             // Remove numbers and other symbols at start of entry, like '6.' or '[14]'.
             $entry = ltrim($entry, ' .0123456789[]()|*+:^?、');
 
