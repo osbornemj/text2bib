@@ -46,7 +46,7 @@
             </main>
         </div>
 
-        @yield('scripts')
+        @stack('scripts')
         @livewireScripts
     </body>
 </html>

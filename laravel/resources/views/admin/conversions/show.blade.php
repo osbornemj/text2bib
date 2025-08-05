@@ -56,12 +56,34 @@
             </div>
 
             @foreach ($outputs as $i => $output)
-                <div>
+                <div id="output-{{ $output->id }}">
                     <a name="{{ $output->id }}"></a>
-                    <livewire:admin-converted-item :output="$output" />
+                    <livewire:admin-converted-item :output="$output" :wire:key="$output->id" />
                 </div>
             @endforeach
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            window.addEventListener('livewire:initialized', () => {
+                Livewire.on('scroll-to-next', ({ id }) => {
+                    const current = document.getElementById(id);
+                    if (!current) {
+                        return;
+                    }
+
+                    const next = current.nextElementSibling;
+                    if (next) {
+                        next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                        // Optional: Highlight effect
+                        //next.classList.add('bg-yellow-100');
+                        //setTimeout(() => next.classList.remove('bg-yellow-100'), 1500);
+                    }
+                });
+            });
+        </script>
+    @endpush
 
 </x-app-layout>

@@ -14,10 +14,17 @@ window.Chart = Chart;
 
 //Alpine.start();
 
-import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
+//import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
 
 // Drag-and-drop sorting
 import sort from '@alpinejs/sort'
-Alpine.plugin(sort) 
+
+// Wait until Alpine is available on the window (Livewire will load it) [ChatGPT instructions]
+document.addEventListener('alpine:init', () => {
+    window.Alpine.plugin(sort)
+})
+
+//import sort from '@alpinejs/sort'
+//Alpine.plugin(sort) 
  
-Livewire.start()
+//Livewire.start()

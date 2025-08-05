@@ -16826,7 +16826,6 @@ class ExampleSeeder extends Seeder
                     ]
             ],
 
-
         ];
 
         DB::statement('DELETE FROM examples');

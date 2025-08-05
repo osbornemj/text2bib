@@ -16,7 +16,7 @@
         @endif
 
         <p class="mb-4">
-            Explanatory video: <x-link href="https://youtu.be/uDYHszzWhfk" target="_blank">https://youtu.be/uDYHszzWhfk</x-link> (5:45).  Retrieving items from <x-link href="https://crossref.org" target="_blank">crossref.org</x-link> during conversion: <x-link href="https://youtu.be/W4-WEwo2esY" target="_blank">https://youtu.be/W4-WEwo2esY</x-link> (5:56).
+            Explanatory video: <x-link href="https://youtu.be/uDYHszzWhfk" target="_blank">https://youtu.be/uDYHszzWhfk</x-link> (5:45).  Retrieving items from <x-link href="https://crossref.org" target="_blank">crossref.org</x-link> during conversion: <x-link href="https://youtu.be/W4-WEwo2esY" target="_blank">https://youtu.be/W4-WEwo2esY</x-link> (5:56).  Presentation at TeX Users Group 2025 conference: <x-link href="https://youtu.be/dznm0LBsBfo" target="_blank">https://youtu.be/dznm0LBsBfo</x-link> (23:13).
         </p>
 
         <p class="mb-4">

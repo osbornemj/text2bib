@@ -56,7 +56,7 @@ class AdminConvertedItem extends Component
         $this->crossrefItem = $crossrefItem;
     }
 
-    public function setCorrectness($value)
+    public function setCorrectness(int $value)
     {
         $this->output->admin_correctness = $value;
         $this->output->save();
@@ -64,6 +64,8 @@ class AdminConvertedItem extends Component
         if ($value == 1) {
             $this->insertPublisherJournalCity($this->output);
         }
+
+        $this->dispatch('scroll-to-next', id: "output-{$this->output->id}");
     }
 
     public function delete()
