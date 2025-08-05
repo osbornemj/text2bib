@@ -73,48 +73,46 @@
 
             <ul>
                 @foreach ($convertedItems as $outputId => $convertedItem)
-                <a name="{{ $outputId }}"></a>
-                <div class="mt-4">
-                    <li>
-                        @if ($convertedItem['detected_encoding'] != 'UTF-8')
-                        <span class="text-red-600 dark:text-red-400">
-                            Detected character encoding: {{ $convertedItem['detected_encoding']}}.
-                        </span>
-                        <br/>
-                        @endif
-                        {{ $convertedItem['source'] }}
-                        <br/>
+                    <a name="{{ $outputId }}"></a>
+                    <div id="output-{{ $outputId }}" class="mt-4">
+                        <li>
+                            @if ($convertedItem['detected_encoding'] != 'UTF-8')
+                            <span class="text-red-600 dark:text-red-400">
+                                Detected character encoding: {{ $convertedItem['detected_encoding']}}.
+                            </span>
+                            <br/>
+                            @endif
+                            {{ $convertedItem['source'] }}
+                            <br/>
 
-                        @if ($reportType == 'detailed') 
-                        <ul>
-                            @foreach ($convertedItem['details'] as $details)
-                                <li>
-                                    @include('index.partials.conversionDetails')
-                                </li>
-                            @endforeach
-                        </ul>
-                        @endif
+                            @if ($reportType == 'detailed') 
+                            <ul>
+                                @foreach ($convertedItem['details'] as $details)
+                                    <li>
+                                        @include('index.partials.conversionDetails')
+                                    </li>
+                                @endforeach
+                            </ul>
+                            @endif
 
-                        @php
-                            $language = $conversion->language;
-                        @endphp
+                            @php
+                                $language = $conversion->language;
+                            @endphp
 
-                        <div>
-                            <livewire:show-converted-item 
-                                :convertedItem="$convertedItem" 
-                                :itemTypes="$itemTypes" 
-                                :outputId="$outputId" 
-                                :itemTypeOptions="$itemTypeOptions"
-                                :language="$language"
-                            />
-                        </div>
-
-                    </li>
-                    @endforeach
-                </div>
+                            <div>
+                                <livewire:show-converted-item 
+                                    :convertedItem="$convertedItem" 
+                                    :itemTypes="$itemTypes" 
+                                    :outputId="$outputId" 
+                                    :itemTypeOptions="$itemTypeOptions"
+                                    :language="$language"
+                                    :wire:key="$outputId"
+                                />
+                            </div>
+                        </li>
+                    </div>
+                @endforeach
             </ul>
         </div>
     </div>
 </div>
-
-

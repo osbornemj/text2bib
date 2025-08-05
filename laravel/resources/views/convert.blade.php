@@ -6,22 +6,27 @@
         </div>
     </div>
 
-    @section('scripts')
+    @push('scripts')
         <script>
-            /*
-            history.scrollRestoration = "manual";
-            window.onbeforeunload = function () {
-                window.scrollTo(0, 0);
-            }
-            */
-            /*document.body.scrollIntoView({behavior: "smooth"});*/
-            /*
-            document.addEventListener('livewire:navigated', () => {
-                window.scrollTo(0,0);
-            })
-            */
+            window.addEventListener('livewire:initialized', () => {
+                Livewire.on('scroll-to-next', ({ id }) => {
+                    const current = document.getElementById(id);
+                    if (!current) {
+                        return;
+                    }
+
+                    const next = current.nextElementSibling;
+                    if (next) {
+                        next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                        // Optional: Highlight effect
+                        //next.classList.add('bg-yellow-100');
+                        //setTimeout(() => next.classList.remove('bg-yellow-100'), 1500);
+                    }
+                });
+            });
         </script>
-    @endsection
+    @endpush
 
 </x-app-layout>
 

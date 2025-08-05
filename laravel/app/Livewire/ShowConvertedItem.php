@@ -326,6 +326,8 @@ class ShowConvertedItem extends Component
         if ($value == 1) {
             $this->insertPublisherJournalCity($output);
         }
+
+        $this->dispatch('scroll-to-next', id: "output-{$this->outputId}");
     }
 
     private function insertPublisherJournalCity($output)
