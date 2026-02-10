@@ -557,6 +557,7 @@ class RegularExpressions
             '^Proceedings of the American Academy',
             '^Proceedings of the American Catholic',
             '^Carnegie-Rochester conference',
+            '^Proceedings of the United States National Museum',
         ];
 
         $this->proceedingsExceptionsRegExp = implode('|', $proceedingsExceptions);
