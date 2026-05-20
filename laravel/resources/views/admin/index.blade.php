@@ -100,12 +100,9 @@
                 <x-link :href="route('journals.index')" :active="request()->routeIs('journals.index')">
                     Journals
                 </x-link>
-                @if ($uncheckedJournalCount)
-                    <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedJournalCount }}</span>
-                    <x-link :href="route('admin.journals.unchecked')" :active="request()->routeIs('admin.journals.unchecked')">
-                        unchecked
-                    </x-link>
-                @endif
+                <x-link :href="route('admin.journals.unchecked')" :active="request()->routeIs('admin.journals.unchecked')">
+                    (unchecked)
+                </x-link>
                 (journal names, based on conversions marked as correct by users and approved by administrator)
             </p>
             <p>
@@ -137,18 +134,18 @@
                 <x-link :href="route('publishers.index')" :active="request()->routeIs('publishers.index')">
                     Publishers
                 </x-link>
-                @if ($uncheckedPublisherCount)
-                    <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedPublisherCount }}</span>
-                @endif
+                <x-link :href="route('admin.publishers.unchecked')" :active="request()->routeIs('admin.publishers.unchecked')">
+                    (unchecked)
+                </x-link>
                 (publishing companies, based on conversions marked as correct by users and approved by administrator)
             </p>
             <p>
                 <x-link :href="route('cities.index')" :active="request()->routeIs('cities.index')">
                     Publication cities
                 </x-link>
-                @if ($uncheckedCityCount)
-                    <span class="bg-red-300 dark:bg-red-500 text-xs px-1">{{ $uncheckedCityCount }}</span>
-                @endif
+                <x-link :href="route('admin.cities.unchecked')" :active="request()->routeIs('admin.cities.unchecked')">
+                    (unchecked)
+                </x-link>
                 (cities in which publishers are located, for the <code>address</code> field of a book)
             </p>
             <p>

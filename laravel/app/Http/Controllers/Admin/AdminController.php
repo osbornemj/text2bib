@@ -22,9 +22,9 @@ class AdminController extends Controller
     public function index(): View
     {
         $uncheckedBstCount = Bst::where('checked', 0)->count();
-        $uncheckedJournalCount = Journal::where('checked', 0)->count();
-        $uncheckedPublisherCount = Publisher::where('checked', 0)->count();
-        $uncheckedCityCount = City::where('checked', 0)->count();
+//        $uncheckedJournalCount = Journal::where('checked', 0)->count();
+//        $uncheckedPublisherCount = Publisher::where('checked', 0)->count();
+//        $uncheckedCityCount = City::where('checked', 0)->count();
         $uncheckedJournalWordAbbreviationCount = JournalWordAbbreviation::where('checked', 0)->count();
         $adminSetting = AdminSetting::first();
         $trainingItemsConversionCount = $adminSetting->training_items_conversion_count;
@@ -43,9 +43,9 @@ class AdminController extends Controller
 
         return view('admin.index', compact(
             'uncheckedBstCount', 
-            'uncheckedJournalCount', 
-            'uncheckedPublisherCount', 
-            'uncheckedCityCount', 
+//            'uncheckedJournalCount', 
+//            'uncheckedPublisherCount', 
+//            'uncheckedCityCount', 
             'uncheckedJournalWordAbbreviationCount', 
             'latestVersion',
             'trainingItemsConversionCount',
