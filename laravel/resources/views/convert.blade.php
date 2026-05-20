@@ -2,7 +2,7 @@
 
     <div class="px-4 space-y-6 pb-6">
         <div class="sm:p-0 pt-0">
-            <livewire:convert-file>
+            <livewire:convert-file/>
         </div>
     </div>
 
