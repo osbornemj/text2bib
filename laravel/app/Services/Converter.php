@@ -1036,9 +1036,9 @@ class Converter
             $this->verbose('Title is ' . ($titleStyle == 'none' ? 'not styled' : 'styled (' . $titleStyle . ')'));
             $newRemainder = $before . ($after ? ltrim($after, "., ") : '');
 
-            // If title is styled and is followed by series, put it in series field.
+            // If title is styled, but not in quotes (which would indicate an article) and is followed by series, put it in series field.
             // This should happen only for a book, but at this point we don't know the type of the item.
-            if ($title && preg_match('/^(?P<before>[^.,]+)[.,](?P<after>.*)$/', $newRemainder, $matches)) {
+            if ($title && $titleStyle !== 'quoted' && preg_match('/^(?P<before>[^.,]+)[.,](?P<after>.*)$/', $newRemainder, $matches)) {
                 if ($matches['before'] && preg_match('/' . $this->regExps->seriesRegExp . '/', $matches['before'], $seriesMatches)) {
                     $this->setField($item, 'series', trim($matches['before']), 'setField 30a');
                     $newRemainder = $matches['after'] ?? '';

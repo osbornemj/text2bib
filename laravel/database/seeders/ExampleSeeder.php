@@ -16825,6 +16825,19 @@ class ExampleSeeder extends Seeder
                     'pages' => '815-820',
                     ]
             ],
+            [
+                'source' => '\bibitem{CA:1983} Cheng, R.C.H. and Amin, N.A.K. (1983), ``Estimating Parameters in Continuous Univariate Distributions with a Shifted Origin\'\', {\it Journal of the Royal Statistical Society: Series B (Methodological)}, 45 (3), pages 394--403. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Cheng, R. C. H. and Amin, N. A. K.',
+                    'journal' => 'Journal of the Royal Statistical Society: Series B (Methodological)',
+                    'number' => '3',
+                    'pages' => '394-403',
+                    'title' => 'Estimating Parameters in Continuous Univariate Distributions with a Shifted Origin',
+                    'volume' => '45',
+                    'year' => '1983',
+                    ]
+            ],
 
         ];
 
