@@ -24,7 +24,7 @@
                     $selected[$itemTypeId] = 1;                
                 @endphp
                 <x-input-label for="itemTypeId" value="Item type"/>
-                <x-select-input id="itemTypeId" name="itemTypeId" class="block mt-1 w-full" :options="$itemTypeOptions" :selected="$selected" wire:model.change="itemTypeId" />
+                <x-select-input id="itemTypeId" name="itemTypeId" class="block mt-1 w-full" :options="$itemTypeOptions" :selected="$selected" wire:model.live.change="itemTypeId" />
             </div>
 
             @foreach ($fields as $field)

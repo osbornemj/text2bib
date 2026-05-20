@@ -68,7 +68,7 @@ Route::middleware('auth', 'noRequiredResponses')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(ErrorReportController::class)->group(function () {
-    Route::get('/errorReport/{id}', 'show')->name('errorReport');
+        Route::get('/errorReport/{id}', 'show')->name('errorReport');
     });
 
     Route::controller(CommentController::class)->group(function () {
