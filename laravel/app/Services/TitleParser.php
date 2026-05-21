@@ -795,7 +795,7 @@ class TitleParser
                             ||
                             in_array($word, $titleAbbreviations)
                             || 
-                            // Second preg_match rules of initials of editor, but more than that should be ruled out: could be
+                            // Second preg_match rules out initials of editor, but more than that should be ruled out: could be
                             // name like 'I. Smith'.  Could use convertToAuthors?
                             (preg_match('/^(Part )?(I|II|III|[1-9])[:.] /', $remainder) && !preg_match('/^I\. [A-Z]\./', $remainder))
                         )
