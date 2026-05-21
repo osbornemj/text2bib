@@ -113,6 +113,9 @@ class PublisherAddressParser
                 $remainder = substr($remainder, $periodPos);
             } else {
                 $publisher = trim($remainder, ', ');
+                // If $publisher ends in something like ''Silesia,'' (the name of the publisher in quotes, with
+                // comma before closing quotes, replace it with ''Silesia''
+                $publisher = preg_replace('/, \'\'$/', '\'\'', $publisher) ;
                 if (! Str::endsWith($publisher, $this->publisherAbbreviations)) {
                     $publisher = trim($publisher, '.');
                 }

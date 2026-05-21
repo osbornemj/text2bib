@@ -2450,8 +2450,10 @@ class Converter
                 $editorStart = false;
                 $newRemainder = $remainder;
                 
-                // If a string in $remainder is quoted or italicized, take that to be book title
-                $booktitle = $this->getQuotedOrItalic($remainder, false, false, $before, $after, $style);
+                // If a string in $remainder is quoted or italicized and it is not *preceded* by "edited by", take that to be book title
+                $tempBooktitle = $this->getQuotedOrItalic($remainder, false, false, $before, $after, $style);
+                $precededByEditedBy = preg_match('/'.$this->regExps->editedByRegExp.'/', $before);
+                $booktitle = !$precededByEditedBy ? $tempBooktitle : null;
 
                 // If booktitle is followed by volume, append it to booktitle
                 if (preg_match('/^(?P<volume>,? ?' . $this->regExps->volumeWithNumberRegExp . ')(?P<after>.*)$/', $after, $matches)) {
@@ -2472,7 +2474,10 @@ class Converter
                 }
 
                 $after = ltrim($after, ".,' ");
-                $newRemainder = $remainder = $before . $after;
+                if (!$precededByEditedBy) {
+                    $newRemainder = $remainder = $before . $after;
+                }
+
                 $booktitle = rtrim($booktitle, ', ');
 
                 if ($booktitle) {

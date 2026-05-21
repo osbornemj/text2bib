@@ -16875,6 +16875,21 @@ class ExampleSeeder extends Seeder
                     'year' => '1973',
                     ]
             ],
+            [
+                'source' => 'Barczewska-Skarboń, M. “Osobliwości kulturowe w musicalach i ich przekładach (rock-opera Jesus Christ Superstar).” In Odmienność kulturowa w przekładzie, edited by P. Fast, P. Janikowski, and A. Olszta, 111–29. Katowice-Częstochowa: Wydawnictwo Naukowe “Śląsk,” 2008. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'author' => 'Barczewska-Skarboń, M.',
+                    'booktitle' => 'Odmienność kulturowa w przekładzie',
+                    'editor' => 'P. Fast and P. Janikowski and A. Olszta',
+                    'pages' => '111-29',
+                    'publisher' => 'Wydawnictwo Naukowe ``Śląsk\'\'',
+                    'address' => 'Katowice-Częstochowa',
+                    'title' => 'Osobliwości kulturowe w musicalach i ich przekładach (rock-opera Jesus Christ Superstar)',
+                    'year' => '2008',
+                    ],
+                'char_encoding' => 'utf8leave',
+            ],
         ];
 
         DB::statement('DELETE FROM examples');
