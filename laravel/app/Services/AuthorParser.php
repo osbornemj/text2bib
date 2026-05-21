@@ -80,7 +80,7 @@ class AuthorParser
     }
 
     /**
-     * convertToAuthors: determine the authors in the initial elements of an array of words
+     * convertToAuthors: determine the authors in the initial elements of an array of words.
      * After making a change, check that all examples are still converted correctly.
      * @param array $words array of words
      * @param string|null $remainder: string remaining after authors removed

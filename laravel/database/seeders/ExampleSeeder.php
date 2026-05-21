@@ -16903,6 +16903,21 @@ class ExampleSeeder extends Seeder
                     'year' => '1966',
                     ]
             ],
+            [
+                'source' => 'Harlen, W. (2016). Assessment and Curriculum. I. D. Wyse & J. Pandya (Red.), The SAGE Handbook of Curriculum, Pedagogy and Assessment: Two Volume Set (s. 693–709). SAGE Publications Ltd. https://doi.org/10.4135/9781473921405.n43 ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'doi' => '10.4135/9781473921405.n43',
+                    'author' => 'Harlen, W.',
+                    'year' => '2016',
+                    'title' => 'Assessment and Curriculum',
+                    'editor' => 'I. D. Wyse and J. Pandya',
+                    'booktitle' => 'The SAGE Handbook of Curriculum, Pedagogy and Assessment',
+                    'booksubtitle' => 'Two Volume Set',
+                    'pages' => '693-709',
+                    'publisher' => 'SAGE Publications Ltd',
+                    ]
+            ],
 
             
         ];

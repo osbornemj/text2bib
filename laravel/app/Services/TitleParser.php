@@ -251,7 +251,7 @@ class TitleParser
             }
 
             if (Str::startsWith($word, '//')) {
-                $this->verbose("Ending title, case 1a");
+                $this->verbose("Ending title, case 1b");
                 $title = rtrim(implode(' ', $initialWords), ',:;');
                 $remainder = ltrim(implode(' ', $remainingWords), '/');
                 break;
@@ -289,13 +289,13 @@ class TitleParser
                     ||
                     $word == '//'
                 ) {
-                $this->verbose("Ending title, case 1b");
+                $this->verbose("Ending title, case 1c");
                 $title = rtrim(implode(' ', $initialWords), ',:;');
                 break;
             }
 
             if (Str::endsWith($word, '//')) {
-                $this->verbose("Ending title, case 1c");
+                $this->verbose("Ending title, case 1d");
                 $title = rtrim(implode(' ', $initialWords), ',:;.') . ' ' . substr($word, 0, -2);
                 break;
             }
@@ -304,7 +304,7 @@ class TitleParser
 
             // volume is next
             if (preg_match('/^(' . $this->regExps->volumeRegExp . ') [0-9]/', $remainder)) {
-                $this->verbose("Ending title, case 1d");
+                $this->verbose("Ending title, case 1e");
                 $title = rtrim(implode(' ', $initialWords), ',:;');
                 break;
             }
@@ -795,7 +795,9 @@ class TitleParser
                             ||
                             in_array($word, $titleAbbreviations)
                             || 
-                            preg_match('/^(Part )?(I|II|III|[1-9])[:.] /', $remainder)
+                            // Second preg_match rules of initials of editor, but more than that should be ruled out: could be
+                            // name like 'I. Smith'.  Could use convertToAuthors?
+                            (preg_match('/^(Part )?(I|II|III|[1-9])[:.] /', $remainder) && !preg_match('/^I\. [A-Z]\./', $remainder))
                         )
                         &&
                         ! ($nextWord == 'edited' && $nextButOneWord == 'by')
