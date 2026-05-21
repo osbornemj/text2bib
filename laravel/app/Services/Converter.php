@@ -975,6 +975,7 @@ class Converter
                 $hasSecondaryDate = true;
             }
         }
+
         //////////////////////
         // # Get page count //
         //////////////////////
@@ -2207,7 +2208,7 @@ class Converter
             case 'unpublished':
                 $remainder = trim($remainder, '.,} ');
                 if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
-                    $this->addToField($item, 'note', substr($remainder, $length), 'addToField 8a');
+                    $this->addToField($item, 'note', substr($remainder, $length ?: 0), 'addToField 8a');
                 } elseif (! preg_match('/[Ii]n(:|\.|$)/', $remainder)) {
                     $this->addToField($item, 'note', $remainder, 'addToField 8b');
                 }
@@ -4344,7 +4345,7 @@ class Converter
 
                     // If string is in italics, get rid of the italics
                     if ($this->containsFontStyle($remainder, true, 'italics', $startPos, $length)) {
-                        $remainder = rtrim(substr($remainder, $length), '}');
+                        $remainder = rtrim(substr($remainder, $length ?: 0), '}');
                     }
 
                     // First remove publisher, then address, in case address is part of publisher (Cambridge, Cambridge University Press)

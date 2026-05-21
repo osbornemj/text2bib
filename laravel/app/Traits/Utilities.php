@@ -399,13 +399,13 @@ trait Utilities
         $italicText = $this->getStyledText($string, $start, 'italics', $beforeItalics, $afterItalics, $remains);
 
         if ($italicsOnly) {
-            if ($italicText && (! $start || strlen($beforeItalics) == 0)) {
+            if ($italicText && (! $start || strlen($beforeItalics ?: '') == 0)) {
                 $before = $beforeItalics;
                 $after = $afterItalics;
                 $matchedText = $italicText;
             }
         } elseif ($quotedText && $italicText) {
-            $quoteFirst = strlen($beforeQuote) < strlen($beforeItalics);
+            $quoteFirst = strlen($beforeQuote) < strlen($beforeItalics ?: '');
             $style = $quoteFirst ? 'quoted' : 'italic';
             $before = $quoteFirst ? $beforeQuote : $beforeItalics;
             $after = $quoteFirst ? $afterQuote : $afterItalics;
@@ -423,7 +423,7 @@ trait Utilities
             $style = 'italic';
             $before = $beforeItalics;
             $after = $afterItalics;
-            if (! $start || strlen($before) == 0) {
+            if (! $start || strlen($before ?: '') == 0) {
                 $matchedText = $italicText;
             }
         }

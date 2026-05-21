@@ -16838,7 +16838,43 @@ class ExampleSeeder extends Seeder
                     'year' => '1983',
                     ]
             ],
-
+            [
+                'source' => 'Huang, H. and C.C. Chen. 2017. Stag beetles of China III. Formosa Ecological Company, Taipei, Taiwan. 524 pp. ',
+                'type' => 'book',
+                'bibtex' => [
+                    'address' => 'Taipei, Taiwan',
+                    'author' => 'Huang, H. and C. C. Chen',
+                    'pagetotal' => '524',
+                    'publisher' => 'Formosa Ecological Company',
+                    'title' => 'Stag beetles of {C}hina III',
+                    'year' => '2017',
+                    ]
+            ],
+            [
+                'source' => 'Howden, H.F. and O.L. Cartwright. 1963. Scarab beetles of the genus Onthophagus Latreille north of Mexico. Proceedings of the United States National Museum 114: 1–135. https://doi.org/10.5479/si.00963801.114-3467.1 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Howden, H. F. and O. L. Cartwright',
+                    'doi' => '10.5479/si.00963801.114-3467.1',
+                    'journal' => 'Proceedings of the United States National Museum',
+                    'pages' => '1-135',
+                    'title' => 'Scarab beetles of the genus Onthophagus Latreille north of Mexico',
+                    'volume' => '114',
+                    'year' => '1963',
+                    ]
+            ],
+            [
+                'source' => 'J. Arnold, 1973. Krull dimension in power series rings, Trans. Amer. Math. Soc. 177, 299-304. ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'J. Arnold',
+                    'journal' => 'Trans. Amer. Math. Soc.',
+                    'pages' => '299-304',
+                    'title' => 'Krull dimension in power series rings',
+                    'volume' => '177',
+                    'year' => '1973',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');

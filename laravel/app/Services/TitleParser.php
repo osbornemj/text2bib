@@ -566,9 +566,10 @@ class TitleParser
                         $translatorNext = true;
                     } elseif (preg_match('/^' . $this->regExps->translatorRegExp . '$/', $nextWord)) {
                         // "trans. John Smith."
-                        // Here trans must start with lowercase, because journal name might start with Trans. and period
+                        // Here 'Trans.' followed by string up to next period that contains not space --- e.g. Trans. Amer. ---
+                        // is excluded, because is likely to be journal name, and period
                         // cannnot be preceded by uppercase letter (which would be initial of translator)
-                        if (preg_match('/^' . $this->regExps->translatorRegExp . ' (?P<translator>[^.]+(?<!\p{Lu})\.)(?P<remainder>.*)/u', $remainder, $matches)) {
+                        if (preg_match('/^' . $this->regExps->translatorRegExp . ' (?P<translator>[^.]+(?<!\p{Lu})\.)(?P<remainder>.*)/u', $remainder, $matches) && !($matches[1] === 'Trans.' && !str_contains($matches[2], ' '))) {
                             $translatorNext = true;
                             $translator = $matches['translator'];
                             $remainder = $matches['remainder'];
