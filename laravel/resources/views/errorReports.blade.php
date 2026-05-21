@@ -53,7 +53,7 @@
             </x-link>
         </div>
     </div>
-    <div class="mb-3">
+    <div class="pb-3">
         @foreach ($errorReports as $errorReport)
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 mx-4">
                 <div class="col-span-6">
