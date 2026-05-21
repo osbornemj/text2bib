@@ -53,24 +53,23 @@
             </x-link>
         </div>
     </div>
-    @foreach ($errorReports as $errorReport)
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 mx-4">
-            <div class="col-span-6">
-                <x-link href="{{ url('errorReport/' . $errorReport->id) }}">{{ substr($errorReport->output->source, 0, strpos($errorReport->output->source, ' ', 45)) . ' ...' }}</x-link>
+    <div class="mb-3">
+        @foreach ($errorReports as $errorReport)
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-12 mx-4">
+                <div class="col-span-6">
+                    <x-link href="{{ url('errorReport/' . $errorReport->id) }}">{{ substr($errorReport->output->source, 0, strpos($errorReport->output->source, ' ', 45)) . ' ...' }}</x-link>
+                </div>
+                <div class="col-span-2">
+                    {{ $errorReport->updated_at->format('Y-m-d') }}
+                </div>
+                <div class="mt-0 pt-0 col-span-3">
+                    {{ $errorReport->output->conversion->user->fullName() }}
+                </div>
+                <div class="mt-0 pt-0 col-span-1">
+                    <span class="{{ $errorReport->status->color() }}">{{ $errorReport->status->name }}
+                </div>
             </div>
-            <div class="col-span-2">
-                {{ $errorReport->updated_at->format('Y-m-d') }}
-            </div>
-            <div class="mt-0 pt-0 col-span-3">
-                {{ $errorReport->output->conversion->user->fullName() }}
-            </div>
-            <div class="mt-0 pt-0 col-span-1">
-                <span class="{{ $errorReport->status->color() }}">{{ $errorReport->status->name }}
-            </div>
-        </div>
-    @endforeach
-    <div>
-        END
+        @endforeach
     </div>
 
 </x-app-layout>
