@@ -759,6 +759,7 @@ class TitleParser
                         $this->verbose('$stringToNextPeriodOrComma: ' . $stringToNextPeriodOrComma);
                         $this->verbose('$wordAfterNextCommaOrPeriod: ' . $wordAfterNextCommaOrPeriod);
                         $this->verbose('$stringToNextPeriod: ' . $stringToNextPeriod);
+                        $this->verbose('$nextWord: ' . $nextWord);
                         // if (preg_match('/^(?P<beforeDigit>[^\d]*)/', $remainder, $matches) && $matches['beforeDigit']) {
                         //     $charCountBeforeDigit = mb_strlen($matches['beforeDigit']);
                         // } else {
@@ -1017,6 +1018,14 @@ class TitleParser
                             ! in_array($nextButOneWord[0], range(0,9))
                             ) {
                             $this->verbose("Not ending title, case 7e (next word, '" . $nextWord . "', ends in period and is not a journal word abbreviation, and following word does not start with a digit)");
+                        } elseif (
+                            strlen($stringToNextPeriodOrComma) > 5 
+                            && 
+                            strlen($stringToNextPeriodOrComma) < 50 
+                            &&
+                            preg_match('/^'.$this->regExps->journalRegExp.'$/', $wordAfterNextCommaOrPeriod)
+                            ) {
+                            $this->verbose("Not ending title, case 7f (string to next comma or period has more than 5 characters and fewer than 50 and is followed by journal word)");
                         } else {
                             // otherwise assume the punctuation ends the title.
                             $this->verbose("Ending title, case 6b (word '" . $word ."')");

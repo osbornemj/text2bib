@@ -16890,6 +16890,21 @@ class ExampleSeeder extends Seeder
                     ],
                 'char_encoding' => 'utf8leave',
             ],
+            [
+                'source' => 'Wooding, R. A. (1966b). A hydraulic model for the catchment-stream problem: III. Comparison with runoff observations. Journal of Hydrology, 4, 21–37. https://doi.org/10.1016/0022-1694(66)90065-5 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'Wooding, R. A.',
+                    'doi' => '10.1016/0022-1694(66)90065-5',
+                    'journal' => 'Journal of Hydrology',
+                    'pages' => '21-37',
+                    'title' => 'A hydraulic model for the catchment-stream problem: III. Comparison with runoff observations',
+                    'volume' => '4',
+                    'year' => '1966',
+                    ]
+            ],
+
+            
         ];
 
         DB::statement('DELETE FROM examples');
