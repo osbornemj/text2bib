@@ -2159,10 +2159,11 @@ class Converter
                                 $this->detailLines = array_merge($this->detailLines, $result['pub_info_details']);
                             }
 
-                            $result = $this->findRemoveAndReturn($remainder, $this->articleRegExp);
+//                            $result = $this->findRemoveAndReturn($remainder, $this->articleRegExp);
+                            $result = $this->removeAndReturn($remainder, $this->articleRegExp, ['all']);
                             if ($result) {
                                 // If remainder contains article number, put it in the note field
-                                $this->addToField($item, 'note', $result[0], 'addToField 7');
+                                $this->addToField($item, 'note', $result['all'], 'addToField 7');
                             } elseif (empty($item->pages) && ! empty($item->number) && ! $containsNumberDesignation) {
                                 // else if no pages have been found and a number has been set, assume the previously assigned number
                                 // is in fact a single page

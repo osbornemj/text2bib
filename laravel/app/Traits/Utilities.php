@@ -38,7 +38,7 @@ trait Utilities
         '{\\bfseries ',
     ];
 
-    public $articleRegExp = 'art(icle|\.) (id |no\.? ?)?[0-9]*';
+    public $articleRegExp = '(?P<all>art(icle|\.) (id |no\.? ?)?[0-9]+)';
 
     public $yearRegExp = '(18|19|20)[0-9]{2}';
 
@@ -86,7 +86,7 @@ trait Utilities
     {
         if ($string) {
             if (isset($item->$fieldName) && $item->$fieldName && ! in_array(substr($item->$fieldName, -1), ['.', '?', '!'])) {
-                $item->$fieldName .= '.';
+                $item->$fieldName = rtrim($item->$fieldName).'.';
             }
             $this->setField($item, $fieldName, (isset($item->$fieldName) ? $item->$fieldName.' ' : '').$string, $id);
         }

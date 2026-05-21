@@ -16918,6 +16918,20 @@ class ExampleSeeder extends Seeder
                     'publisher' => 'SAGE Publications Ltd',
                     ]
             ],
+            [
+                'source' => '[11] Burgess, R. A., Jeffery, M., Odero, S. A., Rose-Clarke, K., & Devakumar, D. (2022). Overlooked and unaddressed: A narrative review of mental health consequences of child marriages. PLOS Global Public Health, 2(1), Article e0000131. https://doi.org/10.1371/journal.pgph.0000131 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'note' => 'Article e0000131',
+                    'doi' => '10.1371/journal.pgph.0000131',
+                    'author' => 'Burgess, R. A. and Jeffery, M. and Odero, S. A. and Rose-Clarke, K. and Devakumar, D.',
+                    'year' => '2022',
+                    'title' => 'Overlooked and unaddressed: A narrative review of mental health consequences of child marriages',
+                    'journal' => 'PLOS Global Public Health',
+                    'volume' => '2',
+                    'number' => '1',
+                    ]
+            ],
 
             
         ];
