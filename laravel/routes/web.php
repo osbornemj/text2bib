@@ -86,7 +86,7 @@ Route::middleware(['auth', 'verified', 'noRequiredResponses'])->group(function (
         Route::get('/convertFile', 'convertFile')->name('convertFile.get');
         Route::post('/convertFile', 'convertFile')->name('convertFile.post');
         Route::get('/conversions', 'conversions')->name('conversions');
-        Route::get('/showConversion/{id}/{flag?}', 'showConversion')->name('showConversion');
+        Route::get('/showConversion/{id}/{flag?}', 'showConversion')->name('showConversion')->where('flag', '[0-1]');
         Route::get('/downloadSource/{userFileId}', 'downloadSource')->name('downloadSource');
     });
 

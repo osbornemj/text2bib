@@ -58,9 +58,14 @@ class AppServiceProvider extends ServiceProvider
 
         // Generates errors on n+1 problems etc.
         Model::shouldBeStrict(! $this->app->isProduction());
-        // Automatically eager load all neede relationships
+
+        // Automatically eager load all needed relationships
         Model::automaticallyEagerLoadRelationships();
+
         // Disallow re-seeding database in production
         DB::prohibitDestructiveCommands($this->app->isProduction());
+
+        // Every route parameter named 'id' must consist of digits
+        Route::pattern('id', '[0-9]+');
     }
 }
