@@ -24,20 +24,20 @@ use App\Services\RegularExpressions;
 
 class Converter
 {
-    var $bookTitleAbbrevs;
-    var $cities;
+    var array $bookTitleAbbrevs;
+    var array $cities;
     var $detailLines;
-    var $dictionaryNames;
-    var $distinctiveJournalWordAbbreviations;
-    var $entryPrefixes;
-    var $entrySuffixes;
-    var $excludedWords;
-    var $itemType;
-    var $names;
-    var $onlinePhrases;
-    var $ordinals;
-    var $publishers;
-    var $journalWordAbbreviations;
+    var array $dictionaryNames;
+    var array $distinctiveJournalWordAbbreviations;
+    var array $entryPrefixes;
+    var array $entrySuffixes;
+    var array $excludedWords;
+    var string $itemType;
+    var array $names;
+    var string $onlinePhrases;
+    var array $ordinals;
+    var array $publishers;
+    var array $journalWordAbbreviations;
 
     use AuthorPatterns;
     use MakeScholarTitle;

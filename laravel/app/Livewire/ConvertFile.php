@@ -14,6 +14,8 @@ use App\Models\Version;
 use App\Services\Converter;
 use App\Services\Crossref;
 use App\Traits\AddLabels;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -32,63 +34,63 @@ class ConvertFile extends Component
 
     private Crossref $crossref;
 
-    public $conversionExists = false;
+    public bool $conversionExists = false;
 
-    public $conversionCount;
+    public int $conversionCount;
 
-    public $version;
+    public Carbon $version;
 
-    public $crossrefQuota;
+    public int $crossrefQuota;
 
-    public $crossrefQuotaRemaining;
+    public int $crossrefQuotaRemaining;
 
-    public $crossrefQueryCount;
+    public int $crossrefQueryCount;
 
-    public $retrievedFromCrossrefCount;
+    public int $retrievedFromCrossrefCount;
 
-    public $retrievedFromCacheCount;
+    public int $retrievedFromCacheCount;
 
-    public $convertedItems;
+    public array $convertedItems;
 
-    public $invalidItems;
+    public array $invalidItems;
 
-    public $malformedUtf8Items;
+    public array $malformedUtf8Items;
 
-    public $itemsWithErrors;
+    public array $itemsWithErrors;
 
-    public $conversionId;
+    public int $conversionId;
 
-    public $outputId;
+    public int $outputId;
 
-    public $includeSource;
+    public int $includeSource;
 
-    public $reportType;
+    public string $reportType;
 
-    public $conversion;
+    public Conversion $conversion;
 
-    public $itemTypeOptions;
+    public array $itemTypeOptions;
 
-    public $itemTypes;
+    public Collection $itemTypes;
 
-    public $entry = null;
+    public string|null $entry = null;
 
-    public $itemSeparatorError = false;
+    public bool $itemSeparatorError = false;
 
-    public $unknownEncodingEntries = [];
+    public array $unknownEncodingEntries = [];
 
-    public $fileError = null;
+    public string|null $fileError = null;
 
-    public $notUtf8;
+    public bool $notUtf8;
 
-    public $convertedEncodingCount;
+    public int $convertedEncodingCount;
 
-    public $useOptions;
+    public array $useOptions;
 
-    public $bstOptions;
+    public array $bstOptions;
 
-    public $bstFields;
+    public array $bstFields;
 
-    public $languages;
+    public array $languages;
 
     public function boot()
     {
@@ -320,6 +322,7 @@ class ConvertFile extends Component
             $this->fileError = 'bibliographic-export';
         }
 
+        $encodings = [];
         if ($this->fileError) {
             $conversion->update(['file_error' => $this->fileError]);
         } else {
@@ -340,7 +343,6 @@ class ConvertFile extends Component
             $this->unknownEncodingEntries = [];
 
             // Check for utf-8
-            $encodings = [];
             $this->notUtf8 = false;
             $this->convertedEncodingCount = 0;
             foreach ($entries as $i => $entry) {
@@ -349,7 +351,7 @@ class ConvertFile extends Component
                 } else {
                     // Distinguishing between Windows-1252 and ISO-8859-1 is difficult; Windows-1252 is more common
                     // so it is checked first.
-                    $encodings[$i] = $this->mb_detect_encoding_in_order($entry, ['UTF-8', 'Windows-1252', 'ISO-8859-1'], true);
+                    $encodings[$i] = $this->mb_detect_encoding_in_order($entry, ['UTF-8', 'Windows-1252', 'ISO-8859-1']);
                     if (in_array($encodings[$i], ['ISO-8859-1', 'Windows-1252'])) {
                         $entries[$i] = mb_convert_encoding($entry, 'UTF-8', $encodings[$i]);
                         $this->convertedEncodingCount++;

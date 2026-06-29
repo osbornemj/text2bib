@@ -88,7 +88,7 @@
                 </div>
             @endif
             <br/>
-            @endforeach
+        @endforeach
 
         <x-input-error :messages="$errors->get('uploadForm.use')" class="mt-2" />
 
