@@ -32,7 +32,7 @@ class Converter
     var array $entryPrefixes;
     var array $entrySuffixes;
     var array $excludedWords;
-    var string $itemType;
+    var ?string $itemType;
     var array $names;
     var string $onlinePhrases;
     var array $ordinals;
