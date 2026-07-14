@@ -26,7 +26,7 @@ class Converter
 {
     var array $bookTitleAbbrevs;
     var array $cities;
-    var $detailLines;
+    var array $detailLines;
     var array $dictionaryNames;
     var array $distinctiveJournalWordAbbreviations;
     var array $entryPrefixes;

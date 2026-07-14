@@ -49,7 +49,7 @@ trait Utilities
     // Strings that occur in publishers' names and end in periods that are not sentence-ending
     public $publisherAbbreviations = ['Inc.', 'St.', 'Univ.', 'Pub.', 'Co.'];
 
-    public $detailLines;
+    public array $detailLines;
 
     public function isInitials(string $word): bool
     {
@@ -163,7 +163,6 @@ trait Utilities
      * @param  $before:  part of $string preceding left delimiter and matched text
      * @param  $after:  part of $string following matched text and right delimiter
      * @param  $style  style detected: 'none', 'italic', or 'quoted'
-     * @return $matchedText: quoted or italic substring
      */
     private function getQuotedOrItalic(string $string, bool $start, bool $italicsOnly, ?string &$before, ?string &$after, ?string &$style): string|bool
     {
