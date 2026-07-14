@@ -4196,7 +4196,6 @@ class ExampleSeeder extends Seeder
                     'year' => '1996',
                     'title' => 'A simulation study of the number of events per variable in logistic regression analysis',
                     'journal' => 'Journal of Clinical Epidemiology',
-                    'pages' => '12',
                     'month' => '12',
                     'volume' => '49',
                     'number' => '12',
@@ -7352,7 +7351,6 @@ class ExampleSeeder extends Seeder
                 'source' => 'Mengya Lei, Fan Li, Fang Wang, Dan Feng, Xiaomin Zou, Renzhi Xiao. SecNVM: An Eﬀicient and Write-Friendly Metadata Crash Consistency Scheme for Secure NVM. ACM Transactions on Architecture and Code Optimization, Vol.19 Issue 1, March 2022, Article No.8, Pages: 1–26 ',
                 'type' => 'article',
                 'bibtex' => [
-                    'note' => 'Article',
                     'author' => 'Mengya Lei and Fan Li and Fang Wang and Dan Feng and Xiaomin Zou and Renzhi Xiao',
                     'title' => 'SecNVM: An Efficient and Write-Friendly Metadata Crash Consistency Scheme for Secure NVM',
                     'year' => '2022',
@@ -7984,7 +7982,7 @@ class ExampleSeeder extends Seeder
                 'source' => 'Abiy, A. (2018, April 3) Full English Transcript of Ethiopian Prime Minister Abiy Ahmed’s Inaugural Address. Translation by Hassen Hussein. Published at: OPride. Available at: https://www.opride.com/2018/04/03/english-partial-transcript-of-ethiopian-prime-minister-abiy-ahmeds-inaugural-address/ (Accessed 2 January 2024) ',
                 'type' => 'online',
                 'bibtex' => [
-                    'note' => 'Translation by Hassen Hussein. Published at: OPride',
+                    'note' => 'Published at: OPride',
                     'url' => 'https://www.opride.com/2018/04/03/english-partial-transcript-of-ethiopian-prime-minister-abiy-ahmeds-inaugural-address/',
                     'urldate' => '2024-01-02',
                     'month' => '4',
@@ -7993,7 +7991,6 @@ class ExampleSeeder extends Seeder
                     'year' => '2018',
                     'title' => 'Full English Transcript of Ethiopian Prime Minister Abiy Ahmed\'s Inaugural Address',
 					'translator' => 'Hassen Hussein',
-                    'note' => 'Published at: OPride',
                     ]
             ],
 			// use of \textendash{} (also \textendash ) --- replace with --.
@@ -8140,7 +8137,6 @@ class ExampleSeeder extends Seeder
                 'type' => 'article',
                 'bibtex' => [
                     'author' => 'W. Hillen and T. C. Goodman and R. D. Wells',
-                    'title' => 'Wells',
                     'year' => '1981',
                     'title' => 'Salt dependence and thermodynamic interpretation of the thermal-denaturation of small dna restriction fragments',
                     'pages' => '415-436',
@@ -8797,7 +8793,6 @@ class ExampleSeeder extends Seeder
                     'title' => 'Risk factors for suicide in individuals with depression: a systematic review',
                     'year' => '2013',
                     'journal' => 'Journal of affective disorders',
-                    'pages' => '17',
                     'volume' => '147',
                     'number' => '1-3',
                     'pages' => '17-28',
@@ -12050,7 +12045,6 @@ class ExampleSeeder extends Seeder
                 'bibtex' => [
                     'doi' => '10.1136/bmj.322.7296.1222',
                     'author' => 'Blomley, M. J. and Cooke, J. C. and Unger, E. C. and Monaghan, M. J. and Cosgrove, D. O.',
-                    'title' => 'Blomley',
                     'year' => '2001',
                     'title' => 'Science, medicine, and the future: Microbubble contrast agents: a new era in ultrasound',
                     'journal' => 'BMJ. British Medical Journal',
@@ -14418,7 +14412,6 @@ class ExampleSeeder extends Seeder
                     'booktitle' => 'Proceedings of the 2010 International Cross Disciplinary Conference on Web Accessibility (W4A)',
                     'pages' => '1-9',
                     'publisher' => 'Association for Computing Machinery',
-					'address' => 'Nueva York',
                     'title' => 'On the testability of WCAG 2.0 for beginners',
                     'year' => '2010',
                     'url' => 'https://dl.acm.org/doi/10.1145/1805986.1806000',
@@ -16932,6 +16925,18 @@ class ExampleSeeder extends Seeder
                     'number' => '1',
                     ]
             ],
+            [
+                'source' => '[32] M. Gurioli, F. Bogani, D. S. Wiersma, Ph. Roussignol, G. Cassabois, G. Khitrova, and H. Gibbs, Experimental study of disorder in a semiconductor microcavity, Phys. Rev. B 64, 165309 (2001). ',
+                'type' => 'article',
+                'bibtex' => [
+                    'author' => 'M. Gurioli and F. Bogani and D. S. Wiersma and Ph. Roussignol and G. Cassabois and G. Khitrova and H. Gibbs',
+                    'journal' => 'Phys. Rev. B',
+                    'pages' => '165309',
+                    'title' => 'Experimental study of disorder in a semiconductor microcavity',
+                    'volume' => '64',
+                    'year' => '2001',
+                    ]
+            ],
 
             
         ];
@@ -16944,6 +16949,7 @@ class ExampleSeeder extends Seeder
         // https://www.youtube.com/watch?v=gEfethzjLrA
 
         $j = 1;
+        $exs = $exFields = [];
         foreach ($examples as $i => $example) {
           $exs[] = [
             'id' => $i+1,

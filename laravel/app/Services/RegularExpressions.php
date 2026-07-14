@@ -5,79 +5,79 @@ use App\Traits\Utilities;
 
 class RegularExpressions
 {
-    var $abbreviationsUsedAsInitials;
+    var string $abbreviationsUsedAsInitials;
 
-    var $accessedRegExp1;
-    var $retrievedFromRegExp1;
-    var $retrievedFromRegExp2;
+    var array $accessedRegExp1;
+    var array $retrievedFromRegExp1;
+    var array $retrievedFromRegExp2;
 
-    var $editedByRegExp;
-    var $editorStartRegExp;
-    var $edsNoParensRegExp;
-    var $edsParensRegExp;
-    var $edsOptionalParensRegExp;
-    var $edsRegExp;
+    var string $editedByRegExp;
+    var string $editorStartRegExp;
+    var string $edsNoParensRegExp;
+    var string $edsParensRegExp;
+    var string $edsOptionalParensRegExp;
+    var string $edsRegExp;
 
-    var $editionRegExp;
+    var string $editionRegExp;
 
-    var $firstPublishedRegExp;
+    var string $firstPublishedRegExp;
 
-    var $forthcomingRegExp;
-    var $startForthcomingRegExp;
-    var $endForthcomingRegExp;
+    var string $forthcomingRegExp;
+    var string $startForthcomingRegExp;
+    var string $endForthcomingRegExp;
 
-    var $inRegExp;
+    var string $inRegExp;
 
-    var $inReviewRegExp;
+    var string $inReviewRegExp;
 
-    var $isbnLabelRegExp;
-    var $isbnNumberRegExp;
-    var $issnRegExps;
+    var string $isbnLabelRegExp;
+    var string $isbnNumberRegExp;
+    var array $issnRegExps;
 
-    var $journalRegExp;
+    var string $journalRegExp;
 
-    var $numberRegExp;
-    var $numberAndCodesRegExp;
+    var string $numberRegExp;
+    var string $numberAndCodesRegExp;
 
-    var $oclcLabelRegExp;
-    var $oclcNumberRegExp;
+    var string $oclcLabelRegExp;
+    var string $oclcNumberRegExp;
 
-    var $page;
-    var $pageRange;
-    var $pagesRegExp;
-    var $pageRegExp;
-    var $pageRegExpWithPp;
-    var $pagesRegExpWithPp;
-    var $pageWordsRegExp;
-    var $startPagesRegExp;
+    var string $page;
+    var string $pageRange;
+    var string $pagesRegExp;
+    var string $pageRegExp;
+    var string $pageRegExpWithPp;
+    var string $pagesRegExpWithPp;
+    var string $pageWordsRegExp;
+    var string $startPagesRegExp;
 
-    var $proceedingsRegExp;
-    var $proceedingsExceptionsRegExp;
+    var string $proceedingsRegExp;
+    var string $proceedingsExceptionsRegExp;
 
-    var $publisherRegExp;
+    var string $publisherRegExp;
 
-    var $seriesRegExp;
+    var string $seriesRegExp;
 
-    var $fullThesisRegExp;
-    var $masterRegExp;
-    var $phdRegExp;
-    var $thesisRegExp;
+    var string $fullThesisRegExp;
+    var string $masterRegExp;
+    var string $phdRegExp;
+    var string $thesisRegExp;
 
-    var $translatedByRegExp;
-    var $translatorRegExp;
+    var string $translatedByRegExp;
+    var string $translatorRegExp;
 
-    var $twoPartTitleAbbreviationsRegExp;
+    var string $twoPartTitleAbbreviationsRegExp;
 
-    var $unpublishedRegExp;
+    var string $unpublishedRegExp;
 
-    var $volumeRegExp;
-    var $volumeAndCodesRegExp;
-    var $volumeNumberPagesRegExp;
-    var $volumeNumberRegExp;
-    var $volumeNumberYearRegExp;
-    var $volumeWithNumberRegExp;
+    var string $volumeRegExp;
+    var string $volumeAndCodesRegExp;
+    var string $volumeNumberPagesRegExp;
+    var string $volumeNumberRegExp;
+    var string $volumeNumberYearRegExp;
+    var string $volumeWithNumberRegExp;
 
-    var $workingPaperRegExp;
+    var string $workingPaperRegExp;
 
     use Utilities;
 
@@ -796,7 +796,7 @@ class RegularExpressions
 
         // Other languages?
         $this->inReviewRegExp = '[Ii]n [Rr]eview';
-        $this->abbreviationsUsedAsInitials = '(ʿA|Ch|Mª|Md|Wm|Yu|Zh)';  // including Yu is problematic because it is also a complete name
+        $this->abbreviationsUsedAsInitials = '(ʿA|Ch|Mª|Md|Ph|Wm|Yu|Zh)';  // including Yu is problematic because it is also a complete name
 
         $this->oclcLabelRegExp = 'OCLC:? ';
         $this->oclcNumberRegExp = '[0-9]+';
