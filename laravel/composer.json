@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "guzzlehttp/guzzle": "^7.2",
+        "guzzlehttp/guzzle": "^7.15",
         "icehouse-ventures/laravel-chartjs": "dev-master",
         "laravel/breeze": "^2.0",
         "laravel/framework": "^13.0",
