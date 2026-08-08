@@ -985,7 +985,7 @@ class Converter
         $pageCount = null;
         // pp cannot be followed by digit, because string could be "vol 10 pp. 20-30".  (Period after (pp?pgs) has to be optional, but 
         // then need it also in the (?! expression.)
-        if (preg_match('/^(?P<before>.*?)(,? (?P<pageCount>[0-9ivx +\[\]]+((pp|pgs)\.?|p\.)(?!\.? [1-9])))(?P<after>.*?)$/', $remainder, $matches)) {
+        if (preg_match('/^(?P<before>.*?)(,? (?P<pageCount>[0-9ivx +\[\]]+((pp|pgs|с)\.?|p\.)(?!\.? [1-9])))(?P<after>.*?)$/', $remainder, $matches)) {
             $pageCount = $matches['pageCount'] ?? null;
             $remainder = ($matches['before'] ?? '') . ' ' . ($matches['after'] ?? '');
             $this->verbose("Page count found: " . $pageCount);
@@ -1644,6 +1644,7 @@ class Converter
         // (?<address>: <publisher>(, <year>)?)?
         // if (preg_match('/^\(?[\p{L},. ]{0,25}: [\p{L}&\- ]{0,25}(, (19|20)[0-9]{2})?\)?/u', $remainder) && ! preg_match('/^Published/', $remainder)) {
         // if (preg_match('/^' . $this->addressPublisherYearRegExp . '/u', $remainder) && ! preg_match('/^Published/', $remainder)) {
+
         if (
             $this->isAddressPublisher(rtrim($remainder, '.'), finish: false) 
             && 
