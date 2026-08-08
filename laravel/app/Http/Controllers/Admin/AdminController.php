@@ -33,7 +33,7 @@ class AdminController extends Controller
 
         $maxCheckedConversionId = $adminSetting->max_checked_conversion_id;
         $uncheckedConversionCount = Conversion::where('id', '>', $maxCheckedConversionId)->count();
-        $adminCorrectOutputCount = Output::where('admin_correctness', 1)->count();
+        //$adminCorrectOutputCount = Output::where('admin_correctness', 1)->count(); // Very slow?
 
         $seconds = Carbon::parse($trainingItemsConversionStartedAt)->diffInSeconds(Carbon::parse($trainingItemsConversionEndedAt));
         $itemsPerSecond = $seconds ? number_format($trainingItemsConversionCount / $seconds, 2) : null;
@@ -53,7 +53,7 @@ class AdminController extends Controller
             'trainingItemsConversionEndedAt',
             'itemsPerSecond',
             'uncheckedConversionCount',
-            'adminCorrectOutputCount',
+//            'adminCorrectOutputCount',
         ));
     }
 
