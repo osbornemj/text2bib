@@ -19,7 +19,7 @@ class ConvertFileForm extends Form
     public string $use;
 
     #[Rule('required_if:use,latex', message: 'Please select the BibTeX style file you will use')]
-    public ?int $bst_id;
+    public ?string $bst_id;
 
     #[Rule('regex:/^[a-z0-9\-]+$/i', message: 'The name you have entered is not a valid name for a style file.  Enter the argument of the \bibliographystyle command in your document.')]
     #[Rule('nullable', message: '')]
