@@ -10,7 +10,7 @@ class ThreadStatus extends Component
 {
     public array $statusOptions;
 
-    public string $status;
+    public FeedbackThreadStatus $status;
 
     public Thread $thread;
 

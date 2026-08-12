@@ -17,7 +17,7 @@ use Livewire\Component;
 class Comments extends Component
 {
     #[Rule('required', message: 'Please enter a comment')]
-    public ?Comment $comment;
+    public ?string $comment;
 
     public Collection $comments;
 

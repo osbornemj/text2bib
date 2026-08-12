@@ -16,7 +16,7 @@ use Livewire\Component;
 class ErrorFeedback extends Component
 {
     #[Rule('required', message: 'Please enter a comment')]
-    public ?ErrorReportComment $comment;
+    public ?string $comment;
 
     public Collection $comments;
 

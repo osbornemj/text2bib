@@ -3,12 +3,13 @@
 namespace App\Livewire;
 
 use App\Models\Comment;
+use App\Models\ErrorReportComment;
 use App\Models\RequiredResponse;
 use Livewire\Component;
 
 class RequireResponse extends Component
 {
-    public Comment $comment;
+    public ErrorReportComment|Comment $comment;
 
     public int $userId;
 
