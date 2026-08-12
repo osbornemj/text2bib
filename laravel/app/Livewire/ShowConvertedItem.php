@@ -113,7 +113,7 @@ class ShowConvertedItem extends Component
 
     public string $errorReport;
 
-    public string $language;
+    public string $language = 'en';
 
     public string $itemTypeId;
 
