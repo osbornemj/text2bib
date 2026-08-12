@@ -119,7 +119,7 @@ trait Utilities
         // 'with' is allowed to cover lists of authors like Smith, J. with Jones, A.
         // return mb_strtolower($string) == $this->phrases[$language]['and'] || in_array($string, $this->andWords) || $string == 'with';
         //return in_array(mb_strtolower($string), $this->andWords) || $string == 'with';
-        return in_array($string, $this->andWords) || in_array($string, array_map('mb_strtoupper', $this->andWords)) || $string == 'with';
+        return in_array($string, $this->regExps->andWords) || in_array($string, array_map('mb_strtoupper', $this->regExps->andWords)) || $string == 'with';
     }
 
     /**
@@ -489,6 +489,8 @@ trait Utilities
             $codes = $this->italicCodes;
         } elseif ($style == 'bold') {
             $codes = $this->boldCodes;
+        } else {
+            $codes = [];
         }
         foreach ($codes as $code) {
             $length = strlen($code);
@@ -503,10 +505,12 @@ trait Utilities
 
     private function removeFontStyle(string $string, string $style): string
     {
-        if ($style == 'italics') {
+        if ($style === 'italics') {
             $codes = $this->italicCodes;
-        } elseif ($style == 'bold') {
+        } elseif ($style === 'bold') {
             $codes = $this->boldCodes;
+        } else {
+            $codes = [];
         }
         foreach ($codes as $code) {
             $string = str_replace($code, '', $string);
@@ -570,7 +574,7 @@ trait Utilities
                 substr($word, -1) == '.'
                 && ! $isInitial
                 && ($prevWordInitial || iterator_count($aspell->check($word)) == 0)
-                && ! in_array(substr($word, 0, -1), $this->excludedWords)
+                && ! in_array(substr($word, 0, -1), $this->regExps->excludedWords)
             ) {
                 $sentences[] = $sentence;
                 $sentence = '';
@@ -622,7 +626,7 @@ trait Utilities
         $returnString = '';
         foreach ($words as $word) {
             $returnString .= ' ';
-            if (in_array($word, $this->names)) {
+            if (in_array($word, $this->regExps->names)) {
                 $returnString .= '{'.$word[0].'}'.substr($word, 1);
             } else {
                 $returnString .= $word;

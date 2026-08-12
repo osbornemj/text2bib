@@ -2,18 +2,19 @@
 
 namespace App\Livewire;
 
+use App\Models\Comment;
 use App\Models\RequiredResponse;
 use Livewire\Component;
 
 class RequireResponse extends Component
 {
-    public $comment;
+    public Comment $comment;
 
-    public $userId;
+    public int $userId;
 
-    public $type;
+    public string $type;
 
-    public function submit($userId, $commentId)
+    public function submit(int $userId, int $commentId)
     {
         if ($this->type == 'comment') {
             RequiredResponse::create(['user_id' => $userId, 'comment_id' => $commentId]);
@@ -22,7 +23,7 @@ class RequireResponse extends Component
         }
     }
 
-    public function remove($id)
+    public function remove(int $id)
     {
         RequiredResponse::destroy($id);
     }

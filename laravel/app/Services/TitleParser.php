@@ -48,7 +48,7 @@ class TitleParser
         string|null &$edition, 
         string|null &$volume, 
         bool &$isArticle, 
-        string|null &$year = null, 
+        string|null &$year, 
         string|null &$note, 
         string|null $journal, 
         bool $containsUrlAccessInfo, 
@@ -371,6 +371,7 @@ class TitleParser
                 $wordAfterNextCommaOrPeriod = strtok(substr($remainder, 1 + strlen($stringToNextPeriodOrComma)), ' ');
                 $upcomingRoman = $upcomingArticlePubInfo = false;
 
+                $remainderFollowingNextPeriodOrComma = '';
                 $upcomingYear = $upcomingVolumePageYear = $upcomingVolumeNumber = false;
                 if ($stringToNextPeriodOrComma) {
                     $remainderFollowingNextPeriodOrComma = mb_substr($remainder, mb_strlen($stringToNextPeriodOrComma));
@@ -400,6 +401,12 @@ class TitleParser
                     $this->verbose("Ending title, case 2a (journal pub info next, with no journal name)");
                     $title = rtrim(implode(' ', $initialWords), ',:;');
                     $isArticle = true;
+                    break;
+                }
+
+                if (preg_match('/'.$this->regExps->incollectionTitleRegExp.'/', strtolower($stringToNextPeriod))) {
+                    $this->verbose("Ending title, case 2a (incollection title next)");
+                    $title = rtrim(implode(' ', $initialWords), ',:;');
                     break;
                 }
 

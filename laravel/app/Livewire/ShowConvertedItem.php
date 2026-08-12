@@ -19,117 +19,117 @@ use Livewire\Component;
 
 class ShowConvertedItem extends Component
 {
-    // public ShowConvertedItemForm $form;
+    // public string ShowConvertedItemForm $form;
 
-    public $address;
+    public string $address;
 
-    public $annote;
+    public string $annote;
 
-    public $archiveprefix;
+    public string $archiveprefix;
 
-    public $author;
+    public string $author;
 
-    public $booksubtitle;
+    public string $booksubtitle;
 
-    public $booktitle;
+    public string $booktitle;
 
-    public $chapter;
+    public string $chapter;
 
-    public $date;
+    public string $date;
 
-    public $doi;
+    public string $doi;
 
-    public $edition;
+    public string $edition;
 
-    public $editor;
+    public string $editor;
 
-    public $eprint;
+    public string $eprint;
 
-    public $howpublished;
+    public string $howpublished;
 
-    public $institution;
+    public string $institution;
 
-    public $isbn;
+    public string $isbn;
 
-    public $issn;
+    public string $issn;
 
-    public $journal;
+    public string $journal;
 
-    public $key;
+    public string $key;
 
-    public $month;
+    public string $month;
 
-    public $note;
+    public string $note;
 
-    public $number;
+    public string $number;
 
-    public $oclc;
+    public string $oclc;
 
-    public $organization;
+    public string $organization;
 
-    public $pages;
+    public string $pages;
 
-    public $pagetotal;
+    public string $pagetotal;
 
-    public $publisher;
+    public string $publisher;
 
-    public $school;
+    public string $school;
 
-    public $series;
+    public string $series;
 
-    public $subtitle;
+    public string $subtitle;
 
-    public $title;
+    public string $title;
 
-    public $translator;
+    public string $translator;
 
-    public $type;
+    public string $type;
 
-    public $url;
+    public string $url;
 
-    public $urldate;
+    public string $urldate;
 
-    public $volume;
+    public string $volume;
 
-    public $year;
+    public string $year;
 
-    public $postReport = false;
+    public bool $postReport = false;
 
-    public $comment;
+    public string $comment;
 
-    public $convertedItem;
+    public array $convertedItem;
 
-    public $outputId;
+    public string $outputId;
 
-    public $itemTypeOptions;
+    public array $itemTypeOptions;
 
-    public $itemTypes;
+    public object $itemTypes;
 
-    public $fields;
+    public array $fields;
 
-    public $origFields;
+    public array $origFields;
 
-    public $crossrefFields;
+    public array $crossrefFields;
 
-    public $errorReport;
+    public string $errorReport;
 
-    public $language;
+    public string $language;
 
-    public $itemTypeId;
+    public string $itemTypeId;
 
-    public $displayState;
+    public string $displayState;
 
-    public $status;
+    public string $status;
 
-    public $correctness;
+    public string $correctness;
 
-    public $correctionExists;
+    public string $correctionExists;
 
-    public $priorReportExists;
+    public string $priorReportExists;
 
-    public $correctionsEnabled;
+    public string $correctionsEnabled;
 
-    public $source = 'conversion';
+    public string $source = 'conversion';
 
     public function mount()
     {
@@ -216,7 +216,7 @@ class ShowConvertedItem extends Component
     /**
      * Add field from Crossref data
      */
-    public function addCrossrefField($field)
+    public function addCrossrefField(string $field)
     {
         $output = Output::find($this->outputId);
 
@@ -236,7 +236,7 @@ class ShowConvertedItem extends Component
         $output->update(['item' => $item]);
     }
 
-    public function setFieldSource($field, $fieldSource)
+    public function setFieldSource(string $field, string $fieldSource)
     {
         $output = Output::find($this->outputId);
 
@@ -257,7 +257,7 @@ class ShowConvertedItem extends Component
         $output->update(['item' => $item]);
     }
 
-    public function setItemSource($itemSource)
+    public function setItemSource(string $itemSource)
     {
         $output = Output::find($this->outputId);
 
@@ -311,7 +311,7 @@ class ShowConvertedItem extends Component
         $this->displayState = 'block';
     }
 
-    public function setCorrectness($value)
+    public function setCorrectness(string $value)
     {
         $this->correctness = $value;
         $this->displayState = $this->correctness == -1 ? 'block' : 'none';
@@ -330,7 +330,7 @@ class ShowConvertedItem extends Component
         $this->dispatch('scroll-to-next', id: "output-{$this->outputId}");
     }
 
-    private function insertPublisherJournalCity($output)
+    private function insertPublisherJournalCity(Output $output)
     {
         if ($output->itemType && $output->itemType->name == 'article' && isset(($output->item)['journal'])) {
             $journalName = ($output->item)['journal'];

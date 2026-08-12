@@ -103,6 +103,7 @@ class TrainingItemsController extends Controller
         $converter = new Converter;
 
         $itemTypes = ItemType::select('id', 'name')->get();
+        $itemTypeIds = [];
         foreach ($itemTypes as $itemType) {
             $itemTypeIds[$itemType->name] = $itemType->id;
         }
@@ -166,6 +167,7 @@ class TrainingItemsController extends Controller
         $trainingItems = TrainingItem::inRandomOrder()->limit(6000)->get();
 
         $itemTypes = ItemType::select('id', 'name')->get();
+        $itemTypeNames = [];
         foreach ($itemTypes as $itemType) {
             $itemTypeNames[$itemType->id] = $itemType->name;
         }

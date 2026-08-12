@@ -125,12 +125,6 @@
                 --}}
             </p>
             <p>
-                <x-link :href="route('vonNames.index')" :active="request()->routeIs('vonNames.index')">
-                    von Names
-                </x-link>
-                (name parts like 'von' and 'della' that need special treatment)
-            </p>
-            <p>
                 <x-link :href="route('publishers.index')" :active="request()->routeIs('publishers.index')">
                     Publishers
                 </x-link>
@@ -147,18 +141,6 @@
                     (unchecked)
                 </x-link>
                 (cities in which publishers are located, for the <code>address</code> field of a book)
-            </p>
-            <p>
-                <x-link :href="route('names.index')" :active="request()->routeIs('names.index')">
-                    Names
-                </x-link>
-                (proper names that need to have their initial letter enclosed in braces in BibTeX entries)
-            </p>
-            <p>
-                <x-link :href="route('excludedWords.index')" :active="request()->routeIs('excludedWords.index')">
-                    Excluded words
-                </x-link>
-                (strings that are used as abbreviations but are also in the dictionary as words on their own)
             </p>
             <p>
                 <x-link :href="route('dictionaryNames.index')" :active="request()->routeIs('dictionaryNames.index')">

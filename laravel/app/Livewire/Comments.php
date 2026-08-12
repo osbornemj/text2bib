@@ -6,8 +6,10 @@ use App\Models\Comment;
 use App\Models\RequiredResponse;
 use App\Models\Thread;
 use App\Models\User;
+
 use App\Notifications\CommentPosted;
 use App\Notifications\CommentResponsePosted;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
@@ -15,15 +17,15 @@ use Livewire\Component;
 class Comments extends Component
 {
     #[Rule('required', message: 'Please enter a comment')]
-    public $comment;
+    public ?Comment $comment;
 
-    public $comments;
+    public Collection $comments;
 
-    public $thread;
+    public Thread $thread;
 
-    public $opUser;
+    public User $opUser;
 
-    public $type;
+    public string $type;
 
     public function mount()
     {
@@ -66,7 +68,7 @@ class Comments extends Component
             $opUser->notify(new CommentResponsePosted($this->thread->id, $comment->id));
         }
 
-        $this->comment = '';
+        $this->comment = null;
         $this->comments = $this->comments->push($comment);
     }
 }

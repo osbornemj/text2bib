@@ -3,15 +3,16 @@
 namespace App\Livewire;
 
 use App\Enums\ReportStatus;
+use App\Models\ErrorReport;
 use Livewire\Component;
 
 class ErrorReportStatus extends Component
 {
-    public $statusOptions;
+    public array $statusOptions;
 
-    public $status;
+    public ReportStatus $status;
 
-    public $errorReport;
+    public ErrorReport $errorReport;
 
     public function mount()
     {

@@ -10,9 +10,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
+use App\Services\RegularExpressions;
+
 class Conversion extends Model
 {
     use HasFactory;
+
+    private RegularExpressions $regExps;
 
     protected $guarded = [];
 
@@ -62,7 +66,7 @@ class Conversion extends Model
 
     public function firstLowercaseOutput(): HasOne
     {
-        $vonNames = VonName::all()->toArray();
+        $vonNames = $this->regExps->vonNames;
 
         $excludedPrefixes = array_merge(
             array_map(fn($vn) => $vn['name'] . ' ', $vonNames),

@@ -2,19 +2,20 @@
 
 namespace App\Livewire;
 
+use App\Models\Journal;
 use Livewire\Component;
 
 class JournalCheck extends Component
 {
-    public $journal;
+    public Journal $journal;
 
-    public $checked;
+    public string $checked;
 
-    public $currentPage;
+    public string $currentPage;
 
-    public $type;
+    public string $type;
 
-    public function check($value, $currentPage)
+    public function check(string $value, string $currentPage)
     {
         $this->journal->checked = $value;
         $this->journal->save();
@@ -26,13 +27,13 @@ class JournalCheck extends Component
         }
     }
 
-    public function distinctive($value)
+    public function distinctive(string $value)
     {
         $this->journal->distinctive = $value;
         $this->journal->save();
     }
 
-    public function delete($currentPage)
+    public function delete(string $currentPage)
     {
         $this->journal->delete();
 

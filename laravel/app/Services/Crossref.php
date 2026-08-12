@@ -43,7 +43,7 @@ class Crossref
             }
     }
 
-    public function parseCrossrefBibtex($crossrefItem) {
+    public function parseCrossrefBibtex(string $crossrefItem) {
         if (preg_match('/^@(?P<itemType>[A-Za-z]+){(?P<label>[^,]+), (?P<fields>.*)$/', $crossrefItem, $matches)) {
             $remainder = $matches['fields'];
             $crossref_fields = [];

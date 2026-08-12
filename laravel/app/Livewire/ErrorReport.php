@@ -7,25 +7,26 @@ use App\Models\ItemField;
 use App\Models\ItemType;
 use App\Models\Output;
 use App\Models\OutputField;
+use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class ErrorReport extends Component
 {
     public ErrorReportForm $form;
 
-    public $output;
+    public Output $output;
 
-    public $outputId;
+    public int $outputId;
 
-    public $itemTypeOptions;
+    public array $itemTypeOptions;
 
-    public $fields;
+    public Collection $fields;
 
-    public $itemTypeId;
+    public int $itemTypeId;
 
-    public $displayState;
+    public string $displayState;
 
-    public $status;
+    public string $status;
 
     public function mount()
     {

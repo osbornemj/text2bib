@@ -151,7 +151,7 @@ trait AddLabels
         return $result;
     }
 
-    public function translateFrom($string, $language)
+    public function translateFrom(string $string, string $language)
     {
         if ($language == 'my') {
             // Burmese numerals

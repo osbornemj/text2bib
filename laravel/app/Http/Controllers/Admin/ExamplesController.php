@@ -58,7 +58,7 @@ class ExamplesController extends Controller
             // remove closing }
             array_pop($bibtexLines);
 
-            foreach($bibtexLines as $key => $bibtexLine) {
+            foreach($bibtexLines as $bibtexLine) {
                 $bibtexLineComponents = explode('=', $bibtexLine);
                 ExampleField::create([
                     'example_id' => $example->id,

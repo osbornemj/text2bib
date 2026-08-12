@@ -4,15 +4,17 @@ namespace App\Livewire;
 
 use Livewire\Component;
 
+use App\Models\City;
+
 class CityCheck extends Component
 {
-    public $city;
+    public City $city;
 
-    public $currentPage;
+    public string $currentPage;
 
-    public $type;
+    public string $type;
 
-    public function check($value, $currentPage)
+    public function check(string $value, string $currentPage)
     {
         $this->city->checked = $value;
         $this->city->save();
@@ -24,13 +26,13 @@ class CityCheck extends Component
         }
     }
 
-    public function distinctive($value)
+    public function distinctive(string $value)
     {
         $this->city->distinctive = $value;
         $this->city->save();
     }
 
-    public function delete($currentPage)
+    public function delete(string $currentPage)
     {
         $this->city->delete();
 

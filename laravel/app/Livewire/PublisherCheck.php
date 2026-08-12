@@ -2,17 +2,18 @@
 
 namespace App\Livewire;
 
+use App\Models\Publisher;
 use Livewire\Component;
 
 class PublisherCheck extends Component
 {
-    public $publisher;
+    public Publisher $publisher;
 
-    public $currentPage;
+    public string $currentPage;
 
-    public $type;
+    public string $type;
 
-    public function check($value, $currentPage)
+    public function check(string $value, string $currentPage)
     {
         $this->publisher->checked = $value;
         $this->publisher->save();
@@ -24,13 +25,13 @@ class PublisherCheck extends Component
         }
     }
 
-    public function distinctive($value)
+    public function distinctive(string $value)
     {
         $this->publisher->distinctive = $value;
         $this->publisher->save();
     }
 
-    public function delete($currentPage)
+    public function delete(string $currentPage)
     {
         $this->publisher->delete();
 

@@ -7,7 +7,7 @@ use Livewire\Component;
 
 class ConversionUsability extends Component
 {
-    public $conversion;
+    public Conversion $conversion;
 
     public function toggleUsable()
     {

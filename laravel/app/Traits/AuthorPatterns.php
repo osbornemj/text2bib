@@ -3,10 +3,14 @@
 namespace App\Traits;
 
 use App\Services\RegularExpressions;
+use App\Models\VonName;
 
 trait AuthorPatterns
 {
     private RegularExpressions $regExps;
+    //abstract protected function getVonNames(): array;
+
+//    protected array $vonNames;
 
     /* AUTHOR PATTERNS
     *
@@ -45,14 +49,11 @@ trait AuthorPatterns
     {
         $abbreviationsUsedAsInitials = $this->regExps->abbreviationsUsedAsInitials;
 
-        $vonNameRegExp = '(';
-        foreach ($this->vonNames as $i => $vonName) {
-            $vonNameRegExp .= ($i ? '|' : '').$vonName;
-        }
-        $vonNameRegExp .= ')';
+        $this->vonNames = $this->regExps->vonNames;
+        $vonNamesRegExp = $this->regExps->vonNamesRegExp;
 
         $andRegExp = '(';
-        foreach ($this->andWords as $i => $andWord) {
+        foreach ($this->regExps->andWords as $i => $andWord) {
             if ($andWord == '\&') {
                 $andWord = '\\\&';
             } elseif ($andWord == '$\&$') {
@@ -70,13 +71,13 @@ trait AuthorPatterns
         // as long as none of the patterns end with simply a space.
         // Last names can be enclosed in braces (e.g. in a \bibitem so that a name with a double-barelled last name is formatted correctly).
         $nameSegment = '\p{Lu}[\p{L}\-\']+';
-        $lastNameRegExp = '{?('.$vonNameRegExp.' )?('.$vonNameRegExp.' )?'.$nameSegment.'( '.$nameSegment.')?}?';
+        $lastNameRegExp = '{?('.$vonNamesRegExp.' )?('.$vonNamesRegExp.' )?'.$nameSegment.'( '.$nameSegment.')?}?';
         // Other name (string before first space) has to start with uppercase letter and include at least one lowercase letter
         $otherNameRegExp = '(?=[^ ]*\p{Ll})'.$nameSegment;
         // Uppercase name
         $ucNameRegExp = '\p{Lu}+( \p{Lu}+)?';
         //$initialRegExp = '((\p{Lu}|'.$abbreviationsUsedAsInitials.')\.?|\p{Lu}\.?-\p{Lu}\.?)';
-        $initialRegExp = '((\p{Lu}|'.$abbreviationsUsedAsInitials.')\.?|\p{Lu}\.?-\p{Lu}\.?|'.$vonNameRegExp.')';
+        $initialRegExp = '((\p{Lu}|'.$abbreviationsUsedAsInitials.')\.?|\p{Lu}\.?-\p{Lu}\.?|'.$vonNamesRegExp.')';
         $initialPeriodRegExp = '((\p{Lu}|'.$abbreviationsUsedAsInitials.')\.|\p{Lu}\.-\p{Lu}\.)';
 
         // Spaces between initials are added before an item is processed, so "A.B." doesn't need to be matched
@@ -447,7 +448,7 @@ trait AuthorPatterns
             // Jane Smith, Leiden
             // (However, this case should be dealt with by extracing the publication info before getting the editor.)
             [
-                'name1' => $lastNameRegExp.', '.$otherNameRegExp.'( \p{Lu}\.?)?( \p{Lu}\.?)?'.'( '.$vonNameRegExp.')?',
+                'name1' => $lastNameRegExp.', '.$otherNameRegExp.'( \p{Lu}\.?)?( \p{Lu}\.?)?'.'( '.$vonNamesRegExp.')?',
                 // 'name1' => $lastNameRegExp . ', ' . $otherNameRegExp . '( \p{Lu}\.?)?( \p{Lu}\.?)?',
                 'end1' => $periodNotAndOrCommaYear,
                 'end2' => null,

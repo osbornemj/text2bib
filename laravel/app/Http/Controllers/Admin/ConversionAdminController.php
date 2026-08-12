@@ -26,8 +26,8 @@ class ConversionAdminController extends Controller
 {
     use AddLabels;
 
-    public $userRatings = ['' => '', 0 => 'unrated', 1 => 'correct', -1 => 'incorrect', 2 => 'corrected'];
-    public $adminRatings = ['' => '', 0 => 'unrated', 1 => 'correct', -1 => 'incorrect'];
+    public array $userRatings = ['' => '', 0 => 'unrated', 1 => 'correct', -1 => 'incorrect', 2 => 'corrected'];
+    public array $adminRatings = ['' => '', 0 => 'unrated', 1 => 'correct', -1 => 'incorrect'];
 
     public function index(int $userId = 0, string $style = 'normal'): View
     {

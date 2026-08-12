@@ -7,11 +7,11 @@ use Livewire\Component;
 
 class ConvertedOrCrossrefField extends Component
 {
-    public $convertedItem;
+    public array $convertedItem;
 
-    public $outputId;
+    public int $outputId;
 
-    public $field;
+    public string $field;
 
     public $fieldSource = 'conversion';
 

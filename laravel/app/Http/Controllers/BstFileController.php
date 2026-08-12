@@ -9,7 +9,7 @@ use App\Models\Bst;
 
 class BstFileController extends Controller
 {
-    var $nonstandardFields;
+    var array $nonstandardFields;
 
     public function __construct()
     {

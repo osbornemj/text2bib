@@ -3,13 +3,14 @@
 namespace App\Livewire;
 
 use App\Models\AdminSetting;
+use App\Models\Conversion;
 use Livewire\Component;
 
 class ConversionChecked extends Component
 {
-    public $maxCheckedConversionId;
+    public int $maxCheckedConversionId;
 
-    public $conversion;
+    public Conversion $conversion;
 
     public function setMaxChecked()
     {

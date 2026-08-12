@@ -14,7 +14,7 @@ use Illuminate\View\View;
 
 class BstsController extends Controller
 {
-    var $nonstandardFields;
+    var array $nonstandardFields;
 
     public function __construct()
     {

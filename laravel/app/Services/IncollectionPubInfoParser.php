@@ -6,9 +6,9 @@ class IncollectionPubInfoParser
     public AuthorParser $authorParser;
     private RegularExpressions $regExps;
 
-    var $pubInfoDetails;
-    var $patternsNoBooktitle;
-    var $patternsWithBooktitle;
+    //var $pubInfoDetails;
+    var array $patternsNoBooktitle;
+    var array $patternsWithBooktitle;
 
     public function __construct()
     {
@@ -87,11 +87,11 @@ class IncollectionPubInfoParser
         ];
     }
 
-    public function checkPatterns(string $remainder, string $language, bool $booktitleSet): array|false
+    public function checkPatterns(string $remainder, string $language, bool $booktitleSet): array|null
     {
         $isEditor = true;
         $isTranslator = false;
-        $returner = false;
+        $returner = null;
 
         $patterns  = $booktitleSet ? $this->patternsNoBooktitle : $this->patternsWithBooktitle;
 

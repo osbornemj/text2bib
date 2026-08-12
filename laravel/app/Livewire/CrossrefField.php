@@ -8,12 +8,12 @@ use Livewire\Component;
 class CrossrefField extends Component
 {
     #[Reactive]
-    public $convertedItem;
+    public array $convertedItem;
 
-    public $outputId;
+    public int $outputId;
 
     #[Reactive]
-    public $field;
+    public string $field;
 
     public $checked = false;
 

@@ -10,15 +10,15 @@ use Livewire\Component;
 
 class AdminConvertedItem extends Component
 {
-    public $output;
+    public ?Output $output = null;
 
-    public $convertedItem;
+    public array $convertedItem;
 
-    public $originalItem;
+    public array $originalItem;
 
-    public $originalItemSet;
+    public bool $originalItemSet;
 
-    public $crossrefItem;
+    public array $crossrefItem;
 
     public function mount()
     {
@@ -74,7 +74,7 @@ class AdminConvertedItem extends Component
         $this->output = null;
     }
 
-    private function insertPublisherJournalCity($output)
+    private function insertPublisherJournalCity(Output $output)
     {
         if ($output->itemType->name == 'article' && isset(($output->item)['journal'])) {
             $journalName = ($output->item)['journal'];

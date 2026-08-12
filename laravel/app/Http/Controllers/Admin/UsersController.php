@@ -40,7 +40,7 @@ class UsersController extends Controller
         return view('admin.users.index', compact('users', 'searchString', 'sortBy'));
     }
 
-    public function destroy($id): RedirectResponse
+    public function destroy(int $id): RedirectResponse
     {
         $user = User::find($id);
         

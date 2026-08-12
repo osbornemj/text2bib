@@ -3,17 +3,18 @@
 namespace App\Livewire;
 
 use App\Models\Conversion;
+use App\Models\Output;
 use Livewire\Component;
 
 class ConversionFirstItem extends Component
 {
     public Conversion $conversion;
 
-    public $currentPage;
+    public string $currentPage;
 
-    public $firstOutput;
+    public Output $firstOutput;
 
-    public $style;
+    public string $style;
 
     public function mount(Conversion $conversion)
     {

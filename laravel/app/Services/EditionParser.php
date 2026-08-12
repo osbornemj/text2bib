@@ -18,6 +18,8 @@ class EditionParser
     {
         $beforePattern = $start ? '' : '(?P<before>.*)';
         $afterPattern = $end ? '' : '(?P<after>.*)';
+        $edition = '';
+        $editionNumber = null;
 
         $editionRegExp = '/^' . $beforePattern . '(\(' . $this->regExps->editionRegExp . '\)|([( ]|^)' . $this->regExps->editionRegExp . '[.,]?)' . $afterPattern . '$/iJu';
 

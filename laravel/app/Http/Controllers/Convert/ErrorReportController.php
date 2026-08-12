@@ -41,7 +41,7 @@ class ErrorReportController extends Controller
         return view('errorReports', compact('errorReports', 'sortBy'));
     }
 
-    public function show($id): View
+    public function show(int $id): View
     {
         $errorReport = ErrorReport::where('id', $id)
             ->with('output')

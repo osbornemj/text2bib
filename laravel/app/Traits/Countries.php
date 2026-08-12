@@ -5,7 +5,7 @@ namespace App\Traits;
 trait Countries
 {
     // Taken, with some deletions, from https://gist.github.com/DHS/1340150
-    public $countries = [
+    public array $countries = [
         'AF' => 'Afghanistan',
         'AL' => 'Albania',
         'DZ' => 'Algeria',

@@ -2,13 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Models\ItemType;
 use Livewire\Component;
 
 class ItemTypeFields extends Component
 {
-    public $itemType;
+    public ItemType $itemType;
 
-    public function reorder($oldPosition, $newPosition)
+    public function reorder(int $oldPosition, int $newPosition)
     {
         $fields = $this->itemType->fields;
         $out = array_splice($fields, $oldPosition, 1);

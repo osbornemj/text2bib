@@ -19,8 +19,8 @@ class ArticlePubInfoParser
 
     private RegularExpressions $regExps;
 
-    var $monthsRegExp;
-    var $pubInfoDetails;
+    var array $monthsRegExp;
+    var array $pubInfoDetails;
 
     public function __construct()
     {
@@ -104,7 +104,6 @@ class ArticlePubInfoParser
                     $this->containsFontStyle($remainder, true, 'bold', $posBold, $lenBold) // followed by bold
                     || 
                     $this->containsFontStyle($remainder, true, 'italics', $posItalic, $lenItalic) // followed by italics
-                    // (Str::endsWith($word, '.') && strlen($word) > 2 && $this->inDict($word) && !in_array($word, $this->excludedWords))
                    )
                 {
                     $this->verbose('Ending journal name.  Next word: ' . $word);

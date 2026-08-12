@@ -6,7 +6,9 @@ use App\Models\ErrorReport;
 use App\Models\ErrorReportComment;
 use App\Models\RequiredResponse;
 use App\Models\User;
+
 use App\Notifications\ErrorReportCommentPosted;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
@@ -14,17 +16,17 @@ use Livewire\Component;
 class ErrorFeedback extends Component
 {
     #[Rule('required', message: 'Please enter a comment')]
-    public $comment;
+    public ?ErrorReportComment $comment;
 
-    public $comments;
+    public Collection $comments;
 
-    public $errorReportId;
+    public int $errorReportId;
 
-    public $opUser;
+    public User $opUser;
 
-    public $type;
+    public string $type;
 
-    public $userIsAdmin;
+    public bool $userIsAdmin;
 
     public function mount()
     {
@@ -50,7 +52,7 @@ class ErrorFeedback extends Component
             'comment_text' => $this->comment,
         ]);
 
-        $this->comment = '';
+        $this->comment = null;
         $this->comments = $this->comments->push($comment);
 
         // Delete required response, if there is one

@@ -3,15 +3,16 @@
 namespace App\Livewire;
 
 use App\Enums\FeedbackThreadStatus;
+use App\Models\Thread;
 use Livewire\Component;
 
 class ThreadStatus extends Component
 {
-    public $statusOptions;
+    public array $statusOptions;
 
-    public $status;
+    public string $status;
 
-    public $thread;
+    public Thread $thread;
 
     public function mount()
     {

@@ -43,7 +43,7 @@ class CommentController extends Controller
         return view('threads', compact('threads', 'sortBy'));
     }
 
-    public function show($id): View
+    public function show(int $id): View
     {
         $thread = Thread::where('id', $id)
             ->with('comments')

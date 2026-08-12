@@ -7,6 +7,9 @@ class RegularExpressions
 {
     var string $abbreviationsUsedAsInitials;
 
+    var array $andWords;
+    var string $andWordsRegExp;
+
     var array $accessedRegExp1;
     var array $retrievedFromRegExp1;
     var array $retrievedFromRegExp2;
@@ -20,11 +23,15 @@ class RegularExpressions
 
     var string $editionRegExp;
 
+    var array $excludedWords;
+
     var string $firstPublishedRegExp;
 
     var string $forthcomingRegExp;
     var string $startForthcomingRegExp;
     var string $endForthcomingRegExp;
+
+    var string $incollectionTitleRegExp;
 
     var string $inRegExp;
 
@@ -35,6 +42,8 @@ class RegularExpressions
     var array $issnRegExps;
 
     var string $journalRegExp;
+
+    var array $names;
 
     var string $numberRegExp;
     var string $numberAndCodesRegExp;
@@ -77,6 +86,9 @@ class RegularExpressions
     var string $volumeNumberYearRegExp;
     var string $volumeWithNumberRegExp;
 
+    var array $vonNames;
+    var string $vonNamesRegExp;
+
     var string $workingPaperRegExp;
 
     use Utilities;
@@ -95,6 +107,157 @@ class RegularExpressions
         ];
 
         $this->inRegExp = '(' . implode('|', $inWords) . ')';
+
+        ///////////////////////////
+        // and [between authors] //
+        ///////////////////////////
+
+        $this->andWords = [
+            'and', 
+            '/', 
+            '\&', 
+            '&', 
+            '$\&$', 
+            'dan', // Indonesian // confusion with name "Dan"
+            'e',   // Portuguese, Italian
+            'en',  // Dutch
+            'et',  // French
+            'i',   // Polish
+            'şi',  // Romanian
+            'und', // German
+            've',  // Turkish
+            'y',   // Spanish
+            'и',   // Russian
+//            'a',   // Czech // causes confusion with English word 'a'.
+        ];
+
+        $this->andWordsRegExp = '(' . implode('|', $this->andWords) . ')';
+
+        ////////////////////
+        // Excluded words //
+        ////////////////////
+
+        // Strings that are used as abbreviations but are also in the dictionary as words on their own.
+
+        $this->excludedWords = [
+            'Amer',
+            'Austral',
+            'Bull',
+            'Geom',
+            'Ind',
+            'Int',
+            'Math',
+            'Meth',
+            'Nat',
+            'Phys',
+            'Proc',
+            'Res',
+            'Rev',
+            'Sci',
+            'Soc',
+            'Trans',
+            'Univ',
+            'Vol', 
+        ];
+
+        ///////////
+        // Names //
+        ///////////
+
+        // (proper names that need to have their initial letter enclosed in braces in BibTeX entries)
+
+        $this->names = [
+            'American',
+            'Arrovian',
+            'Aumann',
+            'Banach',
+            'Bayes',
+            'Bayesian',
+            'China',
+            'Cournot',
+            'Elisabeth',
+            'Elizabeth',
+            'Euler',
+            'Gauss',
+            'Gaussian',
+            'German',
+            'Groves',
+            'Indian',
+            'Kleinian',
+            'Ledyard',
+            'Lindahl',
+            'Markov',
+            'Markovian',
+            'Morse',
+            'Nash',
+            'Riccati',
+            'Riemann',
+            'Savage',
+            'Schur',
+            'Smale',
+            'Sylvester',
+            'U.S.',
+            'Walras',
+            'Walrasian',
+        ];
+
+        ///////////////
+        // von names //
+        ///////////////
+
+        $this->vonNames = [
+            '`t',
+            'Abdel',
+            'al',
+            'aus',
+            'Ben',
+            'bin',
+            'd\.',
+            'da',
+            'dan',
+            'das',
+            'de',
+            'De',
+            'del',
+            'dela',
+            'della',
+            'dem',
+            'den',
+            'der',
+            'di',
+            'do',
+            'dos',
+            'du',
+            'el',
+            'i',
+            'ibn',
+            'la',
+            'La',
+            'Le',
+            'le',
+            'Lo',
+            'los',
+            'op',
+            'San',
+            'St\.',
+            'te',
+            'Ten',
+            'ten',
+            'ter',
+            'tom',
+            'ul',
+            'ur',
+            'v\.',
+            'van',
+            'Van',
+            'vom',
+            'von',
+            'wa',
+            'zu',
+            'zur',
+        ];
+
+        $this->vonNamesRegExp = '(' . implode('|', $this->vonNames) . ')';
 
         /////////////
         // Editors //
@@ -383,6 +546,17 @@ class RegularExpressions
         ];
 
         $this->journalRegExp = '(' . implode('|', $journalWords) . ')';
+
+        //////////////////
+        // Incollection //
+        //////////////////
+
+        $incollectionTitleWords = [
+            'in honor of', 
+            'festschrift', 
+        ];
+
+        $this->incollectionTitleRegExp = '(' . implode('|', $incollectionTitleWords) . ')';
 
         ///////////
         // Pages //

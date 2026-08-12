@@ -14,8 +14,8 @@ class Dates
 {
     private Dates $dates;
 
-    var $monthsRegExp;
-    var $monthsAbbreviationsRegExp;
+    var array $monthsRegExp;
+    var array $monthsAbbreviationsRegExp;
     
     use Months;
     use Utilities;
@@ -384,7 +384,11 @@ class Dates
         $months = $fullMonth1 . ($fullMonth2 ? '--' . $fullMonth2 : '');
 
         $month1numberNoLeadingZero = substr($month1number, 0, 1) == '0' ? substr($month1number, 1) : $month1number;
-        $month2numberNoLeadingZero = substr($month2number, 0, 1) == '0' ? substr($month2number, 1) : $month2number;
+        if ($month2number === null) {
+            $month2numberNoLeadingZero = null;
+        } else {
+            $month2numberNoLeadingZero = substr($month2number, 0, 1) == '0' ? substr($month2number, 1) : $month2number;
+        }
 
         return [
             'months' => $months,

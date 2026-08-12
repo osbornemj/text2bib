@@ -35,6 +35,8 @@ class DownloadBibtexController extends Controller
                     $cr = "\r\n";
                 } elseif ($lineEndings == 'l') {
                     $cr = "\n";
+                } else {
+                    $cr = "";
                 }
 
                 $handle = fopen('php://output', 'w');

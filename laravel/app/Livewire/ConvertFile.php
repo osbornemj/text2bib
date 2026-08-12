@@ -322,7 +322,7 @@ class ConvertFile extends Component
             $this->fileError = 'bibliographic-export';
         }
 
-        $encodings = [];
+        $encodings = $entries = [];
         if ($this->fileError) {
             $conversion->update(['file_error' => $this->fileError]);
         } else {

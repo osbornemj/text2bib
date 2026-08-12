@@ -5,7 +5,7 @@ namespace App\Traits;
 trait Stopwords
 {
     // Taken, with some deletions, from https://github.com/voku/stop-words
-    public $stopwords = [
+    public array $stopwords = [
         'about',
         'above',
         'above',

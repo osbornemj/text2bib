@@ -12,7 +12,6 @@ use App\Models\Name;
 use App\Models\Publisher;
 use App\Models\JournalWordAbbreviation;
 
-use App\Traits\AuthorPatterns;
 use App\Traits\MakeScholarTitle;
 use App\Traits\Months;
 use App\Traits\Stopwords;
@@ -39,7 +38,6 @@ class Converter
     var array $publishers;
     var array $journalWordAbbreviations;
 
-    use AuthorPatterns;
     use MakeScholarTitle;
     use Months;
     use Stopwords;
@@ -70,13 +68,14 @@ class Converter
         $this->regExps = new RegularExpressions;
 
         // Words that are in dictionary but are abbreviations in journal names
-        $this->excludedWords = ExcludedWord::all()->pluck('word')->toArray();
+        // (Used to be in table in database.)
+        $this->excludedWords = $this->regExps->excludedWords;
 
         // Words that are in dictionary but are names
         $this->dictionaryNames = DictionaryName::all()->pluck('word')->toArray();
 
         // Abbreviations used as the first words of journal names (like "J." or "Bull.")
-        $journalWordAbbreviations = JournalWordAbbreviation::where('checked', 1);
+        $journalWordAbbreviations = JournalWordAbbreviation::where('checked', 1)->get();
 
         $this->distinctiveJournalWordAbbreviations = $journalWordAbbreviations->where('distinctive', 1)->pluck('word')->toArray();
         $this->journalWordAbbreviations = $journalWordAbbreviations->pluck('word')->toArray();
@@ -254,6 +253,7 @@ class Converter
         // Otherwise extract label, if any, and remove numbers and other stray characters at start of entry //
         //////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        $year = null;
         if (preg_match('/^(?P<year>' . $this->yearRegExp . ')\*? (?P<remainder>.*)$/', $entry, $matches)) {
             $year = $matches['year'];
             $remainder = ltrim($matches['remainder'], ' |*+');
@@ -352,6 +352,7 @@ class Converter
         }
 
         // Case of URL that is also link to doi --- record both doi and URL
+        $retrievedFrom = $note = null;
         if (empty($doi)
             &&
             preg_match(
@@ -811,6 +812,7 @@ class Converter
         $journal = null;
         $containsJournalName = false;
         $wordString = mb_strtolower(' ' . implode(' ', $words));
+        $date = '';
 
         // Internationalize?
         if (preg_match('/' . $this->regExps->journalRegExp . '[,. ]/u', $wordString)) {
@@ -900,6 +902,7 @@ class Converter
             $authorstring = strstr($authorstring, ' ');
         }
 
+        $monthResult = null;
         if ($month) {
             $monthResult = $this->dates->fixMonth($month, $language);
             $itemMonth = ($use == 'biblatex') ? $monthResult['month1numberNoLeadingZero'] : $monthResult['months'];
@@ -1000,6 +1003,7 @@ class Converter
         //////////////////////
 
         $remainder = ltrim($remainder, ': ');
+        $before = '';
 
         // If remainder starts with year in parens, extract it.
         if (preg_match('/^\((?P<year>' . $this->yearRegExp . ')\)(?P<remains>.*)$/', $remainder, $matches)) {
@@ -1013,6 +1017,7 @@ class Converter
         $containsEdition = false;
         $containsSeries = false;
         $seriesString = null;
+        $newRemainder = '';
 
         // Does title start with "Doctoral thesis:" or something like that?
         $containsThesis = false;
@@ -1031,7 +1036,9 @@ class Converter
                 $newRemainder = Str::after($remainder, '}');
             }
         }
-        
+      
+        $after = null;
+        $edition = null;
         if (! $title) {
             $title = $this->getQuotedOrItalic($remainder, true, false, $before, $after, $titleStyle);
             $this->verbose('Title is ' . ($titleStyle == 'none' ? 'not styled' : 'styled (' . $titleStyle . ')'));
@@ -2458,7 +2465,7 @@ class Converter
                 $booktitle = !$precededByEditedBy ? $tempBooktitle : null;
 
                 // If booktitle is followed by volume, append it to booktitle
-                if (preg_match('/^(?P<volume>,? ?' . $this->regExps->volumeWithNumberRegExp . ')(?P<after>.*)$/', $after, $matches)) {
+                if ($after && preg_match('/^(?P<volume>,? ?' . $this->regExps->volumeWithNumberRegExp . ')(?P<after>.*)$/', $after, $matches)) {
                     if (isset($matches['volume'])) {
                         $booktitle .= $matches['volume'];
                         $after = $matches['after'] ?? '';
@@ -2480,7 +2487,7 @@ class Converter
                     $newRemainder = $remainder = $before . $after;
                 }
 
-                $booktitle = rtrim($booktitle, ', ');
+                $booktitle = $booktitle ? rtrim($booktitle, ', ') : '';
 
                 if ($booktitle) {
                     $this->setField($item, 'booktitle', $booktitle, 'setField 67');
@@ -2637,7 +2644,7 @@ class Converter
                         //&& ! Str::endsWith(substr($remainder, 0, $periodPosition), $this->dates->monthsAbbreviationsOld[$language])
                         && ! preg_match('/ edited |[ \(]eds?[\.)]|[ \(]pp\./i', $remainder)
                        ) {
-                        if ($periodPosition > $datePos) {
+                        if (isset($datePos) && $periodPosition > $datePos) {
                             $booktitle = substr($remainder, 0, $periodPosition);
                             $remainder = trim(substr($remainder, $periodPosition+1));
                         } else {
@@ -3001,6 +3008,8 @@ class Converter
 
                     // Set $noWordBeforeEdsInDict = true if no word before 'eds' is in the dictionary
                     // in which case format seems to be <editor> eds <booktitle> <publicationInfo>
+                    $noWordBeforeEdsInDict = false;
+                    $edStrLen = null;
                     if (! isset($item->editor)) {
                         if ($remainderContainsEds) {
                             $noWordBeforeEdsInDict = true;
@@ -3197,7 +3206,7 @@ class Converter
                                             $this->publishers
                                         );
                                         $this->setField($item, 'booktitle', $booktitle, 'setField 118');
-                                        if ($address) {
+                                        if (isset($address) && $address) {
                                             $this->setField($item, 'address', $address, 'setField 119');
                                         }
                                         if ($publisher) {
@@ -3977,15 +3986,17 @@ class Converter
                         if (str_contains($booktitle, trim($cityString, '. '))) {
                             $cityString = '';
                         }
-                        if (preg_match('/^(?P<remains>.*?)' . $this->regExps->pagesRegExp . '$/', $remainder, $matches)) {
-                            $this->setField($item, 'pages', $matches['pages'], 'setField 172');
+                        if (preg_match('/^(?P<remains>.*?)' . $this->regExps->pagesRegExp . '$/', $remainder, $pagesMatches)) {
+                            $this->setField($item, 'pages', $pagesMatches['pages'], 'setField 172');
                             $remainder = trim($matches['remains'], ';., ');
                         }
                         // publisher cannot be all-numeric
                         if (! preg_match('/^\d+$/', $remainder)) {                        
                             $newRemainder = $this->publisherAddressParser->extractPublisherAndAddress($remainder, $address, $publisher, $cityString, $publisherString, $this->cities, $this->publishers);
                             $this->setField($item, 'publisher', $publisher, 'setField 173');
-                            $this->setField($item, 'address', $address, 'setField 174');
+                            if (isset($address)) {
+                                $this->setField($item, 'address', $address, 'setField 174');
+                            }
                         }
                     }
                 }
@@ -4111,9 +4122,9 @@ class Converter
 
             case 'book':
                 if ($language == 'my') {
-                    if (preg_match('/^"(?P<pubinfo>[^"]*)"(?P<pages>.*)$/', $remainder, $matches)) {
-                        $pubinfo = $matches['pubinfo'] ?? null;
-                        $pages = $matches['pages'] ?? null;
+                    if (preg_match('/^"(?P<pubinfo>[^"]*)"(?P<pages>.*)$/', $remainder, $myMatches)) {
+                        $pubinfo = $myMatches['pubinfo'] ?? null;
+                        $pages = $myMatches['pages'] ?? null;
                         
                         if ($pubinfo) {
                             $pubinfoParts = explode('။', $pubinfo);

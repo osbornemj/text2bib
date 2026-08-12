@@ -6,61 +6,61 @@ use Livewire\Form;
 
 class ShowConvertedItemForm extends Form
 {
-    public $author;
+    public string $author;
 
-    public $title;
+    public string $title;
 
-    public $journal;
+    public string $journal;
 
-    public $year;
+    public int $year;
 
-    public $month;
+    public int $month;
 
-    public $volume;
+    public string $volume;
 
-    public $number;
+    public string $number;
 
-    public $pages;
+    public string $pages;
 
-    public $note;
+    public string $note;
 
-    public $doi;
+    public string $doi;
 
-    public $url;
+    public string $url;
 
-    public $editor;
+    public string $editor;
 
-    public $edition;
+    public string $edition;
 
-    public $series;
+    public string $series;
 
-    public $address;
+    public string $address;
 
-    public $publisher;
+    public string $publisher;
 
-    public $archiveprefix;
+    public string $archiveprefix;
 
-    public $eprint;
+    public string $eprint;
 
-    public $isbn;
+    public string $isbn;
 
-    public $oclc;
+    public string $oclc;
 
-    public $institution;
+    public string $institution;
 
-    public $type;
+    public string $type;
 
-    public $booktitle;
+    public string $booktitle;
 
-    public $school;
+    public string $school;
 
-    public $urldate;
+    public string $urldate;
 
-    public $chapter;
+    public string $chapter;
 
-    public $organization;
+    public string $organization;
 
-    public $postReport = false;
+    public bool $postReport = false;
 
-    public $comment;
+    public string $comment;
 }

@@ -16950,6 +16950,20 @@ class ExampleSeeder extends Seeder
                     'year' => '2006',
                     ]
             ],
+            [
+                'source' => 'Haug D. (2015), PIE *kwi-/kwo-: Interrogative, Indefinite or Both?, Tavet Tat Satyam. Studies in Honor of Jared S. Klein on the Occasion of His Seventieth Birthday, Ed. by A.M. Byrd, J. DeLisi, M. Wenthe, Ann Arbor, New York: Beech Stave Press, pp. 86–100. ',
+                'type' => 'incollection',
+                'bibtex' => [
+                    'address' => 'New York',
+                    'author' => 'Haug, D.',
+                    'booktitle' => 'Tavet Tat Satyam. Studies in Honor of Jared S. Klein on the Occasion of His Seventieth Birthday',
+                    'editor' => 'A. M. Byrd and J. DeLisi and M. Wenthe',
+                    'pages' => '86-100',
+                    'publisher' => 'Beech Stave Press',
+                    'title' => 'PIE *kwi-/kwo-: Interrogative, Indefinite or Both?',
+                    'year' => '2015',
+                    ]
+            ],
 
             
         ];

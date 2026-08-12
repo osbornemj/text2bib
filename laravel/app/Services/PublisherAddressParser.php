@@ -29,7 +29,6 @@ class PublisherAddressParser
      * @param $publisherString string
      * @param $cities array: from database
      * @param $publishers array: from database
-     * @return $remainder string
      */
     public function extractPublisherAndAddress(string $string, string|null &$address, string|null &$publisher, string|null $cityString, string|null $publisherString, array $cities, array $publishers): string
     {
@@ -210,7 +209,7 @@ class PublisherAddressParser
             }
         }
         $publisher = Str::of($publisher)->replaceStart('by', '')->trim();
-        $address = ltrim($address, '} ');
+        $address = $address ? ltrim($address, '} ') : '';
 
         return $remainder;
     }

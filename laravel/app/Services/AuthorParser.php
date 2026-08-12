@@ -9,18 +9,14 @@ use App\Traits\AuthorPatterns;
 use App\Traits\Stopwords;
 use App\Traits\Utilities;
 
-use App\Models\VonName;
-
 use App\Services\RegularExpressions;
 
 class AuthorParser
 {
-    var $andWords;
-    var $andWordsRegExp;
-    var $aspell;
-    var $authorDetails;
-    var $nameSuffixes;
-    var $vonNames;
+    var string $andWordsRegExp;
+    var Aspell $aspell;
+    var string|array $authorDetails;
+    var array $nameSuffixes;
 
     private Dates $dates;
     private RegularExpressions $regExps;
@@ -29,6 +25,9 @@ class AuthorParser
     use Stopwords;
     use Utilities;
 
+    protected array $vonNames;
+    var array $andWords;
+
     public function __construct()
     {
         $this->dates = new Dates();
@@ -36,37 +35,14 @@ class AuthorParser
 
         $this->aspell = Aspell::create();
 
-        $this->vonNames = VonName::all()->pluck('name')->toArray();
-
         $this->nameSuffixes = ['Jr', 'Sr', 'III', 'Filho', 'Neto'];
 
-        $this->andWords = [
-            'and', 
-            '/', 
-            '\&', 
-            '&', 
-            '$\&$', 
-            'dan', // Indonesian // confusion with name "Dan"
-            'e',   // Portuguese, Italian
-            'en',  // Dutch
-            'et',  // French
-            'i',   // Polish
-            'şi',  // Romanian
-            'und', // German
-            've',  // Turkish
-            'y',   // Spanish
-            'и',   // Russian
-//            'a',   // Czech // causes confusion with English word 'a'.
-        ];
+        $this->andWords = $this->regExps->andWords;
+        $this->andWordsRegExp = $this->regExps->andWordsRegExp;
 
-        $andWordsRx = '';
-        foreach ($this->andWords as $i => $andWord) {
-            $andWordsRx .= ($i ? '|' : '') . $andWord;
-        }
-    
-        $this->andWordsRegExp = '(' . $andWordsRx . ')';
+        $this->vonNames = $this->regExps->vonNames;
     }
-
+    
     // Overrides method in Utilities trait
     private function verbose(string|array $arg): void
     {
@@ -224,6 +200,7 @@ class AuthorParser
             }
         }
         
+        $remains = null;
         if ($authorstring) {
             $year = $this->dates->getDate(trim($remainder), $remainder, $month, $day, $date, true, true, true, $language);
             //if (preg_match('/^[(\[](tr(ans)?\. and ed\.|ed\. and tr(ans)?\.)[)\]]\.? (?P<remains>.*)$/', $remainder, $matches)) {
@@ -249,7 +226,7 @@ class AuthorParser
 
             return [
                 'authorstring' => $authorstring,
-                'author_pattern' => $i,
+                'author_pattern' => $i ?? 0,
             ];
         } else {
             return null;
@@ -355,6 +332,7 @@ class AuthorParser
         $fullName = '';
         $warnings = [];
         $skip = false;
+        $remains = '';
 
         $authorstring = '';
 
@@ -826,8 +804,8 @@ class AuthorParser
                         if (str_contains($nameComponent, '-')) {
                             $nameChars = mb_str_split($nameComponent);
                             $nameComponent = '';
-                            foreach ($nameChars as $i => $char) {
-                                $nameComponent .= ($i > 0 && $nameChars[$i-1] == '-') ? mb_strtoupper($char) : $char;
+                            foreach ($nameChars as $j => $char) {
+                                $nameComponent .= ($j > 0 && $nameChars[$j-1] == '-') ? mb_strtoupper($char) : $char;
                             }
                         }
                     } else {
@@ -934,8 +912,8 @@ class AuthorParser
                         if ($k == -1) {
                             $n = count($nameWords);
                             $fullName .= $nameWords[$n-1] . ' '. rtrim($word, ',') . ',';
-                            foreach ($nameWords as $i => $nameWord) {
-                                if ($i < $n - 1) {
+                            foreach ($nameWords as $j => $nameWord) {
+                                if ($j < $n - 1) {
                                     $fullName .= ' ' . $nameWord;
                                 }
                             }
