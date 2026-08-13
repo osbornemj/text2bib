@@ -132,7 +132,7 @@ trait AuthorPatterns
 
             // 0. Smith,? AB, Jones,? CD, Gonzalez,? JD(: |\. | followed by <paren> or <quote> or <digit>)
             [
-                'name1' => $lastNameRegExp.',? \p{Lu}{1,3}',
+                'name1' => $lastNameRegExp.',? (\p{Lu}{1,3}|\p{Lu}-\p{Lu})',
                 'end1' => ', ',
                 'end2' => ', '.$notAnd,
                 'end3' => $periodOrColonOrCommaYear,
@@ -140,7 +140,7 @@ trait AuthorPatterns
             ],
             // 1. Smith,? (A.|AB), Jones,? (C.|CD), Gonzalez,? (J.|JD)(: |\. | followed by <paren> or <quote> or <digit> or 4 bare words)
             [
-                'name1' => $lastNameRegExp.',? (\p{Lu}\.|\p{Lu}{2,3})',
+                'name1' => $lastNameRegExp.',? (\p{Lu}\.|\p{Lu}{2,3}|\p{Lu}-\p{Lu})',
                 'end1' => ', ',
                 'end2' => ', '.$notAnd,
                 'end3' => $periodOrColonOrCommaYearOrBareWords,
@@ -148,7 +148,7 @@ trait AuthorPatterns
             ],
             // 2. Smith AB, Jones CD,? and Gonzalez JD(: |\. |, | followed by <paren> or <quote> or <digit>)
             [
-                'name1' => $lastNameRegExp.' \p{Lu}{1,3}',
+                'name1' => $lastNameRegExp.' (\p{Lu}{1,3}|\p{Lu}-\p{Lu})',
                 'end1' => ', ',
                 'end2' => ',? '.$andRegExp.' ',
                 'end3' => $periodOrColonOrCommaYearOrCommaNotJr,
@@ -156,7 +156,7 @@ trait AuthorPatterns
             ],
             // 3. Smith AB, Jones CD, Gonzalez JD, et al.
             [
-                'name1' => $lastNameRegExp.' \p{Lu}{1,3}',
+                'name1' => $lastNameRegExp.' (\p{Lu}{1,3}|\p{Lu}-\p{Lu})',
                 'end1' => ', ',
                 'end2' => ', '.$notAnd,
                 'end3' => $etal,
@@ -165,7 +165,7 @@ trait AuthorPatterns
             ],
             // 4. Smith,? AB, CD Jones, and JD Gonzalez
             [
-                'name1' => $lastNameRegExp.',? \p{Lu}{1,3}',
+                'name1' => $lastNameRegExp.',? (\p{Lu}{1,3}|\p{Lu}-\p{Lu})',
                 'name2' => '\p{Lu}{1,3} '.$lastNameRegExp,
                 'end1' => ', '.$notAnd,
                 'end2' => ',? '.$andRegExp.' ',

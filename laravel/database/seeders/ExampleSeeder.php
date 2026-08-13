@@ -16978,7 +16978,20 @@ class ExampleSeeder extends Seeder
                     'pages' => '166-73',
                     ]
             ],
-            
+            [
+                'source' => 'Park H-M, Kim Y-W, Kim K-J, Kim YJ, Yang Y-H, Jin JM, et al. Comparative N-linked glycan analysis of wild-type and α1,3-galactosyltransferase gene knock-out pig fibroblasts using mass spectrometry approaches. Mol Cells. 2015;38(1):65-74. doi.org/10.14348/molcells.2015.2240 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.14348/molcells.2015.2240',
+                    'author' => 'Park, H.-M. and Kim, Y.-W. and Kim, K.-J. and Kim, Y. J. and Yang, Y.-H. and Jin, J. M. and others',
+                    'title' => 'Comparative N-linked glycan analysis of wild-type and α1,3-galactosyltransferase gene knock-out pig fibroblasts using mass spectrometry approaches',
+                    'year' => '2015',
+                    'journal' => 'Mol Cells',
+                    'volume' => '38',
+                    'number' => '1',
+                    'pages' => '65-74',
+                    ]
+            ],
         ];
 
         DB::statement('DELETE FROM examples');
