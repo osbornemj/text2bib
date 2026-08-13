@@ -3,8 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\City;
-// use App\Livewire\Forms\ShowConvertedItemForm;
-
 use App\Models\ErrorReport;
 use App\Models\ErrorReportComment;
 use App\Models\ItemType;
@@ -19,8 +17,6 @@ use Livewire\Component;
 
 class ShowConvertedItem extends Component
 {
-    // public string ShowConvertedItemForm $form;
-
     public string $address;
 
     public string $annote;

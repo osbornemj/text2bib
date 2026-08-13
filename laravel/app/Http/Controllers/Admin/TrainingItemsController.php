@@ -13,9 +13,9 @@ use App\Models\Conversion;
 use App\Models\ItemType;
 use App\Models\Output;
 use App\Models\TrainingItem;
-use App\Models\VonName;
 
 use App\Services\Converter;
+use App\Services\RegularExpressions;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -23,6 +23,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TrainingItemsController extends Controller
 {
+    private RegularExpressions $regExps;
+
     public function index(): View
     {
         $trainingItems = TrainingItem::with('output.conversion')->orderBy('id')->paginate(50);
@@ -75,7 +77,7 @@ class TrainingItemsController extends Controller
 
     public function showLowercase(): View
     {
-        $vonNames = VonName::all();
+        $vonNames = $this->regExps->vonNames;
 
         $trainingItems = TrainingItem::whereHas('output', function ($q) use ($vonNames) {
             $q->whereRaw('BINARY source regexp "^[a-z]"');

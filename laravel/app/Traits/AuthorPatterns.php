@@ -3,12 +3,10 @@
 namespace App\Traits;
 
 use App\Services\RegularExpressions;
-use App\Models\VonName;
 
 trait AuthorPatterns
 {
     private RegularExpressions $regExps;
-    //abstract protected function getVonNames(): array;
 
 //    protected array $vonNames;
 
