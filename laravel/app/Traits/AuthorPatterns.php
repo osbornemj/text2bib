@@ -434,7 +434,7 @@ trait AuthorPatterns
             // 36. Smith AB(period not and or colon or comma year)
             // [must be at least two initials, otherwise could be start of name --- e.g. Smith A. Jones]
             [
-                'name1' => $lastNameRegExp.' (\p{Lu}{2,3}|\p{Lu}-\p{Lu})',
+                'name1' => $lastNameRegExp.',? (\p{Lu}{2,3}|\p{Lu}-\p{Lu})',
                 'end1' => $periodNotAndOrColonOrCommaYear,
                 'end2' => null,
                 'end3' => null,
