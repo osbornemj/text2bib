@@ -16964,7 +16964,20 @@ class ExampleSeeder extends Seeder
                     'year' => '2015',
                     ]
             ],
-
+            [
+                'source' => 'Lee, HJ, JK Choi, SY Cho, SH Kim, SH Park, SM Choi, DG Lee, JH Choi, and JH Yoo. 2016. “Carbapenem-Resistant Enterobacteriaceae: Prevalence and Risk Factors in a Single Community-Based Hospital in Korea.” Infection & Chemotherapy 48 (3): 166–73. https://doi.org/10.3947/ic.2016.48.3.166 ',
+                'type' => 'article',
+                'bibtex' => [
+                    'doi' => '10.3947/ic.2016.48.3.166',
+                    'author' => 'Lee, H. J. and J. K. Choi and S. Y. Cho and S. H. Kim and S. H. Park and S. M. Choi and D. G. Lee and J. H. Choi and J. H. Yoo',
+                    'year' => '2016',
+                    'title' => 'Carbapenem-Resistant Enterobacteriaceae: Prevalence and Risk Factors in a Single Community-Based Hospital in Korea',
+                    'journal' => 'Infection & Chemotherapy',
+                    'volume' => '48',
+                    'number' => '3',
+                    'pages' => '166-73',
+                    ]
+            ],
             
         ];
 
