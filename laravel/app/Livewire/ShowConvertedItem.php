@@ -35,7 +35,7 @@ class ShowConvertedItem extends Component
 
     public string $chapter;
 
-    public string $date;
+    public ?string $date = null;
 
     public string $doi;
 
