@@ -25,7 +25,7 @@ class ShowConvertedItem extends Component
 
     public string $annote;
 
-    public string $archiveprefix;
+    public ?string $archiveprefix = null;
 
     public string $author;
 
