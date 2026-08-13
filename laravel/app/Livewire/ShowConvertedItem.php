@@ -119,7 +119,7 @@ class ShowConvertedItem extends Component
 
     public string $displayState;
 
-    public string $status;
+    public string $status = '';
 
     public string $correctness;
 

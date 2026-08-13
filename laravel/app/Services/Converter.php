@@ -92,7 +92,7 @@ class Converter
             ->pluck('name')
             ->toArray();
 
-        $this->names = Name::all()->pluck('name')->toArray();
+        $this->names = $this->regExps->names;
 
         $this->ordinals = [
             'en' =>
