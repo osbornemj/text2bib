@@ -147,6 +147,7 @@ class ExampleCheckController extends Controller
             $result['language'] = $example->language;
             $result['charEncoding'] = $example->char_encoding;
 
+            // Add "|| $authorPattern === null" to show items with unidentified author pattern
             if (isset($result) && ($result['result'] == 'incorrect' || $detailsIfCorrect == 'show')) {
                 $results[$example->id] = $result;
             }

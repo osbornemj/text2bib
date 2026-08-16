@@ -33,21 +33,21 @@ class ShowConvertedItem extends Component
 
     public ?string $date = null;
 
-    public string $doi;
+    public ?string $doi = null;
 
     public string $edition;
 
     public string $editor;
 
-    public string $eprint;
+    public ?string $eprint = null;
 
     public string $howpublished;
 
     public string $institution;
 
-    public string $isbn;
+    public ?string $isbn = null;
 
-    public string $issn;
+    public ?string $issn = null;
 
     public string $journal;
 
@@ -59,7 +59,7 @@ class ShowConvertedItem extends Component
 
     public string $number;
 
-    public string $oclc;
+    public ?string $oclc = null;
 
     public string $organization;
 
@@ -111,7 +111,7 @@ class ShowConvertedItem extends Component
 
     public string $language = 'en';
 
-    public string $itemTypeId;
+    public ?string $itemTypeId = null;
 
     public string $displayState;
 
