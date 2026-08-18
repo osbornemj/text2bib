@@ -3986,7 +3986,7 @@ class Converter
                         }
                         if (preg_match('/^(?P<remains>.*?)' . $this->regExps->pagesRegExp . '$/', $remainder, $pagesMatches)) {
                             $this->setField($item, 'pages', $pagesMatches['pages'], 'setField 172');
-                            $remainder = trim($matches['remains'], ';., ');
+                            $remainder = isset($matches['remains']) ? trim($matches['remains'], ';., ') : '';
                         }
                         // publisher cannot be all-numeric
                         if (! preg_match('/^\d+$/', $remainder)) {                        
