@@ -43,7 +43,7 @@ class ShowConvertedItem extends Component
 
     public string $howpublished;
 
-    public string $institution;
+    public ?string $institution = null;
 
     public ?string $isbn = null;
 
