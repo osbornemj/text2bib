@@ -17,31 +17,31 @@ use Livewire\Component;
 
 class ShowConvertedItem extends Component
 {
-    public ?string  $address;
+    public ?string $address;
 
-    public ?string  $annote;
+    public ?string $annote;
 
     public ?string $archiveprefix = null;
 
-    public ?string  $author;
+    public ?string $author;
 
-    public ?string  $booksubtitle;
+    public ?string $booksubtitle;
 
-    public ?string  $booktitle;
+    public ?string $booktitle;
 
-    public ?string  $chapter;
+    public ?string $chapter;
 
     public ?string $date = null;
 
     public ?string $doi = null;
 
-    public ?string  $edition;
+    public ?string $edition;
 
-    public ?string  $editor;
+    public ?string $editor;
 
     public ?string $eprint = null;
 
-    public ?string  $howpublished;
+    public ?string $howpublished;
 
     public ?string $institution = null;
 
@@ -49,53 +49,53 @@ class ShowConvertedItem extends Component
 
     public ?string $issn = null;
 
-    public ?string  $journal;
+    public ?string $journal;
 
-    public ?string  $key;
+    public ?string $key;
 
     public ?string $month = null;
 
-    public ?string  $note;
+    public ?string $note;
 
-    public ?string  $number;
+    public ?string $number;
 
     public ?string $oclc = null;
 
     public ?string $organization = null;
 
-    public ?string  $pages;
+    public ?string $pages;
 
-    public ?string  $pagetotal;
+    public ?string $pagetotal;
 
-    public ?string  $publisher;
+    public ?string $publisher;
 
-    public ?string  $school;
+    public ?string $school;
 
-    public ?string  $series;
+    public ?string $series;
 
-    public ?string  $subtitle;
+    public ?string $subtitle;
 
-    public ?string  $title;
+    public ?string $title;
 
-    public ?string  $translator;
+    public ?string $translator;
 
-    public ?string  $type;
+    public ?string $type;
 
-    public ?string  $url;
+    public ?string $url;
 
-    public ?string  $urldate;
+    public ?string $urldate;
 
-    public ?string  $volume;
+    public ?string $volume;
 
-    public ?string  $year;
+    public ?string $year;
 
     public bool $postReport = false;
 
-    public ?string  $comment;
+    public ?string $comment;
 
     public array $convertedItem;
 
-    public ?string  $outputId;
+    public ?string $outputId;
 
     public array $itemTypeOptions;
 
@@ -107,25 +107,25 @@ class ShowConvertedItem extends Component
 
     public array $crossrefFields;
 
-    public ?string  $errorReport;
+    public ?string $errorReport;
 
-    public ?string  $language = 'en';
+    public ?string $language = 'en';
 
     public ?string $itemTypeId = null;
 
-    public ?string  $displayState;
+    public ?string $displayState;
 
-    public ?string  $status = '';
+    public ?string $status = '';
 
-    public ?string  $correctness;
+    public ?string $correctness;
 
-    public ?string  $correctionExists;
+    public ?string $correctionExists;
 
-    public ?string  $priorReportExists;
+    public ?string $priorReportExists;
 
-    public ?string  $correctionsEnabled;
+    public ?string $correctionsEnabled;
 
-    public string  $source = 'conversion';
+    public string $source = 'conversion';
 
     public function mount()
     {
