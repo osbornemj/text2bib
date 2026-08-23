@@ -17,31 +17,31 @@ use Livewire\Component;
 
 class ShowConvertedItem extends Component
 {
-    public ?string $address;
+    public ?string $address = null;
 
-    public ?string $annote;
+    public ?string $annote = null;
 
     public ?string $archiveprefix = null;
 
-    public ?string $author;
+    public ?string $author = null;
 
-    public ?string $booksubtitle;
+    public ?string $booksubtitle = null;
 
-    public ?string $booktitle;
+    public ?string $booktitle = null;
 
-    public ?string $chapter;
+    public ?string $chapter = null;
 
     public ?string $date = null;
 
     public ?string $doi = null;
 
-    public ?string $edition;
+    public ?string $edition = null;
 
-    public ?string $editor;
+    public ?string $editor = null;
 
     public ?string $eprint = null;
 
-    public ?string $howpublished;
+    public ?string $howpublished = null;
 
     public ?string $institution = null;
 
@@ -49,49 +49,49 @@ class ShowConvertedItem extends Component
 
     public ?string $issn = null;
 
-    public ?string $journal;
+    public ?string $journal = null;
 
-    public ?string $key;
+    public ?string $key = null;
 
     public ?string $month = null;
 
-    public ?string $note;
+    public ?string $note = null;
 
-    public ?string $number;
+    public ?string $number = null;
 
     public ?string $oclc = null;
 
     public ?string $organization = null;
 
-    public ?string $pages;
+    public ?string $pages = null;
 
-    public ?string $pagetotal;
+    public ?string $pagetotal = null;
 
-    public ?string $publisher;
+    public ?string $publisher = null;
 
-    public ?string $school;
+    public ?string $school = null;
 
-    public ?string $series;
+    public ?string $series = null;
 
-    public ?string $subtitle;
+    public ?string $subtitle = null;
 
-    public ?string $title;
+    public ?string $title = null;
 
-    public ?string $translator;
+    public ?string $translator = null;
 
-    public ?string $type;
+    public ?string $type = null;
 
-    public ?string $url;
+    public ?string $url = null;
 
-    public ?string $urldate;
+    public ?string $urldate = null;
 
-    public ?string $volume;
+    public ?string $volume = null;
 
-    public ?string $year;
+    public ?string $year = null;
 
     public bool $postReport = false;
 
-    public ?string $comment;
+    public ?string $comment = null;
 
     public array $convertedItem;
 
@@ -107,23 +107,23 @@ class ShowConvertedItem extends Component
 
     public array $crossrefFields;
 
-    public ?string $errorReport;
+    public ?string $errorReport = null;
 
     public ?string $language = 'en';
 
     public ?string $itemTypeId = null;
 
-    public ?string $displayState;
+    public ?string $displayState = null;
 
     public ?string $status = '';
 
-    public ?string $correctness;
+    public ?string $correctness = null;
 
-    public ?string $correctionExists;
+    public ?string $correctionExists = null;
 
-    public ?string $priorReportExists;
+    public ?string $priorReportExists = null;
 
-    public ?string $correctionsEnabled;
+    public ?string $correctionsEnabled = null;
 
     public string $source = 'conversion';
 
