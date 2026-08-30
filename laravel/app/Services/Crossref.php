@@ -31,16 +31,18 @@ class Crossref
 
     public function getCrossrefItemFromAuthorTitleYear(string $author, string $title, string $year, string $journal, string $publisher): string|null
     {
+        $bibliographic = trim("{$title}, {$author} {$year} {$journal} {$publisher}");
+
         $response = Http::withHeaders([
                 'User-Agent' => 'text2bib (https://text2bib.org); mailto:' . env('CROSSREF_EMAIL'),
             ])
-            ->get('https://api.crossref.org/works?query.bibliographic="' . $title . ', ' . $author . ' ' . $year . ' ' . $journal . ' ' . $publisher . '"&select=DOI&rows=1');
+            ->get('https://api.crossref.org/works', [
+                'query.bibliographic' => $bibliographic,
+                'select' => 'DOI',
+                'rows' => 1,
+                ]);
 
-            if ($response->status() == '200') {
-                return $response->body();
-            } else {
-                return null;
-            }
+            return $response->status() === 200 ? $response->body() : null;
     }
 
     public function parseCrossrefBibtex(string $crossrefItem) {
