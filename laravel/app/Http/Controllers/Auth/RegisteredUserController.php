@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        if (isset($request->empty)) {
+        if ($request->filled('empty')) {
             abort(404);
         }
 

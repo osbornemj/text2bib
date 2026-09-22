@@ -2,8 +2,8 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <div style="display: none;">
-            <input id="empty" type="text" size="32" maxlength="32" class="form-control" name="empty" >
+        <div style="position:absolute; left:-9999px;" aria-hidden="true">
+            <input type="text" name="empty" tabindex="-1" autocomplete="off">
         </div>
 
         <div class="mt-4">
@@ -67,7 +67,7 @@
             <x-input-label for="source" :value="__('How did you discover this website?')" class="mt-4 mb-1"/>
     
             @foreach ($sourceOptions as $key => $option)
-                <x-radio-input name="source" value="{{ $key }}" checked="{{ $key == old('source') }}" @endif class="peer/{{ $key }}" /> 
+                <x-radio-input name="source" value="{{ $key }}" checked="{{ $key == old('source') }}" class="peer/{{ $key }}" /> 
                 <x-value-label for="{{ $key }}" class="peer-checked/{{ $key }}:text-blue-600 ml-1" :value="$option" />
                 <br/>
             @endforeach
