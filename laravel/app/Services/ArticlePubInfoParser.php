@@ -154,7 +154,7 @@ class ArticlePubInfoParser
         $number = '[A-Za-oq-z]?([Ss]upp )?[0-9]{1,13}[A-Za-z]?([0-9]{1,4})?';
         $numberWithRoman = '([0-9]{1,4}|[IVXLCD]{1,6})';
         $letterNumber = '([A-Z]{1,3})?-?' . $number;
-        $numberRange = $number . '(( ?--?-? ?|_|\?)' . $number . ')?';
+        $numberRange = $number . '(( ?--?-? ?|~|_|\?)' . $number . ')?';
         // Some Elsevier journals number supplementary material by adding a suffix to the last page number of the paper
         // and page numbers are presented in the format '62-83.e10'.
         $pageNumberESuffix = '(\.e[0-9]{1,3})';
@@ -283,9 +283,9 @@ class ArticlePubInfoParser
             $this->verbose('remainder: ' . ($remainder ? $remainder : '[empty]'));
             $remainder = ltrim($remainder, ':');
             $number = '[a-z]?[1-9][0-9]{0,5}[A-Za-z]?';
-            $numberRange = $number . '((--?-?|_)' . $number . ')';
+            $numberRange = $number . '((--?-?|_|~)' . $number . ')';
             if (preg_match('/^' . $numberRange . '$/', $remainder, $matches)) {
-                $this->setField($item, 'pages', str_replace(['---', '--', '_'], '-', $remainder), 'getVolumeAndNumberForArticle 3a');
+                $this->setField($item, 'pages', str_replace(['---', '--', '_', '~'], '-', $remainder), 'getVolumeAndNumberForArticle 3a');
                 $this->verbose('[p3a] pages: ' . $item->pages);
             } elseif ($remainder && ctype_digit($remainder)) {
                 if (strlen($remainder) < 7) {
