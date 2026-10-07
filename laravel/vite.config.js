@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import { visualizer } from 'rollup-plugin-visualizer';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     plugins: [
@@ -11,6 +12,7 @@ export default defineConfig({
             ],
             refresh: true,
         }),
+        tailwindcss(),
         process.env.NODE_ENV !== 'production' ? visualizer() : null, // Only enable visualizer in dev
     ].filter(Boolean), // Removes null values from the plugins array
 });

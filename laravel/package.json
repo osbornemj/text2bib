@@ -7,11 +7,11 @@
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
+        "@tailwindcss/vite": "^4.3.3",
         "alpinejs": "^3.4.2",
         "autoprefixer": "^10.4.2",
         "axios": "^1.8.2",
         "laravel-vite-plugin": "^3.1.0",
-        "postcss": "^8.4.6",
         "rollup-plugin-visualizer": "^5.14.0",
         "tailwindcss": "^4.3.3",
         "vite": "^8.0.16"
