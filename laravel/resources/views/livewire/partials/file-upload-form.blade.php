@@ -56,7 +56,10 @@
     @csrf
 
     <div>
-        <x-text-input id="file" class="block mt-1 max-w-xl w-full" type="file" name="file" wire:model="uploadForm.file" accept="txt"
+        <x-text-input id="file" type="file" name="file" wire:model="uploadForm.file" accept="text/plain,.txt"
+            class="block mt-1 max-w-xl w-full text-sm text-gray-600
+                file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
+                file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
             required autofocus />
         <x-input-error :messages="$errors->get('uploadForm.file')" class="mt-2" />
     </div>
